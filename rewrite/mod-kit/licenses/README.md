@@ -1,5 +1,5 @@
 # 第三方许可
 
-保留此目录中的MIT许可与上级THIRD_PARTY_NOTICES.md。StbImageSharp和StbImageWriteSharp使用其公共领域许可选项；LXGW字库的完整OFL文件随data/client/fonts提供。
+保留此目录中的MIT许可与上级THIRD_PARTY_NOTICES.md。StbImageSharp和StbImageWriteSharp使用其公共领域许可选项；Noto、Jigmo和Unifont字库的完整许可随data/client/fonts提供。
 
 许可不包含原游戏素材的再授权。

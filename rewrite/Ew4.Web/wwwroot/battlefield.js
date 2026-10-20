@@ -139,7 +139,7 @@
           const canvas=document.createElement('canvas');canvas.width=width*density;canvas.height=height*density;
           const draw=canvas.getContext('2d');draw.scale(density,density);draw.translate(-left,-top);draw.globalAlpha=opacity;
           if(chinese){
-            const height=Number(label.size),text=[...label.textZh],length=Number(label.letteringLength);
+            const height=Number(label.size),text=[...Ew4OriginalUI.displayText(label.textZh)],length=Number(label.letteringLength);
             draw.rotate(Number(label.angle||0)*Math.PI/180);
             draw.font=height+'px '+Ew4OriginalUI.fontFamily;draw.fontKerning='none';draw.textBaseline='middle';
             const widths=text.map(char=>draw.measureText(char).width),natural=widths.reduce((a,b)=>a+b,0);

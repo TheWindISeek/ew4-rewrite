@@ -9,7 +9,10 @@ import zipfile
 
 ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
-parser.add_argument("--build", default="build/release-20261020")
+parser.add_argument("--build", default="build/release-0.2.4-20261020")
+parser.add_argument("--version", default="0.2.4")
+parser.add_argument("--date", default="20261020")
+parser.add_argument("--notes", default="rewrite/RELEASE_0.2.4_20261020.md")
 args = parser.parse_args()
 build = ROOT / args.build
 assets = build / "assets"
@@ -18,17 +21,18 @@ head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True
 assert not subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT).strip(), "Commit source before packaging"
 web = build / "web"
 assert (web / "Ew4.Web.exe").is_file() and (web / "MoonSharp.Interpreter.dll").is_file()
+assert all((web / name).is_file() for name in ("Start-Web.cmd", "Open-Web-When-Ready.cmd")), "Publish the Web launchers before packaging"
 assert not (web / "saves").exists(), "Do not package user profiles"
 report = json.loads((build / "android-verification.json").read_text(encoding="utf-8"))
 source_apk = ROOT / report["apk"]
 assert hashlib.sha256(source_apk.read_bytes()).hexdigest() == report["sha256"]
-info = dict(version="0.2.0", source=head, ruleApi=1, builtinMaps=["europe", "america", "eastasia"],
+info = dict(version=args.version, source=head, ruleApi=1, builtinMaps=["europe", "america", "eastasia"],
             formalScenarios=95, androidDeviceExecution=False, apkCertificate="Android development certificate")
 (web / "release-info.json").write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8", newline="\n")
-shutil.copyfile(ROOT / "rewrite/RELEASE_20261020.md", web / "RELEASE_NOTES.md")
-apk = assets / "ew4-rewrite-0.2.0-20261020-arm64.apk"
+shutil.copyfile(ROOT / args.notes, web / "RELEASE_NOTES.md")
+apk = assets / f"ew4-rewrite-{args.version}-{args.date}-arm64.apk"
 shutil.copyfile(source_apk, apk)
-archive = assets / "ew4-rewrite-0.2.0-20261020-web-win-x64.zip"
+archive = assets / f"ew4-rewrite-{args.version}-{args.date}-web-win-x64.zip"
 with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as output:
     for file in sorted(web.rglob("*")):
         if file.is_file():

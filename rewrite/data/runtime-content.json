@@ -688,14 +688,54 @@
       "sha256": "6cc0c1741524852db7c12784ba9b9fabcc5a590ffd62e83f80bab91ab5d71e5d"
     },
     {
-      "path": "client/fonts/LXGWWenKai-Regular.ttf",
-      "bytes": 25928940,
-      "sha256": "2d73eea94ad808999d90c0000c239a84a33b09d4bc6ab6c5b8bbf1eda8a7fc8b"
+      "path": "client/fonts/coverage.json",
+      "bytes": 3569,
+      "sha256": "63f367e04b63266adf9b59cc3438f7433f7a42b2d367234d383ebb76a11e9e85"
     },
     {
-      "path": "client/fonts/OFL.txt",
-      "bytes": 5171,
-      "sha256": "1a25e35da1031c6c3436fde545bb9cb5aca954e9873afe510c834b8b79bd21a0"
+      "path": "client/fonts/Jigmo-LICENSE.txt",
+      "bytes": 7171,
+      "sha256": "437ca31a127c9f1b191ff9a42bb563e5f7e414ae819006dca4635d9fb34aeb94"
+    },
+    {
+      "path": "client/fonts/Jigmo.woff2",
+      "bytes": 7270828,
+      "sha256": "eb3eb8838bceca9fa3c2e9cc2776caf9857ed844a8eb65b4902158bce9baecd1"
+    },
+    {
+      "path": "client/fonts/Jigmo2.woff2",
+      "bytes": 12976228,
+      "sha256": "738367ae2a55579a842c3f492929ed3b41f4521f99342f1c881e5029f1e46fec"
+    },
+    {
+      "path": "client/fonts/Jigmo3.woff2",
+      "bytes": 3048560,
+      "sha256": "098a5400514c8f5a5018435e00619495bca05dacb16de7500c9ee808f47efd99"
+    },
+    {
+      "path": "client/fonts/NotoSerifSC-OFL.txt",
+      "bytes": 4350,
+      "sha256": "5e0da210fb04058a8c0087985d2d456b931c2579811a49655721d3cf0c36b6d6"
+    },
+    {
+      "path": "client/fonts/NotoSerifSC-Regular.woff2",
+      "bytes": 5733396,
+      "sha256": "18f742f46aa8f5b7760a5ec96cf7fe85710ec5d72d27cffce7e1ba15784fa65a"
+    },
+    {
+      "path": "client/fonts/Unifont-LICENSE.txt",
+      "bytes": 24142,
+      "sha256": "1e74cb82bf476843e97c2596297b04219b1a7e51f7238944a8c031cb9401fa87"
+    },
+    {
+      "path": "client/fonts/Unifont.woff2",
+      "bytes": 911908,
+      "sha256": "cbcb179f24c8e863dfd85b24341b1dd17941aa9f289d56d8d9ceab17345b7933"
+    },
+    {
+      "path": "client/fonts/UnifontUpper.woff2",
+      "bytes": 571800,
+      "sha256": "d8e0e53304fbff8ac2b6bd27ca1a41ed61c5a3ee853d87d9a3a075586f69a3ed"
     },
     {
       "path": "client/images/anim_fire.png",

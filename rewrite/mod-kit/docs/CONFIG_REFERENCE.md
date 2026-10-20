@@ -30,7 +30,7 @@
 | 城市中文译名 | frontend/city-names.json：英文原名到中文 | app加载；battlefield.labels |
 | 布局背景引用 | client/manifest.json：layouts、menuTextures的file/ratio | ConvertMenuAssets；MenuArt.prepare/texture/apply，只有已读取字段生效 |
 | 历史位图字库 | manifest.fonts及images/font_*，不再控制现行文本 | 不通过glyphs/preserveColor修改字号/描边 |
-| 当前统一字体 | client/fonts/LXGWWenKai-Regular.ttf | original-ui.TextRenderer.prepare/layout/element |
+| 当前统一字体 | client/fonts/*.woff2与coverage.json（Noto Serif SC/Jigmo/Unifont） | original-ui.prepareFonts、TextRenderer.prepare/layout/element、displayText |
 | 历史预渲染菜单字 | manifest.ui.labels，新转换器清空旧文字缓存 | 当前按文本和统一字体绘制 |
 | 粒子/受击时间轴 | client/effects.json：bindings/motions/timelines/definitions | Effects.motion/timeline/emit；app.playCombat |
 | 动画关键帧 | client/animations/<library>.json：fps/items/elements/atlas | LegacyBinary.Animation；app.animation |

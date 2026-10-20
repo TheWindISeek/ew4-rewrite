@@ -1,0 +1,177 @@
+{
+  "schema": 1,
+  "unicodeVersion": "17.0",
+  "faces": [
+    {
+      "file": "NotoSerifSC-Regular.woff2",
+      "family": "EW4 Serif",
+      "probe": "A",
+      "glyphs": 30928,
+      "bytes": 5733396,
+      "sha256": "18f742f46aa8f5b7760a5ec96cf7fe85710ec5d72d27cffce7e1ba15784fa65a",
+      "sourceSha256": "050080d9255a86808f2945bffac582b31ef32bc36411ce29563b4961670c66f9",
+      "upstream": "https://github.com/google/fonts/tree/main/ofl/notoserifsc"
+    },
+    {
+      "file": "Jigmo.woff2",
+      "family": "EW4 Han",
+      "probe": "\u4e00",
+      "glyphs": 50845,
+      "bytes": 7270828,
+      "sha256": "eb3eb8838bceca9fa3c2e9cc2776caf9857ed844a8eb65b4902158bce9baecd1",
+      "sourceSha256": "c8f295b9bd8f9f117a76b3a454aaaa1bb5b4babc18e254978c6deb88464e40cf",
+      "upstream": "https://kamichikoichi.github.io/jigmo/Jigmo-20250912.zip"
+    },
+    {
+      "file": "Jigmo2.woff2",
+      "family": "EW4 Han Plane 2",
+      "probe": "\ud840\udc00",
+      "glyphs": 63047,
+      "bytes": 12976228,
+      "sha256": "738367ae2a55579a842c3f492929ed3b41f4521f99342f1c881e5029f1e46fec",
+      "sourceSha256": "5da3582efe77e22073b86b3b86b556d7111148a76b957cfb53318a91da2efff0",
+      "upstream": "https://kamichikoichi.github.io/jigmo/Jigmo-20250912.zip"
+    },
+    {
+      "file": "Jigmo3.woff2",
+      "family": "EW4 Han Plane 3",
+      "probe": "\ud880\udc00",
+      "glyphs": 13529,
+      "bytes": 3048560,
+      "sha256": "098a5400514c8f5a5018435e00619495bca05dacb16de7500c9ee808f47efd99",
+      "sourceSha256": "815b18c1c670103723fe743090559208fdea47dc587ecb057a5a4721ee8dfeff",
+      "upstream": "https://kamichikoichi.github.io/jigmo/Jigmo-20250912.zip"
+    },
+    {
+      "file": "Unifont.woff2",
+      "family": "EW4 Unicode",
+      "probe": "A",
+      "glyphs": 58910,
+      "bytes": 911908,
+      "sha256": "cbcb179f24c8e863dfd85b24341b1dd17941aa9f289d56d8d9ceab17345b7933",
+      "sourceSha256": "85701ab9b1e251ee16f4df00b13f22eac311d72b7dab427a7d975fe7f5064702",
+      "upstream": "https://unifoundry.com/pub/unifont/unifont-17.0.05/"
+    },
+    {
+      "file": "UnifontUpper.woff2",
+      "family": "EW4 Unicode Supplement",
+      "probe": "\ud800\udc00",
+      "glyphs": 59056,
+      "bytes": 571800,
+      "sha256": "d8e0e53304fbff8ac2b6bd27ca1a41ed61c5a3ee853d87d9a3a075586f69a3ed",
+      "sourceSha256": "f4fd6d5d752726d384feef175bb780c9f29382cd4941c9e1e6990d7c3822a090",
+      "upstream": "https://unifoundry.com/pub/unifont/unifont-17.0.05/"
+    }
+  ],
+  "characters": 192816,
+  "ranges": [
+    [
+      0,
+      55295
+    ],
+    [
+      63744,
+      65023
+    ],
+    [
+      65040,
+      65533
+    ],
+    [
+      65536,
+      73727
+    ],
+    [
+      74650,
+      74751
+    ],
+    [
+      74863,
+      74863
+    ],
+    [
+      74869,
+      74879
+    ],
+    [
+      75076,
+      77823
+    ],
+    [
+      78895,
+      78943
+    ],
+    [
+      82939,
+      82943
+    ],
+    [
+      83527,
+      92159
+    ],
+    [
+      92729,
+      93567
+    ],
+    [
+      93616,
+      94207
+    ],
+    [
+      100352,
+      100607
+    ],
+    [
+      101120,
+      101631
+    ],
+    [
+      101663,
+      101759
+    ],
+    [
+      101875,
+      131069
+    ],
+    [
+      131072,
+      173791
+    ],
+    [
+      173824,
+      178205
+    ],
+    [
+      178208,
+      183981
+    ],
+    [
+      183984,
+      191456
+    ],
+    [
+      191472,
+      192093
+    ],
+    [
+      194560,
+      195101
+    ],
+    [
+      196608,
+      201546
+    ],
+    [
+      201552,
+      210041
+    ],
+    [
+      917504,
+      917631
+    ],
+    [
+      1048576,
+      1058019
+    ]
+  ]
+}

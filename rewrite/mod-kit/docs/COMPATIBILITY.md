@@ -27,6 +27,6 @@
 
 `client/manifest.json.menuTextures`保存原纹理名到实际PNG及`ratio`的映射；修改布局或纹理后重新导入。已有版本2内容包可以直接由新前端按布局读取其原始PNG；版本3重新导入会同时修复派生缓存。
 
-文字内容仍来自`stringtable_cn.ini`、`def_areaname.xml`、将领XML等；不再使用导入FNT/PNG的字形、颜色、描边或行高。rewrite使用自带的`LXGWWenKai-Regular.ttf`及固定字号角色。城市名白色填充、黑色描边；`frontend/city-names.json`提供中英映射，支持反向查找。自创地名没有翻译时保持原名称，不编造译名。标题logo和场景图等美术资源仍可替换。
+文字内容仍来自`stringtable_cn.ini`、`def_areaname.xml`、将领XML等；不再使用导入FNT/PNG的字形、颜色、描边或行高。rewrite使用内置Noto Serif SC、Jigmo和Unifont六份WOFF2及固定字号角色，不依赖系统字体；文件清单与覆盖索引见`data/client/fonts/README.md`和`coverage.json`。城市名白色填充、黑色描边；`frontend/city-names.json`提供中英映射，支持反向查找。自创地名没有翻译时保持原名称，不编造译名。标题logo和场景图等美术资源仍可替换。
 
 资源URL包含当前内容包hash，原版使用基础版本hash；切换后CSS、脚本、位图、字体各自使用正确资源集。尚未完成的旧页面请求仍读取原来的包，不会收到新包图片。此缓存隔离同时应用于Web和Android本地入口。

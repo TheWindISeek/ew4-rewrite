@@ -1,5 +1,11 @@
 # 项目短锚点
 
+- **内置字库与0.2.4发行：先读`reverse/BUNDLED_FONTS_20261020.md`。** 六份离线WOFF2，Noto细宋体/Jigmo/Unifont覆盖192816码位、30.5MB；移除系统字体和未使用旧字库。原版+六APK文本无缺字，源码/独立包各42项10图、客户端859/Mod77/Web3670及APK资源程序集/签名/对齐通过；本版未设备运行。发布Web ZIP+ARM64 APK，源码/远端校验见build/release-0.2.4-20261020，发布说明rewrite/RELEASE_0.2.4_20261020.md。用户对局未操作。
+
+- **目录整理与东亚测试包：`reverse/RUNTIME_LAYOUT_20261020.md`。** 通用Mod管理产物移至rewrite/local/mod-management；5190兼容宿主/基础资源/Mod/存档移至rewrite/local/eastasia-preview，PID33196，最新conquest7 revision4恢复，8项状态/40存档哈希一致。当前导入rewrite/content/eastasia-test-conquest.ew4mod（复用内置底图），征服第二页地图检查；7809项及发行包真实导入/开局/存读档/删除留档通过。无新APK/上传，5184/5191未动。
+
+- **Web双击入口：`reverse/WEB_LAUNCHER_20261020.md`。** 火绒隔离初版PS后改用普通CMD；已补根目录Start-Web.cmd及源码模板转到发行包，修复用户直接打开源码时EXE缺失提示。独立启动/空格路径/重复打开/占用顺延及源码入口测试通过；默认5191已实际启动留给用户。本地Web ZIP及校验更新，GitHub尚未替换，无新APK，5184/5190未动。
+
 - **本轮0.2.0发布整合：先读 `rewrite/RELEASE_20261020.md`。** 最新API 1后端、Mod自动识别与确认删除、原版技能图标及界面修复、东亚内置底图已合并，准备同提交发布APK/Web。核心/客户端859/Mod77/识别21/删除29/扩展18/CLI9/东亚7809/Web独立9146通过。旧东亚v1–v5及重复覆盖目录从仓库索引清理，作者配置保留。Android已签名打包/逐资源与程序集核验，未设备运行。5190仍用兼容引擎与整合前data快照；5184未操作。最终下载与校验见Release。
 
 - **最新开放规则：先读 `reverse/EXTENSIONS_20261020.md`。** API 1已接兵种标签/主被动技能、动态将领槽及坐标、离线Lua、JSON/BTL VICT胜负条件、实例状态与Mod隔离；20KB指南/可打包示例/文件函数表同步工具包。核心309638（扩展43）/客户端859/既有Mod77/扩展包18/CLI9/浏览器20项6图通过，Android Compile通过；AI主动技能规划未接，不执行SO/DEX。5184 PID36912/extensions-delivery-runtime保留原版空会话，1741档案哈希一致，缓存.3；5185已收尾停止，无新APK。下方WIP与旧状态为历史。

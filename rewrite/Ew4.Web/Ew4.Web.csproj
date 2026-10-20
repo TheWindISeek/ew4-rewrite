@@ -9,6 +9,7 @@
     <ProjectReference Include="../Ew4.Client/Ew4.Client.csproj" />
     <ProjectReference Include="../Ew4.Mods/Ew4.Mods.csproj" />
     <Content Include="DISTRIBUTION_README.md" Link="README.md" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="launcher/*" Link="%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../mod-kit/data/**/README.md" Link="data/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../mod-kit/THIRD_PARTY_NOTICES.md" Link="THIRD_PARTY_NOTICES.md" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../mod-kit/licenses/**/*" Link="licenses/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />

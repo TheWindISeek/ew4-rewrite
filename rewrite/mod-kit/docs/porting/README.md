@@ -78,7 +78,7 @@ rewrite不执行导入包的SO/DEX。原脚本或原生代码产生的行为不�
 
 文本取自`stringtable_cn.ini`、`def_areaname.xml`、将领定义等，城市中英对应在`frontend/city-names.json`。FNT/PNG字形、颜色、描边、advance和行高不再决定UI文字。
 
-`original-ui.js`的`TextRenderer.prepare/layout/element`使用自带`LXGWWenKai-Regular.ttf`（EW4 Extended）及固定字号角色，城市白填充黑描边。历史`manifest.fonts`、旧`ui.labels`不是现行样式配置；改`preserveColor`或重画位图字库不会修复现行描边。标题logo等文字美术仍属于图片。
+`original-ui.js`的`TextRenderer.prepare/layout/element`使用六份内置WOFF2（Noto Serif SC、Jigmo、Unifont）及固定字号角色，不使用系统字体；`coverage.json`记录实际覆盖范围，详见`data/client/fonts/README.md`。城市白填充黑描边。历史`manifest.fonts`、旧`ui.labels`不是现行样式配置；改`preserveColor`或重画位图字库不会修复现行描边。标题logo等文字美术仍属于图片。
 
 中英文分别测试，自创名没有翻译时保留原名，作者需补译名，不能由字库图案推导。许可和具体入口见[fonts README](../../data/client/fonts/README.md)。
 

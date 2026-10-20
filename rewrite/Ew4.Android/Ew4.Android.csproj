@@ -6,15 +6,17 @@
     <Nullable>enable</Nullable>
     <ApplicationId>org.ew4.reconstruction</ApplicationId>
     <ApplicationTitle>欧陆战争4 重构</ApplicationTitle>
-    <ApplicationVersion>2</ApplicationVersion>
-    <ApplicationDisplayVersion>0.2.0</ApplicationDisplayVersion>
+    <ApplicationVersion>6</ApplicationVersion>
+    <ApplicationDisplayVersion>0.2.4</ApplicationDisplayVersion>
     <SupportedOSPlatformVersion>26</SupportedOSPlatformVersion>
-    <RuntimeIdentifier>android-arm64</RuntimeIdentifier>
+    <RuntimeIdentifiers>android-arm64;android-x64</RuntimeIdentifiers>
     <AndroidPackageFormats>apk</AndroidPackageFormats>
     <EmbedAssembliesIntoApk>true</EmbedAssembliesIntoApk>
     <AndroidUseAssemblyStore>true</AndroidUseAssemblyStore>
     <PublishTrimmed>false</PublishTrimmed>
     <RunAOTCompilation>false</RunAOTCompilation>
+    <!-- Register JNI callbacks at runtime when publishing untrimmed assemblies. -->
+    <AndroidEnableMarshalMethods>false</AndroidEnableMarshalMethods>
   </PropertyGroup>
   <ItemGroup>
     <ProjectReference Include="../Ew4.Client/Ew4.Client.csproj" />

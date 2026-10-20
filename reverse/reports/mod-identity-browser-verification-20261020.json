@@ -1,4 +1,5 @@
 {
+  "artifactDirectory": "../../rewrite/reports/mod-management-20261020",
   "checks": [
     "Native mod.json automatically fills ID and name before installation",
     "Editing both values changes installed metadata",

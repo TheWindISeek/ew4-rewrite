@@ -1,6 +1,6 @@
 # 稳定文字与字体
 
-当前rewrite使用本目录`LXGWWenKai-Regular.ttf`（字体族EW4 Extended）绘制文字，不再优先使用原位图字库。文本与美术图片分开处理，避免导入Mod后出现白字白边、混合字体或基线浮动。
+当前rewrite使用本目录的六份内置WOFF2字库，不读取系统字体。常用文字使用Noto Serif SC Regular 400细宋体；Jigmo三份字库补充生僻汉字；GNU Unifont及Upper补充其他文字。文本与美术图片分开处理，导入Mod只读取文字内容，避免白字白边和基线浮动。
 
 ## 修改入口
 
@@ -16,7 +16,7 @@
 
 ## 控件文字适配（2026-10-20）
 
-源码位置为`rewrite/Ew4.Web/wwwroot/`。调整下面的入口时保留同一个TTF字体族，按控件用途分别指定颜色和尺寸：
+源码位置为`rewrite/Ew4.Web/wwwroot/`。调整下面的入口时保留同一组内置字体族，按控件用途分别指定颜色和尺寸：
 
 | 范围 | 文件与函数 | 当前约定 |
 | --- | --- | --- |
@@ -33,10 +33,33 @@
 
 前端源码修改后刷新Web预览即可；旧APK不会自动更新。可在独立5185测试服务运行`tools/verify_font_regression.cjs`，覆盖字体加载、国家条目边界、商店文字居中和城市填充/描边；另用`tools/verify_sidebar_restoration.cjs`验证战役侧栏。不要把自动化指向玩家正在使用的5184。
 
-不要改`preserveColor`或重画FNT/PNG来修复当前描边。表现包字体角色配置尚在规划；替换自带TTF需考虑字体族、字符覆盖、尺寸和许可，不是已经验证的任意字体切换功能。
+不要改`preserveColor`或重画FNT/PNG来修复当前描边。表现包字体角色配置尚在规划；替换内置WOFF2需同时更新覆盖索引、缓存版本和许可，不是已经验证的任意字体切换功能。
 
 ## 验证与许可
 
 重导入并启用后，检查中文/英文城市名、长将领名、商店、技能说明和资源数字，核对字形、换行、点击区、填充和描边。原版与Mod往返切换检查内容来源。分步操作见[移植指南](../../../docs/porting/README.md)。
 
-LXGW WenKai Regular v1.530来源：https://github.com/lxgw/LxgwWenKai 。SIL Open Font License 1.1见本目录`OFL.txt`，替换或再发布时保留许可。
+## 字库文件与加载顺序
+
+| 文件 | 前端字体族 | 用途与来源 |
+| --- | --- | --- |
+| `NotoSerifSC-Regular.woff2` | `EW4 Serif` | 常用中文、西文，400字重；https://github.com/google/fonts/tree/main/ofl/notoserifsc |
+| `Jigmo.woff2` | `EW4 Han` | 基本平面汉字；Jigmo 20250912 |
+| `Jigmo2.woff2` | `EW4 Han Plane 2` | 第二平面汉字，如𠮷；https://kamichikoichi.github.io/jigmo/ |
+| `Jigmo3.woff2` | `EW4 Han Plane 3` | 第三平面扩展汉字，如𰀀；同上 |
+| `Unifont.woff2` | `EW4 Unicode` | 其他基本平面文字；GNU Unifont 17.0.05 |
+| `UnifontUpper.woff2` | `EW4 Unicode Supplement` | 其他补充平面文字；https://unifoundry.com/unifont/ |
+| `coverage.json` | 不适用 | 六字库完整cmap的并集、文件哈希和来源；必须与字体一起发布 |
+
+`original-ui.css`定义六个`@font-face`与`--ew4-font-family`；`original-ui.js::prepareFonts`加载全部字库后才允许`TextRenderer.prepare`完成。DOM与Canvas使用相同顺序，不使用Arial/宋体等系统字体别名，也不合成粗体。Android `MainActivity.LocalClient.ShouldInterceptRequest`以`font/woff2`提供同一文件。
+
+UTF-8只是编码。实际覆盖以`coverage.json::ranges`为准；尚未分配的码位、私用区和任意未来新增Unicode字不保证覆盖。`displayText`按码点处理补充平面汉字，先做NFC规范化；缺字显示内置替代字符U+FFFD并在控制台记录码位，不悄悄切换系统字形。不要把UTF-16代理对切成两个字符。
+
+## 重建与缺字排查
+
+1. 在仓库`rewrite/local/font-sources-20261020`准备Noto Serif SC变量TTF、Jigmo-20250912.zip及Unifont 17.0.05两份OTF。具体文件名与下载地址见`tools/build_bundled_fonts.py::main/recipes`。原始字体仅用于构建，不随发行包重复分发。
+2. 使用含FontTools和Brotli的Python运行`python tools/build_bundled_fonts.py`，无字符裁剪地压缩成WOFF2。工具核对转换前后cmap，生成覆盖索引，并同步`data/runtime-content.json`字体项。
+3. 运行`python tools/audit_bundled_fonts.py`核对字体哈希、原版和本地APK中的XML/INI字符；结果在`rewrite/reports/bundled-fonts-20261020/coverage-audit.json`。
+4. 发现新Mod缺字时先记录控制台的`U+...`，检查来源是否为私用字符/损坏编码；再决定补字库。增加字库需同步`original-ui.css`和`original-ui.js::families/prepareFonts`；覆盖索引中的顺序必须一致。最后重跑审计及独立浏览器验证。
+
+许可：Noto使用`NotoSerifSC-OFL.txt`（SIL OFL 1.1）；Jigmo使用`Jigmo-LICENSE.txt`（CC0 1.0）；GNU Unifont编译字体采用双许可，本发行选择SIL OFL 1.1，完整说明见`Unifont-LICENSE.txt`。保留所有许可。字库在Web与APK中均完整离线内置，不依赖联网下载。

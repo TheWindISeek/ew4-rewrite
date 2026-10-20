@@ -11,7 +11,7 @@ string baselineFolder = Path.GetFullPath(Path.Combine(root, "rewrite/data"));
 string source = Path.Combine(root, "rewrite/content/eastasia");
 string reports = Path.Combine(root, "maps/eastasia_rewrite");
 bool builtin = args.Contains("--builtin");
-string work = builtin ? Path.Combine(root, "build/release-20261020/map-test") : Path.Combine(reports, "runtime");
+string work = Path.Combine(root, "rewrite/local/eastasia-validation", builtin ? "builtin" : "overlay");
 Directory.CreateDirectory(work);
 if (builtin)
 {
@@ -20,6 +20,8 @@ if (builtin)
     Directory.CreateDirectory(Path.Combine(source, "original"));
     foreach (string file in new[] { "conquest7.btl", "conquest7.names.xml", "def_battlelist.xml" })
         File.Copy(Path.Combine(staged, "original", file), Path.Combine(source, "original", file), true);
+    Directory.CreateDirectory(Path.Combine(source, "frontend"));
+    File.Copy(Path.Combine(staged, "frontend/conquest-pages.json"), Path.Combine(source, "frontend/conquest-pages.json"), true);
 }
 var watch = Stopwatch.StartNew();
 int checks = 0;
@@ -270,7 +272,7 @@ using (var response = JsonDocument.Parse(store.Dispatch("/api/start", "{\"scenar
     Check(state.GetProperty("map").GetString() == "eastasia" && state.GetProperty("cells").GetArrayLength() == 21488, "Client map state and presentation binding");
 }
 foreach (var (path, hash) in before) Check(SHA256.HashData(baseline.Read(path)).SequenceEqual(hash), "Baseline content changed: " + path);
-string archive = builtin ? Path.Combine(work, "inspection.ew4mod") : Path.Combine(root, "rewrite/content/eastasia-map.ew4mod");
+string archive = Path.Combine(root, "rewrite/content", builtin ? "eastasia-test-conquest.ew4mod" : "eastasia-map.ew4mod");
 if (File.Exists(archive))
 {
     string old = archive + ".previous";

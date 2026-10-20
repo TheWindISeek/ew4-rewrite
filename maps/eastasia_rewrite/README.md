@@ -4,11 +4,15 @@
 
 ## 交付
 
+2026-10-20目录整理：通用Mod管理构建与测试产物移到`../../rewrite/local/mod-management/`；5190兼容预览的宿主、基础资源快照、Mod与存档整体移到`../../rewrite/local/eastasia-preview/`，继续保留原进度。通用Mod删除和识别代码一直在rewrite正式项目中，不依赖此地图目录。新路径用途见`../../rewrite/RUNTIME_DIRECTORIES.md`。
+
+**当前版本测试征服请导入`../../rewrite/content/eastasia-test-conquest.ew4mod`**，启用后在征服第二页选择“东亚 / 地图检查”。这份小包复用0.2.0内置底图，只添加测试场景与菜单；旧`eastasia-map.ew4mod`绑定旧基础资源，仅供旧预览留档。重新生成当前测试包：`dotnet run --project tools/EastAsiaMapVerify -- . --builtin`，使用`rewrite/local/eastasia-validation/builtin/`隔离目录，不再往地图目录写宿主或存档。
+
 2026-10-20 发布整合：正式运行资源已迁入 `../../rewrite/data/`，与欧洲、美洲同级。`original/eastasia.bin`、地图/城市目录及 `client/maps/eastasia/` 随 APK 和 Web 包一起发布，不新增正式战役或征服。`builtin-integration.json` 记录整合校验。下列 `rewrite/content/eastasia` 路径为本地可再生成的调试产物，不再在仓库重复保存；旧 v1–v5 记录从当前仓库移除，历史可通过 Git 查询。
 
 重建顺序：`tools/build_eastasia_runtime.py --render-only`，完成地形/引擎检查后执行 `tools/integrate_eastasia_builtin.py`。制作配置继续保存在本目录，正式底图资源以 `rewrite/data` 为准。
 
-- `../../rewrite/content/eastasia-map.ew4mod`：在重写版资源包菜单导入并启用的原生Mod包，新增第三张地图，保留欧洲、美洲及原有剧本。
+- `../../rewrite/content/eastasia-map.ew4mod`：内置整合前的完整地图覆盖包，保留旧预览留档；当前版本请用上方`eastasia-test-conquest.ew4mod`。
 - `../../rewrite/content/eastasia/original/eastasia.bin`：与原版地图同结构的YSAE/1地块数据，每格12字节。
 - `../../rewrite/content/eastasia/eastasia.map.json`：通过实际引擎导入后导出的可编辑现代地图，含地形、河流、城市等级及经济设施，不含政治归属或预设管辖区。
 - `../../rewrite/content/eastasia/`：可重新封装的资源目录；底图使用PNG分块及原有地形精灵。
@@ -99,7 +103,7 @@ ID见`cities.json`的`city_id`，可参考`conquest_names.example.xml`。删除�
 - `terrain-verification.json`：30个独立地理控制点，以及每个地形精灵与地块类型、格心的对应检查；核对高低山体尺寸顺序、原图集像素不变及50港口均在可见海面。
 - `runtime-verification.json`：真实Mod导入/启用、96剧本注册和启动、278城、现代地图及会话存档往返、寻路、原版基线未变。
 - `browser-verification.json`：浏览器实际渲染与选格、移动和保存读取的检查结果，生成后以该文件为准。
-- 独立预览：`http://127.0.0.1:5190`，使用本目录`runtime/mods`和`runtime/saves`。5184的用户对局不在此目录。
+- 独立预览：`http://127.0.0.1:5190`，使用`../../rewrite/local/eastasia-preview/mods`和`saves`，宿主在同级`server`，基础资源快照在`data`。5184的用户对局不在此目录。
 
 此前单独地图预览阶段未构建APK；本轮发布记录见仓库发布说明，Android实机验收仍未进行。独立资源包绑定rewrite基础资源指纹，基础资源升级后须重新封装或导入源目录。Natural Earth公开地理源缓存与地形区域定义沿用项目已有材料。小岛在约42公里格距下有概化，见`geographic_adjustments.json`；最大城市吸附偏移41.2公里。
 
@@ -113,4 +117,4 @@ ID见`cities.json`的`city_id`，可参考`conquest_names.example.xml`。删除�
 
 地形独立检查入口为`tools/verify_eastasia_terrain.py`。基础区域沿用`maps/terrain_regions.geojson`，重写版补充区域独立保存在本目录`terrain_additions.geojson`，不回写旧V5素材。
 
-验证器封装资源包并仅激活本目录的隔离配置。正式剧本制作前还需评估大规模军队的AI回合耗时；两支检查部队不能证明完整征服的长期性能。
+验证器封装资源包并仅激活`rewrite/local/eastasia-validation/`中的隔离配置。正式剧本制作前还需评估大规模军队的AI回合耗时；两支检查部队不能证明完整征服的长期性能。

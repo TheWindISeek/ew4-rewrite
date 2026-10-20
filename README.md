@@ -9,7 +9,7 @@ Mod 制作资料见 [rewrite/mod-kit/README.md](rewrite/mod-kit/README.md)。
 
 2026-10-20：包含原资源迁移、离线 Mod 导入、字体修复、BTL 手工辖区，
 以及已验证的[开放规则API 1](rewrite/mod-kit/docs/porting/RULE_EXTENSIONS.md)：动态技能/布局、离线Lua和可配置胜负条件。
-[交付与验证范围](reverse/EXTENSIONS_20261020.md)区分已测能力与限制。本轮0.2.0同时发布ARM64 APK和独立Windows Web服务包，包含最新后端接口、内置东亚底图和Mod自动识别/确认删除。[发布说明](rewrite/RELEASE_20261020.md)记录验证范围；Android尚未进行设备运行验收。
+[交付与验证范围](reverse/EXTENSIONS_20261020.md)区分已测能力与限制。当前0.2.4提供ARM64 APK和独立Windows Web服务包，增加离线完整字库、双击Web入口及Android启动/全屏/返回键修复。[发布说明](rewrite/RELEASE_0.2.4_20261020.md)记录本轮验证范围；本次APK未进行设备运行验收。下载见[GitHub Releases](https://github.com/aztksilence111/ew4-rewrite/releases/latest)。Web包完整解压后双击`Start-Web.cmd`，无需安装.NET。
 
 ## 目录
 

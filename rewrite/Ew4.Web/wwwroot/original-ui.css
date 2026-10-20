@@ -1,5 +1,10 @@
-@font-face{font-family:"EW4 Extended";src:url("/content/fonts/LXGWWenKai-Regular.ttf") format("truetype");font-display:block}
-:root{font-family:"SimSun","Songti SC","Noto Serif CJK SC",serif;font-synthesis:none}
+@font-face{font-family:"EW4 Serif";src:url("/content/fonts/NotoSerifSC-Regular.woff2") format("woff2");font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:"EW4 Han";src:url("/content/fonts/Jigmo.woff2") format("woff2");font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:"EW4 Han Plane 2";src:url("/content/fonts/Jigmo2.woff2") format("woff2");font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:"EW4 Han Plane 3";src:url("/content/fonts/Jigmo3.woff2") format("woff2");font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:"EW4 Unicode";src:url("/content/fonts/Unifont.woff2") format("woff2");font-weight:400;font-style:normal;font-display:block}
+@font-face{font-family:"EW4 Unicode Supplement";src:url("/content/fonts/UnifontUpper.woff2") format("woff2");font-weight:400;font-style:normal;font-display:block}
+:root{--ew4-font-family:"EW4 Serif","EW4 Han","EW4 Han Plane 2","EW4 Han Plane 3","EW4 Unicode","EW4 Unicode Supplement";font-family:var(--ew4-font-family);font-synthesis:none}
 input,select,textarea{font-family:inherit;font-synthesis:none}
 .original-text{display:inline-flex;vertical-align:middle;flex:none;line-height:0;max-width:100%;pointer-events:none}
 .original-text canvas{display:block;max-width:100%;height:auto!important;object-fit:contain}

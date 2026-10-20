@@ -1,5 +1,9 @@
 # 重构短锚点
 
+- **内置字库与0.2.4发行：`../reverse/BUNDLED_FONTS_20261020.md`。** 统一Noto Serif SC 400/Jigmo/Unifont六份WOFF2，不使用系统字体；192816码位，六APK XML/INI无缺字，Canvas仍白填充黑描边。源码/发行版浏览器各42项10图、客户端859/Mod77/Web资源3670通过。APK0.2.4/code6资源及程序集/签名/对齐核验，未本版设备运行。指南与许可同步Mod工具包；发行说明RELEASE_0.2.4_20261020.md，Web双击Start-Web.cmd。
+
+- **目录整理与东亚测试包：`../reverse/RUNTIME_LAYOUT_20261020.md`。** 通用Mod管理产物在local/mod-management，5190兼容预览在local/eastasia-preview；8项场景/40旧存档哈希不变。content/eastasia-test-conquest.ew4mod供0.2.0导入后在征服第二页检查东亚，7809项及发行版导入/开局/存读档/删除保留存档通过。说明见RUNTIME_DIRECTORIES.md及content/README.md；无新APK/上传。
+
 - **0.2.0发布续接：`RELEASE_20261020.md`。** 当前源代码含最新开放API 1后端及本轮地图/Mod管理修复，APK和Windows独立Web已构建并校验；东亚在data内置，另附无归属eastasia.map.json模板，无正式新剧本。核心/客户端859/Mod77/识别21/删除29/扩展18/CLI9/底图7809/独立包9146通过，Android未设备验收。旧地图重复目录已从索引清理；最终提交/Release信息见发布记录。下方“无新APK”均为当时历史。
 
 - **最新开放规则API 1：先读 `../reverse/EXTENSIONS_20261020.md`。** 技能/特性/可变将领槽与布局、离线Lua、JSON与BTL VICT胜负扩展已接；完整字段/事件/函数指南和可打包示例已同步工具包。核心309638（扩展43）、客户端859、Mod77、扩展包18、CLI9、浏览器20项6图通过，Android Compile通过。5184 PID36912保留原版空会话，1741档案哈希一致，缓存.3；独立5185已停，无新APK。AI主动技能规划及任意世界写脚本不在API 1支持范围。

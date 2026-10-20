@@ -410,3 +410,23 @@ C#编译0警告0错误，app/menus/battlefield三份JS语法通过；本日重�
 20KB完整指南列字段/事件/参数/原格式移植步骤、BTL VICT二进制协议、CLI和文件函数表；新增9文件可打包示例及MoonSharp许可并同步发行工具包。核心309638（扩展43）、客户端859、既有Mod77、扩展导入18、CLI9、浏览器20项6图通过；Android Compile 0警告0错误，无新APK/设备运行。AI自定义主动技能规划、任意世界写接口不在API 1范围，未宣称所有原Mod已兼容。
 
 先落reverse/EXTENSIONS_20261020.md，再更新根/两级STATUS和旧断点指针，最后本日志。5184更新为extensions-delivery-runtime/PID36912，立即前后均为原版空会话，1741档案哈希一致；缓存.3，独立5185/PID37604已停止。保留同工作区其他线程的东亚地图、显示及Mod管理改动，未提交或回退这些内容。
+
+## 2026-10-20 Web包双击启动
+
+用户反馈初版PowerShell入口被火绒隔离，改成Start-Web.cmd与Open-Web-When-Ready.cmd，使用系统curl/netstat，在可见窗口启动服务，等待就绪后打开默认浏览器，不调用PowerShell或调整安全设置。独立端口实测启动、HTTP、空格存档路径、重复打开和占用顺延通过，测试服务已清理。自动打开浏览器分支未作实际浏览器验收。
+
+本地Web目录/ZIP、README/发布说明/包校验更新，四个变更ZIP条目哈希及Web/APK清单通过；未改APK或替换GitHub下载。先落reverse/WEB_LAUNCHER_20261020.md，再更新STATUS，最后本日志。5184/5190及并行Android/资源改动保留，当前未提交。
+
+后续用户EXE缺失截图经进程命令行确认：打开的是源码launcher目录，发行EXE仍在。新增根Start-Web.cmd自动查找本地完整发行目录，源码模板无EXE时转到根入口；源码/根入口独立15560实测通过并清理测试服务，随后默认5191实际启动留给用户，HTTP就绪，浏览器启动分支已执行。本地ZIP及哈希再次同步，GitHub未替换。
+
+## 2026-10-20 Mod管理产物与东亚预览目录整理
+
+通用Mod删除/识别构建、测试档案、日志移至rewrite/local/mod-management；5190兼容宿主、基础快照、Mod和存档移至rewrite/local/eastasia-preview。绝对路径范围与不存在目标先核验；旧运行目录已移走，非复制重复。旧引擎未替换，恢复最新session.json revision4（mode2旧自动档为0），对原快照8项状态及40存档哈希全部一致。通用浏览器报告移至reverse/reports，四张截图移至rewrite/reports/mod-management-20261020，地图作者目录保留地图内容。
+
+EastAsiaMapVerify改用rewrite/local/eastasia-validation隔离档案，--builtin生成eastasia-test-conquest.ew4mod并含征服第二页入口；7809项通过。7522字节测试包用现有发行宿主在15570真实导入/启用/96剧本/21488格278城2单位/存读档/删除保留3存档验证通过，测试进程清理。新包复用内置底图；旧完整覆盖包留档。先落reverse/RUNTIME_LAYOUT_20261020.md与目录/导入README，再更新三级STATUS，最后本日志。5190当前PID33196，5184/5191未动，无新APK或上传。
+
+## 2026-10-20 内置字库与0.2.4发行
+
+本轮用户明确要求完成后提交GitHub并发布Web/APK。统一Noto Serif SC Regular400、Jigmo三平面、Unifont/Upper六份离线WOFF2，192816码位/30512720字节；完整压缩不子集裁剪，旧WenKai归档到local。前端移除系统字体，Canvas/DOM加载后统一测量，规范化NFC并显式缺字提示，城市白填充黑描边保留。Android增加字体MIME，并保留此前启动/全屏/返回键/图标/触摸修复。作者README和具体文件/函数表、许可同步工具包。
+
+六APK和原版文字审计缺字0；源码/独立包各42项10图、客户端859/Mod77/Web资源3670通过，异常/缺失0。0.2.4 ARM64 APK构建、全部运行资源/前端/程序集/签名及对齐通过，本版无设备运行。发布目录build/release-0.2.4-20261020，源码HEAD/远端附件哈希以该目录manifest与remote-audit为准；Web/APK只发Release，不入源码重复副本。先落BUNDLED_FONTS锚点及发布说明，再更新STATUS，最后本日志。5184用户档案未操作，5190只加字体、不更换旧引擎和Mod/存档；5185仅隔离测试。

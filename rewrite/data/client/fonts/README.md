@@ -1,11 +1,18 @@
-# Extended UI Glyphs
+# Offline UI Fonts
 
-Current UI text uses bundled LXGW WenKai Regular (EW4 Extended).
-Imported bitmap glyph styles and metrics do not control text rendering.
-City labels use white fill with a black outline. Text remains separate from
-artwork; author guidance is in rewrite/mod-kit/data/client/fonts/README.md.
+All six WOFF2 faces are bundled, without glyph subsetting or system font aliases.
+Noto Serif SC Regular 400 is the primary face. Jigmo, Jigmo2 and Jigmo3 cover rare
+Han characters; GNU Unifont and Unifont Upper 17.0.05 supplement other scripts.
+`coverage.json` records exact Unicode ranges, sizes, SHA-256 and upstream URLs.
+UTF-8 is the text encoding, not a guarantee that every Unicode code point has ink.
 
-Upstream: https://github.com/lxgw/LxgwWenKai
-Release: v1.530. License: SIL Open Font License 1.1, included as OFL.txt.
-Original font sheets may remain as historical resources; they are not the
-primary renderer or a supported Mod text-style configuration interface.
+`original-ui.js::TextRenderer.prepare` loads the coverage index and all six faces
+before measurement or Canvas drawing. `displayText` normalizes NFC and replaces
+unsupported code points with bundled U+FFFD, with a console warning. City labels
+use separate white fill and black outline. Imported FNT/PNG styling is ignored.
+
+Licenses: NotoSerifSC-OFL.txt (SIL OFL 1.1), Jigmo-LICENSE.txt (CC0 1.0),
+Unifont-LICENSE.txt (compiled font dual license; distributed under SIL OFL 1.1).
+Keep these licenses when redistributing. Detailed author guidance is in
+`rewrite/mod-kit/data/client/fonts/README.md`; build/audit tools are
+`tools/build_bundled_fonts.py` and `tools/audit_bundled_fonts.py`.

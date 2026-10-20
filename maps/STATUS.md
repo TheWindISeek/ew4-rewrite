@@ -1,8 +1,10 @@
 # 地图阶段短锚点
 
+- **最新目录整理：先读`../rewrite/RUNTIME_DIRECTORIES.md`。** 通用Mod管理构建/日志移至`rewrite/local/mod-management`；5190宿主/资源快照/Mod/存档移至`rewrite/local/eastasia-preview`，PID33196，conquest7 revision4/round1，8项场景一致、40原存档哈希不变。通用识别/删除报告移至`reverse/reports/mod-*-browser-verification-20261020.json`，截图在`rewrite/reports/mod-management-20261020`。当前测试征服导入`rewrite/content/eastasia-test-conquest.ew4mod`，征服第二页“东亚/地图检查”；内置验证7809项及发行版导入/开局/存读档/删除保留存档通过。下方runtime路径/PID是迁移前历史。
+
 - **最新内置整合与0.2.0：** 东亚BIN、地图/城市目录、图集/文字及PNG移入rewrite/data，278城、272设施、54通桥节点、71双语地貌名；eastasia.map.json保存无归属城市/设施/桥梁模板，未添加正式征服/战役。`builtin-integration.json`及`rewrite/RELEASE_20261020.md`为入口，真实引擎7809项通过。旧v1–v5和重复content/eastasia已取消跟踪，保留本地与Git历史。5190 PID37444仍用兼容引擎，data指向runtime/preview-data-before-builtin，40原存档哈希不变；新发布包使用最新后端。
 
-- **最新：2026-10-20 Mod管理删除与确认。** `ModStore.Delete`按64位安装key校验路径、拒绝链接安装目录/原版/不存在目录，导入互斥；仅删安装内容，保留存档，当前Mod先切回原版。`mods.js/css/index.html`加删除按钮、名称/存档/活动提示、取消默认焦点及Esc；确认才请求，处理中禁操作，成功刷新/当前包重载。后端29项、浏览器8项/2图0异常，报告`eastasia_rewrite/mod-deletion-browser-verification.json`。5190现PID37680，宿主`runtime/web-mod-delete-compat`：原引擎DLL保持，仅重编Ew4.Mods，避免源码新引擎存档指纹不兼容；当前conquest7 revision4/round1恢复，8项状态一致，23个原Mod保留、40存档指纹不变。5184未操作；源码功能已完成，未打APK。
+- **2026-10-20 Mod管理删除与确认。** `ModStore.Delete`按64位安装key校验路径、拒绝链接安装目录/原版/不存在目录，导入互斥；仅删安装内容，保留存档，当前Mod先切回原版。`mods.js/css/index.html`加删除按钮、名称/存档/活动提示、取消默认焦点及Esc；确认才请求，处理中禁操作，成功刷新/当前包重载。后端29项、浏览器8项/2图0异常，报告现位于`../reverse/reports/mod-deletion-browser-verification-20261020.json`。迁移前5190 PID37680，宿主`runtime/web-mod-delete-compat`：原引擎DLL保持，仅重编Ew4.Mods，避免源码新引擎存档指纹不兼容；当时conquest7 revision4/round1恢复，8项状态一致，23个原Mod保留、40存档指纹不变。5184未操作；源码功能已完成，当时未打APK。
 
 - **最新界面修正：2026-10-20恢复原版技能图标。** 5190当前接口技能仅含id/name/description，`skill-ui.js`原逻辑对缺少icon字段统一用了信息图标。现按`ew4.skill.0..39`回退匹配`skill_01..40.png`，显式icon优先，自定义extensions与未知技能兜底保留。40图均加载且像素非空/各不相同，1446个将领技能槽0未匹配，索菲娅炸药/间谍/围城术及说明弹窗、桌面/竖屏截图验证，0页面错误；报告`eastasia_rewrite/skill-icons-verification.json`。仅前端，无需重打包或重启。
 

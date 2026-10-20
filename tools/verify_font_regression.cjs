@@ -1,18 +1,34 @@
 'use strict';
 const assert=require('node:assert/strict'),fs=require('node:fs/promises'),{createRequire}=require('node:module');
 const {chromium}=createRequire('C:/Users/WIN11/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/_probe.cjs')('playwright');
-const folder='E:/Workplace/game/o4mod/rewrite/reports/font-regression-20261020';
+const folder=process.env.EW4_FONT_REPORT||'E:/Workplace/game/o4mod/rewrite/reports/bundled-fonts-20261020/browser';
 (async()=>{
   await fs.mkdir(folder,{recursive:true});
   const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
-  const page=await browser.newPage({viewport:{width:1136,height:640}}),report={checks:0,errors:[],missing:[],screenshots:[],countries:[]};
+  const page=await browser.newPage({viewport:{width:1136,height:640}}),report={checks:0,errors:[],missing:[],screenshots:[],countries:[],fontRequests:[],platformFonts:[]};
   const check=(value,label)=>{assert.ok(value,label);report.checks++;};
   page.on('pageerror',e=>report.errors.push(e.message));page.on('response',r=>{if(r.status()>=400)report.missing.push([r.status(),r.url()]);});
+  page.on('request',r=>{if(r.resourceType()==='font')report.fontRequests.push(r.url());});
   const shot=async name=>{await page.screenshot({path:folder+'/'+name+'.png'});report.screenshots.push(name);};
   const ready=async()=>page.waitForFunction(()=>typeof originalTextRenderer!=='undefined'&&!!originalTextRenderer&&!!catalog);
   try{
     await page.goto('http://127.0.0.1:5185/');await ready();
-    check(await page.evaluate(()=>document.fonts.check('32px "EW4 Extended"')),'bundled complete font is loaded');
+    check(await page.evaluate(()=>document.documentElement.dataset.fontsReady==='true'&&['EW4 Serif','EW4 Han','EW4 Han Plane 2','EW4 Han Plane 3','EW4 Unicode','EW4 Unicode Supplement'].every(f=>document.fonts.check('32px "'+f+'"'))),'all six bundled fonts are loaded before rendering');
+    check(report.fontRequests.length===6&&report.fontRequests.every(url=>url.startsWith('http://127.0.0.1:5185/content/')&&url.endsWith('.woff2')),'only six local WOFF2 files requested; no remote or system font dependency');
+    const cdp=await page.context().newCDPSession(page);await cdp.send('DOM.enable');await cdp.send('CSS.enable');
+    for(const [index,sample] of ['中文城市 LONDON 123','繁體龘靐齉','𠀀𠮷','𰀀𱍐𲎰','Русский Ελληνικά','日本語 한국어','العربية','★→'].entries()){
+      await page.evaluate(async({sample,index})=>{const span=document.createElement('span');span.className='original-text';span.id='font-probe-'+index;span.textContent=sample;span.style.cssText='display:block;position:fixed;left:0;top:0;font-size:32px;line-height:1;z-index:99999';document.body.append(span);await new Promise(requestAnimationFrame);span.getBoundingClientRect();},{sample,index});
+      const {root}=await cdp.send('DOM.getDocument'),{nodeId}=await cdp.send('DOM.querySelector',{nodeId:root.nodeId,selector:'#font-probe-'+index});
+      const {fonts}=await cdp.send('CSS.getPlatformFontsForNode',{nodeId});report.platformFonts.push({sample,fonts});
+      check(fonts.length>0&&fonts.every(f=>f.isCustomFont),'all actual glyphs use packaged font faces: '+sample);
+      await page.locator('#font-probe-'+index).evaluate(e=>e.remove());
+    }
+    const rare=await page.evaluate(()=>['龘','𠮷','𰀀','𲎰'].map(char=>{
+      const c=originalTextRenderer.element(char,'font_text_4_cn_hd').firstChild,p=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
+      return {char,supported:Ew4OriginalUI.hasGlyph(char.codePointAt(0)),ink:p.filter((v,i)=>i%4===3&&v>100).length,image:c.toDataURL()};
+    }));
+    check(rare.every(g=>g.supported&&g.ink>30)&&new Set(rare.map(g=>g.image)).size===rare.length,'rare Han glyphs render distinct nonblank pixels, including supplementary planes');
+    check(await page.evaluate(()=>Ew4OriginalUI.displayText(String.fromCodePoint(0x10ffff))==='\ufffd'&&Ew4OriginalUI.displayText('e\u0301')==='é'),'unsupported text is explicit and NFC normalization is stable');
     await shot('after-main');
     report.renderer=await page.evaluate(()=>{
       const renderer=originalTextRenderer;
@@ -60,7 +76,7 @@ const folder='E:/Workplace/game/o4mod/rewrite/reports/font-regression-20261020';
     }));report.native=native;
     check(native.length>=5&&native.every(n=>n.width&&n.height),'native shop captions fit original layout control dimensions');
     await page.locator('#close-detail').click();await page.evaluate(()=>showMain());await page.locator('#mod-open').click();await page.waitForTimeout(300);await shot('after-mod-manager');
-    check(await page.locator('.mod-row-name .original-text').first().evaluate(e=>e.dataset.color===getComputedStyle(e.parentElement).color),'dynamic Mod manager labels use their control foreground');
+    check(await page.locator('#mod-manager .original-text').first().evaluate(e=>e.dataset.color===getComputedStyle(e.parentElement).color),'dynamic Mod manager labels use their control foreground');
     check(report.errors.length===0,'no browser exceptions: '+report.errors.join(';'));
     check(report.missing.length===0,'no missing resources: '+JSON.stringify(report.missing));
   }finally{await fs.writeFile(folder+'/results.json',JSON.stringify(report,null,2));await browser.close();}

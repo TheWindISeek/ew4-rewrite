@@ -1,11 +1,43 @@
 'use strict';
 (function(root){
-  const fontFamily='"SimSun","Songti SC","Noto Serif CJK SC",serif';
+  const families=['EW4 Serif','EW4 Han','EW4 Han Plane 2','EW4 Han Plane 3','EW4 Unicode','EW4 Unicode Supplement'];
+  const fontFamily=families.map(name=>'"'+name+'"').join(',');
+  let fontPreparation,glyphRanges;
+  const missingGlyphs=new Set();
+  function hasGlyph(point){
+    if(!glyphRanges)throw new Error('Call TextRenderer.prepare before querying bundled glyphs');
+    let low=0,high=glyphRanges.length-1;
+    while(low<=high){const middle=(low+high)>>1,[start,end]=glyphRanges[middle];if(point<start)high=middle-1;else if(point>end)low=middle+1;else return true;}
+    return false;
+  }
+  function displayText(value){
+    return [...String(value).normalize('NFC')].map(char=>{
+      const point=char.codePointAt(0);
+      if(!glyphRanges||hasGlyph(point)||/[\r\n\t]/.test(char)||/\p{Default_Ignorable_Code_Point}/u.test(char))return char;
+      if(!missingGlyphs.has(point)){missingGlyphs.add(point);console.warn('Bundled font has no glyph for U+'+point.toString(16).toUpperCase());}
+      return '\ufffd';
+    }).join('');
+  }
+  async function prepareFonts(){
+    if(!fontPreparation)fontPreparation=(async()=>{
+      const response=await fetch('/content/fonts/coverage.json?v=20261020.5');
+      if(!response.ok)throw new Error('Bundled font coverage could not be loaded');
+      const coverage=await response.json();
+      if(coverage.schema!==1||coverage.faces?.length!==families.length||!Array.isArray(coverage.ranges))throw new Error('Invalid bundled font coverage');
+      await Promise.all(coverage.faces.map(async(face,index)=>{
+        if(face.family!==families[index])throw new Error('Bundled font family mismatch');
+        const loaded=await document.fonts.load('400 32px "'+face.family+'"',face.probe);
+        if(!loaded.length||loaded.some(font=>font.status!=='loaded'))throw new Error('Bundled font could not be loaded: '+face.family);
+      }));
+      glyphRanges=coverage.ranges;document.documentElement.dataset.fontsReady='true';
+    })();
+    return fontPreparation;
+  }
   class TextRenderer {
     constructor(manifest){this.fonts=manifest.fonts;}
     get fontFamily(){return fontFamily;}
     async prepare(){
-      await document.fonts.load('32px '+fontFamily);
+      await prepareFonts();
       this.measure=document.createElement('canvas').getContext('2d');
     }
     layout(text,font,width=Infinity,options={}){
@@ -13,7 +45,7 @@
       const heights={font_text_1_cn_hd:24,font_text_2_cn_hd:24,font_text_3_cn_hd:26,font_text_4_cn_hd:32,font_char_1_hd:18,font_char_2_hd:24,font_char_3_hd:28,font_char_4_hd:42,font_ascii:16,font_city:13,font_city_hd:26,font_city_labels_hd:26};
       let height=options.size?options.size*2:heights[font]||24;
       const lines=[{glyphs:[],width:0}],limit=Number.isFinite(width)?Math.max(1,width*2-8):Infinity,extended=true;
-      let value=String(text).replace(/\\n/g,'\n');
+      let value=displayText(text).replace(/\\n/g,'\n');
       const setFont=()=>{this.measure.font=height+'px '+fontFamily;this.measure.fontKerning='none';};
       setFont();
       if(options.singleLine){
@@ -78,6 +110,6 @@
       for(const node of nodes)node.replaceWith(this.forElement(node.parentElement,node.textContent));
     }
   }
-  root.Ew4OriginalUI={TextRenderer,fontFamily};
+  root.Ew4OriginalUI={TextRenderer,fontFamily,hasGlyph,displayText};
   if(typeof module!=='undefined')module.exports=root.Ew4OriginalUI;
 })(globalThis);

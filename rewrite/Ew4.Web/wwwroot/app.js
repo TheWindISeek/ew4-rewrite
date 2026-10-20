@@ -662,6 +662,23 @@ async function load(slot=0,saveMode=mode){if(busy)return;busy=true;try{await wit
 $('continue').onclick=()=>menus.saveMenu(false,mode).catch(e=>notice(e.message));
 $('restart').onclick=()=>{if(state&&!busy)start(state.scenario,state.factions.find(f=>f.id===state.playerFaction).country).catch(e=>notice(e.message));};
 $('return-menu').onclick=()=>{if(busy){notice('请等待当前行动完成');return;}showMain();};
+window.ew4Back=()=>{
+  const visible=id=>!$(id).hidden;
+  const modal=document.querySelector('dialog[open]');
+  if(modal){modal.close();return 'handled';}
+  for(const [panel,close] of [['settings','close-settings'],['detail-modal','close-detail'],['mod-manager','mod-close']]){
+    if(visible(panel)){$(close).click();return 'handled';}
+  }
+  if(visible('loading-screen'))return 'handled';
+  if(visible('hq-screen')){$('hq-back').click();return 'handled';}
+  if(visible('play')){$(visible('pause')?'resume':'menu-button').click();return 'handled';}
+  if(visible('campaign-screen')){$('campaign-back').click();return 'handled';}
+  if(visible('countries')){$('cancel-country').click();return 'handled';}
+  const preview=document.querySelector('.chapter-preview');
+  if(preview){preview.remove();return 'handled';}
+  if(visible('scenario-menu')){$('menu-back').click();return 'handled';}
+  return visible('main-menu')?'exit':'handled';
+};
 window.addEventListener('resize',sizeUi);sizeUi();
 Promise.all([rpc('catalog'),fetch('/content/manifest.json?v=20261019.2').then(r=>r.json()),fetch('city-names.json').then(r=>r.json()),fetch('/content/effects.json').then(r=>r.json()),fetch('conquest-pages.json?v=20261019.14').then(r=>r.json())]).then(async([c,m,names,fx,pages])=>{const text=new Ew4OriginalUI.TextRenderer(m);await text.prepare();catalog=c;manifest=m;cityNames=names;conquestPages=pages;menuArt=new Ew4MenuArt.MenuArt({manifest:m,image});await menuArt.prepare();effects=new Ew4Effects.Effects({image,sprite,animation,libraries,get manifest(){return manifest;},volume:()=>settings.sound},fx);originalTextRenderer=text;damageNumbers=new Ew4Effects.DamageNumbers(text);$('continue').disabled=false;originalLabels();showMain();}).catch(e=>notice(e.message));
 requestAnimationFrame(render);
