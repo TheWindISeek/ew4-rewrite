@@ -1,0 +1,50 @@
+# 配置索引：从目标定位到文件
+
+下面路径以作者覆盖包根目录为准。原格式输入则去掉original前缀，放ZIP根目录或统一assets下。所有JSON为整文件替换，文件名/键名区分大小写。
+
+| 目标 | 文件及关键节点 | 加载/执行入口 |
+| --- | --- | --- |
+| 导入包标识/版本/文件哈希 | 根mod.json：schema/id/name/version/baseRevision/scenarios/files/warnings/logicRevision | ModStore.Seal/Validate |
+| 将领基础属性和四技能 | original/def_commander.xml：commander的id/name及能力/skill1～4 | LegacyCatalogConverter.Convert；LegacyRuntimeCatalog.FromJson |
+| 将领名字 | original/stringtable_cn.ini：name_Napoleon等 | ClientContent.Label；Menus.text |
+| 将领头像 | client/ui/commanders1_hd/Napoleon.png或commanders2_hd；manifest.atlases决定图集 | Menus.portrait |
+| 公主/素描 | client/ui/princesses_hd、princesses_sketch_hd | Menus.portrait及名册界面 |
+| 兵种生命/移动/基础攻击 | original/def_army.xml：strength/movement/minatk/maxatk | LegacyCatalogConverter.Convert；Ew4Combat.Calculate |
+| 招募与建造价 | original/def_card.xml：price/industry/army/grade/type | LegacyRecruitmentCatalog.Read/Offers |
+| 动作图像及锚点 | client/manifest.json：profiles[id].library/motions/x/y/scale | app.loadLibrary/animation；battlefield.Renderer |
+| 兵种卡片 | manifest.profiles[id].card/cardMarker，对应client/ui/image_recruit_hd等 | app.unitCard/openRecruitment |
+| 地形及移动 | original/def_mapterrain.xml、def_terraintype.xml和地形BIN | LegacyTerrainRules.FromXml/Resolve |
+| 建筑定义 | original/def_construction.xml/def_capital.xml | LegacyBuildingCatalog.Read |
+| 战斗场景 | original/campaign1_01.btl等 | LegacyBattle.Read；ClientContent.Start |
+| 逐格手工辖区 | 对应BTL尾部JURI v1，不是自动加载的JSON | LegacyBattleExtensions；TerritorialJurisdictions.FromAssignments；[协议和命令](porting/BTL_JURISDICTIONS.md) |
+| 大章按钮/年份/国家 | original/def_battleline.xml：line顺序/name/start/end/countries | ClientContent.Chapters；Menus.open/previewChapter |
+| 章节关卡说明与地图标记 | original/def_battlelist.xml和manifest.strategic | ClientContent.Presentations；Menus.openChapter |
+| 战役标题/介绍 | original/stringtable_cn.ini：title_<name>/desc_<name> | ClientContent.Label |
+| 征服页和占位 | frontend/conquest-pages.json：pages[].slots[] | app.scenarioList/turnConquestPage |
+| 地图登记 | original/def_map.xml：id/name/file/tile/textpos | ClientContent构造；LegacyModImporter.ConvertMaps |
+| 显示底图/叠层 | client/manifest.json：maps[name].tiles/overlays/labels/pixelRatio | map-surface.js与battlefield.js |
+| 国旗/设施/运输船 | client/images/buildings*.png及manifest.atlases；选国旗在ui/image_flag_hd | battlefield.flag/flags；app.sprite |
+| 城市中文译名 | frontend/city-names.json：英文原名到中文 | app加载；battlefield.labels |
+| 布局背景引用 | client/manifest.json：layouts、menuTextures的file/ratio | ConvertMenuAssets；MenuArt.prepare/texture/apply，只有已读取字段生效 |
+| 历史位图字库 | manifest.fonts及images/font_*，不再控制现行文本 | 不通过glyphs/preserveColor修改字号/描边 |
+| 当前统一字体 | client/fonts/LXGWWenKai-Regular.ttf | original-ui.TextRenderer.prepare/layout/element |
+| 历史预渲染菜单字 | manifest.ui.labels，新转换器清空旧文字缓存 | 当前按文本和统一字体绘制 |
+| 粒子/受击时间轴 | client/effects.json：bindings/motions/timelines/definitions | Effects.motion/timeline/emit；app.playCombat |
+| 动画关键帧 | client/animations/<library>.json：fps/items/elements/atlas | LegacyBinary.Animation；app.animation |
+| 音效 | client/sounds/<文件名>与effects.sounds及时间轴sound | Effects.sound |
+| 升级经验/治疗/费用 | legacy/runtime_rule_tables.json | LegacyCombatCatalog.Read |
+| 局外折扣/商业 | legacy/metagame_rule_tables.json | LegacyCommanderAccounts.Read |
+| 使用哪个Mod | 安装目录active.json，不是包内配置 | ModStore.Activate |
+| 账户和战局 | account.json、saves/mode-*/slot-*.json | ClientGame、ClientSaves |
+
+## 不存在的资源开关
+
+完整控件/命令绑定、规则/表现包组合和新的完整剧本容器尚在规划，不能向当前mod.json添加想象的字段启用。手工辖区已通过BTL的JURI扩展实现。大改UI需一起处理布局、点击区、交互和配套资源，见[移植指南](porting/README.md)。
+
+当前没有`skills.json`脚本入口、`jurisdiction.json`公共地图分区文件或`combat.random.uniform`开关。四技能效果、辖区优先级、外交、解散返还和随机取样属于后端代码；具体类见[函数索引](SOURCE_INDEX.md)。不要在JSON里发明同名字段并期待生效。
+
+当前基础攻击正常区间有min钳位，但分布偏向下限；反向端点未完整拒绝。最终伤害还受攻击次数/修正/倍率影响。字段minatk/maxatk不能当最终伤害硬上下限使用。
+
+## 清单是自动产物
+
+`files`把覆盖相对路径映射为SHA256；`scenarios`是可加载剧本ID全集，`baseRevision`绑定当前基础资源，`logicRevision`由实际原定义/规则内容计算。仅修改version不替代资源校验；改内容后重新pack。手改哈希不会把无效XML或缺失动作变有效。

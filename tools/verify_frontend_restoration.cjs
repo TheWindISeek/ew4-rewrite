@@ -1,0 +1,75 @@
+'use strict';
+const assert=require('node:assert/strict');
+const fs=require('node:fs/promises');
+const {createRequire}=require('node:module');
+const dependencies=createRequire('C:/Users/WIN11/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/_probe.cjs');
+const {chromium}=dependencies('playwright');
+const folder='E:/Workplace/game/o4mod/rewrite/reports/frontend_restoration_20261019';
+(async()=>{
+  const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
+  const page=await browser.newPage({viewport:{width:1280,height:720}});page.setDefaultTimeout(5000);
+  const report={checks:0,errors:[],missing:[],warnings:[],screenshots:[],scope:'Isolated Web profile, original assets and transactions. No Android or original-pixel acceptance.'};
+  const check=(value,label)=>{assert.ok(value,label);report.checks++;};
+  page.on('pageerror',e=>report.errors.push(e.message));
+  page.on('response',r=>{if(r.status()>=400)report.missing.push([r.url(),r.status()]);});
+  page.on('console',e=>{if(e.type()==='warning')report.warnings.push(e.text());});
+  const shot=async name=>{await page.screenshot({path:folder+'/'+name+'.png'});report.screenshots.push(name);};
+  try{
+    await page.goto('http://127.0.0.1:5185/');await page.waitForFunction(()=>typeof manifest!=='undefined'&&manifest);
+    await page.locator('#headquarters').click();await page.locator('#hq-princess').click();
+    if(await page.locator('[data-native-id="btn_go_2"]').isEnabled()){
+      await page.locator('[data-native-id="btn_go_2"]').click();await page.waitForFunction(()=>menus.data.princesses[1].claimed);
+    }
+    check(await page.locator('.native-layout .commander-card').count()===8,'eight original princess cards');await shot('princesses-verified');
+    await page.locator('.native-layout .commander-open').nth(1).click();
+    await page.getByRole('button',{name:'装备',exact:true}).click();await shot('equipment-verified');
+    await page.locator('#close-detail').click();await page.locator('.commander-detail-card .promote-commander').click();await shot('promotion-verified');
+    await page.locator('#close-detail').click();await page.getByRole('button',{name:'整编',exact:true}).click();
+    await page.waitForFunction(()=>document.querySelector('[data-native-id="btn_regroup"]')&&!document.querySelector('[data-native-id="btn_regroup"]').disabled);await shot('regroup-verified');
+    await page.locator('#close-detail').click();await page.locator('#close-detail').click();
+    check(await page.locator('.native-layout').getAttribute('data-layout')==='form_princess','nested workflows return to princess list');
+    await page.locator('#close-detail').click();await page.locator('#hq-shop').click();
+    const oldMedals=await page.evaluate(()=>menus.data.medals);
+    await page.locator('[data-native-id="grid_seller"] .native-item:not(:disabled):not(.unavailable-item)').first().click();
+    await page.locator('[data-native-id="btn_buy"]').click();await page.waitForFunction(old=>menus.data.medals<old,oldMedals);
+    check(true,'original shop purchase updates account');await shot('shop-verified');await page.locator('#close-detail').click();
+    await page.evaluate(()=>start('conquest1','rus'));await page.evaluate(async()=>{await selectCell(1799,true);view.x=point(1799).x;view.y=point(1799).y;await menus.exchange(1799);});
+    const money=await page.evaluate(()=>state.factions.find(f=>f.id===state.playerFaction).resources.money);
+    await page.locator('[data-native-id="btn_buy_1"]').click();await page.waitForFunction(old=>state.factions.find(f=>f.id===state.playerFaction).resources.money===old-30,money);
+    check(true,'market debit and read refresh agree');await shot('exchange-verified');await page.locator('#close-detail').click();
+    await page.evaluate(()=>openSettings());await page.locator('#city-language').selectOption('zh');await page.locator('#confirm-settings').click();
+    check(await page.evaluate(()=>settings.cityLanguage==='zh'&&JSON.parse(localStorage.getItem('ew4.settings')).cityLanguage==='zh'),'city language persists');await shot('map-chinese-desktop');
+    await page.setViewportSize({width:844,height:390});await shot('map-chinese-mobile-landscape');
+    await page.setViewportSize({width:390,height:844});await shot('map-chinese-mobile-portrait');
+    check(await page.evaluate(()=>{const d=ctx.getImageData(0,0,canvas.width,canvas.height).data,s=new Set();for(let i=0;i<d.length;i+=400)s.add(d[i]+','+d[i+1]+','+d[i+2]);return s.size>100;}),'portrait canvas contains rendered assets');
+    await page.setViewportSize({width:1280,height:720});await page.evaluate(()=>start('conquest1','fra'));await page.evaluate(()=>menus.tavern(2158));
+    const rows=await page.locator('[data-native-id^="group_gen_"]').evaluateAll(es=>es.filter(e=>!e.hidden).map(e=>[e.offsetTop,e.offsetHeight]));
+    check(rows.every((r,i)=>!i||r[0]>=rows[i-1][0]+rows[i-1][1]),'native tavern rows do not overlap');await shot('tavern-verified');
+    await page.setViewportSize({width:844,height:390});await shot('tavern-mobile');await page.locator('#close-detail').click();await page.setViewportSize({width:1280,height:720});
+    await page.evaluate(async()=>{await selectCell(2158,true);const cell=selection.range.find(i=>i!==2158&&!state.units.some(u=>u.cell===i));await act('move',{unit:selected.id,cell});await selectCell(2158,true);openRecruitment(2158);});
+    check(await page.locator('#detail-confirm').isDisabled(),'unaffordable recruitment is disabled');await shot('recruitment-single');
+    await page.locator('.recruit-cards>button').first().click();await shot('recruitment-stacked');await page.locator('#close-detail').click();
+    await page.evaluate(async()=>{const quote=await rpc('exchange',{cell:2783});await rpc('exchange',{cell:2783,revision:quote.revision,op:'sell',offer:'2'});await menus.api.refresh();await selectCell(2158,true);openRecruitment(2158);});
+    await page.locator('#detail-confirm').click();await page.waitForFunction(()=>!busy&&state.units.some(u=>u.cell===2158&&u.profile==='ew4.unit.fra.militia.0'));
+    check(await page.evaluate(()=>state.factions.find(f=>f.id===state.playerFaction).resources.money===0),'recruitment charges actual displayed single-stack price');await shot('recruitment-complete');
+    await page.evaluate(()=>start('campaign1_02b',null));await page.evaluate(async()=>{await selectCell(2544,true);view.x=point(2544).x;view.y=point(2544).y;});
+    check(await page.evaluate(()=>selection.targets.length>0),'actual naval attack targets');await shot('attack-targets-verified');
+    const hp=await page.evaluate(()=>state.units.reduce((n,u)=>n+u.health,0));
+    await page.evaluate(()=>{window.testCombat=act('attack',{unit:selected.id,target:state.units.find(u=>u.cell===selection.targets[0]).id});});
+    await page.waitForTimeout(200);check(await page.evaluate(()=>combatMotions.size>0&&effects.instances.length>0),'attack timeline and original effects active');await shot('combat-verified');
+    await page.evaluate(()=>window.testCombat);check(await page.evaluate(old=>state.units.reduce((n,u)=>n+u.health,0)<old,hp),'combat commits actual damage');
+    await page.evaluate(async()=>{const u=state.units.find(u=>u.owner===state.playerFaction&&u.canMove&&!u.acted);await selectCell(u.cell,true);view.x=point(u.cell).x;view.y=point(u.cell).y;});
+    const destination=await page.evaluate(()=>selection.range.find(i=>i!==selected.cell&&!state.units.some(u=>u.cell===i)));
+    await page.evaluate(cell=>{window.testMovement=act('move',{unit:selected.id,cell});},destination);
+    await page.waitForTimeout(100);check(await page.evaluate(()=>motions.size>0&&effects.instances.length>0),'original movement and category trail active');await shot('movement-verified');
+    await page.evaluate(()=>window.testMovement);check(await page.evaluate(cell=>selected.cell===cell&&selection.cell===cell,destination),'movement preserves selection');
+    await page.evaluate(()=>act('undo',{unit:selected.id}));
+    await page.evaluate(()=>{window.testRound=act('end');});await page.waitForFunction(()=>aiRunning||state.round>1||state.dialogue);
+    if(await page.locator('#skip-ai').isVisible())await page.locator('#skip-ai').click();await page.evaluate(()=>window.testRound);
+    check(await page.evaluate(()=>!aiRunning&&state.round===2&&state.activeFaction===state.playerFaction&&!state.dialogue),'AI skip completes real faction turns');await shot('round-complete-verified');
+    await page.evaluate(()=>openSettings());await page.locator('#city-language').selectOption('en');await page.locator('#confirm-settings').click();await shot('map-english-verified');
+    check(report.errors.length===0,'no browser exceptions');check(report.missing.length===0,'no missing HTTP assets');
+  }catch(error){report.failure=error.message;throw error;}
+  finally{report.warnings=[...new Set(report.warnings)];await fs.writeFile(folder+'/browser-verification.json',JSON.stringify(report,null,2));await browser.close();}
+  console.log(JSON.stringify({checks:report.checks,errors:report.errors.length,missing:report.missing.length,screenshots:report.screenshots.length,warnings:report.warnings}));
+})().catch(e=>{console.error(e.message);process.exitCode=1;});

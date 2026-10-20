@@ -1,0 +1,11 @@
+{
+  "counts": {
+    "warzone_getter_chain": 5200,
+    "faction_technology_copy": 200,
+    "copy_left_guard": 200,
+    "copy_right_guard": 200,
+    "roster_selection": 400
+  },
+  "errors": [],
+  "scope": "Real 2c97c->5ec30 getter and 5c600 setter with boundaries; 5c658 roster routing. Mode-1 player overwrite is decompiled 7dd18 evidence, not full game Start emulation."
+}

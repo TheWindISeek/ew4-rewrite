@@ -1,0 +1,5 @@
+﻿<installations>
+	<installation type="trench" image="defense_moat.png" penalty_infantry="20" penalty_cavalry="0" penalty_artillery="0"/>
+	<installation type="fence" image="defense_fences.png" penalty_infantry="10" penalty_cavalry="25" penalty_artillery="0"/>
+	<installation type="bunker" image="defense_bunker.png" penalty_infantry="10" penalty_cavalry="0" penalty_artillery="30"/>
+</installations>

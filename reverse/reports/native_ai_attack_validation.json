@@ -1,0 +1,15 @@
+{
+  "counts": {
+    "location": 1600,
+    "strength": 1600,
+    "attack_score": 1600,
+    "strike_candidate": 1600
+  },
+  "errors": [],
+  "grade_multipliers": [
+    1.2999999523162842,
+    1.600000023841858,
+    0.6000000238418579
+  ],
+  "scope": "Native 773a0/77490/77618 and 7a768 strike branch. Real category/relation/site accessors; only map lookup and attack candidate list injected. Not movement, strategic or production AI."
+}

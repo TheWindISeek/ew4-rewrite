@@ -1,0 +1,53 @@
+# Mod制作与排查导航
+
+这份手册对应当前rewrite实现，不是“所有原包改版均已兼容”的承诺。真实APK的兼容性应以逐包测试结果为准；只通过内置版或构造样本不足以证明某个改版能运行。
+
+已有作品先读[原版Mod移植指南](porting/README.md)。其中列出UI/布局/交互、将领与规则、资源/账户隔离、函数入口及发布验收，并单列尚未实现的规划，避免使用不存在的接口。
+
+[原包入库与rewrite入口对照](porting/ENTRYPOINTS.md)按原资源文件串联转换函数、产物、执行函数，并另列已核实原SO地址和证据文件。
+
+[BTL手工辖区指南](porting/BTL_JURISDICTIONS.md)提供逐格中心配置、导出/写回/撤销命令、JURI v1二进制协议、编号规则和函数入口。无扩展的旧BTL继续自动划分。
+
+## 先选制作方式
+
+| 手里的材料 | 操作 | 不需要做什么 |
+| --- | --- | --- |
+| 修改后的APK | 主菜单Mod → 填标识/名称 → 导入APK → 等待校验 → 启用 | 不安装该APK、不先到电脑转换 |
+| 原assets资源 | 将修改文件按原相对路径压ZIP；根目录放原文件，或统一放assets下 | 不把原PKM直接改名PNG |
+| 已转换的rewrite资源 | 自建覆盖文件夹，放client/original/legacy/frontend，pack后导入/导出 | 不把DLL/SO当资源加载 |
+| 新技能/新兵种行为代码 | 根据源码索引修改规则并编译支持版本 | 单改贴图/描述不能生成行为 |
+
+标识例如`my-history-mod`，1～64位小写字母/数字/点/横线/下划线；不可使用builtin和系统保留名称。同一个项目更新保持ID，多个不相干项目不要复用ID。
+
+## 覆盖包从编辑到分发
+
+1. 在自己的目录，如`D:\mods\my-overlay`，建立`client/ui/`并放入`main.png`；不是直接编辑工具data或已安装哈希目录。
+2. 在工具包根目录执行下面命令。pack会在作者目录生成mod.json；verify失败先修资源，不跳过校验。
+3. export生成的文件在电脑或Android游戏内导入，再明确启用。导入本身不切换正在玩的内容。
+
+```powershell
+.\Ew4.ModTool.exe pack "D:\mods\my-overlay" --id=my-history-mod --name="历史改版" --version=1.0
+.\Ew4.ModTool.exe verify "D:\mods\my-overlay"
+.\Ew4.ModTool.exe import "D:\mods\my-overlay"
+.\Ew4.ModTool.exe list
+.\Ew4.ModTool.exe export <list中的key> "D:\mods\my-history-mod-1.0.ew4mod"
+```
+
+尖括号只是待替换参数，不要原样输入。输出目标必须不存在，更新用新文件名。CLI默认读取自身data，在自身mods/saves写内容；`--base=... --mods=... --saves=...`可指定工作目录。CLI activate只影响对应mods目录，不会自动操纵另一实例游戏。
+
+## 改动后的核对顺序
+
+先确认启用名称/版本，再核对画面、菜单和新局。规则/剧本变更需验证实际值和行为并保存/重载。图片需核对HD、布局引用和预裁剪图；文本与自带TTF绘制分开，旧位图字库和预渲染label不是现行文字样式入口。大改UI还需验证点击范围、返回路径、遮挡和动画，不能只比截图。
+
+不同Mod及逻辑版本的存档隔离。变更XML/BTL后看到新账户不等于旧档丢失；旧目录仍保留。切换前在游戏保存，不能依赖重载页面保住未保存的内存对局。
+
+## 深入资料
+
+- [配置/字段总表](CONFIG_REFERENCE.md)：哪个文件控制哪一项。
+- [源码/函数总表](SOURCE_INDEX.md)：加载、转换、规则和绘制入口。
+- [故障定位](TROUBLESHOOTING.md)：报错和检查顺序。
+- [真实改版兼容状态](COMPATIBILITY.md)：六个真实APK的通过范围和阻塞，不能用构造测试代替。
+- [具体制作例子](../examples/README.md)：头像、将领、征服、章节。
+- [安装目录](../mods/README.md)、[存档目录](../saves/README.md)：位置与版本隔离。
+
+原图集、BTL和地形BIN有各自二进制格式。本说明提供实际读取入口，不保证第三方编辑器生成任意变体都合法。当前真实改版测试仍在推进，失败原因应记录到报告再判断能否修复或属于原生代码扩展。

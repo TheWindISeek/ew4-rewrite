@@ -1,0 +1,8 @@
+<battleline>
+	<line name="imperialeagle" hide="0" start="1793" end="1820" stars="10" countries="fra"/>
+	<line name="coalition" hide="0" start="1792" end="1815" stars="10" countries="aus,pru,rus,gbr"/>
+	<line name="romanempire" hide="0" start="1807" end="1822" stars="10" countries="hre,aus,pru"/>
+	<line name="eastern" hide="0" start="1798" end="1820" stars="10" countries="tur,rus"/>
+	<line name="america" hide="0" start="1775" end="1822" stars="10" countries="usa"/>
+	<line name="neversets" hide="1" start="1775" end="1814" stars="10" countries="gbr"/>
+</battleline>

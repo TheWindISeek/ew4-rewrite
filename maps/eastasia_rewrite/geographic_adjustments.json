@@ -1,0 +1,38 @@
+[
+  {
+    "name": "定海",
+    "cell": 14168,
+    "source_center": [
+      3408.0,
+      2394.0
+    ],
+    "reason": "Named coastal/island settlement retained at this grid resolution"
+  },
+  {
+    "name": "那霸",
+    "cell": 15605,
+    "source_center": [
+      3872.0,
+      2637.0
+    ],
+    "reason": "Named coastal/island settlement retained at this grid resolution"
+  },
+  {
+    "name": "马公",
+    "cell": 17324,
+    "source_center": [
+      3280.0,
+      2934.0
+    ],
+    "reason": "Named coastal/island settlement retained at this grid resolution"
+  },
+  {
+    "name": "香港",
+    "cell": 18259,
+    "source_center": [
+      2864.0,
+      3096.0
+    ],
+    "reason": "Named coastal/island settlement retained at this grid resolution"
+  }
+]

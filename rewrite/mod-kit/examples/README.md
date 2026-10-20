@@ -1,0 +1,51 @@
+# 最小覆盖示例
+
+只换主菜单背景：在作者自己的空目录下创建 `client/ui/main.png`，保持原图比例与足够分辨率。执行：
+
+```powershell
+.\Ew4.ModTool.exe pack "D:\mods\my-overlay" --id=my-overlay --name="我的界面" --version=1.0
+.\Ew4.ModTool.exe import "D:\mods\my-overlay"
+.\Ew4.ModTool.exe list
+.\Ew4.ModTool.exe export <key> "D:\mods\my-overlay.ew4mod"
+```
+
+将生成的文件直接在电脑或Android的游戏主菜单左下角Mod入口导入并启用。
+
+只换将领头像：同样结构放入 `client/ui/commanders1_hd/<将领资源名>.png`，例如 `Napoleon.png`；应以 manifest 图集与实际头像路径为准。修改图集布局时请改原PNG/PKM和XML后重新导入，避免裁剪坐标失配。
+
+修改将领属性：复制原 `assets/def_commander.xml` 到作者原资源目录，修改已有字段和0至39的技能引用，压为ZIP后导入。转换器重新建立catalog，并自动隔离逻辑变化后的存档。
+
+新增征服：沿用BTL版本2的结构，设置合法地图、国家、坐标和事件，文件命名 `conquest7.btl` 等。原资源导入会追加菜单页；必要时再用 frontend 配置安排卡片图。新增战役需要同步 `def_battlelist.xml`、`def_battleline.xml`、文字和BTL，新增章有通用按钮布局。
+
+不要把Android安装包改名成.ew4mod；两种格式分别识别，.ew4mod需要校验清单。源文件请留备份，勿在唯一原件上试验。
+
+## 例一：只换拿破仑头像
+
+核对manifest的`atlases.commanders1_hd["Napoleon.png"]`和`data/client/ui/commanders1_hd/Napoleon.png`，基础图为156×156。在自己的覆盖目录放`client/ui/commanders1_hd/Napoleon.png`，保留透明边距；执行pack/import/list/export，在游戏导入启用并打开将领查看。同尺寸换图不需附加manifest；战场若使用另一图集，还需另改对应images/动画。
+
+新增将领或改名还需要XML、文字和图集登记。`Menus.portrait()`从manifest查图集；新文件存在但没有登记新名字，不保证可见。
+
+## 例二：已有将领的能力与四技能
+
+完整def_commander.xml找到id1，只修改business或现有skill字段；整份XML放ZIP根目录导入。技能0对应skill_01图标，-1为空；新技能40～50不能用旧技能顶替。说明文字在name_skill_XX/desc_skill_XX，图标在image_ui等图集；属性、文字、图像各自配套不等于编写了新效果。
+
+## 例三：新增第七征服
+
+1. 使用兼容编辑器将已能运行的BTL另存conquest7.btl，修改合法地图/国家/坐标/事件，不把JSON改扩展名当BTL。
+2. 原资源ZIP放该BTL；新地图/国家/文字同步提供对应完整文件。标题可用stringtable里的text_conquest_age_7。
+3. 通过原资源流程导入，导入器并入scenarios并追加菜单页；核对选国和实际新局。
+4. 卡片排版配置见[frontend说明](../data/frontend/README.md)。进阶覆盖包修改含新场景的导出结果时，注意CLI pack默认采用基础scenarios，不自动扩充。开发接口`ModStore.Seal(..., scenarios:完整清单)`才可显式指定；当前CLI无该参数。普通作者建议维护原资源输入并重导入，不手改校验清单。
+
+## 例四：追加战役大章
+
+def_battleline.xml的line顺序决定章号，第七条对应campaign7_XX。def_battlelist.xml的file对应实际BTL，name对应文字，age/commander/centerx/centery决定介绍/战略标记。line的name、每关title_/desc_文字和国旗资源需配套。
+
+前六章布局保留；新增章由`Menus.open()`走custom-chapter，右栏底图由`openChapter()`回退现有图。当前没有大量大章的自动分页保证，不能把通用按钮回退理解成无限布局已就绪。
+
+## 例五：修改训练资金费
+
+复制完整runtime_rule_tables.json到作者覆盖包`legacy/runtime_rule_tables.json`，只改training_money对应项，保留schema/source和其他表。pack/verify后新局检查确认框与实际扣款，保存重载；级别行/经验表也变化时须配套，不能只改按钮文字。
+
+## 发布前实测
+
+核对将领、进入征服/战役、实际移动/攻击/招募/回合、保存重载、切回原版看原档。导入完成不等于长期玩法兼容；不要删掉失败剧本或回退原图后仍称原Mod完整兼容。错误定位见[排错表](../docs/TROUBLESHOOTING.md)。

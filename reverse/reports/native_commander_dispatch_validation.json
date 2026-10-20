@@ -1,0 +1,11 @@
+{
+  "counts": {
+    "availability": 600,
+    "deployment": 800,
+    "attachment": 800,
+    "ai": 800,
+    "inheritance": 1000
+  },
+  "errors": [],
+  "scope": "Original 5dd28/5df98/52bcc/a7a0c/58238; environment, funds and lookup/allocation/commander-effect services injected. Inheritance uses real ELF tables. No GUI, phone or complete deployment state chain."
+}

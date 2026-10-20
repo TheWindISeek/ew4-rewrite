@@ -1,0 +1,894 @@
+[
+  {
+    "kind": "bridge",
+    "name": "郑州黄河铁路桥",
+    "river": "Yellow",
+    "lon": 113.61,
+    "lat": 34.94,
+    "year": 1906,
+    "style": 3,
+    "cell": 11936,
+    "other": 12095,
+    "direction": 1,
+    "world_pixel": [
+      5536,
+      4032
+    ],
+    "offset_world_pixels": 8.13
+  },
+  {
+    "kind": "bridge",
+    "name": "济南泺口黄河铁路桥",
+    "river": "Yellow",
+    "lon": 116.99,
+    "lat": 36.81,
+    "year": 1912,
+    "style": 3,
+    "cell": 10995,
+    "other": 11154,
+    "direction": 1,
+    "world_pixel": [
+      5984,
+      3708
+    ],
+    "offset_world_pixels": 8.44
+  },
+  {
+    "kind": "bridge",
+    "name": "兰州中山桥",
+    "river": "Yellow",
+    "lon": 103.82,
+    "lat": 36.07,
+    "year": 1909,
+    "style": 3,
+    "cell": 11284,
+    "other": 11442,
+    "direction": 2,
+    "world_pixel": [
+      4256,
+      3816
+    ],
+    "offset_world_pixels": 18.75
+  },
+  {
+    "kind": "ferry",
+    "name": "宜宾长江渡口",
+    "river": "Yangtze",
+    "lon": 104.63,
+    "lat": 28.76,
+    "year": null,
+    "style": 1,
+    "cell": 14919,
+    "other": 15076,
+    "direction": 2,
+    "world_pixel": [
+      4288,
+      5058
+    ],
+    "offset_world_pixels": 15.62
+  },
+  {
+    "kind": "ferry",
+    "name": "泸州长江渡口",
+    "river": "Yangtze",
+    "lon": 105.44,
+    "lat": 28.87,
+    "year": null,
+    "style": 1,
+    "cell": 14920,
+    "other": 14921,
+    "direction": 0,
+    "world_pixel": [
+      4352,
+      5058
+    ],
+    "offset_world_pixels": 21.03
+  },
+  {
+    "kind": "ferry",
+    "name": "重庆长江渡口",
+    "river": "Yangtze",
+    "lon": 106.58,
+    "lat": 29.57,
+    "year": null,
+    "style": 1,
+    "cell": 14607,
+    "other": 14608,
+    "direction": 0,
+    "world_pixel": [
+      4544,
+      4950
+    ],
+    "offset_world_pixels": 5.05
+  },
+  {
+    "kind": "ferry",
+    "name": "涪陵长江渡口",
+    "river": "Yangtze",
+    "lon": 107.39,
+    "lat": 29.71,
+    "year": null,
+    "style": 1,
+    "cell": 14451,
+    "other": 14609,
+    "direction": 2,
+    "world_pixel": [
+      4704,
+      4896
+    ],
+    "offset_world_pixels": 12.75
+  },
+  {
+    "kind": "ferry",
+    "name": "万县长江渡口",
+    "river": "Yangtze",
+    "lon": 108.4,
+    "lat": 30.8,
+    "year": null,
+    "style": 1,
+    "cell": 13980,
+    "other": 14137,
+    "direction": 2,
+    "world_pixel": [
+      4864,
+      4734
+    ],
+    "offset_world_pixels": 8.18
+  },
+  {
+    "kind": "ferry",
+    "name": "奉节长江渡口",
+    "river": "Yangtze",
+    "lon": 109.46,
+    "lat": 31.02,
+    "year": null,
+    "style": 1,
+    "cell": 13823,
+    "other": 13982,
+    "direction": 1,
+    "world_pixel": [
+      4960,
+      4680
+    ],
+    "offset_world_pixels": 22.23
+  },
+  {
+    "kind": "ferry",
+    "name": "宜昌长江渡口",
+    "river": "Yangtze",
+    "lon": 111.29,
+    "lat": 30.68,
+    "year": null,
+    "style": 1,
+    "cell": 14143,
+    "other": 14144,
+    "direction": 0,
+    "world_pixel": [
+      5216,
+      4788
+    ],
+    "offset_world_pixels": 11.15
+  },
+  {
+    "kind": "ferry",
+    "name": "城陵矶长江渡口",
+    "river": "Yangtze",
+    "lon": 113.14,
+    "lat": 29.44,
+    "year": null,
+    "style": 1,
+    "cell": 14622,
+    "other": 14780,
+    "direction": 1,
+    "world_pixel": [
+      5504,
+      4950
+    ],
+    "offset_world_pixels": 3.37
+  },
+  {
+    "kind": "ferry",
+    "name": "武汉长江渡口",
+    "river": "Yangtze",
+    "lon": 114.29,
+    "lat": 30.55,
+    "year": null,
+    "style": 1,
+    "cell": 14150,
+    "other": 14151,
+    "direction": 0,
+    "world_pixel": [
+      5664,
+      4788
+    ],
+    "offset_world_pixels": 14.48
+  },
+  {
+    "kind": "ferry",
+    "name": "九江长江渡口",
+    "river": "Yangtze",
+    "lon": 115.99,
+    "lat": 29.74,
+    "year": null,
+    "style": 1,
+    "cell": 14470,
+    "other": 14629,
+    "direction": 1,
+    "world_pixel": [
+      5920,
+      4896
+    ],
+    "offset_world_pixels": 14.93
+  },
+  {
+    "kind": "ferry",
+    "name": "安庆长江渡口",
+    "river": "Yangtze",
+    "lon": 117.05,
+    "lat": 30.52,
+    "year": null,
+    "style": 1,
+    "cell": 14156,
+    "other": 14157,
+    "direction": 0,
+    "world_pixel": [
+      6048,
+      4788
+    ],
+    "offset_world_pixels": 19.47
+  },
+  {
+    "kind": "ferry",
+    "name": "芜湖长江渡口",
+    "river": "Yangtze",
+    "lon": 118.36,
+    "lat": 31.33,
+    "year": null,
+    "style": 1,
+    "cell": 13685,
+    "other": 13686,
+    "direction": 0,
+    "world_pixel": [
+      6208,
+      4626
+    ],
+    "offset_world_pixels": 12.18
+  },
+  {
+    "kind": "ferry",
+    "name": "南京长江轮渡",
+    "river": "Yangtze",
+    "lon": 118.72,
+    "lat": 32.1,
+    "year": 1933,
+    "style": 1,
+    "cell": 13212,
+    "other": 13370,
+    "direction": 2,
+    "world_pixel": [
+      6304,
+      4464
+    ],
+    "offset_world_pixels": 3.04
+  },
+  {
+    "kind": "ferry",
+    "name": "镇江长江渡口",
+    "river": "Yangtze",
+    "lon": 119.43,
+    "lat": 32.23,
+    "year": null,
+    "style": 1,
+    "cell": 13213,
+    "other": 13214,
+    "direction": 0,
+    "world_pixel": [
+      6368,
+      4464
+    ],
+    "offset_world_pixels": 14.19
+  },
+  {
+    "kind": "ferry",
+    "name": "金沙江渡口",
+    "river": "Yangtze",
+    "lon": 101.72,
+    "lat": 26.58,
+    "year": null,
+    "style": 1,
+    "cell": 15860,
+    "other": 16017,
+    "direction": 2,
+    "world_pixel": [
+      3840,
+      5382
+    ],
+    "offset_world_pixels": 6.31
+  },
+  {
+    "kind": "ferry",
+    "name": "贵德黄河渡口",
+    "river": "Yellow",
+    "lon": 101.43,
+    "lat": 36.04,
+    "year": null,
+    "style": 1,
+    "cell": 11279,
+    "other": 11437,
+    "direction": 2,
+    "world_pixel": [
+      3936,
+      3816
+    ],
+    "offset_world_pixels": 5.83
+  },
+  {
+    "kind": "ferry",
+    "name": "中卫黄河渡口",
+    "river": "Yellow",
+    "lon": 105.18,
+    "lat": 37.51,
+    "year": null,
+    "style": 1,
+    "cell": 10655,
+    "other": 10813,
+    "direction": 2,
+    "world_pixel": [
+      4448,
+      3600
+    ],
+    "offset_world_pixels": 8.83
+  },
+  {
+    "kind": "ferry",
+    "name": "横城黄河渡口",
+    "river": "Yellow",
+    "lon": 106.42,
+    "lat": 38.36,
+    "year": null,
+    "style": 1,
+    "cell": 10341,
+    "other": 10342,
+    "direction": 0,
+    "world_pixel": [
+      4576,
+      3492
+    ],
+    "offset_world_pixels": 9.29
+  },
+  {
+    "kind": "ferry",
+    "name": "包头黄河渡口",
+    "river": "Yellow",
+    "lon": 109.85,
+    "lat": 40.55,
+    "year": null,
+    "style": 1,
+    "cell": 9243,
+    "other": 9400,
+    "direction": 2,
+    "world_pixel": [
+      5056,
+      3114
+    ],
+    "offset_world_pixels": 11.49
+  },
+  {
+    "kind": "ferry",
+    "name": "府谷黄河渡口",
+    "river": "Yellow",
+    "lon": 111.07,
+    "lat": 39.02,
+    "year": null,
+    "style": 1,
+    "cell": 10035,
+    "other": 10193,
+    "direction": 2,
+    "world_pixel": [
+      5216,
+      3384
+    ],
+    "offset_world_pixels": 13.05
+  },
+  {
+    "kind": "ferry",
+    "name": "碛口黄河渡口",
+    "river": "Yellow",
+    "lon": 110.49,
+    "lat": 37.65,
+    "year": null,
+    "style": 1,
+    "cell": 10824,
+    "other": 10825,
+    "direction": 0,
+    "world_pixel": [
+      5120,
+      3654
+    ],
+    "offset_world_pixels": 33.61
+  },
+  {
+    "kind": "ferry",
+    "name": "龙门黄河渡口",
+    "river": "Yellow",
+    "lon": 110.59,
+    "lat": 35.6,
+    "year": null,
+    "style": 1,
+    "cell": 11772,
+    "other": 11773,
+    "direction": 0,
+    "world_pixel": [
+      5120,
+      3978
+    ],
+    "offset_world_pixels": 13.69
+  },
+  {
+    "kind": "ferry",
+    "name": "风陵渡黄河渡口",
+    "river": "Yellow",
+    "lon": 110.3,
+    "lat": 34.6,
+    "year": null,
+    "style": 1,
+    "cell": 12088,
+    "other": 12245,
+    "direction": 2,
+    "world_pixel": [
+      5120,
+      4086
+    ],
+    "offset_world_pixels": 18.14
+  },
+  {
+    "kind": "ferry",
+    "name": "东明黄河渡口",
+    "river": "Yellow",
+    "lon": 115.15,
+    "lat": 35.4,
+    "year": null,
+    "style": 1,
+    "cell": 11782,
+    "other": 11940,
+    "direction": 1,
+    "world_pixel": [
+      5760,
+      3978
+    ],
+    "offset_world_pixels": 29.0
+  },
+  {
+    "kind": "ferry",
+    "name": "利津黄河渡口",
+    "river": "Yellow",
+    "lon": 118.25,
+    "lat": 37.49,
+    "year": null,
+    "style": 1,
+    "cell": 10681,
+    "other": 10682,
+    "direction": 0,
+    "world_pixel": [
+      6112,
+      3600
+    ],
+    "offset_world_pixels": 8.42
+  },
+  {
+    "kind": "bridge",
+    "name": "哈尔滨松花江铁路桥",
+    "lon": 126.61,
+    "lat": 45.79,
+    "year": 1901,
+    "style": 3,
+    "cell": 6271,
+    "other": 6429,
+    "direction": 2,
+    "world_pixel": [
+      7008,
+      2088
+    ],
+    "offset_world_pixels": 9.95
+  },
+  {
+    "kind": "bridge",
+    "name": "吉林松花江桥",
+    "lon": 126.57,
+    "lat": 43.84,
+    "year": 1935,
+    "style": 3,
+    "cell": 7220,
+    "other": 7378,
+    "direction": 2,
+    "world_pixel": [
+      7072,
+      2412
+    ],
+    "offset_world_pixels": 9.85
+  },
+  {
+    "kind": "bridge",
+    "name": "齐齐哈尔嫩江铁路桥",
+    "lon": 123.98,
+    "lat": 47.35,
+    "year": 1930,
+    "style": 3,
+    "cell": 5633,
+    "other": 5792,
+    "direction": 1,
+    "world_pixel": [
+      6624,
+      1872
+    ],
+    "offset_world_pixels": 18.72
+  },
+  {
+    "kind": "bridge",
+    "name": "天津金汤桥",
+    "lon": 117.2,
+    "lat": 39.14,
+    "year": 1906,
+    "style": 3,
+    "cell": 9890,
+    "other": 10047,
+    "direction": 2,
+    "world_pixel": [
+      6016,
+      3330
+    ],
+    "offset_world_pixels": 14.03
+  },
+  {
+    "kind": "bridge",
+    "name": "滦河铁路桥",
+    "lon": 118.72,
+    "lat": 39.74,
+    "year": 1894,
+    "style": 3,
+    "cell": 9576,
+    "other": 9577,
+    "direction": 0,
+    "world_pixel": [
+      6144,
+      3222
+    ],
+    "offset_world_pixels": 9.25
+  },
+  {
+    "kind": "bridge",
+    "name": "蚌埠淮河铁路桥",
+    "lon": 117.37,
+    "lat": 32.96,
+    "year": 1911,
+    "style": 3,
+    "cell": 12893,
+    "other": 13051,
+    "direction": 2,
+    "world_pixel": [
+      6112,
+      4356
+    ],
+    "offset_world_pixels": 21.14
+  },
+  {
+    "kind": "bridge",
+    "name": "杭州钱塘江大桥",
+    "lon": 120.13,
+    "lat": 30.19,
+    "year": 1937,
+    "style": 3,
+    "cell": 14163,
+    "other": 14164,
+    "direction": 0,
+    "world_pixel": [
+      6496,
+      4788
+    ],
+    "offset_world_pixels": 8.77
+  },
+  {
+    "kind": "bridge",
+    "name": "广州海珠桥",
+    "lon": 113.27,
+    "lat": 23.11,
+    "year": 1933,
+    "style": 3,
+    "cell": 17783,
+    "other": 17941,
+    "direction": 1,
+    "world_pixel": [
+      5568,
+      6030
+    ],
+    "offset_world_pixels": 20.14
+  },
+  {
+    "kind": "bridge",
+    "name": "洛阳洛河古渡桥",
+    "lon": 112.47,
+    "lat": 34.65,
+    "year": 1900,
+    "style": 2,
+    "cell": 12093,
+    "other": 12250,
+    "direction": 2,
+    "world_pixel": [
+      5440,
+      4086
+    ],
+    "offset_world_pixels": 20.28
+  },
+  {
+    "kind": "bridge",
+    "name": "怒江惠通桥",
+    "lon": 98.9,
+    "lat": 24.9,
+    "year": 1935,
+    "style": 3,
+    "cell": 16642,
+    "other": 16643,
+    "direction": 0,
+    "world_pixel": [
+      3360,
+      5652
+    ],
+    "offset_world_pixels": 14.87
+  },
+  {
+    "kind": "bridge",
+    "name": "澜沧江功果桥",
+    "lon": 99.34,
+    "lat": 25.6,
+    "year": 1935,
+    "style": 3,
+    "cell": 16327,
+    "other": 16328,
+    "direction": 0,
+    "world_pixel": [
+      3424,
+      5544
+    ],
+    "offset_world_pixels": 6.39
+  },
+  {
+    "kind": "bridge",
+    "name": "伊洛瓦底江阿瓦桥",
+    "lon": 95.99,
+    "lat": 21.88,
+    "year": 1934,
+    "style": 3,
+    "cell": 17898,
+    "other": 18057,
+    "direction": 1,
+    "world_pixel": [
+      2848,
+      6084
+    ],
+    "offset_world_pixels": 15.51
+  },
+  {
+    "kind": "bridge",
+    "name": "河内龙边桥",
+    "lon": 105.86,
+    "lat": 21.04,
+    "year": 1903,
+    "style": 3,
+    "cell": 18713,
+    "other": 18870,
+    "direction": 2,
+    "world_pixel": [
+      4416,
+      6354
+    ],
+    "offset_world_pixels": 9.51
+  },
+  {
+    "kind": "bridge",
+    "name": "清迈平河铁桥",
+    "lon": 99.0,
+    "lat": 18.78,
+    "year": 1932,
+    "style": 3,
+    "cell": 19643,
+    "other": 19801,
+    "direction": 1,
+    "world_pixel": [
+      3264,
+      6678
+    ],
+    "offset_world_pixels": 21.14
+  },
+  {
+    "kind": "bridge",
+    "name": "大阪淀川桥梁",
+    "lon": 135.5,
+    "lat": 34.73,
+    "year": 1876,
+    "style": 3,
+    "cell": 10876,
+    "other": 10877,
+    "direction": 0,
+    "world_pixel": [
+      8448,
+      3654
+    ],
+    "offset_world_pixels": 11.11
+  },
+  {
+    "kind": "bridge",
+    "name": "东京隅田川桥梁",
+    "lon": 139.79,
+    "lat": 35.72,
+    "year": 1897,
+    "style": 3,
+    "cell": 9936,
+    "other": 9937,
+    "direction": 0,
+    "world_pixel": [
+      8960,
+      3330
+    ],
+    "offset_world_pixels": 10.26
+  },
+  {
+    "kind": "bridge",
+    "name": "广岛太田川桥梁",
+    "lon": 132.45,
+    "lat": 34.4,
+    "year": 1878,
+    "style": 2,
+    "cell": 11187,
+    "other": 11344,
+    "direction": 2,
+    "world_pixel": [
+      8128,
+      3762
+    ],
+    "offset_world_pixels": 23.56
+  },
+  {
+    "kind": "bridge",
+    "name": "名古屋木曾川铁路桥",
+    "lon": 136.72,
+    "lat": 35.11,
+    "year": 1895,
+    "style": 3,
+    "cell": 10563,
+    "other": 10720,
+    "direction": 2,
+    "world_pixel": [
+      8640,
+      3546
+    ],
+    "offset_world_pixels": 23.68
+  },
+  {
+    "kind": "bridge",
+    "name": "鸭绿江铁路桥",
+    "lon": 124.38,
+    "lat": 40.1,
+    "year": 1911,
+    "style": 3,
+    "cell": 9113,
+    "other": 9272,
+    "direction": 1,
+    "world_pixel": [
+      6880,
+      3060
+    ],
+    "offset_world_pixels": 13.37
+  },
+  {
+    "kind": "bridge",
+    "name": "平壤大同江铁路桥",
+    "lon": 125.74,
+    "lat": 39.01,
+    "year": 1905,
+    "style": 3,
+    "cell": 9590,
+    "other": 9591,
+    "direction": 0,
+    "world_pixel": [
+      7040,
+      3222
+    ],
+    "offset_world_pixels": 18.78
+  },
+  {
+    "kind": "bridge",
+    "name": "哈巴罗夫斯克阿穆尔河大桥",
+    "lon": 135.02,
+    "lat": 48.55,
+    "year": 1916,
+    "style": 3,
+    "cell": 4388,
+    "other": 4546,
+    "direction": 2,
+    "world_pixel": [
+      7840,
+      1440
+    ],
+    "offset_world_pixels": 23.84
+  },
+  {
+    "kind": "bridge",
+    "name": "新西伯利亚鄂毕河铁路桥",
+    "lon": 82.91,
+    "lat": 54.99,
+    "year": 1897,
+    "style": 3,
+    "cell": 985,
+    "other": 1143,
+    "direction": 1,
+    "world_pixel": [
+      2368,
+      306
+    ],
+    "offset_world_pixels": 10.76
+  },
+  {
+    "kind": "bridge",
+    "name": "克拉斯诺亚尔斯克叶尼塞河铁路桥",
+    "lon": 92.84,
+    "lat": 55.99,
+    "year": 1899,
+    "style": 3,
+    "cell": 1158,
+    "other": 1317,
+    "direction": 1,
+    "world_pixel": [
+      3360,
+      360
+    ],
+    "offset_world_pixels": 12.24
+  },
+  {
+    "kind": "bridge",
+    "name": "乌兰乌德色楞格河铁路桥",
+    "lon": 107.57,
+    "lat": 51.81,
+    "year": 1900,
+    "style": 3,
+    "cell": 3708,
+    "other": 3867,
+    "direction": 1,
+    "world_pixel": [
+      4768,
+      1224
+    ],
+    "offset_world_pixels": 26.37
+  },
+  {
+    "kind": "bridge",
+    "name": "恒河哈丁桥",
+    "lon": 89.03,
+    "lat": 24.06,
+    "year": 1915,
+    "style": 3,
+    "cell": 16302,
+    "other": 16303,
+    "direction": 0,
+    "world_pixel": [
+      1824,
+      5544
+    ],
+    "offset_world_pixels": 9.0
+  },
+  {
+    "kind": "bridge",
+    "name": "加尔各答豪拉渡桥",
+    "lon": 88.34,
+    "lat": 22.59,
+    "year": 1874,
+    "style": 2,
+    "cell": 16932,
+    "other": 16933,
+    "direction": 0,
+    "world_pixel": [
+      1696,
+      5760
+    ],
+    "offset_world_pixels": 25.08
+  }
+]

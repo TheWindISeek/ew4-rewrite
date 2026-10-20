@@ -1,0 +1,12 @@
+{
+  "method": "Original ARM64 functions; external services injected and recorded.",
+  "counts": {
+    "morale_mutation": 100,
+    "environment_raise": 50,
+    "environment_spread": 120,
+    "round_dispatch": 160,
+    "surrender": 90
+  },
+  "errors": [],
+  "scope": "Morale mutation, environmental spread, round event order, surrender territory transfer; not full combat commit."
+}

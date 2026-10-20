@@ -1,0 +1,9 @@
+{
+  "counts": {
+    "hold_score": 600,
+    "candidate_eligibility": 80,
+    "stable_candidate_selection": 300
+  },
+  "errors": [],
+  "scope": "AI hold scoring with injected strength/threat facts; candidate class eligibility; stable selection. Other scoring/production not covered."
+}

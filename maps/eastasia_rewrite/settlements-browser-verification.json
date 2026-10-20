@@ -1,0 +1,82 @@
+{
+  "date": "2026-10-20",
+  "activeKey": "75e617ee5c6efe6c11248e0425628d6427b48fbfb996c58bacefc22090ed071c",
+  "cities": 267,
+  "facilities": 237,
+  "siteCount": 504,
+  "configuration": {
+    "sites": 504,
+    "mismatch": [],
+    "selected": [
+      {
+        "kind": "city",
+        "cell": 985,
+        "selected": 985
+      },
+      {
+        "kind": "industry",
+        "cell": 842,
+        "selected": 842
+      },
+      {
+        "kind": "stable",
+        "cell": 2873,
+        "selected": 2873
+      },
+      {
+        "kind": "port",
+        "cell": 2818,
+        "selected": 2818
+      },
+      {
+        "kind": "farmland",
+        "cell": 1142,
+        "selected": 1142
+      }
+    ]
+  },
+  "rendering": {
+    "uniqueArts": [
+      "city_east_lv1.png",
+      "city_east_lv2.png",
+      "city_east_lv3.png",
+      "city_east_lv4.png",
+      "city_east_lv5.png",
+      "factory_east_lv1.png",
+      "factory_east_lv2.png",
+      "factory_east_lv3.png",
+      "farm_2_lv1.png",
+      "farm_2_lv2.png",
+      "farm_2_lv3.png",
+      "port_2.png",
+      "stable_east_lv1.png",
+      "stable_east_lv2.png"
+    ],
+    "missing": []
+  },
+  "desktop": {
+    "width": 1280,
+    "height": 720,
+    "screenshots": [
+      "settlements-shanghai.png",
+      "settlements-north.png"
+    ]
+  },
+  "mobile": [
+    {
+      "width": 844,
+      "height": 390,
+      "colors": 787,
+      "brokenImages": []
+    },
+    {
+      "width": 390,
+      "height": 844,
+      "colors": 813,
+      "brokenImages": []
+    }
+  ],
+  "pageErrors": [],
+  "failedResources": [],
+  "errors": 0
+}

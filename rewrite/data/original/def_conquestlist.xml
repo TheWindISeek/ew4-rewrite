@@ -1,0 +1,14 @@
+<battlelist>
+	<battle name="1 zone conquest 1" file="conquest_western_1.btl" battle="1 zone conquest 1"/>
+	<battle name="1 zone conquest 2" file="conquest_western_2.btl" battle="1 zone conquest 2"/>
+	<battle name="1 zone conquest 3" file="conquest_western_3.btl" battle="1 zone conquest 3"/>
+	<battle name="1 zone conquest 4" file="conquest_western_4.btl" battle="1 zone conquest 4"/>
+	<battle name="1 zone conquest 5" file="conquest_western_5.btl" battle="1 zone conquest 5"/>
+	<battle name="1 zone conquest 6" file="conquest_western_europe_1.btl" battle="1 zone conquest 6"/>
+	<battle name="1 zone conquest 7" file="conquest_western_7.btl" battle="1 zone conquest 7"/>
+	<battle name="1 zone conquest 8" file="conquest_western_8.btl" battle="1 zone conquest 8"/>
+	<battle name="1 zone conquest 9" file="conquest_western_9.btl" battle="1 zone conquest 9"/>
+	<battle name="2 zone conquest 1" file="conquest_axis_1.btl" battle="2 zone conquest 1"/>
+	<battle name="2 zone conquest 2" file="conquest_axis_2.btl" battle="2 zone conquest 2"/>
+	<battle name="2 zone conquest 3" file="conquest_axis_3.btl" battle="2 zone conquest 3"/>
+</battlelist>

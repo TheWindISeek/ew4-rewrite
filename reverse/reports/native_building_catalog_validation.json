@@ -1,0 +1,12 @@
+{
+  "counts": {
+    "type_and_upgrade_maximum": 5,
+    "level_accessors": 30,
+    "recruit_grade": 660,
+    "recruit_eligibility": 1980,
+    "constructor_level_clamp": 25,
+    "capital_priority": 10
+  },
+  "errors": [],
+  "scope": "Run original building XML loader and rule accessors with parsed XML services.\n\nXML traversal, string storage and allocation are injected. The original type mapping,\nrow construction, lookup, recruitment, capital-priority and upgrade clamp run unchanged."
+}

@@ -1,0 +1,21 @@
+{
+  "counts": {
+    "file:candidate": 375,
+    "file:referenced": 419,
+    "file:unresolved": 11,
+    "layout:candidate": 342,
+    "layout:unresolved": 10,
+    "sprite:candidate": 3076,
+    "sprite:referenced": 2143
+  },
+  "sourceFiles": 805,
+  "nativeReferences": 630,
+  "errors": 0,
+  "animationGaps": 44,
+  "referencedAnimationGaps": 12,
+  "artStatus": {
+    "referenced": 203,
+    "candidate": 333,
+    "unresolved": 2
+  }
+}

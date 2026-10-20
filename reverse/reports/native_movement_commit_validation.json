@@ -1,0 +1,8 @@
+{
+  "counts": {
+    "fast_movement_capture": 400,
+    "moved": 210
+  },
+  "errors": [],
+  "scope": "Fast movement, path/adjacent land claiming, empty-sea release, endpoint capture and remaining movement. Injected route/defeat; no campaign event/diplomacy/UI validation."
+}

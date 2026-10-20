@@ -1,0 +1,8 @@
+{
+  "counts": {
+    "commander_progression": 1000,
+    "fire_application": 600
+  },
+  "errors": [],
+  "scope": "Commander XP with injected equipment lookup, and fire application with injected resistance/ship flags."
+}

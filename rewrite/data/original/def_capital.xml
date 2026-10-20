@@ -1,0 +1,14 @@
+<capitals>
+	<capital id="0" name="Vienna" tax="68 " image="capital_au.png"/>
+	<capital id="1" name="Ottawa" tax="63" image="capital_ca.png"/>
+	<capital id="2" name="Common" tax="60" image="capital_common.png"/>
+	<capital id="3" name="Cairo" tax="61" image="capital_eg.png"/>
+	<capital id="4" name="Madrid" tax="62" image="capital_es.png"/>
+	<capital id="5" name="Paris" tax="69" image="capital_fr.png"/>
+	<capital id="6" name="London" tax="70" image="capital_gb.png"/>
+	<capital id="7" name="Roman" tax="65" image="capital_it.png"/>
+	<capital id="8" name="Berlin" tax="66" image="capital_pu.png"/>
+	<capital id="9" name="Moscow" tax="63" image="capital_ru.png"/>
+	<capital id="10" name="Istanbul" tax="67" image="capital_tk.png"/>
+	<capital id="11" name="Washington" tax="64" image="capital_us.png"/>
+</capitals>

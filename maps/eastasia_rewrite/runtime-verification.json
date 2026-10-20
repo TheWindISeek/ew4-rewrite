@@ -1,0 +1,50 @@
+{
+  "checks": 7807,
+  "errors": 0,
+  "maps": 3,
+  "cells": 21488,
+  "cities": 278,
+  "scenarios": 96,
+  "facilities": 272,
+  "bridges": 54,
+  "nativeInitialMaximumCityLevel": {
+    "europe": 7,
+    "america": 6
+  },
+  "cityLevels": {
+    "4": 35,
+    "1": 23,
+    "2": 129,
+    "3": 82,
+    "6": 6,
+    "7": 3
+  },
+  "facilityCounts": {
+    "industry": 56,
+    "farmland": 119,
+    "stable": 47,
+    "port": 50
+  },
+  "terrainCounts": {
+    "0": 8560,
+    "6": 1521,
+    "1": 7293,
+    "9": 1738,
+    "8": 1098,
+    "7": 667,
+    "3": 162,
+    "4": 388,
+    "5": 61
+  },
+  "riverEdges": 4520,
+  "mapDocumentBytes": 8103741,
+  "sessionBytes": 8176822,
+  "pathfindingReachableCells": 14267,
+  "elapsedSeconds": 61.33,
+  "package": "E:\\Workplace\\game\\o4mod\\rewrite/content/eastasia-map.ew4mod",
+  "packageBytes": 3153862,
+  "packageSha256": "02f895b3452cb3eb4ff72b50d00240fffb13498378d5a848a65c4491dec2d0be",
+  "activeKey": "7efb47bfd1cbab27e609cf87bd867a03348a80a772c72f3c61319e5a4b2ff0f8",
+  "previewSaves": "E:\\Workplace\\game\\o4mod\\maps/eastasia_rewrite\\runtime\\saves",
+  "previewMods": "E:\\Workplace\\game\\o4mod\\maps/eastasia_rewrite\\runtime\\mods"
+}

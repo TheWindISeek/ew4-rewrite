@@ -1,0 +1,15 @@
+{
+  "counts": {
+    "roster_load": 400,
+    "skill_count_untouched": 400,
+    "roster_save": 400,
+    "roster_guard": 400,
+    "effective_commerce": 300,
+    "medal_balance": 300,
+    "medal_notification": 300,
+    "roster_inheritance_dispatch": 300
+  },
+  "errors": [],
+  "source_sha256": "c16905a2f6d155111a1ff702f2b0f8fbad09482dcedce08785a2bf7965fe7f63",
+  "scope": "Original 5873c/586ec 60-byte record, 571e8 title-commerce, 2c320 medals, 5520c donor-removal dispatch. Notification/inheritance/removal services injected; no complete account/client test."
+}

@@ -1,0 +1,10 @@
+{
+  "scope": "Native layer seek/tick and affine/alpha submission; nested drawing and rendered pixels not verified.",
+  "counts": {
+    "layer_seek": 36,
+    "layer_tick": 720,
+    "leaf_submission": 300,
+    "leaf_alpha": 300
+  },
+  "errors": []
+}

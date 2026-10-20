@@ -1,0 +1,117 @@
+{
+  "status": "resource prototype; game runtime not yet tested",
+  "original_apk_sha256": "5ecc95252edc68b0bded04e6bf1952ad60bc97fbf0a7829bb50e6efe9e77eab8",
+  "map_slot": 1,
+  "pixel_size": [
+    4993,
+    3583
+  ],
+  "hd_pixel_size": [
+    9986,
+    7166
+  ],
+  "terrain_grid": [
+    79,
+    68
+  ],
+  "projection": "spherical Lambert conformal conic",
+  "projection_parameters": {
+    "lon0": 110,
+    "lat0": 35,
+    "parallels": [
+      25,
+      47
+    ],
+    "radius_m": 6371008.8,
+    "projected_bounds": [
+      -3350000.0,
+      -2050000.0,
+      3250000.0,
+      2686190.666933707
+    ]
+  },
+  "texture_index_origin_margin": [
+    64,
+    64
+  ],
+  "terrain_centres": "x=64*col+32*(row%2), y=54*row; inferred from original format, requires runtime confirmation",
+  "textures": [
+    {
+      "scale": 1,
+      "texture_blocks": 1140,
+      "active_atlases": 72,
+      "atlas_inventory": 102,
+      "index_grid": [
+        81,
+        58
+      ],
+      "errors": []
+    },
+    {
+      "scale": 2,
+      "texture_blocks": 1098,
+      "active_atlases": 69,
+      "atlas_inventory": 102,
+      "index_grid": [
+        81,
+        58
+      ],
+      "errors": []
+    }
+  ],
+  "land_cells": 3548,
+  "sea_cells": 1824,
+  "river_edge_cells": 591,
+  "river_names": [
+    "Amur",
+    "Bei",
+    "Brahmaputra",
+    "Dong",
+    "Fen",
+    "Hai",
+    "Han",
+    "Huai",
+    "Huang",
+    "Irrawaddy",
+    "Ishikari",
+    "Jinsha",
+    "Liao",
+    "Mekong",
+    "Min",
+    "Nakdong",
+    "Salween",
+    "Songhua",
+    "Tone",
+    "Tumen",
+    "Ussuri",
+    "Wei",
+    "Xi",
+    "Xiliao",
+    "Yalu",
+    "Yangtze",
+    "Yarlung",
+    "Yellow",
+    "Yongding"
+  ],
+  "resource_files": 209,
+  "terrain_counts": {
+    "0": 2670,
+    "1": 1824,
+    "3": 62,
+    "4": 58,
+    "6": 150,
+    "7": 136,
+    "8": 175,
+    "9": 297
+  },
+  "terrain_regions_sha256": "7d4ee6edd66b0278fe74a01325b5d00a3a78feec7d14acce7e68d4aa2b79e6c1",
+  "terrain_accuracy": "Hand-generalized terrain regions at game-grid resolution; not measured elevation or historical vegetation.",
+  "historical_geography": "Modern physical baseline; reservoir-class lakes excluded. Period-specific river courses and lake shores still require historical review.",
+  "errors": [],
+  "pending": [
+    "Android runtime and map-index origin validation",
+    "Historical city placements and six scenario files",
+    "Ownership and faction colors",
+    "Conquest-selection miniature artwork"
+  ]
+}

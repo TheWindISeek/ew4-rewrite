@@ -1,0 +1,14 @@
+{
+  "method": "Original ARM64 combat calculator with injected resolved map/definition inputs.",
+  "limitations": [
+    "No action legality, real XML definitions, full adjacent aura lookup, or damage commit tested here.",
+    "Not an APK/emulator/phone compatibility test."
+  ],
+  "cases": 1200,
+  "coverage": {
+    "counterattack": 379,
+    "offensive_proc": 32,
+    "defensive_proc": 26
+  },
+  "errors": []
+}

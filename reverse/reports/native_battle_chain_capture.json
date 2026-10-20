@@ -1,0 +1,12 @@
+{
+  "counts": {
+    "battle_chain": 800,
+    "units_destroyed": 476,
+    "troop_advances": 566,
+    "ignition_changes": 13,
+    "commander_rank_advances": 43,
+    "commander_title_advances": 3
+  },
+  "errors": [],
+  "scope": "Original 825d4 -> damage/death, ignition, troop-XP/healing, commander rank/title-XP/health scaling and morale executed together. 400 cases without commanders + 400 allowing commanders; progression eligibility injected true, equipment lookup absent, map/troop rows and nondefeat/local refresh/rendering injected; mode3 medal/diplomacy bypass. Not a phone test."
+}

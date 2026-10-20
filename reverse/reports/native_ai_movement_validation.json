@@ -1,0 +1,6 @@
+{
+  "count": 1200,
+  "errors": [],
+  "health_threshold": 0.3499999940395355,
+  "scope": "Real 7a768 tactical move and move-attack generation, relations and 86010 post-move attack eligibility on 3x1 map. Reachable list and location/attack/strength score services injected. Not strategic or production AI."
+}

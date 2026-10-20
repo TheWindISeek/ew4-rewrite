@@ -1,0 +1,37 @@
+{
+  "format": "YSAE/1; 12-byte cells",
+  "width": 158,
+  "height": 136,
+  "cells": 21488,
+  "bytes": 257872,
+  "city_count": 278,
+  "max_city_displacement_km": 41.2,
+  "generalized_cities": [
+    "定海",
+    "那霸",
+    "马公",
+    "香港"
+  ],
+  "visual_city_patches": [
+    "定海",
+    "那霸",
+    "马公",
+    "香港"
+  ],
+  "terrain_counts": {
+    "0": 8560,
+    "6": 1521,
+    "1": 7293,
+    "9": 1738,
+    "8": 1098,
+    "7": 667,
+    "3": 162,
+    "4": 388,
+    "5": 61
+  },
+  "directed_river_edges": 4520,
+  "terrain_additions_sha256": "68c473f4ac96ecea68f2c85bed5d3c8da0d84cff3af8ed0ff057e5f2fabad826",
+  "source_city_sha256": "58d9d1d53ffe2d734e59b07483272ab7d2478c06547d776eac617ea3fc1469a0",
+  "runtime_tested": false,
+  "errors": []
+}

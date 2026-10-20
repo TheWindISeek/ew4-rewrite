@@ -1,0 +1,596 @@
+{
+  "schema": 1,
+  "description": "Self-contained rewrite runtime data; byte-identical imported source content.",
+  "files": [
+    {
+      "path": "legacy/catalog.json",
+      "bytes": 1710270,
+      "sha256": "bbf0ef42342dc82165d956531d4c14d51fe042ea008c9cefc22932ad63d22b53"
+    },
+    {
+      "path": "legacy/metagame_rule_tables.json",
+      "bytes": 505,
+      "sha256": "ce466cbe16e3633986730efe44cf58ab9591d0e65f449b75873cba12fdd5f42d"
+    },
+    {
+      "path": "legacy/runtime_rule_tables.json",
+      "bytes": 1193,
+      "sha256": "6866b8a54e33a65c11500a9e750f2e8d2151428f159d31414f77faa0e60e72f5"
+    },
+    {
+      "path": "original/america.bin",
+      "bytes": 50176,
+      "sha256": "c81550bb7aab6fc1619c291f0b83e1de51a40c8f73f43fe7b12b5040a3739edb"
+    },
+    {
+      "path": "original/campaign1_01.btl",
+      "bytes": 3853,
+      "sha256": "83b048a7c0856dc2a0fa2c86bc740e4829f62ddea600b16e1bc38858052d883d"
+    },
+    {
+      "path": "original/campaign1_02.btl",
+      "bytes": 4168,
+      "sha256": "856cb34e7a06d5a5970324d24a91a422396d3d4b311062f77e86df1ee61eafaf"
+    },
+    {
+      "path": "original/campaign1_02b.btl",
+      "bytes": 4532,
+      "sha256": "9413a2d9d95b3976a783760a37775072f1b97a7ef7f29fa00c8f2e144cd1a820"
+    },
+    {
+      "path": "original/campaign1_03.btl",
+      "bytes": 4377,
+      "sha256": "a8eddb5f2d4367a8cd12f359642b7331b07e6029bc879fae04f9245d2cc29f95"
+    },
+    {
+      "path": "original/campaign1_04.btl",
+      "bytes": 4256,
+      "sha256": "0b203573e5c144a5ac5accf9f67f991d8ba92854fea8555aa032571ce70787ca"
+    },
+    {
+      "path": "original/campaign1_05.btl",
+      "bytes": 3848,
+      "sha256": "96c530221d5ee18dd5626249bd9d70e91731e3f5f610f41c53f2db7baf05ab2b"
+    },
+    {
+      "path": "original/campaign1_06.btl",
+      "bytes": 4990,
+      "sha256": "eb7621138ce1f51a711b5e927eb10e4f24ddea32b7a0d4f4a060940feccf6379"
+    },
+    {
+      "path": "original/campaign1_07.btl",
+      "bytes": 5152,
+      "sha256": "cad3bf148bd187593ffdd49b166b73b39660a12bda98895737fe5cf1e4498657"
+    },
+    {
+      "path": "original/campaign1_08.btl",
+      "bytes": 5463,
+      "sha256": "6e297b1058a79247e7fc2efdd694b6ec937a10af2c522625e82e8491e6569544"
+    },
+    {
+      "path": "original/campaign1_09.btl",
+      "bytes": 5056,
+      "sha256": "9f618c0552cc376ae25cc567b16fe7ae05f97a5fccb16655f1d5b301b1f11c10"
+    },
+    {
+      "path": "original/campaign1_10.btl",
+      "bytes": 4523,
+      "sha256": "38c2a42455d037e5f512e34b03dd6505a4e11dfafc44949d40389363fe03fe35"
+    },
+    {
+      "path": "original/campaign1_11.btl",
+      "bytes": 5324,
+      "sha256": "9108c1be2e5bb5b634c47f21f8b7f4626698fba9fe49e40581b270fda85ac7ac"
+    },
+    {
+      "path": "original/campaign1_12.btl",
+      "bytes": 8138,
+      "sha256": "bda79508c6829188ba23d36ca0f5ae11562c9c275c8865c1baef85069ec133a9"
+    },
+    {
+      "path": "original/campaign1_13.btl",
+      "bytes": 6348,
+      "sha256": "310da30d50382dbcfe6aa0c6a56109ec41f0779c47969ab0776098aa76fc4a4e"
+    },
+    {
+      "path": "original/campaign1_14.btl",
+      "bytes": 7899,
+      "sha256": "3763d7f56c2c4ca08db20141fdaa685dfb5696e001120c8a19cb85457e158d09"
+    },
+    {
+      "path": "original/campaign1_15.btl",
+      "bytes": 6519,
+      "sha256": "0e2a46da654b1a69a3da17a391967ff83a60789eac4b5ad7b0d44f9711a7f228"
+    },
+    {
+      "path": "original/campaign1_16.btl",
+      "bytes": 5496,
+      "sha256": "4ce3e5b9c6652f93bd8cfedf9600230caa08bc1561a7f1ce11b14dfe3b626af3"
+    },
+    {
+      "path": "original/campaign1_17.btl",
+      "bytes": 6110,
+      "sha256": "3b84a91e748821498532c188db6b2086d0edd737ae8f89cbfdf6b5fd0f52b947"
+    },
+    {
+      "path": "original/campaign1_18.btl",
+      "bytes": 6224,
+      "sha256": "8f755dc3e139349574dd0fa52fbffbaac9b9628733ec1adfd971fd4ab6e0211e"
+    },
+    {
+      "path": "original/campaign2_01.btl",
+      "bytes": 4756,
+      "sha256": "2aaf1537d474517cb1acb8f16fbef484327de92511ba9f3e05370508bafb1d5e"
+    },
+    {
+      "path": "original/campaign2_02.btl",
+      "bytes": 3870,
+      "sha256": "3802be69c33692b75187672ee6ddcf31296cfc178993cd082974a839932062bd"
+    },
+    {
+      "path": "original/campaign2_03.btl",
+      "bytes": 5248,
+      "sha256": "f8353a1338d82728486500c16b9e0eeb69638edfe02167b71e7221acb143c7b3"
+    },
+    {
+      "path": "original/campaign2_04.btl",
+      "bytes": 5663,
+      "sha256": "0fa8bf3b1f144c09e2b23d4fb52850ee84d2d59d2f09a10fe3fde2e95627a505"
+    },
+    {
+      "path": "original/campaign2_05.btl",
+      "bytes": 6862,
+      "sha256": "951320eb1b6e53e408171002291e51931db8c94527eefedeeef566ef03662501"
+    },
+    {
+      "path": "original/campaign2_06.btl",
+      "bytes": 6036,
+      "sha256": "4ca27a582dca7c83b644c700d31383a14e78ef429089c0b2b4f73c5e69e16b36"
+    },
+    {
+      "path": "original/campaign2_07.btl",
+      "bytes": 2847,
+      "sha256": "b7aa3ef0b9926d83764a19ada0837fbf395e04b8260ffb7b03e88e3a8d71220e"
+    },
+    {
+      "path": "original/campaign2_08.btl",
+      "bytes": 5537,
+      "sha256": "9e1594d3a71c25e99770bf95d8eb981d815d9e8c1aadbf6c0796a3c3edaac787"
+    },
+    {
+      "path": "original/campaign2_09.btl",
+      "bytes": 6524,
+      "sha256": "572f236b71469322d7c50a08e90da74979bc1364a1606cf79463fe5c4849c61e"
+    },
+    {
+      "path": "original/campaign2_10.btl",
+      "bytes": 5234,
+      "sha256": "0247042c86999fcc1bbbb71e9afb174e9591f55a2f7d553503a808987ff2e374"
+    },
+    {
+      "path": "original/campaign2_11.btl",
+      "bytes": 4364,
+      "sha256": "88f999a8f4cb1291bc5c255c6b3b82d7d47ef2c83d42392322d983b59d7fbbbb"
+    },
+    {
+      "path": "original/campaign2_12.btl",
+      "bytes": 4552,
+      "sha256": "7bb46653f1011c5143765a8b9469c507926ec72c0eab2342e40603356da4b260"
+    },
+    {
+      "path": "original/campaign2_13.btl",
+      "bytes": 6328,
+      "sha256": "f3fb28c640a71530091da26168823f92ad03fb2f72d00560cdb4f1179225c893"
+    },
+    {
+      "path": "original/campaign2_14.btl",
+      "bytes": 5245,
+      "sha256": "415f83ca7b23489150b6655382fc13e8947f9157c560055658e89623e17e3fd6"
+    },
+    {
+      "path": "original/campaign2_15.btl",
+      "bytes": 6124,
+      "sha256": "2550b5845a5f00e2a85a424cd38f5948f163b5a05e360e9061a59f7cb19be5b3"
+    },
+    {
+      "path": "original/campaign2_16.btl",
+      "bytes": 6478,
+      "sha256": "e6e997266b5170f179852f04a14d6bb36b060de8cf8c43ee6431acd1ff8db759"
+    },
+    {
+      "path": "original/campaign2_17.btl",
+      "bytes": 6402,
+      "sha256": "923f742cd76f6293e6e53f3a06e0d518124ce355c94475478f1ac3365ad94186"
+    },
+    {
+      "path": "original/campaign3_01.btl",
+      "bytes": 6440,
+      "sha256": "7005d5e3fb314617d2a885eaaaca8997a6ade52ef27a355f29533673dfaa1575"
+    },
+    {
+      "path": "original/campaign3_02.btl",
+      "bytes": 7024,
+      "sha256": "fdcd9cf53c9a3c8e2f055506714e27afdecebe070627d051e9b9450d07c22497"
+    },
+    {
+      "path": "original/campaign3_03.btl",
+      "bytes": 6407,
+      "sha256": "102af03cf52e3f042abf301afd85d684c3c3ca9a9a17e7085a8364171ec2c73e"
+    },
+    {
+      "path": "original/campaign3_04.btl",
+      "bytes": 6384,
+      "sha256": "728edf3f3bfec0bbaf5d82afcfba1686b92be35097fa02ac32ab1449fbdc74d9"
+    },
+    {
+      "path": "original/campaign3_05.btl",
+      "bytes": 5423,
+      "sha256": "5ad9a29aeff995d06df0834fe698ce4b645b214ecd0588530c81165129f544b6"
+    },
+    {
+      "path": "original/campaign3_06.btl",
+      "bytes": 8167,
+      "sha256": "8f81d527392a5805d415c74a064c6908bf3871bc6b2d6b5a1ebd4a7ebaa3edb8"
+    },
+    {
+      "path": "original/campaign3_07.btl",
+      "bytes": 8438,
+      "sha256": "38388ad3b8a93768371c4a29f087a1c25c53b0cc56de77ee735417af707642da"
+    },
+    {
+      "path": "original/campaign3_08.btl",
+      "bytes": 6690,
+      "sha256": "8779b832fbeb808aaa1403166169a07e863ec036f7258d7a8da785735a360139"
+    },
+    {
+      "path": "original/campaign3_08b.btl",
+      "bytes": 7318,
+      "sha256": "9a6e53c4d1308528430568c0214b9d767e9e8995afac35036c9cdd1c71dec696"
+    },
+    {
+      "path": "original/campaign3_09.btl",
+      "bytes": 5156,
+      "sha256": "c0d0e5f57e561b1a2b9f2b5fe6584a81b4d768824186e4c9147a46e443f77859"
+    },
+    {
+      "path": "original/campaign3_10.btl",
+      "bytes": 5203,
+      "sha256": "e5119f4754171284486aef2701739a7d57ff0f54227a7284e398f3bc632e9e8c"
+    },
+    {
+      "path": "original/campaign3_11.btl",
+      "bytes": 4690,
+      "sha256": "73957128a8c7a18c7a31ce17729e0c492b8002b1b6491a557a94936a39797778"
+    },
+    {
+      "path": "original/campaign3_12.btl",
+      "bytes": 5594,
+      "sha256": "1c1dd39299441b9ca6493427976a4c3b6ee801f7a4829fefce76f04897f6c9b5"
+    },
+    {
+      "path": "original/campaign3_13.btl",
+      "bytes": 5673,
+      "sha256": "b94898e8c347866c2f1df04583fbc3a4aeda9cfd901fa6b10bcbba07ad05a113"
+    },
+    {
+      "path": "original/campaign3_14.btl",
+      "bytes": 5229,
+      "sha256": "d54bd28569acce17fd7f362b4122cb84b96a95c85446e66b94fe942cc6b4ecf6"
+    },
+    {
+      "path": "original/campaign3_15.btl",
+      "bytes": 5856,
+      "sha256": "ca259fd0b7accf3edc68784c8aa20fa67e4eae59600738e28c5809bcc0337c8a"
+    },
+    {
+      "path": "original/campaign4_01.btl",
+      "bytes": 3638,
+      "sha256": "dd4d42e399786ab625c43c0285d92a05f88d868cb3d5b266f8aab18a6a7f5b1d"
+    },
+    {
+      "path": "original/campaign4_02.btl",
+      "bytes": 4929,
+      "sha256": "4983b76be285a7e71d50daef519dfcec57138a973af017a0c546d65ef12e6bfe"
+    },
+    {
+      "path": "original/campaign4_03.btl",
+      "bytes": 6454,
+      "sha256": "c568307143c2f50f56400552213cdbb1904bdf5cadecee97605dccaaced70690"
+    },
+    {
+      "path": "original/campaign4_04.btl",
+      "bytes": 4449,
+      "sha256": "85e98313a66107873fe9481cb678fdf134b0aa737a851a532630b6992b07ca09"
+    },
+    {
+      "path": "original/campaign4_05.btl",
+      "bytes": 3940,
+      "sha256": "1d08145c40e680b2c68e9b78b8ad5b09c43e7063b49cee63b02596cb9dfa2872"
+    },
+    {
+      "path": "original/campaign4_06.btl",
+      "bytes": 5332,
+      "sha256": "2a72dd60f6d5b05224c6c119b1808ffaf622ce6f550c4d0f8d5f41565b75ea78"
+    },
+    {
+      "path": "original/campaign4_07.btl",
+      "bytes": 3756,
+      "sha256": "21a0707c92d32de13433c25bff3779d923b17896236a3febdbfc6859c08f70da"
+    },
+    {
+      "path": "original/campaign4_08.btl",
+      "bytes": 3922,
+      "sha256": "fae7c63eab80c1ed89e66d4fd0c2e96fac11bfd4697af7995817ab62a06aa534"
+    },
+    {
+      "path": "original/campaign4_09.btl",
+      "bytes": 4150,
+      "sha256": "2a9c03da4eb631a53b74522f74a3085e5d18910c6941024f01ca51a3fa8bc9b3"
+    },
+    {
+      "path": "original/campaign4_10.btl",
+      "bytes": 5087,
+      "sha256": "ddccfb61b2da2f5b291084802742227887ee0fb2f86a2f7a32fe2d103c7e66fc"
+    },
+    {
+      "path": "original/campaign4_10b.btl",
+      "bytes": 5295,
+      "sha256": "40a18581aea5241db99c90d250f3c55e227c43e528b3c8a38b1a824fa1accb8d"
+    },
+    {
+      "path": "original/campaign4_11.btl",
+      "bytes": 3676,
+      "sha256": "719b6668355a8c0979858ece58639624615431421bdc1c0f88f341998a92fcb9"
+    },
+    {
+      "path": "original/campaign4_12.btl",
+      "bytes": 3412,
+      "sha256": "9001bc63f48262e50d57031e8fa4c811731e54a99e0de979a360ea47b8e21b22"
+    },
+    {
+      "path": "original/campaign4_13.btl",
+      "bytes": 4988,
+      "sha256": "9e5f5d5efd1cef3fd976bb8237087f2bb1a637b6a15a20269cb80a7bafaded05"
+    },
+    {
+      "path": "original/campaign5_01.btl",
+      "bytes": 3896,
+      "sha256": "7739cab43df6d478c1feb1bd581b767fd339a4aca408aaf6019a9ecc14177ace"
+    },
+    {
+      "path": "original/campaign5_02.btl",
+      "bytes": 4328,
+      "sha256": "78671509ef171bffe8e3877660885cbb9e32fd4b1b81807d674bc28aacc35893"
+    },
+    {
+      "path": "original/campaign5_03.btl",
+      "bytes": 3698,
+      "sha256": "4e8167e16795d437cff0570d4d33909f411d42623f24e3b974901dcb8d93d45c"
+    },
+    {
+      "path": "original/campaign5_04.btl",
+      "bytes": 2800,
+      "sha256": "d3ee99b331dcb19480c598f6f1b1d59c23b7947af4b97a58e6b89d037ab1cb9a"
+    },
+    {
+      "path": "original/campaign5_05.btl",
+      "bytes": 4378,
+      "sha256": "7d07e0f5501bc7ee05e2dadf1907e47d11b7233f923d551ccf8650b4e2b7e398"
+    },
+    {
+      "path": "original/campaign5_06.btl",
+      "bytes": 3498,
+      "sha256": "3347113c19def1d5d4e733b93116d4db4d0b7fcadf706e766086389c2347cc3a"
+    },
+    {
+      "path": "original/campaign5_07.btl",
+      "bytes": 2945,
+      "sha256": "39925df4ad33a75b0e982b1d91a7165b38ad77162728808bdc9b6e6502bf68c9"
+    },
+    {
+      "path": "original/campaign5_08.btl",
+      "bytes": 4376,
+      "sha256": "be461b9cf4b083a1205d9028444ed1255d62baf7e09a529715d7e1cea9db73b5"
+    },
+    {
+      "path": "original/campaign5_09.btl",
+      "bytes": 3256,
+      "sha256": "44d30e6cce5739d45bcce791ede923063cf274d54bc4680ad1b043fc70eeb326"
+    },
+    {
+      "path": "original/campaign5_10.btl",
+      "bytes": 4160,
+      "sha256": "acf5b1e6f38a805bfba64a51702359af496849f077ed346b594efeb1864ba036"
+    },
+    {
+      "path": "original/campaign5_11.btl",
+      "bytes": 4400,
+      "sha256": "51945a95779ef9e14f3e7e10cec4ee79e09c2995d004fb5fef17d87c8b4dd593"
+    },
+    {
+      "path": "original/campaign6_01.btl",
+      "bytes": 4096,
+      "sha256": "6e5dcfd41a67143bc0d69131dad050138ef37643f41331723f70c9956ea3cdae"
+    },
+    {
+      "path": "original/campaign6_02.btl",
+      "bytes": 4273,
+      "sha256": "ad938a593a75cfdac3f8b0ff2f774d8e5660d243e81622d634009c23fe0a6993"
+    },
+    {
+      "path": "original/campaign6_03.btl",
+      "bytes": 3991,
+      "sha256": "458c10f4f2509b550cf540e9537d3e3f78727d3948972343f2cbeea6f8135429"
+    },
+    {
+      "path": "original/campaign6_04.btl",
+      "bytes": 3654,
+      "sha256": "1c869dd8f36e7ccfbdd56a8163f64c37f0681ed3d1850b0c05a1b6f0261ee882"
+    },
+    {
+      "path": "original/campaign6_05.btl",
+      "bytes": 2804,
+      "sha256": "ee2116f57945dc6d21833282109048a36356e9030cc54e6b16af2a959c237300"
+    },
+    {
+      "path": "original/campaign6_06.btl",
+      "bytes": 3157,
+      "sha256": "a174ab4e4aacb3fbb4223208f5037ea3275a6d689541eb5fe921072bc6ce90a8"
+    },
+    {
+      "path": "original/campaign6_07.btl",
+      "bytes": 4388,
+      "sha256": "8737e222aacb2ab1edfb55f37c9dc510f470572d1af7cb3145ad160c03326c4a"
+    },
+    {
+      "path": "original/campaign6_08.btl",
+      "bytes": 4817,
+      "sha256": "0b207af6f3c0f5122d36d8261400e7b983af9ea26688dd300acd51091e781657"
+    },
+    {
+      "path": "original/campaign6_09.btl",
+      "bytes": 3107,
+      "sha256": "e92235e086953890ba9e7a07c4252e1f1402998527098826deaecdbd31185177"
+    },
+    {
+      "path": "original/campaign6_10.btl",
+      "bytes": 4386,
+      "sha256": "d7ea723485668964d2709ae618a2ab8705c5e32fc71371d7b97ed4a5e3e904e2"
+    },
+    {
+      "path": "original/conquest1.btl",
+      "bytes": 21592,
+      "sha256": "bef704254c55997c1c61912f97c8c1726d9688d39ed13ce6b105236e0ba2b759"
+    },
+    {
+      "path": "original/conquest2.btl",
+      "bytes": 16420,
+      "sha256": "fd22b22bad68fbd6854047b450d200a1ee5c1fafcfedfd84df902b488c846985"
+    },
+    {
+      "path": "original/conquest3.btl",
+      "bytes": 21908,
+      "sha256": "457d18109fe6a9890351b6b7a34a1c9623eca724dbcb3f46212f2c1593159ff2"
+    },
+    {
+      "path": "original/conquest4.btl",
+      "bytes": 25110,
+      "sha256": "11a85d4a0cfad6842e7c6dfaf56f906030e3f357e08bc7ed576ab6df6f9af3c1"
+    },
+    {
+      "path": "original/conquest5.btl",
+      "bytes": 10984,
+      "sha256": "330836e57b8cecdd7b0316c5c90a44beb56437d6fee5164e300a01970479c552"
+    },
+    {
+      "path": "original/conquest6.btl",
+      "bytes": 22088,
+      "sha256": "5c362402ab34c19d5451d721649b50a74885026cbbc92477669dee5d5044031c"
+    },
+    {
+      "path": "original/def_areaname.xml",
+      "bytes": 7240,
+      "sha256": "b741a3087c65eb1b842684b9f3c0ece749762c45fa3643cbaf9c61de5641fdbf"
+    },
+    {
+      "path": "original/def_army.xml",
+      "bytes": 63704,
+      "sha256": "2ba0fe999054c461d3812e2dbdbc10e866c71ad2145fbe06c0839dec48489da4"
+    },
+    {
+      "path": "original/def_battleline.xml",
+      "bytes": 575,
+      "sha256": "a0471b77f21063712df267339410536667ff3c13c6bffcefe2eea9b2b6c0bff5"
+    },
+    {
+      "path": "original/def_battlelist.xml",
+      "bytes": 14510,
+      "sha256": "38bd85989c9806dbc1b5ce78da06a4e4cb9d06d9cd8436fb72bad404201a578f"
+    },
+    {
+      "path": "original/def_capital.xml",
+      "bytes": 827,
+      "sha256": "ef3622da9def7ba8d6fff982f86e14874260483f18ef0cf5541a957af839b009"
+    },
+    {
+      "path": "original/def_card.xml",
+      "bytes": 8226,
+      "sha256": "f701f755cd04830fb3cc48f7dfd30535715ff71ac573d32f1634bd9119999a52"
+    },
+    {
+      "path": "original/def_commander.xml",
+      "bytes": 169055,
+      "sha256": "57726395eb10a6fa1d0f3f19b28a644fb9cc70de3caf7a976419d52a5f240567"
+    },
+    {
+      "path": "original/def_conquestlist.xml",
+      "bytes": 1155,
+      "sha256": "871dddd992cc64f584d49fe3b147fec971708b0d99c6fef8c4a3852de092591a"
+    },
+    {
+      "path": "original/def_construction.xml",
+      "bytes": 4920,
+      "sha256": "3363881729dcbe39e134c1261d317e8b0d307ab86f78380d8b6cbc0295253793"
+    },
+    {
+      "path": "original/def_dialogues.xml",
+      "bytes": 19649,
+      "sha256": "d64d390ac6023a5456d48510967deb52a339e6a02104ca86cee820811fc99676"
+    },
+    {
+      "path": "original/def_installation.xml",
+      "bytes": 406,
+      "sha256": "10a3f3cde9b81414582ea150119fdcc3b908f94888a6b09862d9604821caa731"
+    },
+    {
+      "path": "original/def_item.xml",
+      "bytes": 21002,
+      "sha256": "ded737008eef2b8fefd1347d65d0e3fc9f051e82eb88f71bf2200247e9b80adc"
+    },
+    {
+      "path": "original/def_map.xml",
+      "bytes": 396,
+      "sha256": "b32c3475a0f8096c3e689fcdd16692e09ebc29fdc935319f25ad338c3b899dd2"
+    },
+    {
+      "path": "original/def_mapterrain.xml",
+      "bytes": 3046,
+      "sha256": "f7af626674c92dca0309cad7cadabf5e93bc13a425c9a71893d543918f653fa1"
+    },
+    {
+      "path": "original/def_princess.xml",
+      "bytes": 855,
+      "sha256": "c5370ab606575441a3b373f2cfaa91eed8b8329fcff0192b9541838dfcd6131c"
+    },
+    {
+      "path": "original/def_terraintype.xml",
+      "bytes": 811,
+      "sha256": "456b04d7cc998511b764666cb94d8122e3f71fbaa3f14d9eacdd02c1105c48a5"
+    },
+    {
+      "path": "original/def_warzonetech.xml",
+      "bytes": 4725,
+      "sha256": "35320e99f2c39ac998c92340cb221653ae3f2c9fe8bb24b9ee3bfb321efe64db"
+    },
+    {
+      "path": "original/europe.bin",
+      "bytes": 64480,
+      "sha256": "cbab47e29b6eeda038a9c529e68298550ed7a7d652b61482eed63181e97c8efa"
+    },
+    {
+      "path": "original/stringtable_cn.ini",
+      "bytes": 103131,
+      "sha256": "af90a6b87035cbfe28404514293efe55dd98fc623df46d6251854a6a6bea48a4"
+    },
+    {
+      "path": "original/tutorials1.btl",
+      "bytes": 3477,
+      "sha256": "b8f433161bc21d03898f717f4c568d34f86478b30e9b03e4eda259589cdacfd1"
+    },
+    {
+      "path": "original/tutorials2.btl",
+      "bytes": 4208,
+      "sha256": "d03adc042b41e188c7efdf7a0817c698886339c5767cd091b379123fd5336f2d"
+    }
+  ]
+}

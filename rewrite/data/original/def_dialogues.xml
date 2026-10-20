@@ -1,0 +1,338 @@
+<dialogues>
+    <dialogue id="1011" commander="24"  textid="34" left="1"/>
+    <dialogue id="1012" commander="24"  textid="201" left="1"/>
+    <dialogue id="1013" commander="1"  textid="73" left="1"/>
+    <dialogue id="1014" commander="24"  textid="133" left="1"/>
+    <dialogue id="1021" commander="1"  textid="114" left="1"/>
+    <dialogue id="1022" commander="1"  textid="12" left="1"/>
+    <dialogue id="1023" commander="1"  textid="13" left="1"/>
+    <dialogue id="1024" commander="159"  textid="44"/>
+    <dialogue id="1031" commander="10"  textid="183" left="1"/>
+    <dialogue id="1032" commander="1"  textid="57" left="1"/>
+    <dialogue id="1033" commander="1"  textid="50" left="1"/>
+    <dialogue id="1041" commander="4"  textid="67"/>
+    <dialogue id="1042" commander="128"  textid="72" left="1"/>
+    <dialogue id="1043" commander="29"  textid="168" left="1"/>
+    <dialogue id="1044" commander="29"  textid="101" left="1"/>
+    <dialogue id="1045" commander="1"  textid="104" left="1"/>
+    <dialogue id="1046" commander="1"  textid="102" left="1"/>
+    <dialogue id="1047" commander="1"  textid="44" left="1"/>
+    <dialogue id="1051" commander="50"  textid="196" left="1"/>
+    <dialogue id="1052" commander="50"  textid="9" left="1"/>
+    <dialogue id="1061" commander="29"  textid="183" left="1"/>
+    <dialogue id="1062" commander="132"  textid="27" left="1"/>
+    <dialogue id="1063" commander="14"  textid="202"/>
+    <dialogue id="1064" commander="107"  textid="116"/>
+    <dialogue id="1071" commander="5"  textid="211" left="1"/>
+    <dialogue id="1072" commander="1"  textid="41" left="1"/>
+    <dialogue id="1073" commander="7"  textid="30"/>
+    <dialogue id="1081" commander="32"  textid="90" left="1"/>
+    <dialogue id="1082" commander="30"  textid="117" left="1"/>
+    <dialogue id="1091" commander="26"  textid="144" left="1"/>
+    <dialogue id="1092" commander="19"  textid="118"/>
+    <dialogue id="1093" commander="32"  textid="177" left="1"/>
+    <dialogue id="1101" commander="170"  textid="173" left="1"/>
+    <dialogue id="1102" commander="170"  textid="251" left="1"/>
+    <dialogue id="1103" commander="3"  textid="123"/>
+    <dialogue id="1104" commander="132"  textid="207" left="1"/>
+    <dialogue id="1111" commander="16"  textid="238" left="1"/>
+    <dialogue id="1112" commander="1"  textid="142" left="1"/>
+    <dialogue id="1113" commander="9"  textid="170"/>
+    <dialogue id="1121" commander="34"  textid="247"/>
+    <dialogue id="1122" commander="1"  textid="44" left="1"/>
+    <dialogue id="1123" commander="1"  textid="9" left="1"/>
+    <dialogue id="1124" commander="30"  textid="99" left="1"/>
+    <dialogue id="1125" commander="2"  textid="203" left="1"/>
+    <dialogue id="1131" commander="2"  textid="111" left="1"/>
+    <dialogue id="1132" commander="2"  textid="108" left="1"/>
+    <dialogue id="1133" commander="1"  textid="94" left="1"/>
+    <dialogue id="1134" commander="7"  textid="199"/>
+    <dialogue id="1141" commander="1"  textid="28" left="1"/>
+    <dialogue id="1142" commander="1"  textid="26" left="1"/>
+    <dialogue id="1143" commander="30"  textid="210" left="1"/>
+    <dialogue id="1151" commander="1"  textid="34" left="1"/>
+    <dialogue id="1152" commander="32"  textid="226" left="1"/>
+    <dialogue id="1153" commander="1"  textid="115" left="1"/>
+    <dialogue id="1154" commander="8"  textid="117"/>
+    <dialogue id="1155" commander="1"  textid="133" left="1"/>
+    <dialogue id="1156" commander="8"  textid="108"/>
+    <dialogue id="1161" commander="1"  textid="190" left="1"/>
+    <dialogue id="1162" commander="106"  textid="67" left="1"/>
+    <dialogue id="1163" commander="3"  textid="201"/>
+    <dialogue id="1164" commander="1"  textid="43" left="1"/>
+    <dialogue id="1165" commander="1"  textid="104" left="1"/>
+    <dialogue id="1171" commander="35"  textid="134" left="1"/>
+    <dialogue id="1172" commander="132"  textid="98" left="1"/>
+    <dialogue id="1173" commander="106"  textid="127" left="1"/>
+    <dialogue id="1174" commander="35"  textid="128" left="1"/>
+    <dialogue id="1175" commander="13"  textid="123"/>
+    <dialogue id="1181" commander="41"  textid="211" left="1"/>
+    <dialogue id="1182" commander="57"  textid="207" left="1"/>
+    <dialogue id="1183" commander="70"  textid="22"/>
+	<dialogue id="2011" commander="14" textid="83" left="1"/>
+	<dialogue id="2012" commander="9" textid="138" left="1"/>
+	<dialogue id="2021" commander="113" textid="171" left="1"/>
+	<dialogue id="2022" commander="72" textid="72" left="1"/>
+	<dialogue id="2023" commander="1" textid="13"/>
+	<dialogue id="2031" commander="4" textid="67" left="1"/>
+	<dialogue id="2032" commander="1" textid="71"/>
+	<dialogue id="2033" commander="33" textid="99" left="1"/>
+	<dialogue id="2034" commander="33" textid="164" left="1"/>
+	<dialogue id="2041" commander="159" textid="119" left="1"/>
+	<dialogue id="2042" commander="71" textid="180" left="1"/>
+	<dialogue id="2043" commander="71" textid="194" left="1"/>
+	<dialogue id="2044" commander="9" textid="168" left="1"/>
+	<dialogue id="2051" commander="19" textid="211" left="1"/>
+	<dialogue id="2052" commander="23" textid="218" left="1"/>
+	<dialogue id="2053" commander="187" textid="174" left="1"/>
+	<dialogue id="2054" commander="23" textid="222" left="1"/>
+	<dialogue id="2061" commander="140" textid="70" left="1"/>
+	<dialogue id="2062" commander="140" textid="65" left="1"/>
+	<dialogue id="2063" commander="4" textid="10" left="1"/>
+	<dialogue id="2064" commander="4" textid="14" left="1"/>
+	<dialogue id="2065" commander="4" textid="257" left="1"/>
+	<dialogue id="2066" commander="20" textid="124" left="1"/>
+	<dialogue id="2071" commander="4" textid="67" left="1"/>
+	<dialogue id="2072" commander="4" textid="23" left="1"/>
+	<dialogue id="2073" commander="77" textid="34"/>
+	<dialogue id="2074" commander="36" textid="68" left="1"/>
+	<dialogue id="2075" commander="36" textid="70" left="1"/>
+	<dialogue id="2081" commander="79" textid="107" left="1"/>
+	<dialogue id="2082" commander="79" textid="104" left="1"/>
+	<dialogue id="2083" commander="7" textid="118" left="1"/>
+	<dialogue id="2084" commander="101" textid="97" left="1"/>
+	<dialogue id="2085" commander="8" textid="123" left="1"/>
+	<dialogue id="2091" commander="150" textid="13" left="1"/>
+	<dialogue id="2092" commander="8" textid="123" left="1"/>
+	<dialogue id="2093" commander="187" textid="51"/>
+	<dialogue id="2094" commander="152" textid="143" left="1"/>
+	<dialogue id="2101" commander="5" textid="139"/>
+	<dialogue id="2102" commander="19" textid="126" left="1"/>
+	<dialogue id="2103" commander="117" textid="32" left="1"/>
+	<dialogue id="2104" commander="117" textid="203" left="1"/>
+	<dialogue id="2111" commander="88" textid="72" left="1"/>
+	<dialogue id="2112" commander="3" textid="226" left="1"/>
+	<dialogue id="2113" commander="124" textid="17"/>
+	<dialogue id="2114" commander="88" textid="92" left="1"/>
+	<dialogue id="2115" commander="3" textid="116" left="1"/>
+	<dialogue id="2116" commander="88" textid="255" left="1"/>
+	<dialogue id="2121" commander="30" textid="144"/>
+	<dialogue id="2122" commander="67" textid="89" left="1"/>
+	<dialogue id="2123" commander="67" textid="18" left="1"/>
+	<dialogue id="2124" commander="3" textid="118" left="1"/>
+	<dialogue id="2125" commander="3" textid="128" left="1"/>
+	<dialogue id="2131" commander="9" textid="15" left="1"/>
+	<dialogue id="2132" commander="9" textid="215" left="1"/>
+	<dialogue id="2133" commander="5" textid="92"/>
+	<dialogue id="2134" commander="71" textid="228" left="1"/>
+	<dialogue id="2141" commander="1" textid="34"/>
+	<dialogue id="2142" commander="32" textid="3"/>
+	<dialogue id="2143" commander="9" textid="39" left="1"/>
+	<dialogue id="2144" commander="48" textid="129" left="1"/>
+	<dialogue id="2145" commander="81" textid="117"/>
+	<dialogue id="2151" commander="8" textid="26" left="1"/>
+	<dialogue id="2152" commander="30" textid="28"/>
+	<dialogue id="2153" commander="63" textid="11" left="1"/>
+	<dialogue id="2154" commander="153" textid="186"/>
+	<dialogue id="2161" commander="3" textid="19" left="1"/>
+	<dialogue id="2162" commander="3" textid="196" left="1"/>
+	<dialogue id="2163" commander="1" textid="186"/>
+	<dialogue id="2164" commander="8" textid="125" left="1"/>
+	<dialogue id="2165" commander="3" textid="116" left="1"/>
+	<dialogue id="2166" commander="3" textid="148" left="1"/>
+	<dialogue id="2171" commander="3" textid="107" left="1"/>
+	<dialogue id="2172" commander="8" textid="110" left="1"/>
+	<dialogue id="2173" commander="142" textid="18"/>
+	<dialogue id="2174" commander="1" textid="38"/>
+	<dialogue id="2175" commander="3" textid="187" left="1"/>
+	<dialogue id="3011" commander="153" textid="97" left="1"/>
+	<dialogue id="3012" commander="117" textid="123" left="1"/>
+	<dialogue id="3013" commander="107" textid="19"/>
+	<dialogue id="3014" commander="185" textid="22" left="1"/>
+	<dialogue id="3021" commander="200" textid="222" left="1"/>
+	<dialogue id="3022" commander="147" textid="34"/>
+	<dialogue id="3023" commander="107" textid="18"/>
+	<dialogue id="3031" commander="14" textid="92" left="1"/>
+	<dialogue id="3032" commander="83" textid="18" left="1"/>
+	<dialogue id="3033" commander="14" textid="29" left="1"/>
+	<dialogue id="3034" commander="52" textid="40"/>
+	<dialogue id="3035" commander="14" textid="43" left="1"/>
+	<dialogue id="3041" commander="8" textid="11" left="1"/>
+	<dialogue id="3042" commander="1" textid="2"/>
+	<dialogue id="3043" commander="31" textid="16" left="1"/>
+	<dialogue id="3044" commander="8" textid="19" left="1"/>
+	<dialogue id="3051" commander="63" textid="207" left="1"/>
+	<dialogue id="3052" commander="33" textid="122" left="1"/>
+	<dialogue id="3053" commander="63" textid="144" left="1"/>
+	<dialogue id="3061" commander="8" textid="188" left="1"/>
+	<dialogue id="3062" commander="8" textid="48" left="1"/>
+	<dialogue id="3063" commander="104" textid="123"/>
+	<dialogue id="3071" commander="8" textid="206" left="1"/>
+	<dialogue id="3072" commander="91" textid="139" left="1"/>
+	<dialogue id="3073" commander="91" textid="211" left="1"/>
+	<dialogue id="3074" commander="8" textid="44" left="1"/>
+	<dialogue id="3081" commander="8" textid="15" left="1"/>
+	<dialogue id="3082" commander="91" textid="20" left="1"/>
+	<dialogue id="3083" commander="9" textid="13"/>
+	<dialogue id="3084" commander="9" textid="3"/>
+	<dialogue id="3085" commander="86" textid="18" left="1"/>
+	<dialogue id="3086" commander="9" textid="34" left="1"/>
+	<dialogue id="3087" commander="9" textid="186" left="1"/>
+	<dialogue id="3088" commander="8" textid="214"/>
+	<dialogue id="3091" commander="48" textid="18" left="1"/>
+	<dialogue id="3092" commander="82" textid="187" left="1"/>
+	<dialogue id="3093" commander="10" textid="186"/>
+	<dialogue id="3094" commander="10" textid="92"/>
+	<dialogue id="3101" commander="8" textid="138" left="1"/>
+	<dialogue id="3102" commander="79" textid="71" left="1"/>
+	<dialogue id="3103" commander="11" textid="4"/>
+	<dialogue id="3104" commander="8" textid="20" left="1"/>
+	<dialogue id="3111" commander="33" textid="8"/>
+	<dialogue id="3112" commander="14" textid="193" left="1"/>
+	<dialogue id="3113" commander="9" textid="27" left="1"/>
+	<dialogue id="3114" commander="25" textid="183"/>
+	<dialogue id="3115" commander="172" textid="72"/>
+	<dialogue id="3121" commander="8" textid="26" left="1"/>
+	<dialogue id="3122" commander="9" textid="24" left="1"/>
+	<dialogue id="3123" commander="3" textid="34"/>
+	<dialogue id="3124" commander="74" textid="12"/>
+	<dialogue id="3125" commander="3" textid="1"/>
+	<dialogue id="3131" commander="14" textid="230" left="1"/>
+	<dialogue id="3132" commander="31" textid="194"/>
+	<dialogue id="3133" commander="14" textid="114" left="1"/>
+	<dialogue id="3134" commander="14" textid="132" left="1"/>
+	<dialogue id="3135" commander="48" textid="55" left="1"/>
+	<dialogue id="3141" commander="79" textid="144" left="1"/>
+	<dialogue id="3142" commander="48" textid="121" left="1"/>
+	<dialogue id="3143" commander="52" textid="36"/>
+	<dialogue id="3144" commander="48" textid="116" left="1"/>
+	<dialogue id="3145" commander="48" textid="142" left="1"/>
+	<dialogue id="3151" commander="71" textid="190" left="1"/>
+	<dialogue id="3152" commander="6" textid="69" left="1"/>
+	<dialogue id="3153" commander="28" textid="6"/>
+	<dialogue id="3154" commander="13" textid="21"/>
+	<dialogue id="3155" commander="139" textid="18"/>
+	<dialogue id="3156" commander="118" textid="228"/>
+	<dialogue id="3157" commander="6" textid="115" left="1"/>
+	<dialogue id="3158" commander="71" textid="114" left="1"/>
+	<dialogue id="4011" commander="147" textid="23" left="1"/>
+	<dialogue id="4012" commander="4" textid="117" left="1"/>
+	<dialogue id="4013" commander="196" textid="14" left="1"/>
+	<dialogue id="4014" commander="1" textid="3"/>
+	<dialogue id="4021" commander="7" textid="7" left="1"/>
+	<dialogue id="4022" commander="31" textid="44" left="1"/>
+	<dialogue id="4023" commander="98" textid="37"/>
+	<dialogue id="4031" commander="52" textid="22" left="1"/>
+	<dialogue id="4032" commander="36" textid="69" left="1"/>
+	<dialogue id="4033" commander="77" textid="68"/>
+	<dialogue id="4034" commander="192" textid="201"/>
+	<dialogue id="4035" commander="36" textid="124" left="1"/>
+	<dialogue id="4041" commander="21" textid="67" left="1"/>
+	<dialogue id="4042" commander="149" textid="68" left="1"/>
+	<dialogue id="4043" commander="40" textid="44" left="1"/>
+	<dialogue id="4051" commander="6" textid="40"/>
+	<dialogue id="4052" commander="19" textid="54"/>
+	<dialogue id="4061" commander="78" textid="10" left="1"/>
+	<dialogue id="4062" commander="76" textid="188"/>
+	<dialogue id="4063" commander="97" textid="21"/>
+	<dialogue id="4064" commander="147" textid="18"/>
+	<dialogue id="4071" commander="7" textid="186" left="1"/>
+	<dialogue id="4072" commander="40" textid="13" left="1"/>
+	<dialogue id="4073" commander="1" textid="37"/>
+	<dialogue id="4081" commander="19" textid="6" left="1"/>
+	<dialogue id="4082" commander="1" textid="235"/>
+	<dialogue id="4083" commander="30" textid="189"/>
+	<dialogue id="4084" commander="19" textid="248" left="1"/>
+	<dialogue id="4085" commander="32" textid="244"/>
+	<dialogue id="4086" commander="35" textid="238"/>
+	<dialogue id="4091" commander="35" textid="251" />
+	<dialogue id="4092" commander="1" textid="94"/>
+	<dialogue id="4093" commander="1" textid="111"/>
+	<dialogue id="4094" commander="27" textid="11" left="1"/>
+	<dialogue id="4101" commander="52" textid="13" left="1"/>
+	<dialogue id="4102" commander="147" textid="17" left="1"/>
+	<dialogue id="4103" commander="38" textid="15"/>
+	<dialogue id="4104" commander="31" textid="19" left="1"/>
+	<dialogue id="4105" commander="37" textid="194" left="1"/>
+	<dialogue id="4106" commander="52" textid="229"/>
+	<dialogue id="4111" commander="52" textid="216" left="1"/>
+	<dialogue id="4112" commander="52" textid="211" left="1"/>
+	<dialogue id="4113" commander="52" textid="101" left="1"/>
+	<dialogue id="4121" commander="147" textid="1"/>
+	<dialogue id="4122" commander="34" textid="196" left="1"/>
+	<dialogue id="4123" commander="83" textid="235" left="1"/>
+	<dialogue id="4131" commander="27" textid="26" left="1"/>
+	<dialogue id="4132" commander="8" textid="30"/>
+	<dialogue id="4133" commander="9" textid="29"/>
+	<dialogue id="4134" commander="91" textid="17"/>
+	<dialogue id="4135" commander="63" textid="217"/>
+	<dialogue id="4136" commander="27" textid="218" left="1"/>
+	<dialogue id="5011" commander="20" textid="16"/>
+	<dialogue id="5012" commander="130" textid="33" left="1"/>
+	<dialogue id="5021" commander="59" textid="28"/>
+	<dialogue id="5022" commander="13" textid="30" left="1"/>
+	<dialogue id="5031" commander="12" textid="17" left="1"/>
+	<dialogue id="5032" commander="12" textid="187" left="1"/>
+	<dialogue id="5033" commander="59" textid="92"/>
+	<dialogue id="5041" commander="28" textid="67" left="1"/>
+	<dialogue id="5042" commander="118" textid="71" left="1"/>
+	<dialogue id="5043" commander="24" textid="68"/>
+	<dialogue id="5051" commander="139" textid="19" left="1"/>
+	<dialogue id="5052" commander="118" textid="33" left="1"/>
+	<dialogue id="5053" commander="70" textid="22" left="1"/>
+	<dialogue id="5061" commander="13" textid="191" left="1"/>
+	<dialogue id="5062" commander="174" textid="18" left="1"/>
+	<dialogue id="5063" commander="13" textid="75" left="1"/>
+	<dialogue id="5071" commander="28" textid="143" left="1"/>
+	<dialogue id="5072" commander="56" textid="144"/>
+	<dialogue id="5073" commander="13" textid="129" left="1"/>
+	<dialogue id="5081" commander="28" textid="223" left="1"/>
+	<dialogue id="5082" commander="139" textid="228" left="1"/>
+	<dialogue id="5083" commander="18" textid="188"/>
+	<dialogue id="5091" commander="118" textid="196" left="1"/>
+	<dialogue id="5092" commander="33" textid="12"/>
+	<dialogue id="5093" commander="28" textid="218" left="1"/>
+	<dialogue id="5101" commander="106" textid="9"/>
+	<dialogue id="5102" commander="13" textid="190" left="1"/>
+	<dialogue id="5103" commander="118" textid="47" left="1"/>
+	<dialogue id="5104" commander="26" textid="126"/>
+	<dialogue id="5111" commander="132" textid="115"/>
+	<dialogue id="5112" commander="118" textid="1" left="1"/>
+	<dialogue id="5113" commander="13" textid="18" left="1"/>
+	<dialogue id="6011" commander="20" textid="215" left="1"/>
+	<dialogue id="6012" commander="12" textid="78"/>
+	<dialogue id="6013" commander="28" textid="173"/>	
+	<dialogue id="6021" commander="59" textid="223" left="1"/>
+	<dialogue id="6022" commander="65" textid="103" left="1"/>
+	<dialogue id="6023" commander="70" textid="17"/>
+	<dialogue id="6024" commander="43" textid="193"/>
+	<dialogue id="6025" commander="43" textid="16"/>
+	<dialogue id="6031" commander="113" textid="71" left="1"/>
+	<dialogue id="6032" commander="11" textid="47"/>
+	<dialogue id="6033" commander="9" textid="119" left="1"/>
+	<dialogue id="6041" commander="156" textid="213"/>
+	<dialogue id="6042" commander="4" textid="235" left="1"/>
+	<dialogue id="6043" commander="4" textid="234" left="1"/>
+	<dialogue id="6051" commander="4" textid="67" left="1"/>
+	<dialogue id="6052" commander="53" textid="186"/>
+	<dialogue id="6053" commander="36" textid="222" left="1"/>
+	<dialogue id="6054" commander="4" textid="227" left="1"/>
+	<dialogue id="6055" commander="106" textid="97"/>	
+	<dialogue id="6061" commander="20" textid="67" left="1"/>
+	<dialogue id="6062" commander="4" textid="68" left="1"/>
+	<dialogue id="6063" commander="4" textid="98" left="1"/>
+	<dialogue id="6071" commander="183" textid="90" left="1"/>
+	<dialogue id="6072" commander="3" textid="117" left="1"/>
+	<dialogue id="6073" commander="16" textid="43"/>	
+	<dialogue id="6081" commander="72" textid="226" left="1"/>
+	<dialogue id="6082" commander="45" textid="118"/>
+	<dialogue id="6083" commander="33" textid="99" left="1"/>
+	<dialogue id="6091" commander="33" textid="113" left="1"/>
+	<dialogue id="6092" commander="73" textid="94" left="1"/>
+	<dialogue id="6093" commander="52" textid="199"/>
+	<dialogue id="6101" commander="3" textid="19" left="1"/>
+	<dialogue id="6102" commander="80" textid="18"/>
+	<dialogue id="6103" commander="3" textid="26" left="1"/>
+	<dialogue id="6104" commander="3" textid="129" left="1"/>
+	<dialogue id="6105" commander="3" textid="114" left="1"/>
+</dialogues>

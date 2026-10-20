@@ -1,0 +1,21 @@
+{
+  "seed": 20261020,
+  "oceanCells": 7234,
+  "waves": 723,
+  "target": 723,
+  "waveStyles": {
+    "1": 228,
+    "2": 128,
+    "3": 103,
+    "4": 151,
+    "5": 54,
+    "6": 46,
+    "7": 13
+  },
+  "labels": 71,
+  "landLabels": 60,
+  "seaLabels": 11,
+  "lakeLabels": 21,
+  "nativeGlyphs": true,
+  "ownership": "unset; natural geography only"
+}

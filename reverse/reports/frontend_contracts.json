@@ -1,0 +1,1387 @@
+{
+  "schema": 1,
+  "cameraMargin": 20,
+  "recruitment": {
+    "counts": [
+      6,
+      4,
+      2
+    ],
+    "ratingRanges": [
+      [
+        1,
+        3
+      ],
+      [
+        4,
+        6
+      ],
+      [
+        7,
+        9
+      ]
+    ],
+    "badgePrices": [
+      0,
+      0,
+      0,
+      3,
+      3,
+      4,
+      6,
+      8
+    ]
+  },
+  "vectors": {
+    "camera": [
+      {
+        "source": [
+          0,
+          0,
+          1,
+          1
+        ],
+        "rectangle": [
+          -32.0,
+          -54.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          0,
+          2,
+          2
+        ],
+        "rectangle": [
+          -32.0,
+          -54.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          0,
+          12,
+          19
+        ],
+        "rectangle": [
+          -32.0,
+          -54.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          0,
+          79,
+          68
+        ],
+        "rectangle": [
+          -32.0,
+          -54.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          1,
+          1,
+          1
+        ],
+        "rectangle": [
+          -32.0,
+          0.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          1,
+          2,
+          2
+        ],
+        "rectangle": [
+          -32.0,
+          0.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          1,
+          12,
+          19
+        ],
+        "rectangle": [
+          -32.0,
+          0.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          1,
+          79,
+          68
+        ],
+        "rectangle": [
+          -32.0,
+          0.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          2,
+          1,
+          1
+        ],
+        "rectangle": [
+          -32.0,
+          54.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          2,
+          2,
+          2
+        ],
+        "rectangle": [
+          -32.0,
+          54.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          2,
+          12,
+          19
+        ],
+        "rectangle": [
+          -32.0,
+          54.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          2,
+          79,
+          68
+        ],
+        "rectangle": [
+          -32.0,
+          54.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          13,
+          1,
+          1
+        ],
+        "rectangle": [
+          -32.0,
+          648.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          13,
+          2,
+          2
+        ],
+        "rectangle": [
+          -32.0,
+          648.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          13,
+          12,
+          19
+        ],
+        "rectangle": [
+          -32.0,
+          648.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          0,
+          13,
+          79,
+          68
+        ],
+        "rectangle": [
+          -32.0,
+          648.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          0,
+          1,
+          1
+        ],
+        "rectangle": [
+          32.0,
+          -54.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          0,
+          2,
+          2
+        ],
+        "rectangle": [
+          32.0,
+          -54.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          0,
+          12,
+          19
+        ],
+        "rectangle": [
+          32.0,
+          -54.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          0,
+          79,
+          68
+        ],
+        "rectangle": [
+          32.0,
+          -54.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          1,
+          1,
+          1
+        ],
+        "rectangle": [
+          32.0,
+          0.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          1,
+          2,
+          2
+        ],
+        "rectangle": [
+          32.0,
+          0.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          1,
+          12,
+          19
+        ],
+        "rectangle": [
+          32.0,
+          0.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          1,
+          79,
+          68
+        ],
+        "rectangle": [
+          32.0,
+          0.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          2,
+          1,
+          1
+        ],
+        "rectangle": [
+          32.0,
+          54.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          2,
+          2,
+          2
+        ],
+        "rectangle": [
+          32.0,
+          54.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          2,
+          12,
+          19
+        ],
+        "rectangle": [
+          32.0,
+          54.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          2,
+          79,
+          68
+        ],
+        "rectangle": [
+          32.0,
+          54.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          13,
+          1,
+          1
+        ],
+        "rectangle": [
+          32.0,
+          648.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          13,
+          2,
+          2
+        ],
+        "rectangle": [
+          32.0,
+          648.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          13,
+          12,
+          19
+        ],
+        "rectangle": [
+          32.0,
+          648.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          1,
+          13,
+          79,
+          68
+        ],
+        "rectangle": [
+          32.0,
+          648.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          0,
+          1,
+          1
+        ],
+        "rectangle": [
+          416.0,
+          -54.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          0,
+          2,
+          2
+        ],
+        "rectangle": [
+          416.0,
+          -54.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          0,
+          12,
+          19
+        ],
+        "rectangle": [
+          416.0,
+          -54.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          0,
+          79,
+          68
+        ],
+        "rectangle": [
+          416.0,
+          -54.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          1,
+          1,
+          1
+        ],
+        "rectangle": [
+          416.0,
+          0.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          1,
+          2,
+          2
+        ],
+        "rectangle": [
+          416.0,
+          0.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          1,
+          12,
+          19
+        ],
+        "rectangle": [
+          416.0,
+          0.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          1,
+          79,
+          68
+        ],
+        "rectangle": [
+          416.0,
+          0.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          2,
+          1,
+          1
+        ],
+        "rectangle": [
+          416.0,
+          54.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          2,
+          2,
+          2
+        ],
+        "rectangle": [
+          416.0,
+          54.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          2,
+          12,
+          19
+        ],
+        "rectangle": [
+          416.0,
+          54.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          2,
+          79,
+          68
+        ],
+        "rectangle": [
+          416.0,
+          54.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          13,
+          1,
+          1
+        ],
+        "rectangle": [
+          416.0,
+          648.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          13,
+          2,
+          2
+        ],
+        "rectangle": [
+          416.0,
+          648.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          13,
+          12,
+          19
+        ],
+        "rectangle": [
+          416.0,
+          648.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          7,
+          13,
+          79,
+          68
+        ],
+        "rectangle": [
+          416.0,
+          648.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          0,
+          1,
+          1
+        ],
+        "rectangle": [
+          1504.0,
+          -54.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          0,
+          2,
+          2
+        ],
+        "rectangle": [
+          1504.0,
+          -54.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          0,
+          12,
+          19
+        ],
+        "rectangle": [
+          1504.0,
+          -54.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          0,
+          79,
+          68
+        ],
+        "rectangle": [
+          1504.0,
+          -54.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          1,
+          1,
+          1
+        ],
+        "rectangle": [
+          1504.0,
+          0.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          1,
+          2,
+          2
+        ],
+        "rectangle": [
+          1504.0,
+          0.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          1,
+          12,
+          19
+        ],
+        "rectangle": [
+          1504.0,
+          0.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          1,
+          79,
+          68
+        ],
+        "rectangle": [
+          1504.0,
+          0.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          2,
+          1,
+          1
+        ],
+        "rectangle": [
+          1504.0,
+          54.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          2,
+          2,
+          2
+        ],
+        "rectangle": [
+          1504.0,
+          54.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          2,
+          12,
+          19
+        ],
+        "rectangle": [
+          1504.0,
+          54.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          2,
+          79,
+          68
+        ],
+        "rectangle": [
+          1504.0,
+          54.0,
+          5088.0,
+          3690.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          13,
+          1,
+          1
+        ],
+        "rectangle": [
+          1504.0,
+          648.0,
+          96.0,
+          72.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          13,
+          2,
+          2
+        ],
+        "rectangle": [
+          1504.0,
+          648.0,
+          160.0,
+          126.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          13,
+          12,
+          19
+        ],
+        "rectangle": [
+          1504.0,
+          648.0,
+          800.0,
+          1044.0
+        ]
+      },
+      {
+        "source": [
+          24,
+          13,
+          79,
+          68
+        ],
+        "rectangle": [
+          1504.0,
+          648.0,
+          5088.0,
+          3690.0
+        ]
+      }
+    ],
+    "promotion": [
+      {
+        "title": false,
+        "level": 0,
+        "experience": 0,
+        "price": 4
+      },
+      {
+        "title": false,
+        "level": 0,
+        "experience": 17,
+        "price": 4
+      },
+      {
+        "title": false,
+        "level": 0,
+        "experience": 499,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 1,
+        "experience": 0,
+        "price": 7
+      },
+      {
+        "title": false,
+        "level": 1,
+        "experience": 17,
+        "price": 7
+      },
+      {
+        "title": false,
+        "level": 1,
+        "experience": 799,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 2,
+        "experience": 0,
+        "price": 10
+      },
+      {
+        "title": false,
+        "level": 2,
+        "experience": 17,
+        "price": 10
+      },
+      {
+        "title": false,
+        "level": 2,
+        "experience": 1199,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 3,
+        "experience": 0,
+        "price": 16
+      },
+      {
+        "title": false,
+        "level": 3,
+        "experience": 17,
+        "price": 16
+      },
+      {
+        "title": false,
+        "level": 3,
+        "experience": 1899,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 4,
+        "experience": 0,
+        "price": 25
+      },
+      {
+        "title": false,
+        "level": 4,
+        "experience": 17,
+        "price": 24
+      },
+      {
+        "title": false,
+        "level": 4,
+        "experience": 2999,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 5,
+        "experience": 0,
+        "price": 39
+      },
+      {
+        "title": false,
+        "level": 5,
+        "experience": 17,
+        "price": 39
+      },
+      {
+        "title": false,
+        "level": 5,
+        "experience": 4799,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 6,
+        "experience": 0,
+        "price": 61
+      },
+      {
+        "title": false,
+        "level": 6,
+        "experience": 17,
+        "price": 60
+      },
+      {
+        "title": false,
+        "level": 6,
+        "experience": 7499,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 7,
+        "experience": 0,
+        "price": 97
+      },
+      {
+        "title": false,
+        "level": 7,
+        "experience": 17,
+        "price": 96
+      },
+      {
+        "title": false,
+        "level": 7,
+        "experience": 11999,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 8,
+        "experience": 0,
+        "price": 152
+      },
+      {
+        "title": false,
+        "level": 8,
+        "experience": 17,
+        "price": 152
+      },
+      {
+        "title": false,
+        "level": 8,
+        "experience": 18999,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 9,
+        "experience": 0,
+        "price": 241
+      },
+      {
+        "title": false,
+        "level": 9,
+        "experience": 17,
+        "price": 240
+      },
+      {
+        "title": false,
+        "level": 9,
+        "experience": 29999,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 10,
+        "experience": 0,
+        "price": 385
+      },
+      {
+        "title": false,
+        "level": 10,
+        "experience": 17,
+        "price": 384
+      },
+      {
+        "title": false,
+        "level": 10,
+        "experience": 47999,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 11,
+        "experience": 0,
+        "price": 608
+      },
+      {
+        "title": false,
+        "level": 11,
+        "experience": 17,
+        "price": 608
+      },
+      {
+        "title": false,
+        "level": 11,
+        "experience": 75999,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 12,
+        "experience": 0,
+        "price": 961
+      },
+      {
+        "title": false,
+        "level": 12,
+        "experience": 17,
+        "price": 960
+      },
+      {
+        "title": false,
+        "level": 12,
+        "experience": 119999,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 13,
+        "experience": 0,
+        "price": 1601
+      },
+      {
+        "title": false,
+        "level": 13,
+        "experience": 17,
+        "price": 1600
+      },
+      {
+        "title": false,
+        "level": 13,
+        "experience": 199999,
+        "price": 1
+      },
+      {
+        "title": false,
+        "level": 14,
+        "experience": 0,
+        "price": 0
+      },
+      {
+        "title": false,
+        "level": 14,
+        "experience": 17,
+        "price": 0
+      },
+      {
+        "title": false,
+        "level": 14,
+        "experience": 199999,
+        "price": 0
+      },
+      {
+        "title": true,
+        "level": 0,
+        "experience": 0,
+        "price": 20
+      },
+      {
+        "title": true,
+        "level": 0,
+        "experience": 17,
+        "price": 17
+      },
+      {
+        "title": true,
+        "level": 0,
+        "experience": 99,
+        "price": 1
+      },
+      {
+        "title": true,
+        "level": 1,
+        "experience": 0,
+        "price": 40
+      },
+      {
+        "title": true,
+        "level": 1,
+        "experience": 17,
+        "price": 37
+      },
+      {
+        "title": true,
+        "level": 1,
+        "experience": 199,
+        "price": 1
+      },
+      {
+        "title": true,
+        "level": 2,
+        "experience": 0,
+        "price": 60
+      },
+      {
+        "title": true,
+        "level": 2,
+        "experience": 17,
+        "price": 57
+      },
+      {
+        "title": true,
+        "level": 2,
+        "experience": 299,
+        "price": 1
+      },
+      {
+        "title": true,
+        "level": 3,
+        "experience": 0,
+        "price": 90
+      },
+      {
+        "title": true,
+        "level": 3,
+        "experience": 17,
+        "price": 87
+      },
+      {
+        "title": true,
+        "level": 3,
+        "experience": 449,
+        "price": 1
+      },
+      {
+        "title": true,
+        "level": 4,
+        "experience": 0,
+        "price": 135
+      },
+      {
+        "title": true,
+        "level": 4,
+        "experience": 17,
+        "price": 132
+      },
+      {
+        "title": true,
+        "level": 4,
+        "experience": 674,
+        "price": 1
+      },
+      {
+        "title": true,
+        "level": 5,
+        "experience": 0,
+        "price": 200
+      },
+      {
+        "title": true,
+        "level": 5,
+        "experience": 17,
+        "price": 197
+      },
+      {
+        "title": true,
+        "level": 5,
+        "experience": 999,
+        "price": 1
+      },
+      {
+        "title": true,
+        "level": 6,
+        "experience": 0,
+        "price": 300
+      },
+      {
+        "title": true,
+        "level": 6,
+        "experience": 17,
+        "price": 297
+      },
+      {
+        "title": true,
+        "level": 6,
+        "experience": 1499,
+        "price": 1
+      },
+      {
+        "title": true,
+        "level": 7,
+        "experience": 0,
+        "price": 450
+      },
+      {
+        "title": true,
+        "level": 7,
+        "experience": 17,
+        "price": 447
+      },
+      {
+        "title": true,
+        "level": 7,
+        "experience": 2249,
+        "price": 1
+      },
+      {
+        "title": true,
+        "level": 8,
+        "experience": 0,
+        "price": 675
+      },
+      {
+        "title": true,
+        "level": 8,
+        "experience": 17,
+        "price": 672
+      },
+      {
+        "title": true,
+        "level": 8,
+        "experience": 3374,
+        "price": 1
+      },
+      {
+        "title": true,
+        "level": 9,
+        "experience": 0,
+        "price": 0
+      },
+      {
+        "title": true,
+        "level": 9,
+        "experience": 17,
+        "price": 0
+      },
+      {
+        "title": true,
+        "level": 9,
+        "experience": 3374,
+        "price": 0
+      }
+    ]
+  }
+}

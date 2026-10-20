@@ -1,0 +1,15 @@
+{
+  "counts": {
+    "end_cell": 1000,
+    "income": 600,
+    "faction_start_driver": 500,
+    "faction_end_driver": 500,
+    "local_penalty": 600,
+    "adjacent_healing": 600,
+    "adjacent_attack": 600,
+    "adjacent_defense": 600,
+    "start_city_expansion": 400
+  },
+  "errors": [],
+  "scope": "Original 50b44 with real healing/burning/environment primitives and injected healing lookup/adjacency/local-morale/building setter; income chain with injected building/commander rows; faction start/end drivers with injected services; actual adjacency/flanking and 51918 city-expansion functions with injected map/equipment/ownership/refresh services. Not Android or full battle validation."
+}

@@ -1,0 +1,7 @@
+{
+  "counts": {
+    "evasion_context": 800
+  },
+  "errors": [],
+  "scope": "Real 4fffc/55be0/5c974 with injected terrain/map/building config lookup; building bypass and AI tail addition retained separately. Not full battle formula or rendering."
+}

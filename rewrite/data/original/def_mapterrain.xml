@@ -1,0 +1,81 @@
+﻿<terrains>
+	<terrain name="land" type="land">
+		<tile idx="0" image="land_1.png"/>
+	</terrain>
+	<terrain name="sea" type="sea">
+		<tile idx="0" image="wave_1.png"/>
+		<tile idx="1" image="wave_2.png"/>
+		<tile idx="2" image="wave_3.png"/>
+		<tile idx="3" image="wave_4.png"/>
+		<tile idx="4" image="wave_5.png"/>
+		<tile idx="5" image="wave_6.png"/>
+		<tile idx="6" image="wave_7.png"/>
+	</terrain>
+	<terrain name="cactus" type="forest">
+		<tile idx="0" image="cactus_1.png" n="1"/>
+		<tile idx="1" image="cactus_2.png" n="1"/>
+		<tile idx="2" image="cactus_3.png" n="2"/>
+		<tile idx="3" image="cactus_4.png" n="2"/>
+		<tile idx="4" image="cactus_5.png" n="3"/>
+		<tile idx="5" image="cactus_6.png" n="3"/>
+	</terrain>
+	<terrain name="cedar" type="forest">
+		<tile idx="0" image="cedar_1.png" n="1"/>
+		<tile idx="1" image="cedar_2.png" n="1"/>
+		<tile idx="2" image="cedar_3.png" n="2"/>
+		<tile idx="3" image="cedar_4.png" n="3"/>
+		<tile idx="4" image="cedar_5.png" n="3"/>
+		<tile idx="5" image="cedar_6.png" n="4"/>
+	</terrain>
+	<terrain name="cypress" type="forest">
+		<tile idx="0" image="cypress_1.png" n="1"/>
+		<tile idx="1" image="cypress_2.png" n="1"/>
+		<tile idx="2" image="cypress_3.png" n="2"/>
+		<tile idx="3" image="cypress_4.png" n="3"/>
+		<tile idx="4" image="cypress_5.png" n="3"/>
+		<tile idx="5" image="cypress_6.png" n="4"/>
+	</terrain>
+	<terrain name="palm" type="forest">
+		<tile idx="0" image="palm_1.png" n="1"/>
+		<tile idx="1" image="palm_2.png" n="1"/>
+		<tile idx="2" image="palm_3.png" n="2"/>
+		<tile idx="3" image="palm_4.png" n="3"/>
+		<tile idx="4" image="palm_5.png" n="3"/>
+		<tile idx="5" image="palm_6.png" n="4"/>
+	</terrain>
+	<terrain name="pine" type="forest">
+		<tile idx="0" image="pine_1.png" n="1"/>
+		<tile idx="1" image="pine_2.png" n="1"/>
+		<tile idx="2" image="pine_3.png" n="1"/>
+		<tile idx="3" image="pine_4.png" n="1"/>
+		<tile idx="4" image="pine_5.png" n="1"/>
+		<tile idx="5" image="pine_6.png" n="1"/>
+	</terrain>
+	<terrain name="desert" type="desert">
+		<tile idx="0" image="desert_1.png"/>
+		<tile idx="1" image="desert_2.png"/>
+		<tile idx="2" image="desert_3.png"/>
+		<tile idx="3" image="desert_4.png"/>
+		<tile idx="4" image="desert_5.png"/>
+		<tile idx="5" image="desert_6.png"/>
+		<tile idx="6" image="desert_7.png"/>
+		<tile idx="7" image="desert_8.png"/>
+		<tile idx="8" image="desert_9.png"/>
+	</terrain>
+	<terrain name="hills" type="hill">
+		<tile idx="0" image="hill_1.png"/>
+		<tile idx="1" image="hill_2.png"/>
+		<tile idx="2" image="hill_3.png"/>
+		<tile idx="3" image="hill_4.png"/>
+		<tile idx="4" image="hill_5.png"/>
+		<tile idx="5" image="hill_6.png"/>
+	</terrain>
+	<terrain name="mountains" type="mountain">
+		<tile idx="0" image="mountain_1.png"/>
+		<tile idx="1" image="mountain_2.png"/>
+		<tile idx="2" image="mountain_3.png"/>
+		<tile idx="3" image="mountain_4.png"/>
+		<tile idx="4" image="mountain_5.png"/>
+		<tile idx="5" image="mountain_6.png"/>
+	</terrain>
+</terrains>

@@ -1,0 +1,23 @@
+[
+  {
+    "kind": "land",
+    "url": "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_land.zip",
+    "path": "maps\\source_cache\\ne_10m_land.zip",
+    "sha256": "e547d749445eaa0964aba76738090ec88f5e63c4585122170f98c67a7ea922dc",
+    "license": "Natural Earth public domain"
+  },
+  {
+    "kind": "rivers",
+    "url": "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_rivers_lake_centerlines.zip",
+    "path": "maps\\source_cache\\ne_10m_rivers_lake_centerlines.zip",
+    "sha256": "ded71b01870855ccfe19b51f2ec14c9bb48fae23c0e9f3c11974d426433b5c38",
+    "license": "Natural Earth public domain"
+  },
+  {
+    "kind": "lakes",
+    "url": "https://naturalearth.s3.amazonaws.com/10m_physical/ne_10m_lakes.zip",
+    "path": "maps\\source_cache\\ne_10m_lakes.zip",
+    "sha256": "0803a06f9c3cb4671d89b68c48b142aad9366ba40f665245e12a913fbc61722a",
+    "license": "Natural Earth public domain"
+  }
+]

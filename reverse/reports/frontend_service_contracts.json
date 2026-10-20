@@ -1,0 +1,8866 @@
+{
+  "schema": 2,
+  "fullPromotion": [
+    {
+      "rank": 0,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 9,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 0,
+      "title": 9,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 9,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 1,
+      "title": 9,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 9,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 2,
+      "title": 9,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 9,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 3,
+      "title": 9,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 9,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 4,
+      "title": 9,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 9,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 5,
+      "title": 9,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 9,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 6,
+      "title": 9,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 9,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 7,
+      "title": 9,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 9,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 8,
+      "title": 9,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 9,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 9,
+      "title": 9,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 10,
+      "title": 9,
+      "experience": 0,
+      "price": 3553
+    },
+    {
+      "rank": 10,
+      "title": 9,
+      "experience": 17,
+      "price": 3552
+    },
+    {
+      "rank": 11,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 8,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 8,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 11,
+      "title": 9,
+      "experience": 0,
+      "price": 3169
+    },
+    {
+      "rank": 11,
+      "title": 9,
+      "experience": 17,
+      "price": 3168
+    },
+    {
+      "rank": 12,
+      "title": 0,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 0,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 1,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 1,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 2,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 2,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 3,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 3,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 4,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 4,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 5,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 5,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 6,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 6,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 7,
+      "experience": 0,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 7,
+      "experience": 17,
+      "price": 3600
+    },
+    {
+      "rank": 12,
+      "title": 8,
+      "experience": 0,
+      "price": 3235
+    },
+    {
+      "rank": 12,
+      "title": 8,
+      "experience": 17,
+      "price": 3232
+    },
+    {
+      "rank": 12,
+      "title": 9,
+      "experience": 0,
+      "price": 2560
+    },
+    {
+      "rank": 12,
+      "title": 9,
+      "experience": 17,
+      "price": 2560
+    },
+    {
+      "rank": 13,
+      "title": 0,
+      "experience": 0,
+      "price": 3571
+    },
+    {
+      "rank": 13,
+      "title": 0,
+      "experience": 17,
+      "price": 3567
+    },
+    {
+      "rank": 13,
+      "title": 1,
+      "experience": 0,
+      "price": 3551
+    },
+    {
+      "rank": 13,
+      "title": 1,
+      "experience": 17,
+      "price": 3547
+    },
+    {
+      "rank": 13,
+      "title": 2,
+      "experience": 0,
+      "price": 3511
+    },
+    {
+      "rank": 13,
+      "title": 2,
+      "experience": 17,
+      "price": 3507
+    },
+    {
+      "rank": 13,
+      "title": 3,
+      "experience": 0,
+      "price": 3451
+    },
+    {
+      "rank": 13,
+      "title": 3,
+      "experience": 17,
+      "price": 3447
+    },
+    {
+      "rank": 13,
+      "title": 4,
+      "experience": 0,
+      "price": 3361
+    },
+    {
+      "rank": 13,
+      "title": 4,
+      "experience": 17,
+      "price": 3357
+    },
+    {
+      "rank": 13,
+      "title": 5,
+      "experience": 0,
+      "price": 3226
+    },
+    {
+      "rank": 13,
+      "title": 5,
+      "experience": 17,
+      "price": 3222
+    },
+    {
+      "rank": 13,
+      "title": 6,
+      "experience": 0,
+      "price": 3026
+    },
+    {
+      "rank": 13,
+      "title": 6,
+      "experience": 17,
+      "price": 3022
+    },
+    {
+      "rank": 13,
+      "title": 7,
+      "experience": 0,
+      "price": 2726
+    },
+    {
+      "rank": 13,
+      "title": 7,
+      "experience": 17,
+      "price": 2722
+    },
+    {
+      "rank": 13,
+      "title": 8,
+      "experience": 0,
+      "price": 2276
+    },
+    {
+      "rank": 13,
+      "title": 8,
+      "experience": 17,
+      "price": 2272
+    },
+    {
+      "rank": 13,
+      "title": 9,
+      "experience": 0,
+      "price": 1601
+    },
+    {
+      "rank": 13,
+      "title": 9,
+      "experience": 17,
+      "price": 1600
+    },
+    {
+      "rank": 14,
+      "title": 0,
+      "experience": 0,
+      "price": 1970
+    },
+    {
+      "rank": 14,
+      "title": 0,
+      "experience": 17,
+      "price": 1967
+    },
+    {
+      "rank": 14,
+      "title": 1,
+      "experience": 0,
+      "price": 1950
+    },
+    {
+      "rank": 14,
+      "title": 1,
+      "experience": 17,
+      "price": 1947
+    },
+    {
+      "rank": 14,
+      "title": 2,
+      "experience": 0,
+      "price": 1910
+    },
+    {
+      "rank": 14,
+      "title": 2,
+      "experience": 17,
+      "price": 1907
+    },
+    {
+      "rank": 14,
+      "title": 3,
+      "experience": 0,
+      "price": 1850
+    },
+    {
+      "rank": 14,
+      "title": 3,
+      "experience": 17,
+      "price": 1847
+    },
+    {
+      "rank": 14,
+      "title": 4,
+      "experience": 0,
+      "price": 1760
+    },
+    {
+      "rank": 14,
+      "title": 4,
+      "experience": 17,
+      "price": 1757
+    },
+    {
+      "rank": 14,
+      "title": 5,
+      "experience": 0,
+      "price": 1625
+    },
+    {
+      "rank": 14,
+      "title": 5,
+      "experience": 17,
+      "price": 1622
+    },
+    {
+      "rank": 14,
+      "title": 6,
+      "experience": 0,
+      "price": 1425
+    },
+    {
+      "rank": 14,
+      "title": 6,
+      "experience": 17,
+      "price": 1422
+    },
+    {
+      "rank": 14,
+      "title": 7,
+      "experience": 0,
+      "price": 1125
+    },
+    {
+      "rank": 14,
+      "title": 7,
+      "experience": 17,
+      "price": 1122
+    },
+    {
+      "rank": 14,
+      "title": 8,
+      "experience": 0,
+      "price": 675
+    },
+    {
+      "rank": 14,
+      "title": 8,
+      "experience": 17,
+      "price": 672
+    },
+    {
+      "rank": 14,
+      "title": 9,
+      "experience": 0,
+      "price": 0
+    },
+    {
+      "rank": 14,
+      "title": 9,
+      "experience": 17,
+      "price": 0
+    }
+  ],
+  "exchange": [
+    {
+      "commander": false,
+      "commerce": 0,
+      "offer": 0,
+      "buyMoney": 30,
+      "sellAmount": 6
+    },
+    {
+      "commander": false,
+      "commerce": 0,
+      "offer": 1,
+      "buyMoney": 150,
+      "sellAmount": 30
+    },
+    {
+      "commander": false,
+      "commerce": 0,
+      "offer": 2,
+      "buyMoney": 30,
+      "sellAmount": 150
+    },
+    {
+      "commander": false,
+      "commerce": 0,
+      "offer": 3,
+      "buyMoney": 150,
+      "sellAmount": 750
+    },
+    {
+      "commander": false,
+      "commerce": 1,
+      "offer": 0,
+      "buyMoney": 30,
+      "sellAmount": 6
+    },
+    {
+      "commander": false,
+      "commerce": 1,
+      "offer": 1,
+      "buyMoney": 150,
+      "sellAmount": 30
+    },
+    {
+      "commander": false,
+      "commerce": 1,
+      "offer": 2,
+      "buyMoney": 30,
+      "sellAmount": 150
+    },
+    {
+      "commander": false,
+      "commerce": 1,
+      "offer": 3,
+      "buyMoney": 150,
+      "sellAmount": 750
+    },
+    {
+      "commander": false,
+      "commerce": 2,
+      "offer": 0,
+      "buyMoney": 30,
+      "sellAmount": 6
+    },
+    {
+      "commander": false,
+      "commerce": 2,
+      "offer": 1,
+      "buyMoney": 150,
+      "sellAmount": 30
+    },
+    {
+      "commander": false,
+      "commerce": 2,
+      "offer": 2,
+      "buyMoney": 30,
+      "sellAmount": 150
+    },
+    {
+      "commander": false,
+      "commerce": 2,
+      "offer": 3,
+      "buyMoney": 150,
+      "sellAmount": 750
+    },
+    {
+      "commander": false,
+      "commerce": 3,
+      "offer": 0,
+      "buyMoney": 30,
+      "sellAmount": 6
+    },
+    {
+      "commander": false,
+      "commerce": 3,
+      "offer": 1,
+      "buyMoney": 150,
+      "sellAmount": 30
+    },
+    {
+      "commander": false,
+      "commerce": 3,
+      "offer": 2,
+      "buyMoney": 30,
+      "sellAmount": 150
+    },
+    {
+      "commander": false,
+      "commerce": 3,
+      "offer": 3,
+      "buyMoney": 150,
+      "sellAmount": 750
+    },
+    {
+      "commander": false,
+      "commerce": 4,
+      "offer": 0,
+      "buyMoney": 30,
+      "sellAmount": 6
+    },
+    {
+      "commander": false,
+      "commerce": 4,
+      "offer": 1,
+      "buyMoney": 150,
+      "sellAmount": 30
+    },
+    {
+      "commander": false,
+      "commerce": 4,
+      "offer": 2,
+      "buyMoney": 30,
+      "sellAmount": 150
+    },
+    {
+      "commander": false,
+      "commerce": 4,
+      "offer": 3,
+      "buyMoney": 150,
+      "sellAmount": 750
+    },
+    {
+      "commander": false,
+      "commerce": 5,
+      "offer": 0,
+      "buyMoney": 30,
+      "sellAmount": 6
+    },
+    {
+      "commander": false,
+      "commerce": 5,
+      "offer": 1,
+      "buyMoney": 150,
+      "sellAmount": 30
+    },
+    {
+      "commander": false,
+      "commerce": 5,
+      "offer": 2,
+      "buyMoney": 30,
+      "sellAmount": 150
+    },
+    {
+      "commander": false,
+      "commerce": 5,
+      "offer": 3,
+      "buyMoney": 150,
+      "sellAmount": 750
+    },
+    {
+      "commander": true,
+      "commerce": 0,
+      "offer": 0,
+      "buyMoney": 30,
+      "sellAmount": 6
+    },
+    {
+      "commander": true,
+      "commerce": 0,
+      "offer": 1,
+      "buyMoney": 150,
+      "sellAmount": 30
+    },
+    {
+      "commander": true,
+      "commerce": 0,
+      "offer": 2,
+      "buyMoney": 30,
+      "sellAmount": 150
+    },
+    {
+      "commander": true,
+      "commerce": 0,
+      "offer": 3,
+      "buyMoney": 150,
+      "sellAmount": 750
+    },
+    {
+      "commander": true,
+      "commerce": 1,
+      "offer": 0,
+      "buyMoney": 26,
+      "sellAmount": 5
+    },
+    {
+      "commander": true,
+      "commerce": 1,
+      "offer": 1,
+      "buyMoney": 130,
+      "sellAmount": 26
+    },
+    {
+      "commander": true,
+      "commerce": 1,
+      "offer": 2,
+      "buyMoney": 26,
+      "sellAmount": 130
+    },
+    {
+      "commander": true,
+      "commerce": 1,
+      "offer": 3,
+      "buyMoney": 130,
+      "sellAmount": 650
+    },
+    {
+      "commander": true,
+      "commerce": 2,
+      "offer": 0,
+      "buyMoney": 22,
+      "sellAmount": 4
+    },
+    {
+      "commander": true,
+      "commerce": 2,
+      "offer": 1,
+      "buyMoney": 110,
+      "sellAmount": 22
+    },
+    {
+      "commander": true,
+      "commerce": 2,
+      "offer": 2,
+      "buyMoney": 22,
+      "sellAmount": 110
+    },
+    {
+      "commander": true,
+      "commerce": 2,
+      "offer": 3,
+      "buyMoney": 110,
+      "sellAmount": 550
+    },
+    {
+      "commander": true,
+      "commerce": 3,
+      "offer": 0,
+      "buyMoney": 18,
+      "sellAmount": 3
+    },
+    {
+      "commander": true,
+      "commerce": 3,
+      "offer": 1,
+      "buyMoney": 90,
+      "sellAmount": 18
+    },
+    {
+      "commander": true,
+      "commerce": 3,
+      "offer": 2,
+      "buyMoney": 18,
+      "sellAmount": 90
+    },
+    {
+      "commander": true,
+      "commerce": 3,
+      "offer": 3,
+      "buyMoney": 90,
+      "sellAmount": 450
+    },
+    {
+      "commander": true,
+      "commerce": 4,
+      "offer": 0,
+      "buyMoney": 14,
+      "sellAmount": 2
+    },
+    {
+      "commander": true,
+      "commerce": 4,
+      "offer": 1,
+      "buyMoney": 70,
+      "sellAmount": 14
+    },
+    {
+      "commander": true,
+      "commerce": 4,
+      "offer": 2,
+      "buyMoney": 14,
+      "sellAmount": 70
+    },
+    {
+      "commander": true,
+      "commerce": 4,
+      "offer": 3,
+      "buyMoney": 70,
+      "sellAmount": 350
+    },
+    {
+      "commander": true,
+      "commerce": 5,
+      "offer": 0,
+      "buyMoney": 10,
+      "sellAmount": 2
+    },
+    {
+      "commander": true,
+      "commerce": 5,
+      "offer": 1,
+      "buyMoney": 50,
+      "sellAmount": 10
+    },
+    {
+      "commander": true,
+      "commerce": 5,
+      "offer": 2,
+      "buyMoney": 10,
+      "sellAmount": 50
+    },
+    {
+      "commander": true,
+      "commerce": 5,
+      "offer": 3,
+      "buyMoney": 50,
+      "sellAmount": 250
+    }
+  ],
+  "impacts": [
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "gun",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "guns",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "guns",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "guns",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "bodystrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "bodystrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "woodstrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "woodstrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike1 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike1 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "stonestrike2 left"
+    },
+    {
+      "weapon": "mgun",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "stonestrike2 right"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "cannon",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "strike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike1"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "strike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike2"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "strike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike3"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "strike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "rocket",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "seastrike4"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "infantry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "cavalry",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "artillery",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "naval",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 0,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 0,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 10,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 10,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 11,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 11,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 25,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 25,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike1"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 26,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 26,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 40,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 40,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 41,
+      "sea": false,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": -1,
+      "name": "coldstonestrike2"
+    },
+    {
+      "weapon": "cold",
+      "category": "fort",
+      "damage": 41,
+      "sea": true,
+      "facing": 1,
+      "name": "coldstonestrike2"
+    }
+  ],
+  "errors": 0
+}

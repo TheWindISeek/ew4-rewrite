@@ -1,0 +1,11 @@
+{
+  "counts": {
+    "terrain": 1200,
+    "faction": 400,
+    "site": 600,
+    "army": 800,
+    "variant": 300
+  },
+  "errors": 0,
+  "scope": "Original 50340 terrain, 59850 faction, 51b2c site, 53cf8 -> 52bcc -> 539b0 army load, 702a4 variant fallback. Config/effect/tree lookup, string construction, resource setters, allocation and graphics/name services injected. Not a full initialization or device test."
+}

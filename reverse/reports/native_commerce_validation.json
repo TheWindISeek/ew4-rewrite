@@ -1,0 +1,21 @@
+{
+  "counts": {
+    "market_load": 250,
+    "market_key": 250,
+    "market_refresh": 250,
+    "market_save": 250,
+    "market_guard": 250,
+    "tavern_load": 250,
+    "tavern_key": 250,
+    "tavern_refresh": 250,
+    "tavern_save": 250,
+    "tavern_guard": 250,
+    "item_availability": 400,
+    "purchase_price": 500,
+    "sale_price": 500,
+    "tavern_stable_insertion": 400
+  },
+  "errors": [],
+  "source_sha256": "c16905a2f6d155111a1ff702f2b0f8fbad09482dcedce08785a2bf7965fe7f63",
+  "scope": "Native 116/108 load/save, item availability, purchase/sale price, stable candidate insertion; item/ownership/inventory services injected; no client or device test."
+}

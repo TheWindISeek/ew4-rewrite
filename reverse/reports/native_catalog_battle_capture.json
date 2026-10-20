@@ -1,0 +1,12 @@
+{
+  "counts": {
+    "battle_chain": 800,
+    "units_destroyed": 628,
+    "troop_advances": 100,
+    "ignition_changes": 12,
+    "commander_rank_advances": 49,
+    "commander_title_advances": 2
+  },
+  "errors": [],
+  "scope": "Original combat commit chain with actual imported unit category/grade/weapon/base health and native veterancy rows; supplied damage, generated commander states, injected eligibility/map/survival/rendering; not full damage formula or device test."
+}

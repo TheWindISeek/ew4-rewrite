@@ -1,0 +1,56 @@
+# Original input archives and release copies; runtime data lives in rewrite/data.
+/*.apk
+/*.apK
+/*.APK
+/*.zip
+/*.xls
+/*.xlsx
+*.idsig
+*.ew4mod
+*.ew4mod.previous
+/apk_work/
+/build/
+
+# Reproducible compiler, package, editor and interpreter caches.
+**/bin/
+**/obj/
+**/node_modules/
+**/__pycache__/
+*.pyc
+.vs/
+.idea/
+*.user
+*.suo
+*.log
+
+# User accounts, installed Mods, local servers, and generated test artifacts.
+/rewrite/local/
+/rewrite/reports/
+/reverse/references/
+/reverse/native/
+/reverse/java/
+/reverse/ghidra/
+/reverse/reports/*
+!/reverse/reports/*.json
+
+# Preserve map authoring text/configuration, exclude generated texture copies.
+/maps/**
+!/maps/**/
+!/maps/**/*.md
+!/maps/**/*.json
+!/maps/**/*.geojson
+!/maps/**/*.html
+/maps/source_cache/
+/maps/**/runtime/
+
+# Never add credentials or signing keys.
+.env
+.env.*
+*.keystore
+*.jks
+*.pfx
+*.p12
+*.pem
+*.key
+credentials.json
+secrets.json

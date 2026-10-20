@@ -1,0 +1,22 @@
+* text=auto
+*.cs text eol=lf
+*.csproj text eol=lf
+*.js text eol=lf
+*.cjs text eol=lf
+*.css text eol=lf
+*.html text eol=lf
+*.md text eol=lf
+*.py text eol=lf
+*.ps1 text eol=lf
+
+# Source hashes, package revisions and legacy bytes require exact content.
+rewrite/data/** -text
+rewrite/content/** -text
+*.png -text
+*.jpg -text
+*.ttf -text
+*.bin -text
+*.btl -text
+*.mp3 -text
+*.wav -text
+*.ogg -text

@@ -1,0 +1,9 @@
+﻿<terraintypes>
+	<terraintype type="land" movementcost="3" penalty_infantry="0" penalty_cavalry="0" penalty_artillery="0"/>
+	<terraintype type="sea" movementcost="1" penalty_infantry="0" penalty_cavalry="0" penalty_artillery="0"/>
+	<terraintype type="plant" movementcost="4" penalty_infantry="0" penalty_cavalry="10" penalty_artillery="5"/>
+	<terraintype type="forest" movementcost="5" penalty_infantry="0" penalty_cavalry="20" penalty_artillery="10"/>
+	<terraintype type="desert" movementcost="4" penalty_infantry="5" penalty_cavalry="5" penalty_artillery="5"/>
+	<terraintype type="hill" movementcost="5" penalty_infantry="0" penalty_cavalry="5" penalty_artillery="10"/>
+	<terraintype type="mountain" movementcost="6" penalty_infantry="0" penalty_cavalry="10" penalty_artillery="20"/>
+</terraintypes>

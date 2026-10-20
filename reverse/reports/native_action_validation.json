@@ -1,0 +1,11 @@
+{
+  "counts": {
+    "attack_range_and_flags": 500,
+    "attack_allowed": 167,
+    "fort_success": 108,
+    "recruit_eligibility_and_commit": 600,
+    "ordinary_success": 93
+  },
+  "errors": [],
+  "scope": "Attack range/flags predicate; ordinary/fort recruitment eligibility and spending with injected building capability, costs and unit creation."
+}
