@@ -10,12 +10,13 @@ ROOT = Path(__file__).resolve().parents[1]
 parser = argparse.ArgumentParser()
 parser.add_argument("apk", nargs="?", default="build/ew4-rewrite-refinement-20261019-arm64.apk")
 parser.add_argument("--report", default="rewrite/reports/frontend_refinement_20261019/android-package.json")
+parser.add_argument("--managed", help="Raw assembly-store path from this build")
 args = parser.parse_args()
 APK = ROOT / args.apk
 files = {}
 with zipfile.ZipFile(APK) as archive:
     assert archive.testzip() is None, "APK CRC failure"
-    for name in ("app.js", "index.html", "original-ui.js", "effects.js", "native-layout.js", "commander-workflows.js", "menus.js", "battlefield.js", "original-ui.css", "city-names.json", "disband.png"):
+    for name in ("app.js", "index.html", "original-ui.js", "effects.js", "native-layout.js", "commander-workflows.js", "menus.js", "battlefield.js", "original-ui.css", "city-names.json", "disband.png", "mods.js", "mods.css", "skill-ui.js"):
         relative = "assets/www/" + name
         source = ROOT / "rewrite/Ew4.Web/wwwroot" / name
         assert archive.read(relative) == source.read_bytes(), relative + " is stale"
@@ -26,7 +27,14 @@ with zipfile.ZipFile(APK) as archive:
         assert archive.read(relative) == source.read_bytes(), relative + " is stale"
         files[relative] = hashlib.sha256(source.read_bytes()).hexdigest()
     assert "lib/arm64-v8a/libmonodroid.so" in archive.namelist(), "ARM64 runtime missing"
-    managed = ROOT / "rewrite/Ew4.Android/obj/Release/net10.0-android/android-arm64/app_shared_libraries/arm64-v8a/arm64-v8a/assemblies.arm64-v8a.blob.so"
+    catalog = json.loads((ROOT / "rewrite/data/runtime-content.json").read_text(encoding="utf-8"))
+    for entry in catalog["files"]:
+        path = entry["path"]
+        relative = "assets/" + ("www/content/" + path[7:] if path.startswith("client/") else
+                                "data/" + Path(path).name if path.startswith("legacy/") else path)
+        assert archive.read(relative) == (ROOT / "rewrite/data" / path).read_bytes(), relative + " is stale"
+        files[relative] = entry["sha256"]
+    managed = ROOT / (args.managed or "rewrite/Ew4.Android/obj/Release/net10.0-android/android-arm64/app_shared_libraries/arm64-v8a/arm64-v8a/assemblies.arm64-v8a.blob.so")
     relative = "lib/arm64-v8a/libassemblies.arm64-v8a.blob.so"
     wrapped = archive.read(relative)
     # Android wraps the raw assembly store in an ELF payload section.

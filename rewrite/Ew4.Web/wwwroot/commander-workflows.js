@@ -116,6 +116,7 @@
     let chosen,buying;
     const choose=(item,buy,b,offer)=>{
       chosen={item,offer};buying=buy;for(const n of l.body.querySelectorAll('.native-item'))n.setAttribute('aria-pressed',String(n===b));
+      l.get('btn_buy').style.width=b.offsetWidth+'px';
       l.text('group_info/text_name',item.name);l.text('text_desc',item.description);l.text('text_price',buy?offer.price:data.sales.find(s=>s.id===item.id)?.price||0);l.text('btn_buy',this.text(buy?'text_buy':'text_sell'));
       const price=buy?offer.price:0;
       const command=l.action('btn_buy',this.text(buy?'text_buy':'text_sell')+' '+item.name,async()=>{
@@ -124,7 +125,7 @@
       const itemRect=b.getBoundingClientRect(),body=l.body.getBoundingClientRect(),scale=body.width/l.width;
       const itemTop=(itemRect.top-body.top)/scale,itemLeft=(itemRect.left-body.left)/scale;
       const above=b.offsetTop>=command.offsetHeight;
-      Object.assign(command.style,{left:Math.max(0,Math.min(l.width-command.offsetWidth,itemLeft+(b.offsetWidth-command.offsetWidth)/2+5))+'px',top:(above?itemTop-command.offsetHeight:itemTop+b.offsetHeight)+'px'});
+      Object.assign(command.style,{left:itemLeft+'px',top:(above?itemTop-command.offsetHeight:itemTop+b.offsetHeight)+'px'});
       this.api.popup(command);
     };
     for(let slot=0;slot<14;slot++){const offer=data.offers.find(o=>o.slot===slot),item=offer&&data.items.find(i=>i.id===offer.itemId);let b=this.itemButton(item,offer?.remaining,()=>offer&&choose(item,true,b,offer));b.disabled=!offer;if(offer)b.classList.toggle('unavailable-item',!offer.available);l.get('grid_seller').append(b);}

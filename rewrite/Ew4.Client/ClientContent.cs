@@ -133,7 +133,11 @@ public sealed class ClientContent
         {
             var rules = started.Rules;
             var victory = rules.Turns.Victory with { Custom = customVictory, Scripts = Extensions.Bus.Scripts };
-            if (customVictory != null) ValidateVictoryTargets(customVictory, started.Session.World);
+            if (customVictory != null)
+            {
+                ValidateVictoryTargets(customVictory, started.Session.World);
+                Extensions.ValidateVictoryScripts(customVictory);
+            }
             var movement = rules.Movement with { Extensions = Extensions.Bus, Victory = victory };
             var turns = rules.Turns with { Extensions = Extensions.Bus, Victory = victory };
             var combat = rules.Battle with { Combat = rules.Battle.Combat with { Extensions = Extensions.Bus }, Victory = victory };
@@ -148,6 +152,13 @@ public sealed class ClientContent
                     world = Extensions.Bus.Dispatch(world, "scenario.start", unit, new Ew4Random(world.RandomState));
                 world.Validate();
                 started = started with { Session = started.Session with { World = world } };
+            }
+            if (customVictory != null)
+            {
+                var world = started.Session.World;
+                var outcome = WorldVictory.Evaluate(world, turns.PlayerCamp!, victory, turns.NeutralCamps);
+                if (outcome != BattleOutcome.Continue)
+                    started = started with { Session = started.Session with { World = world with { Outcome = outcome, Phase = TurnPhase.Finished } } };
             }
         }
         return started;

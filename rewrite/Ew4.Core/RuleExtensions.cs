@@ -40,7 +40,8 @@ public sealed record ExtensionSkill
     public IReadOnlyList<ExtensionEffect> Effects { get; init; } = Array.Empty<ExtensionEffect>();
 }
 public sealed record RuleScriptContext(string Event, Combatant? Source, Combatant? Target, int Level,
-    int Round, double Value, IReadOnlyDictionary<string, long> State);
+    int Round, double Value, IReadOnlyDictionary<string, long> State, WorldState? World = null, string? PlayerCamp = null,
+    string? SourceId = null, string? TargetId = null);
 public sealed record RuleScriptResult(double Value, IReadOnlyDictionary<string, long>? State = null);
 public interface IRuleScriptRuntime
 {
@@ -77,9 +78,10 @@ public sealed class RuleEventBus
         return value;
     }
 
-    public WorldState Dispatch(WorldState world, string ev, string unitId, Ew4Random random, string? onlyInstance = null, string? targetId = null)
+    public WorldState Dispatch(WorldState world, string ev, string unitId, Ew4Random random, string? onlyInstance = null, string? targetId = null,
+        UnitState? eventSource = null)
     {
-        var source = world.Units.SingleOrDefault(u => u.Id == unitId);
+        var source = world.Units.SingleOrDefault(u => u.Id == unitId) ?? eventSource;
         if (source == null) return world;
         var target = targetId == null ? source : world.Units.Single(u => u.Id == targetId);
         var counters = world.ExtensionState.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
@@ -92,7 +94,8 @@ public sealed class RuleEventBus
                 var local = counters.Where(p => p.Key.StartsWith(prefix, StringComparison.Ordinal))
                     .ToDictionary(p => p.Key[prefix.Length..], p => p.Value, StringComparer.Ordinal);
                 var result = effect.Script == null ? new RuleScriptResult(effect.Value) : Scripts!.Run(effect.Script, effect.Function!,
-                    new(ev, source.Combatant, target.Combatant, slot.Level, world.Round, effect.Value, local), random);
+                    new(ev, source.Combatant, target.Combatant, slot.Level, world.Round, effect.Value, local, world,
+                        SourceId: source.Id, TargetId: target.Id), random);
                 if (result.State != null) foreach (var pair in result.State)
                 {
                     if (string.IsNullOrWhiteSpace(pair.Key) || pair.Key.Length > 64 || pair.Key.Contains('/'))
@@ -110,6 +113,15 @@ public sealed class RuleEventBus
                         Resources = new Resources(checked(f.Resources.Money + (effect.Operation == "money" ? amount : 0)),
                             checked(f.Resources.Industry + (effect.Operation == "industry" ? amount : 0)),
                             checked(f.Resources.Food + (effect.Operation == "food" ? amount : 0))) }).ToArray() };
+                else if (effect.Operation == "damage")
+                {
+                    var victim = world.Units.SingleOrDefault(u => u.Id == target.Id);
+                    if (victim == null) continue;
+                    int health = (int)Math.Max(0, (long)victim.Combatant.Health - amount);
+                    world = health > 0 ? world with { Units = world.Units.Select(u => u.Id != victim.Id ? u : u with {
+                        Combatant = u.Combatant with { Health = health } }).ToArray() }
+                        : WorldDeaths.Remove(world, victim.Id, source.Owner).State;
+                }
             }
         return world with { ExtensionState = counters, RandomState = random.State };
     }
@@ -131,7 +143,7 @@ public static class WorldSkillActions
         string key = unitId + "/" + instanceId + "/ready";
         if (skill.Kind != "active" || target == null || state.ExtensionState.TryGetValue(key, out long ready) && ready > state.Round)
             throw new RuleViolation("skill.unavailable", "Skill unavailable or cooling down");
-        bool hostile = WorldDiplomacy.Hostile(state, unit.Owner, target.Owner, movement.NeutralCamps);
+        bool hostile = state.Factions.Single(f => f.Id == unit.Owner).Camp != state.Factions.Single(f => f.Id == target.Owner).Camp;
         bool allied = state.Factions.Single(f => f.Id == unit.Owner).Camp == state.Factions.Single(f => f.Id == target.Owner).Camp;
         if (skill.Target == "self" && target.Id != unit.Id || skill.Target == "ally" && !allied || skill.Target == "enemy" && !hostile
             || new HexMap(state.Width, state.Height).Distance(unit.Cell, target.Cell) > skill.Range)
@@ -141,12 +153,25 @@ public static class WorldSkillActions
             throw new RuleViolation("skill.resources", "Insufficient resources");
         var next = state.Copy() with { Factions = state.Factions.Select(f => f.Id != unit.Owner ? f : f with { Resources = new(
             checked(f.Resources.Money - skill.Cost.Money), checked(f.Resources.Industry - skill.Cost.Industry), checked(f.Resources.Food - skill.Cost.Food)) }).ToArray() };
+        if (skill.Effects.Any(e => e.Operation == "damage") && target.Owner != unit.Owner)
+            next = WorldDiplomacy.Attacked(next, unit.Owner, target.Owner, movement.NeutralCamps);
         next = bus.Dispatch(next, "skill.activate", unitId, new Ew4Random(state.RandomState), instanceId, target.Id);
         var counters = next.ExtensionState.ToDictionary(p => p.Key, p => p.Value);
         counters[key] = checked(state.Round + Math.Max(1, skill.Cooldown));
         next = next with { ExtensionState = counters, Revision = checked(revision + 1), Units = next.Units.Select(u => u.Id == unitId && skill.EndsAction
             ? u with { Acted = true, RemainingMovement = 0 } : u).ToArray() };
         next.Validate();
-        return new(next, new[] { new WorldNotice("skill.used", unitId) });
+        var notices = new List<WorldNotice> { new("skill.used", unitId) };
+        foreach (var old in state.Units)
+        {
+            var current = next.Units.SingleOrDefault(u => u.Id == old.Id);
+            if (current == null)
+            {
+                notices.Add(new("battle.damage", old.Id, old.Combatant.Health));
+                notices.Add(new("unit.destroyed", old.Id));
+            }
+            else if (current.Combatant.Health < old.Combatant.Health) notices.Add(new("battle.damage", old.Id, old.Combatant.Health - current.Combatant.Health));
+        }
+        return new(next, notices);
     }
 }

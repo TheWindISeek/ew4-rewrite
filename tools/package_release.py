@@ -1,0 +1,43 @@
+"""Package the verified standalone Web publish and signed ARM64 APK."""
+import argparse
+import hashlib
+import json
+from pathlib import Path
+import shutil
+import subprocess
+import zipfile
+
+ROOT = Path(__file__).resolve().parents[1]
+parser = argparse.ArgumentParser()
+parser.add_argument("--build", default="build/release-20261020")
+args = parser.parse_args()
+build = ROOT / args.build
+assets = build / "assets"
+assets.mkdir(exist_ok=True)
+head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
+assert not subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT).strip(), "Commit source before packaging"
+web = build / "web"
+assert (web / "Ew4.Web.exe").is_file() and (web / "MoonSharp.Interpreter.dll").is_file()
+assert not (web / "saves").exists(), "Do not package user profiles"
+report = json.loads((build / "android-verification.json").read_text(encoding="utf-8"))
+source_apk = ROOT / report["apk"]
+assert hashlib.sha256(source_apk.read_bytes()).hexdigest() == report["sha256"]
+info = dict(version="0.2.0", source=head, ruleApi=1, builtinMaps=["europe", "america", "eastasia"],
+            formalScenarios=95, androidDeviceExecution=False, apkCertificate="Android development certificate")
+(web / "release-info.json").write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8", newline="\n")
+shutil.copyfile(ROOT / "rewrite/RELEASE_20261020.md", web / "RELEASE_NOTES.md")
+apk = assets / "ew4-rewrite-0.2.0-20261020-arm64.apk"
+shutil.copyfile(source_apk, apk)
+archive = assets / "ew4-rewrite-0.2.0-20261020-web-win-x64.zip"
+with zipfile.ZipFile(archive, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as output:
+    for file in sorted(web.rglob("*")):
+        if file.is_file():
+            output.write(file, file.relative_to(web).as_posix())
+with zipfile.ZipFile(archive) as output:
+    assert output.testzip() is None
+    assert json.loads(output.read("release-info.json"))["source"] == head
+files = [dict(name=p.name, bytes=p.stat().st_size, sha256=hashlib.sha256(p.read_bytes()).hexdigest())
+         for p in (apk, archive)]
+(assets / "SHA256SUMS.txt").write_text("".join(f"{p['sha256']}  {p['name']}\n" for p in files), encoding="ascii", newline="\n")
+(assets / "release-manifest.json").write_text(json.dumps(dict(info, files=files), indent=2) + "\n", encoding="utf-8", newline="\n")
+print(json.dumps(dict(source=head, files=files)))

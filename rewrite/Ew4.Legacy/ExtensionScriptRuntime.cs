@@ -19,11 +19,14 @@ public sealed class ExtensionScriptRuntime : IRuleScriptRuntime
     private static Script NewScript() => new(CoreModules.Basic | CoreModules.Table | CoreModules.String | CoreModules.Math)
     { Options = { DebugPrint = _ => { } } };
 
-    public RuleScriptResult Run(string file, string function, RuleScriptContext context, Ew4Random random)
+    public void ValidateHandler(string file, string function) => Execute(file, function,
+        new("validation", null, null, 1, 1, 0, new Dictionary<string, long>()), new(1), true);
+    public RuleScriptResult Run(string file, string function, RuleScriptContext context, Ew4Random random) => Execute(file, function, context, random, false);
+    private RuleScriptResult Execute(string file, string function, RuleScriptContext context, Ew4Random random, bool validateOnly)
     {
         if (!sources.TryGetValue(file, out var source)) throw new RuleViolation("extension.lua_missing", file);
         var script = NewScript();
-        script.Globals.Set("load", DynValue.Nil); script.Globals.Set("loadfile", DynValue.Nil); script.Globals.Set("dofile", DynValue.Nil);
+        foreach (string name in new[] { "load", "loadstring", "loadfile", "dofile", "require" }) script.Globals.Set(name, DynValue.Nil);
         var math = script.Globals.Get("math").Table;
         math.Set("random", DynValue.Nil); math.Set("randomseed", DynValue.Nil);
         // Remove native bulk allocation helpers that bypass the VM instruction counter.
@@ -44,6 +47,38 @@ public sealed class ExtensionScriptRuntime : IRuleScriptRuntime
             return t;
         }
         ctx.Set("source", DynValue.NewTable(Combatant(context.Source))); ctx.Set("target", DynValue.NewTable(Combatant(context.Target)));
+        ctx.Set("playerCamp", context.PlayerCamp == null ? DynValue.Nil : DynValue.NewString(context.PlayerCamp));
+        ctx.Set("sourceId", context.SourceId == null ? DynValue.Nil : DynValue.NewString(context.SourceId));
+        ctx.Set("targetId", context.TargetId == null ? DynValue.Nil : DynValue.NewString(context.TargetId));
+        if (context.World is WorldState world)
+        {
+            ctx.Set("cell", DynValue.NewCallback((_, args) =>
+            {
+                double raw = args[args.Count - 1].Number;
+                if (!double.IsFinite(raw) || raw != Math.Truncate(raw) || raw < 0 || raw >= world.Cells.Count) throw new ScriptRuntimeException("Invalid cell index");
+                int index = (int)raw;var cell = world.Cells[index];var t = new Table(script);
+                t.Set("id", DynValue.NewNumber(index)); t.Set("owner", cell.Owner == null ? DynValue.Nil : DynValue.NewString(cell.Owner));
+                t.Set("camp", cell.Owner == null ? DynValue.Nil : DynValue.NewString(world.Factions.Single(f => f.Id == cell.Owner).Camp));
+                t.Set("kind", cell.BuildingKind == null ? DynValue.Nil : DynValue.NewString(cell.BuildingKind));
+                t.Set("level", DynValue.NewNumber(cell.BuildingLevel));t.Set("objective", DynValue.NewBoolean(cell.Objective));
+                t.Set("active", DynValue.NewBoolean(cell.Terrain.Active));t.Set("sea", DynValue.NewBoolean(cell.Terrain.Sea));return DynValue.NewTable(t);
+            }));
+            ctx.Set("unit", DynValue.NewCallback((_, args) =>
+            {
+                string id = args[args.Count - 1].String;var unit = world.Units.SingleOrDefault(u => u.Id == id);
+                if (unit == null) return DynValue.Nil;
+                var t = Combatant(unit.Combatant);t.Set("id", DynValue.NewString(unit.Id));t.Set("owner", DynValue.NewString(unit.Owner));
+                t.Set("cell", DynValue.NewNumber(unit.Cell));t.Set("camp", DynValue.NewString(world.Factions.Single(f => f.Id == unit.Owner).Camp));return DynValue.NewTable(t);
+            }));
+            ctx.Set("faction", DynValue.NewCallback((_, args) =>
+            {
+                string id = args[args.Count - 1].String;var f = world.Factions.SingleOrDefault(f => f.Id == id);
+                if (f == null) return DynValue.Nil;
+                var t = new Table(script);t.Set("id", DynValue.NewString(f.Id));t.Set("camp", DynValue.NewString(f.Camp));
+                t.Set("defeated", DynValue.NewBoolean(f.Defeated));t.Set("human", DynValue.NewBoolean(f.Human));
+                t.Set("money", DynValue.NewNumber(f.Resources.Money));t.Set("industry", DynValue.NewNumber(f.Resources.Industry));t.Set("food", DynValue.NewNumber(f.Resources.Food));return DynValue.NewTable(t);
+            }));
+        }
         var state = new Table(script);
         foreach (var pair in context.State) state.Set(pair.Key, DynValue.NewNumber(pair.Value));
         ctx.Set("state", DynValue.NewTable(state));
@@ -73,6 +108,7 @@ public sealed class ExtensionScriptRuntime : IRuleScriptRuntime
             Bounded(script.LoadString(source, null, file));
             var handler = script.Globals.Get(function);
             if (handler.Type != DataType.Function) throw new RuleViolation("extension.lua_function", file + ": " + function);
+            if (validateOnly) return new(0);
             var answer = Bounded(handler, DynValue.NewTable(ctx));
             var value = answer.Type == DataType.Table ? answer.Table.Get("value") : answer;
             if (value.Type == DataType.Boolean) value = DynValue.NewNumber(value.Boolean ? 1 : 0);

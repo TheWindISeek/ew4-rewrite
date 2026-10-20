@@ -42,6 +42,8 @@
 !/maps/**/*.html
 /maps/source_cache/
 /maps/**/runtime/
+/maps/eastasia_v[1-5]/
+/rewrite/content/eastasia/
 
 # Never add credentials or signing keys.
 .env

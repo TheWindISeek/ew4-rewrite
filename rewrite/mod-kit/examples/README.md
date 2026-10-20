@@ -1,5 +1,7 @@
 # 最小覆盖示例
 
+新增技能/标签、七技能将领、Lua和征服胜利条件可直接从[可打包规则示例](rule-extension/README.md)开始；详细字段见[API 1](../docs/porting/RULE_EXTENSIONS.md)。
+
 只换主菜单背景：在作者自己的空目录下创建 `client/ui/main.png`，保持原图比例与足够分辨率。执行：
 
 ```powershell

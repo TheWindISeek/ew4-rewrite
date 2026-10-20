@@ -4,6 +4,10 @@
 
 需要从旧文件或原生函数反查时，先读[原包入库/运行入口对照](porting/ENTRYPOINTS.md)，包括原SO基线、Ghidra标识和证据文件，避免混用不同库版本的地址。
 
+## 规则扩展API 1
+
+完整格式及源码映射见[规则接口指南](porting/RULE_EXTENSIONS.md)。主入口：`Ew4.Legacy/ExtensionLoader.cs`的Load/PatchCatalog/ValidateVictoryScripts，`ExtensionScriptRuntime.cs`的Run/Execute，`Ew4.Core/RuleExtensions.cs`的RuleEventBus和WorldSkillActions.Execute，`ExtensionVictory.cs`的Evaluate，`Ew4.ModTool/VictoryCommands.cs`的Run。UI在`wwwroot/skill-ui.js`及menus.commanderInfo/app.openUnitInfo/openSkillAction；将领不固定四技能位。
+
 ## 导入、转换、验证、存储
 
 | 源码路径 | 类/函数 | 负责内容 |

@@ -5,6 +5,23 @@ using System.Text.Json.Nodes;
 using System.Xml.Linq;
 using Ew4.Mods;
 
+if (args.ElementAtOrDefault(1) == "--identity-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { identityChecks = ModIdentityChecks.Run(Path.GetFullPath(args[0])), errors = 0 }));
+    return;
+}
+
+if (args.ElementAtOrDefault(1) == "--deletion-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { deletionModChecks = ModDeletionChecks.Run(Path.GetFullPath(args[0])), errors = 0 }));
+    return;
+}
+
+if (args.ElementAtOrDefault(1) == "--extension-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { extensionModChecks = ExtensionModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
+}
+
 if (args.ElementAtOrDefault(1) == "--jurisdiction-only")
 {
     Console.WriteLine(JsonSerializer.Serialize(new { jurisdictionModChecks = JurisdictionModChecks.Run(Path.GetFullPath(args[0])), errors = 0 }));

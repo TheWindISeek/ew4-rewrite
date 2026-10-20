@@ -8,6 +8,8 @@
 
 [BTL手工辖区指南](porting/BTL_JURISDICTIONS.md)提供逐格中心配置、导出/写回/撤销命令、JURI v1二进制协议、编号规则和函数入口。无扩展的旧BTL继续自动划分。
 
+[技能与胜负规则API 1](porting/RULE_EXTENSIONS.md)提供自定义标签、动态兵种/将领技能、外置Lua、布局、主动技能和VICT条件；含字段、事件、函数表及[完整示例](../examples/rule-extension/README.md)。
+
 ## 先选制作方式
 
 | 手里的材料 | 操作 | 不需要做什么 |
@@ -15,7 +17,7 @@
 | 修改后的APK | 主菜单Mod → 填标识/名称 → 导入APK → 等待校验 → 启用 | 不安装该APK、不先到电脑转换 |
 | 原assets资源 | 将修改文件按原相对路径压ZIP；根目录放原文件，或统一放assets下 | 不把原PKM直接改名PNG |
 | 已转换的rewrite资源 | 自建覆盖文件夹，放client/original/legacy/frontend，pack后导入/导出 | 不把DLL/SO当资源加载 |
-| 新技能/新兵种行为代码 | 根据源码索引修改规则并编译支持版本 | 单改贴图/描述不能生成行为 |
+| 自定义技能/标签/胜负规则 | 按API 1放rewrite/extension.json、定义与Lua，pack导入 | 支持事件内无需重新编译；超出接口需新支持版本 |
 
 标识例如`my-history-mod`，1～64位小写字母/数字/点/横线/下划线；不可使用builtin和系统保留名称。同一个项目更新保持ID，多个不相干项目不要复用ID。
 

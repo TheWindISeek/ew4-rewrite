@@ -7,8 +7,8 @@
   <title>欧陆战争4</title>
   <link rel="preload" href="/content/fonts/LXGWWenKai-Regular.ttf" as="font" type="font/ttf" crossorigin>
   <link rel="stylesheet" href="style.css?v=20261019.12">
-  <link rel="stylesheet" href="original-ui.css?v=20261020.1">
-  <link rel="stylesheet" href="mods.css?v=20261019.1">
+  <link rel="stylesheet" href="original-ui.css?v=20261020.3">
+  <link rel="stylesheet" href="mods.css?v=20261020.4">
 </head>
 <body>
   <section id="menu">
@@ -65,9 +65,14 @@
   <div id="notice" role="alert" hidden></div>
   <div id="mod-manager" class="modal" hidden><div class="dialog mod-dialog">
     <header class="menu-bar"><button id="mod-close" class="close-icon" title="关闭" aria-label="关闭"></button><h2>本地 Mod</h2></header>
-    <div class="mod-import-row"><label>标识<input id="mod-id" value="my-mod" maxlength="64" spellcheck="false" aria-label="Mod 标识"></label><label>名称<input id="mod-name" value="我的 Mod" maxlength="80" aria-label="Mod 名称"></label><button id="mod-import" class="native-command">导入</button><input id="mod-file" type="file" accept=".apk,.zip,.ew4mod" hidden></div>
+    <div class="mod-import-row"><label>标识<input id="mod-id" placeholder="自动识别" maxlength="64" spellcheck="false" aria-label="Mod 标识"></label><label>名称<input id="mod-name" placeholder="自动识别" maxlength="80" aria-label="Mod 名称"></label><button id="mod-select" class="native-command blue">选择文件</button><button id="mod-import" class="native-command" disabled>导入</button><input id="mod-file" type="file" accept=".apk,.zip,.ew4mod" hidden></div>
+    <div id="mod-file-name" aria-live="polite"></div>
     <div id="mod-progress" role="status" aria-live="polite"></div><div id="mod-list" aria-label="本地内容包"></div>
   </div></div>
+  <dialog id="mod-delete-confirm" class="dialog" aria-labelledby="mod-delete-title" aria-describedby="mod-delete-description">
+    <h2 id="mod-delete-title">删除 Mod</h2><p id="mod-delete-description"></p>
+    <div class="mod-confirm-actions"><button id="mod-delete-cancel" class="native-command blue" autofocus>取消</button><button id="mod-delete-submit" class="native-command red">删除</button></div>
+  </dialog>
   <div id="loading-screen" role="status" aria-label="载入" hidden><div class="loading-stage"><img src="content/ui/title.png" alt="欧陆战争4 拿破仑"><div id="loading-tip"></div><div id="loading-word"></div></div></div>
   <script src="camera.js"></script>
   <script src="map-surface.js"></script>
@@ -79,8 +84,8 @@
   <script src="menus.js?v=20261020.1"></script>
   <script src="commander-workflows.js?v=20261019.12"></script>
   <script src="tutorial.js"></script>
-  <script src="skill-ui.js?v=20261020.2"></script>
-  <script src="app.js?v=20261020.2"></script>
-  <script src="mods.js?v=20261019.1"></script>
+  <script src="skill-ui.js?v=20261020.3"></script>
+  <script src="app.js?v=20261020.3"></script>
+  <script src="mods.js?v=20261020.4"></script>
 </body>
 </html>

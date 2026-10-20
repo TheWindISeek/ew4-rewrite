@@ -134,6 +134,11 @@ public static class Ew4Combat
         var a = attacker;
         var d = defender;
         int ac = AttackCount(a), dc = AttackCount(d);
+        if (rules.Extensions != null)
+        {
+            ac = Math.Max(1, checked((int)rules.Extensions.Modify("combat.attack_count", "attack_count_add", ac, a, d, random)));
+            dc = Math.Max(1, checked((int)rules.Extensions.Modify("combat.attack_count", "attack_count_add", dc, d, a, random)));
+        }
         bool counter = !a.Profile.HasTrait("no_retaliation") && !d.Profile.HasTrait("no_retaliation")
             && distance >= d.Profile.MinimumRange && distance <= d.Profile.MaximumRange
             && d.Morale != -3 && !(d.Profile.Category == "fort" && d.ConstructionTurns > 0);

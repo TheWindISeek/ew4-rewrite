@@ -46,10 +46,13 @@ internal sealed class LegacyModImporter
         if (!names.Any(n => n.StartsWith("def_", StringComparison.Ordinal) || new[] { ".btl", ".png", ".pkm", ".pvr", ".bin", ".fnt", ".ini", ".mp3", ".wav", ".ogg" }.Contains(Path.GetExtension(n))))
             throw new InvalidDataException("未找到原版资源。请选择APK、assets目录ZIP或带mod.json的内容包。");
         report(new("working", "迁移剧本与将领数据"));
-        foreach (string path in source.Names.Where(p => p.StartsWith("rewrite/", StringComparison.Ordinal)))
+        var extensionPaths = new HashSet<string>(StringComparer.Ordinal);
+        foreach (string originalPath in source.Names.Where(p => p.StartsWith("rewrite/", StringComparison.Ordinal) || p.StartsWith("assets/rewrite/", StringComparison.Ordinal)))
         {
+            string path = originalPath.StartsWith("assets/", StringComparison.Ordinal) ? originalPath[7..] : originalPath;
+            if (!extensionPaths.Add(path)) throw new InvalidDataException("Duplicate extension file: " + path);
             if (!ModFiles.RuntimePath(path)) throw new InvalidDataException("Unsupported extension file: " + path);
-            ModFiles.Write(stage, path, source.Read(path));
+            ModFiles.Write(stage, path, source.Read(originalPath));
         }
         resources.CompleteCityLabels();
         resources.CheckMapReferences();

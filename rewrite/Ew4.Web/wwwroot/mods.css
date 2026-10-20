@@ -7,11 +7,20 @@
 .mod-import-row label{min-width:0;flex:1;font-size:12px;color:#343434}
 .mod-import-row input{display:block;box-sizing:border-box;width:100%;height:25px;margin-top:3px;padding:2px 6px;border:1px solid #6b6b65;border-radius:2px;background:#e6e6df;color:#252525;font-size:13px}
 .mod-import-row button{width:66px;height:29px;flex:none}
+#mod-file-name{font-size:11px;line-height:14px;color:#51514d;overflow-wrap:anywhere;max-height:28px;overflow:auto;flex:none}
+#mod-file-name:empty{display:none}
 #mod-progress{font-size:12px;line-height:16px;min-height:16px;overflow-wrap:anywhere;color:#343434;flex:none;max-height:32px;overflow:auto}
 #mod-list{min-height:0;overflow:auto;flex:1;border-top:1px solid #85857d}
 .mod-row{display:flex;align-items:center;gap:8px;padding:7px 0;border-bottom:1px solid #a7a79f;min-height:31px}
 .mod-row-info{flex:1;min-width:0}.mod-row-name{font-size:15px;color:#303030;overflow-wrap:anywhere}.mod-row-meta{font-size:11px;color:#51514d;margin-top:3px}
 .mod-row details{font-size:11px;color:#5a3d28;line-height:16px;overflow-wrap:anywhere}.mod-row summary{cursor:pointer}
 .mod-row button{width:60px;height:27px;flex:none;font-size:13px}.mod-row button:disabled{opacity:.6}
+.mod-row-actions{display:flex;gap:5px;flex:none}
+#mod-delete-confirm{width:300px;padding:16px;border:1px solid #9e9c98;inset:0;margin:auto;color:#404040}
+#mod-delete-confirm::backdrop{background:#0008}
+#mod-delete-title{font-size:17px;font-weight:normal}
+#mod-delete-description{font-size:13px;line-height:1.6;white-space:pre-line;overflow-wrap:anywhere;margin:12px 0}
+.mod-confirm-actions{display:flex;justify-content:flex-end;gap:10px}
+.mod-confirm-actions button{width:70px;height:30px;color:#fff;font-size:13px}
 @media(max-height:300px){.mod-dialog{height:250px;margin-top:-125px}}
 .chapter-list.extended-chapters{overflow-y:auto}.chapter-entry.custom-chapter{background-image:url('/content/ui/image_menu_hd/button_choosestage_france.png');background-size:100% 100%;display:flex;align-items:center;justify-content:center}

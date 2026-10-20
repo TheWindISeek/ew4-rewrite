@@ -134,14 +134,14 @@
             const x=Math.abs(Math.cos(angle))*w+Math.abs(Math.sin(angle))*h,y=Math.abs(Math.sin(angle))*w+Math.abs(Math.cos(angle))*h;
             bounds={left:-x,top:-y,right:x,bottom:y};
           }
-          const ratio=lib.pixelRatio||1,left=Math.floor(bounds.left/ratio)-1,top=Math.floor(bounds.top/ratio)-1;
-          const width=Math.ceil(bounds.right/ratio)-left+1,height=Math.ceil(bounds.bottom/ratio)-top+1;
+          const ratio=lib.pixelRatio||1,left=Math.floor(bounds.left/ratio)-3,top=Math.floor(bounds.top/ratio)-3;
+          const width=Math.ceil(bounds.right/ratio)-left+3,height=Math.ceil(bounds.bottom/ratio)-top+3;
           const canvas=document.createElement('canvas');canvas.width=width*density;canvas.height=height*density;
           const draw=canvas.getContext('2d');draw.scale(density,density);draw.translate(-left,-top);draw.globalAlpha=opacity;
           if(chinese){
             const height=Number(label.size),text=[...label.textZh],length=Number(label.letteringLength);
             draw.rotate(Number(label.angle||0)*Math.PI/180);
-            draw.font=height+'px "EW4 Extended"';draw.fontKerning='none';draw.textBaseline='middle';
+            draw.font=height+'px '+Ew4OriginalUI.fontFamily;draw.fontKerning='none';draw.textBaseline='middle';
             const widths=text.map(char=>draw.measureText(char).width),natural=widths.reduce((a,b)=>a+b,0);
             const scale=Math.min(1,length/natural),spacing=text.length>1?Math.max(0,(length-natural*scale)/(text.length-1)):0;
             draw.scale(scale,1);draw.fillStyle=label.sea?'#ffffff':'#303333';

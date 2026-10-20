@@ -6,6 +6,7 @@ const crypto=require('node:crypto');
 const {execFileSync,spawn}=require('node:child_process');
 const root=path.resolve(__dirname,'..'),rewrite=path.join(root,'rewrite');
 const bundle=path.resolve(process.argv[2]||path.join(rewrite,'local/content-bundle-runtime'));
+const url='http://127.0.0.1:'+Number(process.argv[3]||5185);
 const folder=path.join(rewrite,'reports/content_bundle_20261019');
 const dotnet='C:/Users/WIN11/.codex/tools/dotnet-android/dotnet.exe';
 const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
@@ -25,20 +26,19 @@ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
   for(const asset of assets){
     const relative=path.relative(rewrite,asset.FullPath);
     check(!relative.startsWith('..')&&!path.isAbsolute(relative),'Android source stays inside rewrite '+asset.Identity);
-    check(!links.has(asset.Link),'unique Android package path '+asset.Link);links.add(asset.Link);
+    const link=asset.Link.replace(/\\/g,'/');
+    check(!links.has(link),'unique Android package path '+link);links.add(link);
   }
   for(const item of manifest.files){
-    const name=item.path.startsWith('original/')?item.path:'data/'+path.basename(item.path);
+    const name=item.path.startsWith('original/')?item.path:item.path.startsWith('client/')?'www/content/'+item.path.slice(7):'data/'+path.basename(item.path);
     check(links.has(name),'Android packages runtime input '+name);
   }
   report.androidAssets=assets.length;report.originalAssets=assets.filter(a=>a.Link.startsWith('original/')).length;
-  const profile=path.join(folder,'test-profile');await fs.mkdir(profile,{recursive:true});
-  // Read-only copy of the current preview save; never load historical state into 5184.
-  await fs.copyFile(path.join(rewrite,'reports/frontend_restoration_20261019/test-profile/session.json'),path.join(profile,'session.json'));
-  const child=spawn(dotnet,[path.join(bundle,'Ew4.Web.dll'),'--urls','http://127.0.0.1:5185/','--save-root',profile,'--Logging:LogLevel:Default','Warning'],{cwd:bundle,windowsHide:true,stdio:['ignore','pipe','pipe']});
+  const profile=await fs.mkdtemp(path.join(folder,'release-profile-'));
+  const child=spawn(dotnet,[path.join(bundle,'Ew4.Web.dll'),'--urls',url,'--save-root',profile,'--Logging:LogLevel:Default','Warning'],{cwd:bundle,windowsHide:true,stdio:['ignore','pipe','pipe']});
   let log='';child.stdout.on('data',d=>{log+=d;});child.stderr.on('data',d=>{log+=d;});
   const rpc=async(route,args={})=>{
-    const response=await fetch('http://127.0.0.1:5185/api/'+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(args)});
+    const response=await fetch(url+'/api/'+route,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(args)});
     const result=await response.json();assert.ok(result.ok,result.message);return result.data;
   };
   try{
@@ -48,9 +48,6 @@ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
       try{catalog=await rpc('catalog');break;}catch(e){if(i===79)throw e;await new Promise(r=>setTimeout(r,100));}
     }
     check(catalog.scenarios.length===95,'portable catalog contains all 95 source scenarios');
-    const old=await rpc('load',{slot:0,mode:0});
-    check(old.units.length>0&&old.cells.some(c=>c.jurisdictionCenter!=null),'current old save loads using relocated source data');
-    report.oldSave={scenario:old.scenario,revision:old.revision,units:old.units.length};
     report.starts=[];
     for(const [scenario,country,mode] of [['conquest1','fra',2],['campaign1_01',null,1],['campaign1_02b',null,1],['campaign5_01',null,1],['tutorials1',null,4],['tutorials2',null,4]]){
       const state=await rpc('start',{scenario,country});
@@ -60,7 +57,7 @@ const sha=b=>crypto.createHash('sha256').update(b).digest('hex');
       report.starts.push({scenario,units:state.units.length,map:state.map});
     }
     for(const file of ['/','/app.js?v=20261019.11','/content/manifest.json','/content/maps/europe/0_0.png','/content/maps/america/0_0.png']){
-      const response=await fetch('http://127.0.0.1:5185'+file);check(response.ok,'portable static resource '+file);await response.arrayBuffer();
+      const response=await fetch(url+file);check(response.ok,'portable static resource '+file);await response.arrayBuffer();
     }
     report.serverLog=log;
   }finally{

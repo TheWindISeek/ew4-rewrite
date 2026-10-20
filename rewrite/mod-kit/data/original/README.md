@@ -33,6 +33,8 @@
 
 `skill1`～`skill4`使用0～39，`-1`为空；技能0对应`name_skill_01/desc_skill_01`，图标`skill_01.png`。编号40及以上会拒绝导入。技能效果在规则代码中实现，改名称、图标和说明不会自动生成技能效果。
 
+移植新的原生技能时，将不支持编号从XML槽清为-1，在包根`rewrite/extension.json`注册自己的JSON/Lua定义并用commanderBindings绑定；无需将技能塞回旧格式字段。数量/坐标可变，操作步骤和限制见[API 1指南](../../docs/porting/RULE_EXTENSIONS.md)。
+
 ## 一个可操作的属性修改
 
 在原资源副本的完整`def_commander.xml`里找到`id="1"`，只把`business="3"`改成`business="4"`。将该完整XML压入ZIP根目录，或放`assets/def_commander.xml`后压ZIP，在游戏Mod入口导入。文件选择器导入的是包，不能直接选单个XML。

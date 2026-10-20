@@ -71,6 +71,11 @@ def main():
     facilities = json.loads((runtime.REPORT/'facilities.json').read_text(encoding='utf-8'))
     cities = json.loads((runtime.REPORT/'cities.json').read_text(encoding='utf-8'))
     protected = {s['cell'] for s in cities+facilities}
+    translations = manifest['maps']['eastasia']['cityNames']
+    assert len(translations) == len(cities)
+    for city in cities:
+        names = translations[str(city['cell'])]
+        assert names['name'] == names['zh'] == city['name'] and names['en'].isascii() and names['en'].strip()
     landmarks = json.loads((runtime.REPORT/'mountain_landmark_cells.json').read_text(encoding='utf-8'))
     plan = json.loads((runtime.REPORT/'mountain_landmarks.json').read_text(encoding='utf-8'))['mountains']
     assert {m['name'] for m in landmarks} == {m['name'] for m in plan}

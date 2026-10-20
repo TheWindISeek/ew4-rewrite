@@ -110,8 +110,7 @@ internal static class LegacyBattleExtensions
     {
         var block = blocks.SingleOrDefault(b => b.Tag == "VICT");
         if (block == null) return null;
-        var data = System.Text.Json.JsonSerializer.Deserialize<VictoryEnvelope>(block.Payload, ExtensionLoader.Json)
-            ?? throw new RuleViolation("legacy.victory", "Missing VICT data");
+        var data = ExtensionLoader.ParseJson<VictoryEnvelope>(block.Payload);
         if (data.Schema != 1 || data.BaseSha256 != Convert.ToHexStringLower(SHA256.HashData(body)))
             throw new RuleViolation("legacy.victory", "VICT version/source mismatch");
         ExtensionLoader.ValidateVictory(data.Rules);

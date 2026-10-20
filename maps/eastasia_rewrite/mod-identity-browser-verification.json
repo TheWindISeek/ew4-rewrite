@@ -1,0 +1,36 @@
+{
+  "checks": [
+    "Native mod.json automatically fills ID and name before installation",
+    "Editing both values changes installed metadata",
+    "Real APK binary manifest supplies package ID, filename supplies readable fallback name",
+    "Portrait controls fit"
+  ],
+  "apkIdentity": {
+    "id": "com.easytech.dazpjsagiri",
+    "name": "大鏖战 老友版_1.6.6(1)",
+    "file": ""
+  },
+  "mobileFit": [
+    {
+      "id": "mod-id",
+      "width": 103.38908386230469,
+      "visible": true
+    },
+    {
+      "id": "mod-name",
+      "width": 103.38909912109375,
+      "visible": true
+    },
+    {
+      "id": "mod-select",
+      "width": 47.05987548828125,
+      "visible": true
+    },
+    {
+      "id": "mod-import",
+      "width": 47.059844970703125,
+      "visible": true
+    }
+  ],
+  "errors": []
+}

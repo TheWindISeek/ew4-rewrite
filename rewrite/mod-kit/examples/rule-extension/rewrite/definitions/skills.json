@@ -1,0 +1,22 @@
+[
+  {
+    "id": "example.repair", "nameKey": "战地修理", "descriptionKey": "恢复12点生命乘以技能等级，间隔两回合。",
+    "kind": "active", "target": "self", "range": 0, "cooldown": 2, "endsAction": false,
+    "cost": {"money": 3, "industry": 2, "food": 1},
+    "effects": [{"event": "skill.activate", "operation": "heal", "value": 12,
+                 "script": "rewrite/scripts/abilities.lua", "function": "repair"}]
+  },
+  {
+    "id": "example.siege", "nameKey": "攻坚", "descriptionKey": "对要塞的伤害提高25%。",
+    "effects": [{"event": "combat.modify_damage", "operation": "damage_multiplier",
+                 "script": "rewrite/scripts/abilities.lua", "function": "siege"}]
+  },
+  {
+    "id": "example.supply", "nameKey": "补给", "descriptionKey": "每个所属回合开始恢复3点生命。",
+    "effects": [{"event": "turn.start", "operation": "heal", "value": 3}]
+  },
+  {
+    "id": "example.income", "nameKey": "筹款", "descriptionKey": "每个所属回合开始获得5金钱。",
+    "effects": [{"event": "turn.start", "operation": "money", "value": 5}]
+  }
+]

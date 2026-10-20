@@ -27,7 +27,7 @@ const folder='E:/Workplace/game/o4mod/rewrite/reports/menu-compat-20261019'+(pro
       const res=await fetch('/api/mods').then(r=>r.json());return key?res.mods.find(m=>m.key===key):res.mods[0];
     },process.argv[2]||null);check(!!imported,'Actual APK imported on isolated server');
     await page.setViewportSize({width:1280,height:720});await page.locator('#mod-open').click();
-    await Promise.all([page.waitForNavigation({waitUntil:'load'}),page.locator('[data-mod-key="'+imported.key+'"] button').click()]);await ready();
+    await Promise.all([page.waitForNavigation({waitUntil:'load'}),page.locator('[data-mod-key="'+imported.key+'"] button').first().click()]);await ready();
     const mod=await snapshot();check(mod.main!==builtin.main&&mod.campaign!==builtin.campaign,'Real Mod textures differ');check(mod.css.includes(imported.key)&&!builtin.css.includes(imported.key),'CSS URLs isolated by resource revision');
     await menus('mod');
     const text=await page.evaluate(()=>{

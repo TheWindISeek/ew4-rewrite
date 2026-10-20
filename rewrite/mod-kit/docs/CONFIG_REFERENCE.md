@@ -6,6 +6,9 @@
 | --- | --- | --- |
 | 导入包标识/版本/文件哈希 | 根mod.json：schema/id/name/version/baseRevision/scenarios/files/warnings/logicRevision | ModStore.Seal/Validate |
 | 将领基础属性和四技能 | original/def_commander.xml：commander的id/name及能力/skill1～4 | LegacyCatalogConverter.Convert；LegacyRuntimeCatalog.FromJson |
+| 自定义技能/特性/Lua | rewrite/extension.json及其skills/traits/scripts引用 | ExtensionLoader.Load；RuleEventBus.Modify/Dispatch；[完整接口](porting/RULE_EXTENSIONS.md) |
+| 动态技能数量/顺序/坐标 | extension.json的unitBindings/commanderBindings/presentation | ExtensionLoader.PatchCatalog；Ew4SkillUI.layout；不限制将领四槽 |
+| 自定义征服/战役胜负 | extension.json的victoryRules或BTL的VICT v1 | ExtensionVictory.Evaluate；LegacyBattle.WithVictory；[规则及CLI](porting/RULE_EXTENSIONS.md) |
 | 将领名字 | original/stringtable_cn.ini：name_Napoleon等 | ClientContent.Label；Menus.text |
 | 将领头像 | client/ui/commanders1_hd/Napoleon.png或commanders2_hd；manifest.atlases决定图集 | Menus.portrait |
 | 公主/素描 | client/ui/princesses_hd、princesses_sketch_hd | Menus.portrait及名册界面 |
@@ -41,7 +44,7 @@
 
 完整控件/命令绑定、规则/表现包组合和新的完整剧本容器尚在规划，不能向当前mod.json添加想象的字段启用。手工辖区已通过BTL的JURI扩展实现。大改UI需一起处理布局、点击区、交互和配套资源，见[移植指南](porting/README.md)。
 
-当前没有`skills.json`脚本入口、`jurisdiction.json`公共地图分区文件或`combat.random.uniform`开关。四技能效果、辖区优先级、外交、解散返还和随机取样属于后端代码；具体类见[函数索引](SOURCE_INDEX.md)。不要在JSON里发明同名字段并期待生效。
+技能/特性已支持`rewrite/extension.json`显式注册定义与Lua，可配置胜负条件；字段必须符合[API 1指南](porting/RULE_EXTENSIONS.md)，不是任意位置的skills.json都自动加载。当前没有`jurisdiction.json`公共地图分区文件或`combat.random.uniform`开关。辖区优先级、外交、解散返还和随机取样仍由后端代码控制；具体类见[函数索引](SOURCE_INDEX.md)。
 
 当前基础攻击正常区间有min钳位，但分布偏向下限；反向端点未完整拒绝。最终伤害还受攻击次数/修正/倍率影响。字段minatk/maxatk不能当最终伤害硬上下限使用。
 

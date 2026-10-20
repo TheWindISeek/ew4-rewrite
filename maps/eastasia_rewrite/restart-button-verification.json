@@ -1,0 +1,23 @@
+{
+  "checks": [
+    {
+      "width": 1280,
+      "height": 720,
+      "fontSize": "12px",
+      "leftInset": 16,
+      "rightInset": 16,
+      "ink": 925,
+      "color": "rgb(255, 255, 255)"
+    },
+    {
+      "width": 405,
+      "height": 829,
+      "fontSize": "12px",
+      "leftInset": 15.999995923813007,
+      "rightInset": 16.000017323794715,
+      "ink": 925,
+      "color": "rgb(255, 255, 255)"
+    }
+  ],
+  "pageErrors": []
+}

@@ -1,0 +1,4 @@
+{
+  "commander": {"mode": "grid", "columns": 2, "gap": 4, "iconSize": 19, "maxHeight": 74},
+  "unit": {"mode": "list", "columns": 1, "gap": 4, "iconSize": 19, "maxHeight": 130}
+}

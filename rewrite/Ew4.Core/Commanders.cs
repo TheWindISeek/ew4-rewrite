@@ -31,8 +31,10 @@ public static class Ew4Commander
         var effects = Resolve(commander, unit.Profile.Category);
         return unit with
         {
-            Skills = commander.Skills.ToArray(),
-            SkillSlots = commander.SkillSlots.ToArray(),
+            Skills = commander.Skills.Where(s => !commander.LegacySkillOverrides.Contains(s)
+                && !unit.Profile.LegacySkillOverrides.Contains(s)).ToArray(),
+            SkillSlots = commander.SkillSlots.Count > 0 ? commander.SkillSlots.ToArray()
+                : commander.Skills.Select((id, i) => new SkillSlot(id, "legacy." + i)).ToArray(),
             Stars = commander.Stars.TryGetValue(unit.Profile.Category, out int stars) ? stars : 0,
             AttackBonus = checked(unit.AttackBonus + effects.AttackEquipment),
             DefenseBonus = checked(unit.DefenseBonus + effects.DefenseEquipment),

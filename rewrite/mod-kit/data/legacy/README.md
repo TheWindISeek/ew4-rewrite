@@ -6,6 +6,8 @@
 
 基础文件建议只读；规则变化会影响存档兼容性，因此使用新的规则指纹目录。此目录没有支付、广告或原包可执行代码。
 
+新增技能不必手改完整catalog：用包根`rewrite/extension.json`的定义/绑定/Lua覆盖层，见[API 1指南](../../docs/porting/RULE_EXTENSIONS.md)。原XML仍兼容四槽，覆盖层可扩展数量和位置；支持事件内无需重新编译游戏。
+
 ## catalog.json的具体结构
 
 | 节点 | 内容 | 注意 |

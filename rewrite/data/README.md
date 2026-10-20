@@ -4,15 +4,26 @@ Everything needed to run and package the current rewrite is stored under
 `rewrite/`. The preserved APK workspace and reverse-engineering reports are
 not runtime or packaging inputs.
 
-- `original/`: 115 byte-identical original data files, including 95 scenario
-  files, terrain maps and XML/INI definitions required by `ClientContent`.
+- `original/`: the original 95 scenarios, terrain maps and XML/INI definitions,
+  plus the reviewed East Asia BIN and geographic label positions. Map and city
+  catalogs include East Asia; Europe, America and the scenario list are unchanged.
 - `legacy/`: the imported runtime catalog and the two extracted rule tables.
   Its `animations/` directory is an intermediate research export, not a
   packaging input.
 - `client/`: the converted maps, textures, fonts, animations, sounds, UI and
   frontend manifests used by the renderer.
-- `runtime-content.json`: sizes and SHA-256 hashes for the 118 runtime data
-  inputs in `original/` and `legacy/`.
+- `runtime-content.json`: sizes and SHA-256 hashes for all packaged runtime
+  inputs in `original/`, `client/` and the three runtime `legacy/` files.
+
+East Asia is built in alongside Europe and America. Its 278 settlements,
+terrain, rivers, crossings and bilingual labels are available to future
+scenarios; no formal East Asia campaign or conquest is added. Authoring inputs
+and reproducible generation tools are documented in `maps/eastasia_rewrite`.
+`original/eastasia.map.json` is the editable, politically neutral settlement
+and crossing template. As in the original format, the BIN stores terrain;
+scenario authors must include the desired cities, facilities and crossings
+in their BTL site records. The client map directory also contains the city
+and facility placement tables.
 
 The logical reader names `original/...` and `data/...` are retained for Android
 compatibility. They now resolve to the files inside this directory. Moving

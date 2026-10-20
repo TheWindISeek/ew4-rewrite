@@ -8,7 +8,10 @@
 | 基础资源版本不匹配 | mod.json.baseRevision | 当前工具重新导入原资源，不手工替换hash |
 | 源哈希不匹配 | original XML与legacy/catalog.json.source_sha256 | 重新走原资源转换；LegacyRuntimeCatalog.VerifySources |
 | 文件类型或哈希不符 | mod.json.files列出的文件 | 修改后重新pack；不要改完直接在哈希目录刷新 |
-| 未实现技能ID | def_commander.xml的skill1～4 | 当前范围0～39，空位-1；新机制需要规则代码 |
+| 未实现技能ID | def_commander.xml的skill1～4 | 原格式0～39，空位-1；新原生编号清为-1后通过[API 1](porting/RULE_EXTENSIONS.md)定义/绑定JSON与Lua，不靠改名冒充效果 |
+| extension.lua_missing / lua_function | extension.json的scripts、effect/VICT的script/function | VICT专用脚本也须登记；检查大小写与全局函数名，重新打包 |
+| extension.victory_reference | 条件的国家/单位/格子ID | 从该剧本初始API/存档查ID，格子用整图绝对编号；不是国家简称或裁切内编号 |
+| extension.slot / instance | unitBindings与commanderBindings | 同单位合并后实例ID不可重复，建议unit./commander.前缀 |
 | XML结构错误 | 报错文件、行/列及父子标签 | 非标准声明和相连属性已兼容；缺失结束标签等结构错误仍拒绝 |
 | Invalid unit profile | def_army.xml的strength等字段 | 精确值-999已映射为开火后消耗的一次性武器；其他负值仍需确认语义，不能随便改成正数 |
 | 城市名称不存在 | def_areaname.xml及BTL地点ID | 已保留据点并允许名称为空；同图同剧本同位置/ID/类型时才补原名，Mod已有名称优先 |

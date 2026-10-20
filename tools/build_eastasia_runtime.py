@@ -253,7 +253,7 @@ def background(land,rivers,placements,bridges,mask):
     return sea,mask
 
 
-def map_resources(image,data):
+def map_resources(image,data,placements):
     manifest = json.loads((BASE/'client/manifest.json').read_text(encoding='utf-8'))
     terrain_defs = list(ET.parse(BASE/'original/def_mapterrain.xml').getroot())
     overlays=[]
@@ -281,8 +281,7 @@ def map_resources(image,data):
             tiles.append(dict(x=left+IMAGE_LEFT,y=top+IMAGE_TOP,width=tile.width,height=tile.height,file=f'maps/eastasia/{filename}'))
     labels=json.loads((REPORT/'geographic_labels.json').read_text(encoding='utf-8'))
     translations=json.loads((REPORT/'city_names.json').read_text(encoding='utf-8'))
-    cities=json.loads((REPORT/'cities.json').read_text(encoding='utf-8'))
-    city_names={str(c['cell']):dict(name=c['name'],zh=c['name'],en=translations['byCityId'].get(str(c['city_id']),translations['names'][c['name']])) for c in cities}
+    city_names={str(c['cell']):dict(name=c['name'],zh=c['name'],en=translations['byCityId'].get(str(c['city_id']),translations['names'][c['name']])) for c in placements}
     manifest['maps']['eastasia']=dict(width=image.width,height=image.height,pixelRatio=1,tiles=tiles,overlays=overlays,labels=labels,cityNames=city_names)
     manifest['strings']['text_conquest_age_7']='东亚地图检查'
     manifest['strategic']['conquest7']=dict(name='conquest 7',file='conquest7.btl',map='3',hide='0',centerx='284',centery='160',scale='1',age='',agex='0',agey='0')
@@ -292,6 +291,8 @@ def map_resources(image,data):
 
 def make_preview(data,placements,image,facilities,bridges):
     maps=ET.parse(BASE/'original/def_map.xml').getroot()
+    for entry in list(maps):
+        if entry.get('name')=='eastasia':maps.remove(entry)
     ET.SubElement(maps,'map',id='3',name='eastasia',continent='eastasia',file='eastasia.bin',
                   w=str(IMAGE_W),h=str(IMAGE_H),textpos='maptextpos_eastasia.xml')
     write_xml('def_map.xml',maps)
@@ -301,6 +302,9 @@ def make_preview(data,placements,image,facilities,bridges):
                       ('index','libName','colorAlphaPercent','tx','ty','left','top','width','height')})
     write_xml('maptextpos_eastasia.xml',textpos)
     names=ET.parse(BASE/'original/def_areaname.xml').getroot()
+    city_ids={str(city['city_id']) for city in placements}
+    for entry in list(names):
+        if entry.get('id') in city_ids:names.remove(entry)
     for city in placements:
         ET.SubElement(names,'areaname',id=str(city['city_id']),name=city['name'])
     write_xml('def_areaname.xml',names)
@@ -470,7 +474,7 @@ def main():
     write_json(REPORT/'bridge-verification.json',bridge_report)
     print('Rendering coast, river, bridges and city anchors',flush=True)
     image,mask=background(land,rivers,placements,bridges,mask)
-    manifest,overlays=map_resources(image,data)
+    manifest,overlays=map_resources(image,data,placements)
     write_json(REPORT/'cities.json',placements)
     write_json(OUT/'client/maps/eastasia/cities.json',placements)
     write_json(REPORT/'geographic_adjustments.json',adjustments)

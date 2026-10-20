@@ -28,7 +28,7 @@ public sealed partial class ModStore
             catch (Exception e) when (Recoverable(e)) { progress = new("error", "上次Mod不可用，已回到原版: " + e.Message); }
         }
     }
-    private static bool Recoverable(Exception e) => e is IOException or ArgumentException or JsonException or InvalidOperationException or FormatException or OverflowException or Ew4.Core.RuleViolation
+    private static bool Recoverable(Exception e) => e is IOException or InvalidDataException or UnauthorizedAccessException or ArgumentException or JsonException or InvalidOperationException or FormatException or OverflowException or Ew4.Core.RuleViolation
         or KeyNotFoundException or NullReferenceException or IndexOutOfRangeException or System.Xml.XmlException;
     private string Folder(string key)
     {
@@ -48,6 +48,9 @@ public sealed partial class ModStore
             {
                 var request = string.IsNullOrWhiteSpace(body) ? new JsonObject() : ModFiles.Object(System.Text.Encoding.UTF8.GetBytes(body));
                 if ((string?)request["op"] == "activate") Activate((string?)request["key"]);
+                if ((string?)request["op"] == "delete") Delete((string?)request["key"]);
+                if ((string?)request["op"] == "import") ImportPrepared((string?)request["token"], (string?)request["id"], (string?)request["name"]);
+                if ((string?)request["op"] == "discard") DiscardPrepared((string?)request["token"]);
                 return Status();
             }
             lock (gate)
@@ -90,7 +93,28 @@ public sealed partial class ModStore
             activeKey = key; activeManifest = m; game = candidate;
         }
     }
+    public void Delete(string? key)
+    {
+        if (string.IsNullOrEmpty(key) || key == "builtin") throw new InvalidDataException("不能删除内置原版");
+        if (!importing.Wait(0)) throw new InvalidOperationException("导入完成后才能删除Mod");
+        try
+        {
+            lock (gate)
+            {
+                string folder = Folder(key);
+                if (!Directory.Exists(folder)) throw new DirectoryNotFoundException("此Mod已不存在，请刷新列表");
+                if ((File.GetAttributes(folder) & FileAttributes.ReparsePoint) != 0)
+                    throw new InvalidDataException("不能删除链接目录");
+                if (string.Equals(activeKey, key, StringComparison.OrdinalIgnoreCase)) Activate(null);
+                Directory.Delete(folder, recursive: true);
+                progress = new("complete", "已删除Mod，存档已保留");
+            }
+        }
+        finally { importing.Release(); }
+    }
     public void BeginImport(string path, string id, string name, bool deleteSource = false)
+        => BeginImportCore(path, id, name, deleteSource, renamePackage: false);
+    private void BeginImportCore(string path, string id, string name, bool deleteSource, bool renamePackage)
     {
         if (!importing.Wait(0)) throw new InvalidOperationException("已有导入任务正在运行");
         lock (gate) progress = new("working", "正在检查文件");
@@ -98,7 +122,7 @@ public sealed partial class ModStore
         {
             try
             {
-                var info = ImportCore(path, id, name, p => { lock (gate) progress = p; });
+                var info = ImportCore(path, id, name, p => { lock (gate) progress = p; }, renamePackage);
                 lock (gate) progress = new("complete", "导入并校验完成，请选择启用", Key: info.Key);
             }
             catch (Exception e) { lock (gate) progress = new("error", e.Message); }
@@ -109,7 +133,7 @@ public sealed partial class ModStore
     {
         importing.Wait(); try { return ImportCore(path, id, name, report ?? (_ => { })); } finally { importing.Release(); }
     }
-    private ModInfo ImportCore(string path, string id, string name, Action<ImportProgress> report)
+    private ModInfo ImportCore(string path, string id, string name, Action<ImportProgress> report, bool renamePackage = false)
     {
         string stage = Path.Combine(root, ".staging-" + Guid.NewGuid().ToString("N")); Directory.CreateDirectory(stage);
         try
@@ -118,7 +142,9 @@ public sealed partial class ModStore
             if (source.Contains("mod.json"))
             {
                 var incoming = JsonSerializer.Deserialize<ModManifest>(source.Read("mod.json"), ModFiles.Json) ?? throw new InvalidDataException("清单无效");
-                ModFiles.Write(stage, "mod.json", source.Read("mod.json"));
+                if (renamePackage && (incoming.Id != id || incoming.Name != name))
+                    ModFiles.WriteJson(stage, "mod.json", incoming with { Id = ModFiles.Identifier(id), Name = name });
+                else ModFiles.Write(stage, "mod.json", source.Read("mod.json"));
                 foreach (string f in incoming.Files.Keys)
                 {
                     if (!ModFiles.RuntimePath(ModFiles.PathName(f))) throw new InvalidDataException("不支持的资源路径: " + f);

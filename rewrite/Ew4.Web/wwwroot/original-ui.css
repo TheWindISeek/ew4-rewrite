@@ -1,5 +1,5 @@
 @font-face{font-family:"EW4 Extended";src:url("/content/fonts/LXGWWenKai-Regular.ttf") format("truetype");font-display:block}
-:root{font-family:"EW4 Extended";font-synthesis:none}
+:root{font-family:"SimSun","Songti SC","Noto Serif CJK SC",serif;font-synthesis:none}
 input,select,textarea{font-family:inherit;font-synthesis:none}
 .original-text{display:inline-flex;vertical-align:middle;flex:none;line-height:0;max-width:100%;pointer-events:none}
 .original-text canvas{display:block;max-width:100%;height:auto!important;object-fit:contain}
@@ -90,6 +90,8 @@ input,select,textarea{font-family:inherit;font-synthesis:none}
 #campaign-intro::before{content:"";position:absolute;left:51px;top:-6.8px;width:303px;height:105px;border:12.5px solid transparent;border-image:url("/content/ui/image_ui_hd/board_dialog_ex.png") 25 fill stretch;z-index:-1;pointer-events:none}
 #campaign-battles .country-entry{font-size:13px}
 .pause-dialog #turn{display:flex;justify-content:center;align-items:center;padding:12px 0 0;white-space:nowrap}
+.pause-dialog>button{color:#ffffff}
+.pause-dialog>#restart{font-size:12px;padding-inline:12px}
 #hq-medals{right:0;top:0;height:21px;padding:0 4px;background:transparent;overflow:hidden;gap:3px}
 #hq-medals>.original-text{height:21px;align-items:center}
 #hq-medals img{flex:none;object-fit:contain}
@@ -178,6 +180,7 @@ input,select,textarea{font-family:inherit;font-synthesis:none}
 .commander-skills.extension-skills{overflow:auto;scrollbar-width:thin;height:74px;max-height:74px;display:grid;grid-template-columns:repeat(var(--skill-columns,1),minmax(0,1fr));gap:var(--skill-gap,2px);align-content:start}
 .commander-skills.extension-skills .skill-row{width:auto;min-width:0;height:max(20px,var(--skill-icon,19px));padding-left:calc(var(--skill-icon,19px) + 3px);padding-right:20px}
 .commander-skills.extension-skills .skill-row>img{width:var(--skill-icon,19px);height:var(--skill-icon,19px);object-fit:contain}
+.commander-skills.extension-skills .skill-row>.original-text{flex:1;min-width:0;max-width:100%}
 .extension-skills[data-layout=positioned]{display:block;overflow:auto}
 .positioned-skill-surface{position:relative;min-width:100%}
 .positioned-skill-surface>.skill-row,.positioned-skill-surface>.unit-skill-row{position:absolute;width:150px!important}
@@ -188,7 +191,7 @@ input,select,textarea{font-family:inherit;font-synthesis:none}
 .unit-skill-row>img{flex:none;object-fit:contain;width:var(--skill-icon,19px);height:var(--skill-icon,19px)}
 .unit-skill-row>.original-text{max-width:calc(100% - var(--skill-icon,19px) - 5px)}
 #actions{max-width:94vw;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
-#actions .active-skill-button{flex:none;display:grid;place-items:center;background:url("content/ui/image_ui_hd/button_info.png") center/100% 100% no-repeat}
+#actions .active-skill-button{flex:none;display:grid;place-items:center;background:url("content/ui/image_recruit_hd/button_info.png") center/100% 100% no-repeat}
 #actions .active-skill-button>img{width:23px;height:23px;object-fit:contain}
 .skill-action-description{position:absolute;inset:7px 8px 25px;display:flex;flex-direction:column;gap:7px;overflow:auto}
 .skill-action-cost{display:flex;justify-content:center;gap:14px}
@@ -216,7 +219,7 @@ input,select,textarea{font-family:inherit;font-synthesis:none}
 .regroup-confirm{display:flex;align-items:center;flex-direction:column;gap:3px;padding-top:3px}
 .native-layout[data-layout=form_regroup] [data-native-id=lbox_general]{width:520px!important}
 .native-layout[data-layout=form_princess] [data-native-id^=lbox_princess]{width:372px!important}
-.native-layout[data-layout=form_shop] [data-native-id=btn_buy]{z-index:5;box-shadow:0 1px 3px #3338}
+.native-layout[data-layout=form_shop] [data-native-id=btn_buy]{z-index:5;box-shadow:none}
 .native-layout .native-button{display:flex}
 .dialog{--popup-rest:scale(var(--ui-scale));--popup-start:scale(calc(var(--ui-scale)*.15));--popup-overshoot:scale(calc(var(--ui-scale)*1.03))}
 .popup-opening{animation:native-popup-open 200ms ease-out both}

@@ -1,0 +1,527 @@
+{
+  "checks": [
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_seller",
+      "name": "金星奖章",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_seller",
+      "name": "大医药包",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_seller",
+      "name": "医药包",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_seller",
+      "name": "医药包",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_seller",
+      "name": "烈酒",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_seller",
+      "name": "拿破仑法典",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_seller",
+      "name": "战马",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_buyer",
+      "name": "战马",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_buyer",
+      "name": "战马",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_buyer",
+      "name": "战马",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_buyer",
+      "name": "战马",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_buyer",
+      "name": "黄金权杖",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_buyer",
+      "name": "黄金权杖",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_buyer",
+      "name": "黄金权杖",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_buyer",
+      "name": "黄金权杖",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 1280,
+        "height": 720
+      },
+      "grid": "grid_buyer",
+      "name": "皇冠",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_seller",
+      "name": "金星奖章",
+      "leftError": 0.011138916015625,
+      "rightError": 0.011138916015625,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_seller",
+      "name": "大医药包",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_seller",
+      "name": "医药包",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_seller",
+      "name": "医药包",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_seller",
+      "name": "烈酒",
+      "leftError": 0.0111083984375,
+      "rightError": 0.01116943359375,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_seller",
+      "name": "拿破仑法典",
+      "leftError": 0.011138916015625,
+      "rightError": 0.011138916015625,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_seller",
+      "name": "战马",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_buyer",
+      "name": "战马",
+      "leftError": 0.011138916015625,
+      "rightError": 0.01114654541015625,
+      "joinError": 0.011138916015625,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_buyer",
+      "name": "战马",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0.011138916015625,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_buyer",
+      "name": "战马",
+      "leftError": 0.011138916015625,
+      "rightError": 0.011138916015625,
+      "joinError": 0.011138916015625,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_buyer",
+      "name": "战马",
+      "leftError": 0.011138916015625,
+      "rightError": 0.011138916015625,
+      "joinError": 0.011138916015625,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_buyer",
+      "name": "黄金权杖",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0.011138916015625,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_buyer",
+      "name": "黄金权杖",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0.011138916015625,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_buyer",
+      "name": "黄金权杖",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0.011138916015625,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_buyer",
+      "name": "黄金权杖",
+      "leftError": 0.011138916015625,
+      "rightError": 0.01114654541015625,
+      "joinError": 0.011138916015625,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    },
+    {
+      "viewport": {
+        "width": 405,
+        "height": 829
+      },
+      "grid": "grid_buyer",
+      "name": "皇冠",
+      "leftError": 0,
+      "rightError": 0,
+      "joinError": 0.011138916015625,
+      "shadow": "none",
+      "border": "0px",
+      "hidden": false,
+      "textWidth": "45px",
+      "buttonWidth": "45px"
+    }
+  ],
+  "errors": [],
+  "screenshots": [
+    "maps/eastasia_rewrite/game-shop-grid_seller-1280x720-0.png",
+    "maps/eastasia_rewrite/game-shop-grid_seller-1280x720-6.png",
+    "maps/eastasia_rewrite/game-shop-grid_buyer-1280x720-0.png",
+    "maps/eastasia_rewrite/game-shop-grid_buyer-1280x720-8.png",
+    "maps/eastasia_rewrite/game-shop-grid_seller-405x829-0.png",
+    "maps/eastasia_rewrite/game-shop-grid_seller-405x829-6.png",
+    "maps/eastasia_rewrite/game-shop-grid_buyer-405x829-0.png",
+    "maps/eastasia_rewrite/game-shop-grid_buyer-405x829-8.png"
+  ]
+}

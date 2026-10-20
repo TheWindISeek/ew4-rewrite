@@ -16,6 +16,7 @@ const root='E:/Workplace/game/o4mod',folder=root+'/rewrite/reports/real-mod-ui-2
   check(before.active&&before.mods.some(m=>m.active&&m.name==='欧陆战争4_1.6.6'),'real imported APK active');
   await page.locator('#mod-open').click();await page.locator('.mod-row').first().waitFor();await shot('actual-apk-manager');
   await page.locator('#mod-file').setInputFiles(root+'/大前线_1.6.6(1).apK');
+  await page.waitForFunction(()=>!document.getElementById('mod-import').disabled);await page.locator('#mod-import').click();
   await page.waitForFunction(async()=>{const s=await fetch('/api/mods').then(r=>r.json());return s.import.status==='error';},{},{timeout:90000});
   await page.waitForFunction(()=>document.querySelector('#mod-progress').textContent.includes('commander'));
   const after=await page.evaluate(()=>fetch('/api/mods').then(r=>r.json()));

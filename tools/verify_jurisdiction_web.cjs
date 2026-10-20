@@ -16,6 +16,8 @@ const root=path.resolve(__dirname,'..'),folder=path.join(root,'rewrite/reports/j
     const runs=(await fs.readdir(folder)).filter(n=>n.startsWith('import-'));
     const sample=path.join(folder,runs[0]);
     await page.locator('#mod-file').setInputFiles(path.join(sample,'assets.zip'));
+    await page.waitForFunction(()=>!document.getElementById('mod-import').disabled);
+    await page.locator('#mod-id').fill('web-juri');await page.locator('#mod-name').fill('手工辖区测试');await page.locator('#mod-import').click();
     await page.waitForFunction(async()=>{const r=await fetch('/api/mods').then(r=>r.json());return r.import.status!=='working'&&r.mods.some(m=>m.id==='web-juri');},null,{timeout:120000});
     await page.locator('[data-mod-key]:not([data-mod-key="builtin"]) button').first().waitFor();
     await Promise.all([page.waitForNavigation(),page.locator('[data-mod-key]:not([data-mod-key="builtin"]) button').first().click()]);await ready();

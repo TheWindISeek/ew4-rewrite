@@ -6,7 +6,7 @@ try
 {
     string? Option(string name) => args.FirstOrDefault(a => a.StartsWith("--" + name + "=", StringComparison.Ordinal))?.Split('=', 2)[1];
     string[] positional = args.Where(a => !a.StartsWith("--", StringComparison.Ordinal)).ToArray();
-    if (positional.Length == 0) throw new ArgumentException("命令: import | list | activate | export | pack | verify | jurisdiction-export <源.btl> <输出.json> | jurisdiction-apply <源.btl> <配置.json> <输出.btl> | jurisdiction-strip <源.btl> <输出.btl>；选项 --id= --name= --version= --base= --mods= --saves= --content=");
+    if (positional.Length == 0) throw new ArgumentException("命令: import | list | activate | export | pack | verify | jurisdiction-export <源.btl> <输出.json> | jurisdiction-apply <源.btl> <配置.json> <输出.btl> | jurisdiction-strip <源.btl> <输出.btl> | victory-export <源.btl> <输出.json> | victory-apply <源.btl> <规则.json> <输出.btl> | victory-strip <源.btl> <输出.btl>；选项 --id= --name= --version= --base= --mods= --saves= --content=");
     string data = Path.GetFullPath(Option("base") ?? Path.Combine(AppContext.BaseDirectory, "data"));
     byte[] Read(string p) => File.ReadAllBytes(Path.Combine(data, p));
     var baseline = new ModBase(Read, Directory.EnumerateFiles(data, "*", SearchOption.AllDirectories).Select(p => Path.GetRelativePath(data, p).Replace('\\', '/')));

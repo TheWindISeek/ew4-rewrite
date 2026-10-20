@@ -1,0 +1,212 @@
+{
+  "icons": [
+    {
+      "id": 0,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_01.png",
+      "ink": 283
+    },
+    {
+      "id": 1,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_02.png",
+      "ink": 571
+    },
+    {
+      "id": 2,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_03.png",
+      "ink": 531
+    },
+    {
+      "id": 3,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_04.png",
+      "ink": 314
+    },
+    {
+      "id": 4,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_05.png",
+      "ink": 392
+    },
+    {
+      "id": 5,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_06.png",
+      "ink": 426
+    },
+    {
+      "id": 6,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_07.png",
+      "ink": 322
+    },
+    {
+      "id": 7,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_08.png",
+      "ink": 453
+    },
+    {
+      "id": 8,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_09.png",
+      "ink": 408
+    },
+    {
+      "id": 9,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_10.png",
+      "ink": 453
+    },
+    {
+      "id": 10,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_11.png",
+      "ink": 446
+    },
+    {
+      "id": 11,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_12.png",
+      "ink": 350
+    },
+    {
+      "id": 12,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_13.png",
+      "ink": 621
+    },
+    {
+      "id": 13,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_14.png",
+      "ink": 536
+    },
+    {
+      "id": 14,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_15.png",
+      "ink": 293
+    },
+    {
+      "id": 15,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_16.png",
+      "ink": 514
+    },
+    {
+      "id": 16,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_17.png",
+      "ink": 525
+    },
+    {
+      "id": 17,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_18.png",
+      "ink": 479
+    },
+    {
+      "id": 18,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_19.png",
+      "ink": 325
+    },
+    {
+      "id": 19,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_20.png",
+      "ink": 450
+    },
+    {
+      "id": 20,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_21.png",
+      "ink": 651
+    },
+    {
+      "id": 21,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_22.png",
+      "ink": 595
+    },
+    {
+      "id": 22,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_23.png",
+      "ink": 581
+    },
+    {
+      "id": 23,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_24.png",
+      "ink": 590
+    },
+    {
+      "id": 24,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_25.png",
+      "ink": 529
+    },
+    {
+      "id": 25,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_26.png",
+      "ink": 436
+    },
+    {
+      "id": 26,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_27.png",
+      "ink": 445
+    },
+    {
+      "id": 27,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_28.png",
+      "ink": 364
+    },
+    {
+      "id": 28,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_29.png",
+      "ink": 391
+    },
+    {
+      "id": 29,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_30.png",
+      "ink": 530
+    },
+    {
+      "id": 30,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_31.png",
+      "ink": 707
+    },
+    {
+      "id": 31,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_32.png",
+      "ink": 288
+    },
+    {
+      "id": 32,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_33.png",
+      "ink": 546
+    },
+    {
+      "id": 33,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_34.png",
+      "ink": 617
+    },
+    {
+      "id": 34,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_35.png",
+      "ink": 662
+    },
+    {
+      "id": 35,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_36.png",
+      "ink": 535
+    },
+    {
+      "id": 36,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_37.png",
+      "ink": 598
+    },
+    {
+      "id": 37,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_38.png",
+      "ink": 566
+    },
+    {
+      "id": 38,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_39.png",
+      "ink": 559
+    },
+    {
+      "id": 39,
+      "src": "http://127.0.0.1:5190/content/r-63504e6bf6cadcbfd105903889d15281130b23ea67e2dee6614d43566e2f032f/ui/image_ui_hd/skill_40.png",
+      "ink": 547
+    }
+  ],
+  "distinctImages": 40,
+  "commanderSkillSlots": 1446,
+  "unmapped": [],
+  "explicitIconPriority": true,
+  "extensionIconPriority": true,
+  "unknownFallback": true,
+  "tooltip": true,
+  "errors": []
+}

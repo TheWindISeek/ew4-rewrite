@@ -1,5 +1,9 @@
 # 项目短锚点
 
+- **本轮0.2.0发布整合：先读 `rewrite/RELEASE_20261020.md`。** 最新API 1后端、Mod自动识别与确认删除、原版技能图标及界面修复、东亚内置底图已合并，准备同提交发布APK/Web。核心/客户端859/Mod77/识别21/删除29/扩展18/CLI9/东亚7809/Web独立9146通过。旧东亚v1–v5及重复覆盖目录从仓库索引清理，作者配置保留。Android已签名打包/逐资源与程序集核验，未设备运行。5190仍用兼容引擎与整合前data快照；5184未操作。最终下载与校验见Release。
+
+- **最新开放规则：先读 `reverse/EXTENSIONS_20261020.md`。** API 1已接兵种标签/主被动技能、动态将领槽及坐标、离线Lua、JSON/BTL VICT胜负条件、实例状态与Mod隔离；20KB指南/可打包示例/文件函数表同步工具包。核心309638（扩展43）/客户端859/既有Mod77/扩展包18/CLI9/浏览器20项6图通过，Android Compile通过；AI主动技能规划未接，不执行SO/DEX。5184 PID36912/extensions-delivery-runtime保留原版空会话，1741档案哈希一致，缓存.3；5185已收尾停止，无新APK。下方WIP与旧状态为历史。
+
 - **当前开发断点：`reverse/EXTENSIONS_WIP_20261020.md`。** 动态技能/Lua/VICT 扩展已写入，Web编译及27项专项通过；完整回归、真实Mod包、浏览器和Android验收及指南仍待完成。用户要求先备份Git/GitHub后继续；当前不是正式交付。未更新APK，未操作用户5184。
 
 - **最新BTL手工辖区：先读 `reverse/BTL_JURISDICTIONS_20261020.md`。** JURI v1扩展/逐格中心/显式优先，缺省自动；来源绑定、地形设施和块协议校验，港口独立，固定陆地边界。电脑工具新增jurisdiction-export/apply/strip，README及协议/函数指南已同步工具包。全核心309595（含专项228）、客户端859、Mod77、CLI28、浏览器8/2图通过，Android Compile通过，无新APK。5184 PID35616/jurisdiction-runtime保持原活动内容及无会话主菜单，1741档案哈希一致；5185 PID32196已停。下文为历史。

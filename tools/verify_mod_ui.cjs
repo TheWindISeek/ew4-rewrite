@@ -19,10 +19,11 @@ const root='E:/Workplace/game/o4mod',folder=root+'/rewrite/reports/mod-ui-202610
   check(await page.locator('.city-language-options button').count()===2,'language segmented controls');await page.locator('[data-language="zh"]').click();check(await page.locator('[data-language="zh"]').getAttribute('aria-pressed')==='true','language selection');await shot('settings-font');
   await page.locator('#close-settings').click();await page.locator('#mod-open').click();await page.locator('#mod-list .mod-row').first().waitFor();
   await page.locator('#mod-file').setInputFiles(archive);
+  await page.waitForFunction(()=>!document.getElementById('mod-import').disabled);await page.locator('#mod-import').click();
   await page.waitForFunction(async()=>{const s=await fetch('/api/mods').then(r=>r.json());return s.import.status==='error'||s.mods.some(m=>m.id==='test-mod')&&s.import.status!=='working';},{},{timeout:120000});
   const importStatus=await page.evaluate(()=>fetch('/api/mods').then(r=>r.json()));assert.notEqual(importStatus.import.status,'error',importStatus.import.message);
   await page.waitForFunction(()=>document.querySelectorAll('#mod-list .mod-row').length>=2);check(true,'browser local upload and progress');await shot('imported-package');
-  const mod=page.locator('.mod-row[aria-label="测试内容包"]');await mod.locator('button').click();await page.waitForEvent('load',{timeout:120000});await ready();
+  const mod=page.locator('.mod-row[aria-label="测试内容包"]');await mod.locator('button').first().click();await page.waitForEvent('load',{timeout:120000});await ready();
   check((await page.evaluate(()=>fetch('/api/mods').then(r=>r.json()))).active!=null,'activation persisted');
   await page.locator('[data-mode="2"]').click();await page.waitForFunction(()=>!conquestEntering);
   for(let i=0;i<3&&!await page.locator('[data-scenario="conquest7"]').count();i++){if(await page.locator('#conquest-next').isDisabled())break;await page.locator('#conquest-next').click();await page.waitForFunction(()=>!conquestEntering);}

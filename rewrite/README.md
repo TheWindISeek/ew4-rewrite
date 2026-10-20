@@ -1,5 +1,7 @@
 # 现代核心重构
 
+已提供[开放规则API 1](mod-kit/docs/porting/RULE_EXTENSIONS.md)：兵种标签、动态兵种/将领技能、外置Lua、技能列表/网格/自定义坐标和征服/战役胜负条件。包根`rewrite/extension.json`注册，电脑与Android共享后端；[完整示例](mod-kit/examples/rule-extension/README.md)可pack为离线Mod。无配置时保留原规则，AI主动选择扩展技能尚未接入。
+
 真实Mod兼容实测见 [当前修复与阻塞](../reverse/MOD_RESOURCE_COMPAT_20261019.md)：原版、皇凯、一战、大鏖战通过逐单人剧本开局、代表行动与保存重载，大前线和君临天下仍受新增技能/爵位等规则阻塞。大鏖战strength=-999已实现一次性飞弹。核心309367、共享59、浏览器16项16图通过，未完整通关或Android验收。详细制作资料见[配置字段](mod-kit/docs/CONFIG_REFERENCE.md)、[源码函数](mod-kit/docs/SOURCE_INDEX.md)、[排错表](mod-kit/docs/TROUBLESHOOTING.md)及各资源目录README；工具包已同步。
 
 离线 Mod 导入与管理已接：游戏主菜单左下角 **Mod**，电脑和 Android 共用资源转换/校验，可导入 APK、ZIP 和 `.ew4mod`。中文制作与使用说明见 [离线工具包](mod-kit/README.md)，开发验证及兼容边界见 [交付记录](../reverse/OFFLINE_MOD_IMPORT_20261019.md)。本轮 Android 仅编译及桥接检查，未更新安装包。

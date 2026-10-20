@@ -23,6 +23,8 @@ public sealed record ExtensionVictoryRules
     public VictoryCondition? Lose { get; init; }
     public string Priority { get; init; } = "defeat";
     public string DescriptionKey { get; init; } = "";
+    public int? RoundLimit { get; init; }
+    public bool RequirePlayerSurvival { get; init; } = true;
 }
 public static class ExtensionVictory
 {
@@ -54,7 +56,7 @@ public static class ExtensionVictory
                 var values = new Dictionary<string, long>(state.ExtensionState) { ["round"] = state.Round,
                     ["enemyUnits"] = state.Units.Count(u => state.Factions.Single(f => f.Id == u.Owner).Camp != camp),
                     ["enemyObjectives"] = WorldVictory.Facts(state, neutral).Where(f => f.Combatant && f.Camp != camp).Sum(f => (long)f.Objectives) };
-                return scripts!.Run(c.Script!, c.Function!, new("scenario.victory", null, null, 1, state.Round, 0, values), new Ew4Random(state.RandomState)).Value != 0;
+                return scripts!.Run(c.Script!, c.Function!, new("scenario.victory", null, null, 1, state.Round, 0, values, state, camp), new Ew4Random(state.RandomState)).Value != 0;
             default: throw new RuleViolation("extension.victory_type", "Unknown victory condition: " + c.Type);
         }
     }

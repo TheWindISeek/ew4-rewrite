@@ -10,8 +10,17 @@ string root = Path.GetFullPath(args.Length > 0 ? args[0] : ".");
 string baselineFolder = Path.GetFullPath(Path.Combine(root, "rewrite/data"));
 string source = Path.Combine(root, "rewrite/content/eastasia");
 string reports = Path.Combine(root, "maps/eastasia_rewrite");
-string work = Path.Combine(reports, "runtime");
+bool builtin = args.Contains("--builtin");
+string work = builtin ? Path.Combine(root, "build/release-20261020/map-test") : Path.Combine(reports, "runtime");
 Directory.CreateDirectory(work);
+if (builtin)
+{
+    string staged = source;
+    source = Path.Combine(work, "inspection-source");
+    Directory.CreateDirectory(Path.Combine(source, "original"));
+    foreach (string file in new[] { "conquest7.btl", "conquest7.names.xml", "def_battlelist.xml" })
+        File.Copy(Path.Combine(staged, "original", file), Path.Combine(source, "original", file), true);
+}
 var watch = Stopwatch.StartNew();
 int checks = 0;
 void Check(bool value, string message)
@@ -27,6 +36,14 @@ var files = new[] { "original", "legacy", "client" }
         .Select(p => Path.GetRelativePath(baselineFolder, p).Replace('\\', '/')))
     .Concat(["frontend/conquest-pages.json", "frontend/city-names.json"]);
 var baseline = new ModBase(BaselineRead, files);
+if (builtin)
+{
+    var template = MapDocument.Decode(baseline.Read("original/eastasia.map.json")).Map;
+    Check(template.Cells.Count(c => c.Name != null) == 278 && template.Cells.All(c => c.Owner == null),
+        "Built-in reusable settlements must be complete and politically neutral");
+    Check(baseline.Scenarios.Length == 95 && baseline.Content(baseline.Read, baseline.Scenarios).MapNames[3] == "eastasia",
+        "Built-in map is available without adding a formal scenario");
+}
 var before = new[] { "original/europe.bin", "original/america.bin", "original/def_map.xml", "client/manifest.json", "legacy/catalog.json" }
     .ToDictionary(p => p, p => SHA256.HashData(baseline.Read(p)));
 var store = new ModStore(baseline, Path.Combine(work, "mods"), Path.Combine(work, "saves"));
@@ -253,7 +270,7 @@ using (var response = JsonDocument.Parse(store.Dispatch("/api/start", "{\"scenar
     Check(state.GetProperty("map").GetString() == "eastasia" && state.GetProperty("cells").GetArrayLength() == 21488, "Client map state and presentation binding");
 }
 foreach (var (path, hash) in before) Check(SHA256.HashData(baseline.Read(path)).SequenceEqual(hash), "Baseline content changed: " + path);
-string archive = Path.Combine(root, "rewrite/content/eastasia-map.ew4mod");
+string archive = builtin ? Path.Combine(work, "inspection.ew4mod") : Path.Combine(root, "rewrite/content/eastasia-map.ew4mod");
 if (File.Exists(archive))
 {
     string old = archive + ".previous";
@@ -273,5 +290,5 @@ var result = new { checks, errors = 0, maps = 3, cells = 21488, cities = expecte
     elapsedSeconds = Math.Round(watch.Elapsed.TotalSeconds, 2), package = archive, packageBytes = new FileInfo(archive).Length,
     packageSha256 = Convert.ToHexStringLower(SHA256.HashData(File.ReadAllBytes(archive))), activeKey = info.Key,
     previewSaves = Path.Combine(work, "saves"), previewMods = Path.Combine(work, "mods") };
-File.WriteAllText(Path.Combine(reports, "runtime-verification.json"), JsonSerializer.Serialize(result, new JsonSerializerOptions(JsonSerializerDefaults.Web) { WriteIndented = true }));
+File.WriteAllText(Path.Combine(builtin ? work : reports, "runtime-verification.json"), JsonSerializer.Serialize(result, new JsonSerializerOptions(JsonSerializerDefaults.Web) { WriteIndented = true }));
 Console.WriteLine(JsonSerializer.Serialize(result));

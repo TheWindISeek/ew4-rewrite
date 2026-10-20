@@ -19,8 +19,7 @@ internal static class VictoryCommands
             new JsonSerializerOptions(ExtensionLoader.Json) { WriteIndented = true });
         else
         {
-            var rules = args[0] == "victory-strip" ? null : JsonSerializer.Deserialize<ExtensionVictoryRules>(File.ReadAllBytes(args[2]), ExtensionLoader.Json)
-                ?? throw new RuleViolation("extension.victory", "Missing victory rules");
+            var rules = args[0] == "victory-strip" ? null : ExtensionLoader.ParseJson<ExtensionVictoryRules>(File.ReadAllBytes(args[2]));
             bytes = battle.WithVictory(rules);
             string id = Path.GetFileNameWithoutExtension(input);
             byte[] Read(string path)

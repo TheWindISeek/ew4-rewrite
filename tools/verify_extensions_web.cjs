@@ -1,0 +1,97 @@
+'use strict';
+const fs=require('node:fs/promises'),path=require('node:path'),assert=require('node:assert/strict'),{createRequire}=require('node:module');
+const {chromium}=createRequire('C:/Users/WIN11/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/_probe.cjs')('playwright');
+const root=path.resolve(__dirname,'..'),folder=path.join(root,'rewrite/reports/extensions-20261020');
+(async()=>{
+  const fixture=JSON.parse(await fs.readFile(path.join(folder,'latest-import.json'),'utf8'));
+  const report={checks:0,errors:[],missing:[],screenshots:[],scope:'Independent 5185, real offline import and UI actions; no 5184 requests.'};
+  const check=(v,label)=>{assert(v,label);report.checks++;};
+  const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
+  const page=await browser.newPage({viewport:{width:1136,height:640}});
+  page.on('pageerror',e=>report.errors.push(e.message));
+  page.on('response',r=>{if(r.status()>=400)report.missing.push([r.status(),r.url()]);});
+  const ready=()=>page.waitForFunction(()=>typeof originalTextRenderer!=='undefined'&&originalTextRenderer&&catalog);
+  const shot=async(name)=>{await page.waitForTimeout(300);await page.screenshot({path:path.join(folder,name)});report.screenshots.push(name);};
+  async function waitMod(predicate){
+    let latest;
+    for(let i=0;i<240;i++){
+      latest=await (await page.request.get('http://127.0.0.1:5185/api/mods')).json();
+      if(predicate(latest))return latest;
+      if(latest.import.status==='error')throw new Error(latest.import.message);
+      await page.waitForTimeout(500);
+    }
+    throw new Error('Mod operation timed out: '+JSON.stringify(latest?.import));
+  }
+  try{
+    await page.goto('http://127.0.0.1:5185/');await ready();
+    await page.evaluate(()=>fetch('/api/mods?q='+encodeURIComponent(JSON.stringify({op:'activate',key:null})),{method:'POST'}));
+    await page.reload();await ready();
+    await page.locator('#mod-open').click();await page.locator('#mod-id').fill('web-extensions');await page.locator('#mod-name').fill('技能接口验证');
+    await page.locator('#mod-file').setInputFiles(fixture.archive);
+    await page.waitForFunction(()=>!document.getElementById('mod-import').disabled);
+    await page.locator('#mod-id').fill('web-extensions');await page.locator('#mod-name').fill('技能接口验证');await page.locator('#mod-import').click();
+    const installed=await waitMod(r=>r.import.status!=='working'&&r.mods.some(m=>m.id==='web-extensions'));
+    const installedKey=installed.mods.find(m=>m.id==='web-extensions').key;
+    await Promise.all([page.waitForNavigation(),page.locator('[data-mod-key="'+installedKey+'"] button').first().click()]);await ready();
+    check(await page.evaluate(async()=>{const r=await fetch('/api/mods').then(r=>r.json());return r.mods.some(m=>m.active&&m.id==='web-extensions');}),'offline archive enabled');
+    await page.locator('#headquarters').click();
+    await page.waitForFunction(()=>menus.data?.definitions?.some(d=>d.skills.length===7));
+    await page.evaluate(()=>{const d=menus.data.definitions.find(d=>d.skills.length===7);menus.commanderInfo(d,null);});
+    check(await page.locator('.commander-skills .skill-row').count()===7,'seven rendered commander slots');
+    check(await page.locator('.commander-skills').getAttribute('data-layout')==='positioned','author coordinates applied');
+    const box=await page.locator('.commander-skills').evaluate(e=>({h:e.clientHeight,scroll:e.scrollHeight,w:e.clientWidth}));
+    check(box.scroll>box.h&&box.w>0,'extra slots scroll without stretching dialog');
+    await page.locator('.commander-skills').evaluate(e=>e.scrollTop=e.scrollHeight);
+    await page.locator('.commander-skills .skill-info').last().click();
+    check(await page.locator('.skill-tooltip').isVisible(),'last skill description accessible');await shot('web-commander-desktop.png');
+    await page.locator('#close-detail').click();
+    await page.setViewportSize({width:844,height:390});
+    await page.evaluate(()=>{const d=menus.data.definitions.find(d=>d.skills.length===7);menus.commanderInfo(d,null);});
+    const mobile=await page.locator('#detail-modal .dialog').boundingBox();
+    check(mobile&&mobile.x>=0&&mobile.y>=0&&mobile.x+mobile.width<=845&&mobile.y+mobile.height<=391,'mobile commander dialog fits');
+    await shot('web-commander-mobile.png');await page.locator('#close-detail').click();
+    await page.evaluate(()=>showMain());await page.setViewportSize({width:1136,height:640});
+    await page.locator('[data-mode="2"]').click();await page.locator('.scenario-entry[data-scenario="conquest1"]').click();await page.waitForTimeout(700);
+    await page.locator('#confirm-country').click();await page.waitForFunction(()=>state&&!busy,null,{timeout:60000});
+    await page.evaluate(cell=>selectCell(cell,true),fixture.cell);
+    check(await page.locator('.active-skill-button').count()===1,'active skill toolbar entry');
+    check(await page.locator('.active-skill-button').isEnabled(),'active skill available');
+    await page.evaluate(()=>openUnitInfo(selected));
+    check(await page.locator('.unit-skill-row').count()===5,'unit traits and skills shown together');
+    await page.locator('.unit-skill-row').first().click();check(await page.locator('.skill-action-description').isVisible(),'unit description opens');
+    await page.locator('#close-detail').click();await page.locator('#close-detail').click();
+    await page.locator('.active-skill-button').click();await shot('web-active-confirm.png');
+    const funds=await page.evaluate(()=>state.factions.find(f=>f.id===state.playerFaction).resources);
+    await page.locator('#detail-confirm').click();await page.waitForFunction(()=>!busy&&document.getElementById('detail-modal').hidden);
+    const result=await page.evaluate(()=>({funds:state.factions.find(f=>f.id===state.playerFaction).resources,skill:selection.skills[0]}));
+    check(funds.money-result.funds.money===3&&funds.industry-result.funds.industry===2&&funds.food-result.funds.food===1,'UI skill spends exact backend cost');
+    check(result.skill.remainingCooldown===2&&!result.skill.available,'UI cooldown applied');
+    await page.evaluate(async()=>{await rpc('save',{mode:2,slot:1});await installState(await rpc('load',{mode:2,slot:1}));});
+    await page.evaluate(cell=>selectCell(cell,true),fixture.cell);
+    check(await page.locator('.active-skill-button').isDisabled(),'saved cooldown survives reload');
+    await page.setViewportSize({width:844,height:390});await page.evaluate(()=>openUnitInfo(selected));await shot('web-unit-mobile.png');
+    check(await page.evaluate(()=>{const c=document.getElementById('map'),d=c.getContext('2d').getImageData(0,0,c.width,c.height).data;let seen=0;for(let i=0;i<d.length;i+=400)if(d[i]+d[i+1]+d[i+2]>20&&d[i+3]>0)seen++;return seen>100;}),'battle canvas has rendered pixels');
+    await page.locator('#close-detail').click();await page.evaluate(()=>showMain());await page.locator('#mod-open').click();
+    await Promise.all([page.waitForNavigation(),page.locator('[data-mod-key="builtin"] button').click()]);await ready();
+    check(await page.evaluate(()=>Object.keys(catalog.extensionLayouts).length===0),'return to builtin clears extension presentation');
+    const example=JSON.parse(await fs.readFile(path.join(folder,'cli.json'),'utf8'));
+    await page.locator('#mod-open').click();
+    await page.locator('#mod-file').setInputFiles(example.package);
+    await page.waitForFunction(()=>!document.getElementById('mod-import').disabled);await page.locator('#mod-import').click();
+    const exampleStatus=await waitMod(r=>r.import.status==='complete'&&r.mods.some(m=>m.id==='rule-example'&&m.key===r.import.key));
+    const exampleKey=exampleStatus.mods.find(m=>m.id==='rule-example'&&m.key===exampleStatus.import.key).key;
+    await Promise.all([page.waitForNavigation({timeout:120000}),page.locator('[data-mod-key="'+exampleKey+'"] button').first().click()]);await ready();
+    await page.locator('#headquarters').click();await page.waitForFunction(()=>menus.data?.definitions?.some(d=>d.skills.length===7));
+    await page.evaluate(()=>menus.commanderInfo(menus.data.definitions.find(d=>d.skills.length===7),null));
+    check(await page.locator('.commander-skills').getAttribute('data-layout')==='grid','published example uses authored grid layout');
+    check(await page.locator('.commander-skills .skill-row').count()===7,'published example has seven real skill bindings');
+    check(await page.locator('.commander-skills .skill-row').evaluateAll(rows=>rows.every(row=>{const name=row.querySelector('.original-text'),info=row.querySelector('.skill-info');return name.getBoundingClientRect().right<=info.getBoundingClientRect().left+1;})),'grid names fit before info buttons');
+    await shot('web-example-grid-mobile.png');
+    await page.setViewportSize({width:1136,height:640});await shot('web-example-grid-desktop.png');
+    await page.locator('#close-detail').click();await page.evaluate(()=>showMain());await page.locator('#mod-open').click();
+    await Promise.all([page.waitForNavigation(),page.locator('[data-mod-key="builtin"] button').click()]);await ready();
+    check(report.errors.length===0,'no browser exceptions');check(report.missing.length===0,'no missing resources');
+  }catch(e){report.failure=e.message;report.progress=await page.locator('#mod-progress').textContent();await shot('web-failure.png');throw e;}
+  finally{await fs.writeFile(path.join(folder,'web.json'),JSON.stringify(report,null,2));await browser.close();}
+  console.log(JSON.stringify(report));
+})().catch(e=>{console.error(e);process.exitCode=1;});

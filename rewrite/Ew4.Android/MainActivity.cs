@@ -15,7 +15,6 @@ public sealed class MainActivity : Activity
     private WebView? web;
     private Lazy<ModStore>? store;
     private ImportBridge? bridge;
-    private string importId = "", importName = "";
     private bool picking;
     protected override void OnCreate(Bundle? savedInstanceState)
     {
@@ -58,7 +57,7 @@ public sealed class MainActivity : Activity
     private void Pick(string id, string name) => RunOnUiThread(() =>
     {
         if (picking || IsFinishing) return;
-        picking = true; importId = id; importName = name;
+        picking = true;
         var intent = new Intent(Intent.ActionOpenDocument); intent.AddCategory(Intent.CategoryOpenable); intent.SetType("*/*");
         StartActivityForResult(intent, 441);
     });
@@ -68,7 +67,6 @@ public sealed class MainActivity : Activity
         if (requestCode != 441) return; picking = false;
         if (resultCode != Result.Ok || data?.Data is not { } uri || store == null) return;
         web?.EvaluateJavascript("window.ew4ModFileSelected?.()", null);
-        string id = importId, name = importName;
         _ = Task.Run(() =>
         {
             string? temp = Path.Combine(CacheDir!.AbsolutePath, "mod-" + Guid.NewGuid().ToString("N"));
@@ -80,8 +78,12 @@ public sealed class MainActivity : Activity
                     byte[] buffer = new byte[65536]; long total = 0; int count;
                     while ((count = input.Read(buffer)) > 0) { total += count; if (total > 1024L * 1024 * 1024) throw new IOException("文件超过1GiB"); output.Write(buffer, 0, count); }
                 }
-                store.Value.BeginImport(temp, id, name, deleteSource: true); temp = null;
-                RunOnUiThread(() => web?.EvaluateJavascript("window.ew4ModFileQueued?.()", null));
+                string fileName = uri.LastPathSegment ?? "Mod.apk";
+                using (var cursor = ContentResolver!.Query(uri, [global::Android.Provider.OpenableColumns.DisplayName!], null, null, null))
+                    if (cursor?.MoveToFirst() == true) fileName = cursor.GetString(0) ?? fileName;
+                var prepared = store.Value.PrepareImport(temp, fileName); temp = null;
+                string preparedJson = System.Text.Json.JsonSerializer.Serialize(prepared, new System.Text.Json.JsonSerializerOptions(System.Text.Json.JsonSerializerDefaults.Web));
+                RunOnUiThread(() => web?.EvaluateJavascript("window.ew4ModFilePrepared?.(" + preparedJson + ")", null));
             }
             catch (Exception e) { string message = System.Text.Json.JsonSerializer.Serialize(e.Message); RunOnUiThread(() => web?.EvaluateJavascript("window.ew4ModImportError?.(" + message + ")", null)); }
             finally { if (temp != null) File.Delete(temp); }

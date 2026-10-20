@@ -28,8 +28,8 @@ public static class WorldVictory
     {
         if (rules.Custom == null) return Victory.Evaluate(playerCamp, state.Round,
             Facts(state, neutralCamps, rules.UnitObjectiveOwnership), rules);
-        if (rules.RoundLimit.HasValue && state.Round > rules.RoundLimit.Value
-            || !state.Factions.Any(f => f.Human && f.Camp == playerCamp && !f.Defeated)) return BattleOutcome.Defeat;
+        if (rules.Custom.RoundLimit.HasValue && state.Round > rules.Custom.RoundLimit.Value
+            || rules.Custom.RequirePlayerSurvival && !state.Factions.Any(f => f.Human && f.Camp == playerCamp && !f.Defeated)) return BattleOutcome.Defeat;
         return ExtensionVictory.Evaluate(state, playerCamp, neutralCamps, rules.Custom, rules.Scripts);
     }
 }

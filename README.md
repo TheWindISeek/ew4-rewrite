@@ -1,16 +1,15 @@
 # EW4 rewrite
 
 本仓库保存 rewrite 游戏源码、运行资源、地图制作配置和 Mod 制作指南。
-远程备份：[aztksilence111/ew4-rewrite](https://github.com/aztksilence111/ew4-rewrite)，私有仓库。
+项目仓库：[aztksilence111/ew4-rewrite](https://github.com/aztksilence111/ew4-rewrite)，公开仓库。
 项目状态见 [STATUS.md](STATUS.md)，开发说明见 [rewrite/README.md](rewrite/README.md)，
 Mod 制作资料见 [rewrite/mod-kit/README.md](rewrite/mod-kit/README.md)。
 
 ## 当前快照
 
-2026-10-20：包含已完成的原资源迁移、离线 Mod 导入、字体修复、BTL 手工辖区，
-以及正在实现的技能/脚本/胜负条件扩展。
-后者处于开发验证阶段，不能把本次备份视为扩展功能正式交付；
-具体断点见 [扩展开发断点](reverse/EXTENSIONS_WIP_20261020.md)。
+2026-10-20：包含原资源迁移、离线 Mod 导入、字体修复、BTL 手工辖区，
+以及已验证的[开放规则API 1](rewrite/mod-kit/docs/porting/RULE_EXTENSIONS.md)：动态技能/布局、离线Lua和可配置胜负条件。
+[交付与验证范围](reverse/EXTENSIONS_20261020.md)区分已测能力与限制。本轮0.2.0同时发布ARM64 APK和独立Windows Web服务包，包含最新后端接口、内置东亚底图和Mod自动识别/确认删除。[发布说明](rewrite/RELEASE_20261020.md)记录验证范围；Android尚未进行设备运行验收。
 
 ## 目录
 
@@ -25,7 +24,7 @@ Mod 制作资料见 [rewrite/mod-kit/README.md](rewrite/mod-kit/README.md)。
 | `rewrite/Ew4.Persistence` | 存档编解码 |
 | `rewrite/Ew4.Verify`、`Ew4.ModChecks` | 规则和 Mod 验证程序 |
 | `rewrite/data` | 唯一基础运行资源，Web 与 Android 共用 |
-| `rewrite/content/eastasia` | 东亚地图覆盖内容源文件 |
+| `rewrite/data/original/eastasia.bin` | 内置东亚地形；同目录map.json保存城市、设施与桥梁模板 |
 | `rewrite/mod-kit` | 工具包文档、模板和示例；发行工具由源码构建 |
 | `maps` | 地图制作的文本配置和说明 |
 | `tools` | 构建、转换、测试及逆向辅助脚本 |

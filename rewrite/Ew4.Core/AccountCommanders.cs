@@ -66,7 +66,9 @@ public static class AccountCommanders
         if (donorId == receiverId || donor == null || receiver == null || lockedCommanderIds.Contains(donorId) || lockedCommanderIds.Contains(receiverId))
             throw new RuleViolation("account.inheritance", "Distinct, owned and unlocked commanders are required");
         if (account.Medals < rules.InheritanceMedals) throw new RuleViolation("account.medals", "Insufficient medals");
-        var learning = CommanderInheritance.Apply(receiver.Learning, donor.Learning, Resolve(donor, rules).Skills, rules.Inheritance);
+        var donorDefinition = Resolve(donor, rules);
+        var learning = CommanderInheritance.Apply(receiver.Learning, donor.Learning,
+            donorDefinition.Skills.Where(s => !donorDefinition.LegacySkillOverrides.Contains(s)).ToArray(), rules.Inheritance);
         var next = account with { Revision = checked(account.Revision + 1), Medals = account.Medals - rules.InheritanceMedals,
             Roster = account.Roster.Where(c => c.Id != donorId).Select(c => (c.Id == receiverId ? c with { Learning = learning } : c).Copy()).ToArray(),
             Inventory = account.Inventory.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal) };

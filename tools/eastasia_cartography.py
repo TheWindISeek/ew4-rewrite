@@ -40,6 +40,8 @@ def glyphs(library, text, height, sea, length=0):
 
 
 def building_bounds(placements, facilities):
+    from pathlib import Path
+    translations = json.loads((Path(__file__).resolve().parents[1]/'maps/eastasia_rewrite/city_names.json').read_text(encoding='utf-8'))
     bounds = []
     for site in placements+facilities:
         x, y = site['world_pixel']
@@ -48,7 +50,8 @@ def building_bounds(placements, facilities):
         elif site.get('kind') == 'port':
             bounds.append(box(x-80, y-60, x+80, y+70))
         else:
-            name_width = max(42, len(site.get('name', ''))*7)
+            english = translations['byCityId'].get(str(site.get('city_id')), translations['names'].get(site.get('name'), ''))
+            name_width = max(42, len(site.get('name', ''))*7, len(english)*4+5)
             bounds.append(box(x-name_width, y-32, x+name_width, y+55))
     return bounds
 
@@ -56,6 +59,13 @@ def building_bounds(placements, facilities):
 def labels(runtime, mask, placements, facilities):
     plan = json.loads((runtime.REPORT/'cartography_plan.json').read_text(encoding='utf-8'))
     library = json.loads((runtime.BASE/'client/animations/maptext.json').read_text(encoding='utf-8'))
+    old_labels=[item for item in library['items'] if item['name'].startswith('eastasia_')]
+    if old_labels:
+        first_item=min(item['id'] for item in old_labels)
+        first_element=min(pair[0] for item in old_labels for layer in item['layers'] for frame in layer for pair in frame['indices'])
+        assert all(item['name'].startswith('eastasia_') for item in library['items'][first_item:])
+        library['items']=library['items'][:first_item]
+        library['elements']=library['elements'][:first_element]
     obstacles = unary_union(building_bounds(placements, facilities))
     occupied = []
     result = []
@@ -196,7 +206,7 @@ def waves(runtime, data, mask, placements, facilities, labels):
     runtime.write_json(runtime.REPORT/'cartography.json', dict(
         seed=plan['waveSeed'], oceanCells=len(ocean), waves=sum(count.values()), target=target,
         waveStyles=dict(sorted(count.items())), labels=len(labels),
-        landLabels=sum(not e['sea'] for e in labels), seaLabels=sum(e['sea'] for e in labels),
+        landLabels=sum(not e['sea'] and not e.get('lake') for e in labels), seaLabels=sum(e['sea'] for e in labels),
         lakeLabels=sum(bool(e.get('lake')) for e in labels),
         nativeGlyphs=True, ownership='unset; natural geography only'))
 

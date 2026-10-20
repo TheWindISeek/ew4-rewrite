@@ -87,6 +87,12 @@ def atlas(runtime, manifest):
     scales = {'low': (.68, .48), 'middle': (.80, .74), 'high': (.92, 1.15)}
     for name in ('tiles', 'tiles_hd'):
         source = Image.open(runtime.BASE/f'client/images/{name}.png').convert('RGBA')
+        if all(f'eastasia_{level}_{index+1}.png' in manifest['atlases'][name]
+               for level in scales for index in range(6)):
+            target = runtime.OUT/f'client/images/{name}.png'
+            target.parent.mkdir(parents=True, exist_ok=True)
+            source.save(target, compress_level=6)
+            continue
         entries, y, row_height, x = {}, source.height+2, 0, 2
         pieces = []
         for level, (sx, sy) in scales.items():

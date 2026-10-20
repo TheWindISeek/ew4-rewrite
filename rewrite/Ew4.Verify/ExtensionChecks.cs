@@ -100,6 +100,47 @@ internal static class ExtensionChecks
         var originalBindings = overrides["rewrite/definitions/unit-bindings.json"];
         Put("rewrite/definitions/unit-bindings.json", new[] { new ExtensionBinding(source.Combatant.Profile.Id, "append", [new("missing.skill", "missing")]) });
         Reject(() => ExtensionLoader.Load(Read), "unknown skill"); overrides["rewrite/definitions/unit-bindings.json"] = originalBindings;
+        var nativeId = Ew4Combat.Skill(21);
+        var overriddenCommander = commander with { Skills = [nativeId], SkillSlots = [], LegacySkillOverrides = [nativeId] };
+        var attached = Ew4Commander.Attach(attack, overriddenCommander);
+        Check(!attached.Skills.Contains(nativeId) && !attached.Has(nativeId) && RuleEventBus.Slots(attached).Any(s => s.Id == nativeId),
+            "native override removed from raw experience skills but retained for extension dispatch");
+        Check(Ew4Experience.CommanderGain(100, false, attached.Skills) == 100, "overridden native experience multiplier disabled");
+        Reject(() => ExtensionLoader.ValidateVictory(new() { Win = null! }), "null victory root");
+        Reject(() => ExtensionLoader.ValidateVictory(new() { Win = new() { Conditions = null! } }), "null condition array");
+        Reject(() => ExtensionLoader.ValidateVictory(new() { Win = new() { Type = "all", Conditions = [null!] } }), "null nested condition");
+        Reject(() => ExtensionLoader.ValidateVictory(new() { Win = new() { Type = "resources", Resources = new(-1, 0, 0) } }), "negative resource threshold");
+        Reject(() => ExtensionLoader.ParseJson<ExtensionVictoryRules>(Encoding.UTF8.GetBytes("{\"win\":{},\"Win\":{}}")), "duplicate victory key");
+        Reject(() => ExtensionLoader.ParseJson<ExtensionVictoryRules>(Encoding.UTF8.GetBytes("{\"imaginary\":true}")), "unknown victory member");
+        var deep = new VictoryCondition();
+        for (int i = 0; i < 14; i++) deep = new() { Type = "all", Conditions = [deep] };
+        Reject(() => ExtensionLoader.ValidateVictory(new() { Win = deep }), "deep victory tree");
+        var btlScript = new ExtensionVictoryRules { Win = new() { Type = "script", Script = "rewrite/scripts/test.lua", Function = "missing" } };
+        overrides["original/conquest1.btl"] = battle.WithVictory(btlScript);
+        Reject(() => new ClientContent(Read, ["conquest1.btl"]).Start("conquest1", "fra"), "BTL-only missing handler rejected before gameplay");
+        overrides["rewrite/scripts/test.lua"] = Encoding.UTF8.GetBytes("function boost(ctx) return 1.5 end\nfunction heal(ctx) return {value=9,state={uses=(ctx.state.uses or 0)+1}} end\nfunction objective(ctx) local f=ctx:faction('" + world.ActiveFaction + "'); local c=ctx:cell(" + unit.Cell + "); local u=ctx:unit('" + unit.Id + "'); return ctx.playerCamp==f.camp and c.active and u.owner==f.id end");
+        overrides["original/conquest1.btl"] = battle.WithVictory(btlScript with { Win = btlScript.Win with { Function = "objective" } });
+        var instant = new ClientContent(Read, ["conquest1.btl"]).Start("conquest1", "fra");
+        Check(instant.Session.World.Outcome == BattleOutcome.Victory && instant.Session.World.Phase == TurnPhase.Finished,
+            "BTL Lua victory reads cell unit faction snapshots and evaluates at start");
+        overrides.Remove("original/conquest1.btl");
+        var disabledManifest = overrides["rewrite/extension.json"];
+        overrides.Remove("rewrite/extension.json");
+        Reject(() => builtin.Extensions.ValidateVictoryScripts(btlScript), "BTL script without enabled extension");
+        overrides["rewrite/extension.json"] = disabledManifest;
+        var validSkills = overrides["rewrite/definitions/skills.json"];
+        overrides["rewrite/definitions/skills.json"] = Encoding.UTF8.GetBytes("[null]");
+        Reject(() => ExtensionLoader.Load(Read), "null skill");
+        overrides["rewrite/definitions/skills.json"] = Encoding.UTF8.GetBytes("[{\"id\":\"test.bad\",\"effects\":null}]");
+        Reject(() => ExtensionLoader.Load(Read), "null effects");
+        overrides["rewrite/definitions/skills.json"] = validSkills;
+        var damageSkill = healing with { Target = "enemy", Range = 1000, Effects = [new() { Event = "skill.activate", Operation = "damage", Value = 100000 }] };
+        var damageBus = new RuleEventBus(new Dictionary<string, ExtensionSkill> { [healing.Id] = damageSkill });
+        var victim = world.Units.First(u => world.Factions.Single(f => f.Id == u.Owner).Camp != camp);
+        var destroyed = WorldSkillActions.Execute(world, world.Revision, unit.Id, "heal", victim.Id, damageBus, started.Rules.Movement);
+        Check(destroyed.State.Units.All(u => u.Id != victim.Id) && destroyed.Notices.Any(n => n.Kind == "unit.destroyed" && n.Subject == victim.Id)
+            && destroyed.Notices.Any(n => n.Kind == "battle.damage" && n.Subject == victim.Id), "active damage shares backend death and damage notices");
+        Reject(() => WorldSkillActions.Execute(world, world.Revision, unit.Id, "heal", unit.Id, damageBus, started.Rules.Movement), "enemy skill refuses own target");
         var report = Path.Combine(root, "rewrite/reports/extensions-20261020"); Directory.CreateDirectory(report);
         foreach (var pair in overrides.Where(p => p.Key.StartsWith("rewrite/", StringComparison.Ordinal)))
         {

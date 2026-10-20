@@ -1,0 +1,11 @@
+[
+  {"target": "ew4.commander.1", "mode": "replace", "skills": [
+    {"id": "example.siege", "instanceId": "commander.siege", "order": 0, "x": 0, "y": 0},
+    {"id": "example.repair", "instanceId": "commander.repair", "level": 2, "order": 1, "x": 0, "y": 25},
+    {"id": "example.supply", "instanceId": "commander.supply", "order": 2, "x": 0, "y": 50},
+    {"id": "example.income", "instanceId": "commander.income", "order": 3, "x": 0, "y": 75},
+    {"id": "ew4.skill.0", "instanceId": "commander.native0", "order": 4, "x": 0, "y": 100},
+    {"id": "ew4.skill.1", "instanceId": "commander.native1", "order": 5, "x": 0, "y": 125},
+    {"id": "ew4.skill.2", "instanceId": "commander.native2", "order": 6, "x": 0, "y": 150}
+  ]}
+]

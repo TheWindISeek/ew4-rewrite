@@ -29,7 +29,7 @@ public sealed partial class ClientGame
             var targets = world.Units.Where(t => new HexMap(world.Width, world.Height).Distance(unit.Cell, t.Cell) <= def.Range
                 && (def.Target == "self" ? t.Id == unit.Id : def.Target == "ally"
                     ? world.Factions.Single(f => f.Id == t.Owner).Camp == faction.Camp
-                    : WorldDiplomacy.Hostile(world, unit.Owner, t.Owner, Require().Rules.Movement.NeutralCamps))).Select(t => t.Id).ToArray();
+                    : world.Factions.Single(f => f.Id == t.Owner).Camp != faction.Camp)).Select(t => t.Id).ToArray();
             bool available = !unit.Acted && unit.Morale.Effective != -3 && ready <= world.Round && targets.Length > 0
                 && faction.Resources.Money >= def.Cost.Money && faction.Resources.Industry >= def.Cost.Industry && faction.Resources.Food >= def.Cost.Food;
             return (object)new { skill = s, available, remainingCooldown = Math.Max(0, ready - world.Round), targets };

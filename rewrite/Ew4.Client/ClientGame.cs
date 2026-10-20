@@ -179,11 +179,15 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
     private void Commit(WorldChange change)
     {
         var current = Require();
-        if (content.Extensions.Enabled)
+        if (content.Extensions.Enabled || current.Rules.Turns.Victory.Custom != null)
         {
             var world = change.State;
             foreach (string id in world.Units.Where(u => !current.Session.World.Units.Any(old => old.Id == u.Id)).Select(u => u.Id).ToArray())
                 world = content.Extensions.Bus.Dispatch(world, "unit.recruited", id, new Ew4Random(world.RandomState));
+            foreach (var notice in change.Notices.Where(n => n.Kind is "unit.destroyed" or "battle.damage"))
+                if (current.Session.World.Units.FirstOrDefault(u => u.Id == notice.Subject) is UnitState before)
+                    world = content.Extensions.Bus.Dispatch(world, notice.Kind == "unit.destroyed" ? "unit.destroyed" : "unit.damaged",
+                        before.Id, new Ew4Random(world.RandomState), eventSource: before);
             if (current.Rules.Turns.Victory.Custom != null && world.Outcome == BattleOutcome.Continue)
             {
                 var outcome = WorldVictory.Evaluate(world, current.Rules.Turns.PlayerCamp!, current.Rules.Turns.Victory, current.Rules.Turns.NeutralCamps);
