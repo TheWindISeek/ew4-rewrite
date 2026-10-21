@@ -76,6 +76,7 @@ public static class WorldEvents
     public static WorldState Acknowledge(WorldState state, string dialogue)
     {
         state.Validate();
+        if (ScenarioRules.Pending(state) != null) throw new RuleViolation("scenario.choice_required", "Select an event choice");
         if (state.PendingDialogue == null || dialogue != state.PendingDialogue)
             throw new RuleViolation("event.dialogue_mismatch", "Dialogue acknowledgement does not match");
         return state.Copy() with { PendingDialogue = state.QueuedDialogues.FirstOrDefault(), QueuedDialogues = state.QueuedDialogues.Skip(1).ToArray(),

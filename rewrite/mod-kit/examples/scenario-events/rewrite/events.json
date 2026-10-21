@@ -1,0 +1,35 @@
+{
+  "conquest1": [
+    {
+      "id": "opening.council",
+      "condition": {"type": "always"},
+      "popup": {
+        "title": "出征军议",
+        "text": "陛下，请决定本次出征的补给方案。",
+        "choices": [
+          {"id": "gold", "text": "调拨金币", "effects": [{"type": "money", "value": 100}]},
+          {"id": "food", "text": "筹集粮食", "effects": [{"type": "food", "value": 200}]},
+          {"id": "industry", "text": "支援军工", "effects": [{"type": "industry", "value": 40}]},
+          {"id": "none", "text": "按原计划出征", "effects": []}
+        ]
+      }
+    },
+    {
+      "id": "round.three",
+      "condition": {"type": "all", "conditions": [
+        {"type": "round", "value": 3},
+        {"type": "event_completed", "key": "opening.council"}
+      ]},
+      "effects": [{"type": "food", "value": 100}]
+    },
+    {
+      "id": "city.reward",
+      "condition": {"type": "all", "conditions": [
+        {"type": "city_count", "value": 10},
+        {"type": "money", "value": 200},
+        {"type": "industry", "compare": "lt", "value": 300}
+      ]},
+      "effects": [{"type": "industry", "value": 40}]
+    }
+  ]
+}

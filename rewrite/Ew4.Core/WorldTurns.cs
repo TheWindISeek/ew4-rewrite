@@ -120,11 +120,22 @@ public static class WorldTurns
 
     private static WorldState Continue(WorldState state, WorldTurnRules rules, List<WorldNotice> notices)
     {
+        WorldState Events(WorldState world)
+        {
+            var events = ScenarioRules.Evaluate(world, rules.Extensions?.Scripts);
+            notices.AddRange(events.Notices); return events.State;
+        }
+        state = Events(state);
+        if (state.Phase == TurnPhase.Active && state.Factions.Single(f => f.Id == state.ActiveFaction).Defeated)
+            state = state with { Phase = TurnPhase.EndFactionEvents };
+        if (state.PendingDialogue != null || state.Phase == TurnPhase.Finished) return state;
         if (state.Phase == TurnPhase.EndFactionEvents)
         {
             if (state.PendingDialogue != null) return state;
             state = Advance(state, notices);
             if (state.Phase == TurnPhase.Finished) return state;
+            state = Events(state);
+            if (state.PendingDialogue != null || state.Phase == TurnPhase.Finished) return state;
         }
         if (state.Phase == TurnPhase.RoundEvents)
         {
@@ -157,6 +168,24 @@ public static class WorldTurns
             state = events.State; notices.AddRange(events.Notices);
             if (state.PendingDialogue != null) return state;
             state = state with { Phase = TurnPhase.Active };
+        }
+        state = Events(state);
+        if (state.Phase == TurnPhase.Active && state.Factions.Single(f => f.Id == state.ActiveFaction).Defeated)
+            state = state with { Phase = TurnPhase.EndFactionEvents };
+        if (state.PendingDialogue != null || state.Phase == TurnPhase.Finished) return state;
+        if (rules.PlayerCamp != null)
+        {
+            var outcome = WorldVictory.Evaluate(state, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
+            if (outcome != BattleOutcome.Continue)
+            {
+                notices.Add(new("battle.finished", outcome.ToString()));
+                return state with { Outcome = outcome, Phase = TurnPhase.Finished };
+            }
+        }
+        if (state.Phase == TurnPhase.EndFactionEvents && state.Factions.Single(f => f.Id == state.ActiveFaction).Defeated)
+        {
+            state = Advance(state, notices);
+            return state.Phase == TurnPhase.Finished ? state : Continue(state, rules, notices);
         }
         return state;
     }
@@ -223,15 +252,20 @@ public static class WorldTurns
         if (deaths) state = WorldDeaths.RefreshMorale(state, rules.NeutralCamps);
         notices.Add(new("faction.ended", faction));
         state = state with { RandomState = random.State };
-        if (rules.Extensions != null) foreach (string id in state.Units.Where(u => u.Owner == faction).Select(u => u.Id).ToArray())
-            state = rules.Extensions.Dispatch(state, "turn.end", id, new Ew4Random(state.RandomState));
+        if (rules.Extensions != null)
+        {
+            var before = state;
+            foreach (string id in state.Units.Where(u => u.Owner == faction).Select(u => u.Id).ToArray())
+                state = rules.Extensions.Dispatch(state, "turn.end", id, new Ew4Random(state.RandomState));
+            state = rules.Extensions.ExpireStatuses(state, faction);
+            notices.AddRange(RuleEventBus.ChangeNotices(before, state));
+        }
         return state;
     }
 
     public static int AdjacentHealing(WorldState state, HexMap map, UnitState unit)
     {
-        string camp = state.Factions.Single(f => f.Id == unit.Owner).Camp;
-        var allies = new HashSet<string>(state.Factions.Where(f => f.Camp == camp).Select(f => f.Id), StringComparer.Ordinal);
+        var allies = new HashSet<string>(state.Factions.Where(f => WorldDiplomacy.Allied(state, f.Id, unit.Owner)).Select(f => f.Id), StringComparer.Ordinal);
         long healing = state.Units.Where(u => allies.Contains(u.Owner) && state.Cells[u.Cell].Terrain.Active
             && u.CommanderId != null && map.Distance(unit.Cell, u.Cell) == 1)
             .Sum(u => (long)u.Support.AdjacentHealing);
@@ -273,14 +307,16 @@ public static class WorldTurns
             var refreshed = UnitLifecycle.Refresh(new()
             {
                 Health = unit.Combatant.Health, MaximumHealth = unit.Combatant.Profile.MaxHealth, BaseHealth = unit.Combatant.Profile.MaxHealth,
-                BaseMovement = unit.Combatant.Profile.Movement, Morale = unit.Morale, LocalPenalty = local, Shortage = faction.Shortage,
+                BaseMovement = rules.Extensions?.MovementBudget(unit.Combatant) ?? unit.Combatant.Profile.Movement,
+                Morale = unit.Morale, LocalPenalty = local, Shortage = faction.Shortage,
                 Logistics = unit.Support.Logistics || unit.Combatant.Has(Ew4Combat.Skill(22)), Leadership = unit.Combatant.Has(Ew4Combat.Skill(3)),
                 ConstructionTurns = unit.Combatant.ConstructionTurns, Behavior = unit.Behavior, RestoreBehavior = unit.RestoreBehavior,
                 BehaviorExpiry = unit.BehaviorExpiry, Round = state.Round
             });
             return unit with
             {
-                RemainingMovement = refreshed.Movement, Acted = refreshed.Acted, Morale = refreshed.Morale, LocalPenalty = local,
+                RemainingMovement = refreshed.Movement, ExtensionMovementLimit = rules.Extensions == null ? null : refreshed.Movement,
+                Acted = refreshed.Acted, Morale = refreshed.Morale, LocalPenalty = local,
                 Behavior = refreshed.Behavior, BehaviorExpiry = refreshed.BehaviorExpiry,
                 Combatant = unit.Combatant with { Health = refreshed.Health, Morale = refreshed.Morale.Effective,
                     ConstructionTurns = refreshed.ConstructionTurns, AtSea = cells[unit.Cell].Terrain.Sea, BuildingKind = cells[unit.Cell].BuildingKind }
@@ -288,19 +324,22 @@ public static class WorldTurns
         }).ToArray();
         notices.Add(new("faction.started", faction.Id));
         state = expanded with { Factions = state.Factions.Select(f => f.Id == faction.Id ? faction : f).ToArray(), Units = units, Phase = TurnPhase.Active };
-        if (rules.Extensions != null) foreach (string id in state.Units.Where(u => u.Owner == faction.Id).Select(u => u.Id).ToArray())
-            state = rules.Extensions.Dispatch(state, "turn.start", id, new Ew4Random(state.RandomState));
+        if (rules.Extensions != null)
+        {
+            var before = state;
+            foreach (string id in state.Units.Where(u => u.Owner == faction.Id).Select(u => u.Id).ToArray())
+                state = rules.Extensions.Dispatch(state, "turn.start", id, new Ew4Random(state.RandomState));
+            notices.AddRange(RuleEventBus.ChangeNotices(before, state));
+        }
         return state;
     }
 
     public static int LocalPenalty(WorldState state, HexMap map, int center, string owner, IReadOnlyCollection<string>? neutralCamps = null)
     {
         map.Check(center);
-        string camp = state.Factions.Single(f => f.Id == owner).Camp;
-        var camps = state.Factions.ToDictionary(f => f.Id, f => f.Camp, StringComparer.Ordinal);
         var occupied = new HashSet<int>(state.Units.Select(u => u.Cell));
         var neighbors = Enumerable.Range(0, 6).Select(direction => map.Neighbor(center, direction)).ToArray();
-        bool hostile(int cell) => cell >= 0 && state.Cells[cell].Owner is string faction && camps[faction] != camp;
+        bool hostile(int cell) => cell >= 0 && state.Cells[cell].Owner is string faction && !WorldDiplomacy.Allied(state, faction, owner);
         var active = neighbors.Where(i => i >= 0 && state.Cells[i].Terrain.Active).ToArray();
         if (active.All(i => hostile(i) && (neutralCamps == null || !WorldDiplomacy.NeutralTo(state, state.Cells[i].Owner!, owner, neutralCamps)) && occupied.Contains(i))) return 2;
         for (int direction = 0; direction < 3; direction++)

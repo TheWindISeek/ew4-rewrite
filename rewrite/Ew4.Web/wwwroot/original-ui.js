@@ -1,14 +1,20 @@
 'use strict';
 (function(root){
-  const families=['EW4 Serif','EW4 Han','EW4 Han Plane 2','EW4 Han Plane 3','EW4 Unicode','EW4 Unicode Supplement'];
+  const families=['EW4 Kai','EW4 Serif','EW4 Han','EW4 Han Plane 2','EW4 Han Plane 3','EW4 Unicode','EW4 Unicode Supplement'];
   const fontFamily=families.map(name=>'"'+name+'"').join(',');
-  let fontPreparation,glyphRanges;
+  let fontPreparation,glyphRanges,coverage,revision=0,loadQueue=Promise.resolve();
+  const faceStates=new Map(),requestedPoints=new Set(),paintTargets=new Set(),candidateLists=new Map();
+  const loadedFaces=[];
+  const fontStatus={failures:[]};
   const missingGlyphs=new Set();
+  function inRanges(point,ranges){
+    let low=0,high=ranges.length-1;
+    while(low<=high){const middle=(low+high)>>1,[start,end]=ranges[middle];if(point<start)high=middle-1;else if(point>end)low=middle+1;else return true;}
+    return false;
+  }
   function hasGlyph(point){
     if(!glyphRanges)throw new Error('Call TextRenderer.prepare before querying bundled glyphs');
-    let low=0,high=glyphRanges.length-1;
-    while(low<=high){const middle=(low+high)>>1,[start,end]=glyphRanges[middle];if(point<start)high=middle-1;else if(point>end)low=middle+1;else return true;}
-    return false;
+    return inRanges(point,glyphRanges);
   }
   function displayText(value){
     return [...String(value).normalize('NFC')].map(char=>{
@@ -18,20 +24,82 @@
       return '\ufffd';
     }).join('');
   }
+  function publishStatus(){
+    fontStatus.failures=[...faceStates].filter(([,state])=>state.error).map(([file,state])=>({file,message:state.error}));
+    root.dispatchEvent(new Event('ew4fontstatus'));
+  }
+  function repaintFonts(){
+    revision++;
+    for(const reference of paintTargets){const target=reference.deref();if(target)target.ew4Repaint();else paintTargets.delete(reference);}
+    root.dispatchEvent(new Event('ew4fontsloaded'));
+  }
+  function loadFace(face){
+    if(faceStates.has(face.file))return faceStates.get(face.file).promise;
+    const state={loaded:false,error:null};faceStates.set(face.file,state);
+    // Serialize decoding so several large font buffers cannot expand together on Android.
+    state.promise=loadQueue.then(async()=>{
+      let timer;
+      try{
+        const unicodeRange=face.ranges.map(([a,b])=>'U+'+a.toString(16)+(a===b?'':'-'+b.toString(16))).join(',');
+        const font=new FontFace(face.family,'url("/content/fonts/'+face.file+'")',{weight:'400',unicodeRange});
+        await Promise.race([font.load(),new Promise((_,reject)=>{timer=setTimeout(()=>reject(Error('载入超时')),12000);})]);
+        document.fonts.add(font);state.loaded=true;loadedFaces.push(face);repaintFonts();
+        return true;
+      }catch(error){state.error=error.message||String(error);console.warn('Bundled font failed: '+face.file+': '+state.error);return false;}
+      finally{clearTimeout(timer);publishStatus();}
+    });
+    loadQueue=state.promise.then(()=>{});
+    return state.promise;
+  }
+  function availableText(value){
+    return [...displayText(value)].map(char=>{
+      const point=char.codePointAt(0);
+      return /[\r\n\t]/.test(char)||/\p{Default_Ignorable_Code_Point}/u.test(char)||loadedFaces.some(face=>inRanges(point,face.ranges))?char:'\ufffd';
+    }).join('');
+  }
+  async function prepareText(value,preferred=families){
+    if(!coverage)return;
+    const order=preferred.join('|');
+    if(!candidateLists.has(order))candidateLists.set(order,preferred.flatMap(family=>coverage.faces.filter(face=>face.family===family)));
+    const candidates=candidateLists.get(order);
+    const commonFallback=coverage.faces.some(face=>face.bootstrap&&faceStates.get(face.file)?.error);
+    const points=[...new Set([...String(value).normalize('NFC')].map(char=>char.codePointAt(0)))];
+    points.forEach(point=>requestedPoints.add(point));
+    for(let pass=0;pass<families.length;pass++){
+      const needed=new Set();
+      for(const point of points){
+        if(!hasGlyph(point))continue;
+        if(commonFallback&&loadedFaces.some(face=>inRanges(point,face.ranges)))continue;
+        const best=candidates.find(face=>inRanges(point,face.ranges)&&!faceStates.get(face.file)?.error);
+        if(best&&!faceStates.get(best.file)?.loaded)needed.add(best);
+      }
+      if(!needed.size)return;
+      await Promise.all([...needed].map(loadFace));
+    }
+  }
   async function prepareFonts(){
     if(!fontPreparation)fontPreparation=(async()=>{
-      const response=await fetch('/content/fonts/coverage.json?v=20261020.5');
-      if(!response.ok)throw new Error('Bundled font coverage could not be loaded');
-      const coverage=await response.json();
-      if(coverage.schema!==1||coverage.faces?.length!==families.length||!Array.isArray(coverage.ranges))throw new Error('Invalid bundled font coverage');
-      await Promise.all(coverage.faces.map(async(face,index)=>{
-        if(face.family!==families[index])throw new Error('Bundled font family mismatch');
-        const loaded=await document.fonts.load('400 32px "'+face.family+'"',face.probe);
-        if(!loaded.length||loaded.some(font=>font.status!=='loaded'))throw new Error('Bundled font could not be loaded: '+face.family);
-      }));
-      glyphRanges=coverage.ranges;document.documentElement.dataset.fontsReady='true';
-    })();
+      let response;
+      try{response=await fetch('/content/fonts/coverage.json?v=20261021.3');}
+      catch(error){throw new Error('字库索引载入失败：coverage.json：'+error.message);}
+      if(!response.ok)throw new Error('字库索引载入失败：coverage.json ('+response.status+')');
+      const data=await response.json();
+      if(data.schema!==1||data.loading!=='subsets-v1'||!Array.isArray(data.faces)||!Array.isArray(data.ranges)||
+        !data.faces.some(face=>face.bootstrap)||data.faces.some(face=>!families.includes(face.family)||!Array.isArray(face.ranges)||!/^parts\/[A-Za-z0-9-]+\.woff2$/.test(face.file)))throw new Error('字库索引无效：coverage.json');
+      coverage=data;glyphRanges=data.ranges;
+      for(const face of coverage.faces.filter(face=>face.bootstrap)){
+        if(await loadFace(face)){document.documentElement.dataset.fontsReady='true';return;}
+      }
+      throw new Error('内置常用字库载入失败：'+fontStatus.failures.map(face=>face.file).join('、'));
+    })().catch(error=>{fontPreparation=null;throw error;});
     return fontPreparation;
+  }
+  async function retryFonts(){
+    for(const [file,state] of faceStates)if(state.error)faceStates.delete(file);
+    publishStatus();
+    await prepareFonts();
+    await prepareText([...requestedPoints].map(point=>String.fromCodePoint(point)).join(''));
+    repaintFonts();
   }
   class TextRenderer {
     constructor(manifest){this.fonts=manifest.fonts;}
@@ -45,7 +113,7 @@
       const heights={font_text_1_cn_hd:24,font_text_2_cn_hd:24,font_text_3_cn_hd:26,font_text_4_cn_hd:32,font_char_1_hd:18,font_char_2_hd:24,font_char_3_hd:28,font_char_4_hd:42,font_ascii:16,font_city:13,font_city_hd:26,font_city_labels_hd:26};
       let height=options.size?options.size*2:heights[font]||24;
       const lines=[{glyphs:[],width:0}],limit=Number.isFinite(width)?Math.max(1,width*2-8):Infinity,extended=true;
-      let value=displayText(text).replace(/\\n/g,'\n');
+      let value=availableText(text).replace(/\\n/g,'\n');
       const setFont=()=>{this.measure.font=height+'px '+fontFamily;this.measure.fontKerning='none';};
       setFont();
       if(options.singleLine){
@@ -67,12 +135,13 @@
     element(text,font='font_text_2_cn_hd',color='#404040',width,align='left',options={}){
       const span=document.createElement('span');span.className='original-text';span.setAttribute('aria-label',String(text));
       const canvas=document.createElement('canvas');canvas.setAttribute('aria-hidden','true');span.append(canvas);
-      const layout=this.layout(text,font,width,options),padding=4,outlined=font.startsWith('font_city');
+      const padding=4,outlined=font.startsWith('font_city');
       span.dataset.font=font;span.dataset.typeface=fontFamily;
-      span.dataset.color=outlined?'#ffffff':color;span.dataset.size=String(layout.height/2);
-      canvas.width=Math.ceil(layout.width+padding*2);canvas.height=Math.ceil(layout.lines.length*(layout.height+2)+padding*2);
-      canvas.style.width=canvas.width/2+'px';canvas.style.height=canvas.height/2+'px';
+      span.dataset.color=outlined?'#ffffff':color;
       const redraw=()=>{
+        const layout=this.layout(text,font,width,options);span.dataset.size=String(layout.height/2);
+        canvas.width=Math.ceil(layout.width+padding*2);canvas.height=Math.ceil(layout.lines.length*(layout.height+2)+padding*2);
+        canvas.style.width=canvas.width/2+'px';canvas.style.height=canvas.height/2+'px';
         const draw=canvas.getContext('2d');draw.clearRect(0,0,canvas.width,canvas.height);
         for(const [row,line] of layout.lines.entries()){
           const offset=align==='center'?(layout.width-line.width)/2:align==='right'?layout.width-line.width:0;
@@ -84,7 +153,8 @@
           }
         }
       };
-      redraw();return span;
+      canvas.ew4Repaint=redraw;paintTargets.add(new WeakRef(canvas));
+      redraw();void prepareText(text);return span;
     }
     replace(element,text,font,color,width,align){element.replaceChildren(this.element(text,font,color,width,align));}
     forElement(element,text){
@@ -106,10 +176,11 @@
     }
     paintTree(rootElement){
       const walker=document.createTreeWalker(rootElement,NodeFilter.SHOW_TEXT),nodes=[];
-      while(walker.nextNode()){const node=walker.currentNode;if(!node.textContent.trim()||node.parentElement.closest('.original-text,script,style,canvas,select,option,textarea,[hidden]')||!node.parentElement.getClientRects().length)continue;nodes.push(node);}
+      // Long event prose uses DOM text so scrolling does not composite one oversized canvas.
+      while(walker.nextNode()){const node=walker.currentNode;if(!node.textContent.trim()||node.parentElement.closest('#startup-status,#scenario-event-text,.original-text,script,style,canvas,select,option,textarea,output,[hidden]')||!node.parentElement.getClientRects().length)continue;nodes.push(node);}
       for(const node of nodes)node.replaceWith(this.forElement(node.parentElement,node.textContent));
     }
   }
-  root.Ew4OriginalUI={TextRenderer,fontFamily,hasGlyph,displayText};
+  root.Ew4OriginalUI={TextRenderer,fontFamily,hasGlyph,displayText,availableText,prepareText,retryFonts,fontStatus,get revision(){return revision;}};
   if(typeof module!=='undefined')module.exports=root.Ew4OriginalUI;
 })(globalThis);

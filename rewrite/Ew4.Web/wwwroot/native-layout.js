@@ -69,7 +69,8 @@
       if(el.nativeAttributes.type==='tmp_rank'){
         const name=el.nativeAttributes.ranktype==='military'?'borad_rank.png':'borad_standing.png',art=resource(this.api.manifest,name);
         Object.assign(el.style,{width:art.w/art.ratio+'px',height:art.h/art.ratio+'px',display:'flex',alignItems:'center',justifyContent:'center'});
-        const board=this.api.uiImage(name,art.w/art.ratio,art.h/art.ratio);board.className='native-rank-board';el.replaceChildren(board,...nodes);
+        if(nodes.some(n=>n.classList.contains('rank-gauge')))el.replaceChildren(...nodes);
+        else{const board=this.api.uiImage(name,art.w/art.ratio,art.h/art.ratio);board.className='native-rank-board';el.replaceChildren(board,...nodes);}
       }else el.replaceChildren(...nodes);return el;
     }
     rows(ids,gap=5){

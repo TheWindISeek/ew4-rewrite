@@ -2,6 +2,7 @@
 const assert=require('node:assert/strict'),fs=require('node:fs/promises'),{createRequire}=require('node:module');
 const {chromium}=createRequire('C:/Users/WIN11/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/_probe.cjs')('playwright');
 const folder=process.env.EW4_FONT_REPORT||'E:/Workplace/game/o4mod/rewrite/reports/bundled-fonts-20261020/browser';
+const base=process.env.EW4_TEST_URL||'http://127.0.0.1:5185';
 (async()=>{
   await fs.mkdir(folder,{recursive:true});
   const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
@@ -12,11 +13,12 @@ const folder=process.env.EW4_FONT_REPORT||'E:/Workplace/game/o4mod/rewrite/repor
   const shot=async name=>{await page.screenshot({path:folder+'/'+name+'.png'});report.screenshots.push(name);};
   const ready=async()=>page.waitForFunction(()=>typeof originalTextRenderer!=='undefined'&&!!originalTextRenderer&&!!catalog);
   try{
-    await page.goto('http://127.0.0.1:5185/');await ready();
-    check(await page.evaluate(()=>document.documentElement.dataset.fontsReady==='true'&&['EW4 Serif','EW4 Han','EW4 Han Plane 2','EW4 Han Plane 3','EW4 Unicode','EW4 Unicode Supplement'].every(f=>document.fonts.check('32px "'+f+'"'))),'all six bundled fonts are loaded before rendering');
-    check(report.fontRequests.length===6&&report.fontRequests.every(url=>url.startsWith('http://127.0.0.1:5185/content/')&&url.endsWith('.woff2')),'only six local WOFF2 files requested; no remote or system font dependency');
+    await page.goto(base+'/');await ready();
+    check(await page.evaluate(()=>document.documentElement.dataset.fontsReady==='true'&&document.fonts.check('32px "EW4 Kai"','中文城市')),'primary common subset is ready before rendering');
+    check(report.fontRequests.length>0&&report.fontRequests.length<7&&report.fontRequests.every(url=>url.startsWith(base+'/content/')&&url.endsWith('.woff2')),'startup requests only local common subsets; rare fonts are deferred');
     const cdp=await page.context().newCDPSession(page);await cdp.send('DOM.enable');await cdp.send('CSS.enable');
     for(const [index,sample] of ['中文城市 LONDON 123','繁體龘靐齉','𠀀𠮷','𰀀𱍐𲎰','Русский Ελληνικά','日本語 한국어','العربية','★→'].entries()){
+      await page.evaluate(sample=>Ew4OriginalUI.prepareText(sample),sample);
       await page.evaluate(async({sample,index})=>{const span=document.createElement('span');span.className='original-text';span.id='font-probe-'+index;span.textContent=sample;span.style.cssText='display:block;position:fixed;left:0;top:0;font-size:32px;line-height:1;z-index:99999';document.body.append(span);await new Promise(requestAnimationFrame);span.getBoundingClientRect();},{sample,index});
       const {root}=await cdp.send('DOM.getDocument'),{nodeId}=await cdp.send('DOM.querySelector',{nodeId:root.nodeId,selector:'#font-probe-'+index});
       const {fonts}=await cdp.send('CSS.getPlatformFontsForNode',{nodeId});report.platformFonts.push({sample,fonts});

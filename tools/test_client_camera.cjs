@@ -9,7 +9,11 @@ let cases = 0;
 const activeState={width:8,height:6,cells:Array.from({length:48},(_,i)=>({active:i%8>0&&i%8<7})),cameraBounds:{left:12,top:34,width:400,height:280}};
 const activeBounds=Ew4Battlefield.cameraBounds(activeState,{width:512,height:324});
 assert.deepEqual(activeBounds,activeState.cameraBounds,'authoritative scenario rectangle, not active-row intersection');
-for (const bounds of [...Object.values(manifest.maps), {width:80, height:60}, {left:125,top:70,width:2800,height:1800}, activeBounds]) {
+assert.deepEqual(Ew4Battlefield.cameraBounds(activeState,{width:512,height:324,cameraBounds:{left:20,top:40,width:300,height:200}}),
+  {left:20,top:40,width:300,height:200},'scenario camera stays inside map artwork');
+const eastasiaBounds=Ew4Battlefield.cameraBounds({cameraBounds:{left:-52,top:-74,width:10184,height:7402}},manifest.maps.eastasia);
+assert.ok(eastasiaBounds.left>=-31&&eastasiaBounds.top>=-53&&eastasiaBounds.left+eastasiaBounds.width<=10111&&eastasiaBounds.top+eastasiaBounds.height<=7307);
+for (const bounds of [...Object.values(manifest.maps), {width:80, height:60}, {left:125,top:70,width:2800,height:1800}, activeBounds, eastasiaBounds]) {
   for (const [w,h] of [[1920,1080],[844,390],[390,844],[3440,1440],[568,320]]) {
     for (const zoom of [.01,.22,.95,2.5,100]) {
       for (const [x,y] of [[-100000,-100000],[100000,100000],[-100000,100000],[100000,-100000],[bounds.width/2,bounds.height/2]]) {

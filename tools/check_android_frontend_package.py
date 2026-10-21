@@ -27,6 +27,15 @@ with zipfile.ZipFile(APK) as archive:
         assert archive.read(relative) == source.read_bytes(), relative + " is stale"
         files[relative] = hashlib.sha256(source.read_bytes()).hexdigest()
     assert "lib/arm64-v8a/libmonodroid.so" in archive.namelist(), "ARM64 runtime missing"
+    coverage = json.loads(archive.read("assets/www/content/fonts/coverage.json"))
+    if coverage.get("loading") == "subsets-v1":
+        expected_fonts = {"assets/www/content/fonts/" + face["file"] for face in coverage["faces"]}
+        packaged_fonts = {name for name in archive.namelist() if name.startswith("assets/www/content/fonts/") and name.endswith(".woff2")}
+        assert expected_fonts == packaged_fonts, "Packaged fonts are missing or include stale full fonts"
+        for face in coverage["faces"]:
+            data = archive.read("assets/www/content/fonts/" + face["file"])
+            assert hashlib.sha256(data).hexdigest() == face["sha256"], face["file"]
+            assert struct.unpack_from(">I", data, 16)[0] == face["decodedBytes"] <= 8 * 1024 * 1024, face["file"]
     catalog = json.loads((ROOT / "rewrite/data/runtime-content.json").read_text(encoding="utf-8"))
     for entry in catalog["files"]:
         path = entry["path"]

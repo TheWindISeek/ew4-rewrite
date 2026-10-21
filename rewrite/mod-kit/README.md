@@ -4,7 +4,9 @@
 
 按原资源找rewrite位置可直接查[原包入库/运行入口对照表](docs/porting/ENTRYPOINTS.md)，包括文件、类/函数、产物路径和已核实的原SO地址。
 
-新增开放规则入口：[API 1完整指南](docs/porting/RULE_EXTENSIONS.md)与[可打包示例](examples/rule-extension/README.md)。支持兵种标签、主动/被动技能、动态将领技能数量/顺序/坐标、外置Lua和征服/战役胜负条件；扩展放包根rewrite/extension.json，电脑和Android共用加载逻辑。
+新增开放规则入口：[API 1/2完整指南](docs/porting/RULE_EXTENSIONS.md)与[API 1示例](examples/rule-extension/README.md)、[API 2六技能示例](examples/common-skills/README.md)。支持兵种标签、主动/被动技能、动态将领技能数量/顺序/坐标、外置Lua和征服/战役胜负条件；API 2还支持召唤、传送、范围效果、持续状态及移动力。制作步骤见[Mod修改指南README](docs/porting/README.md)；扩展放包根rewrite/extension.json，电脑和Android共用加载逻辑，旧发行版需升级后才支持API 2。
+
+剧本事件支持自定义条件、直接结果、多按钮弹窗、周期军费及独立双边外交，见[事件接口](docs/porting/SCENARIO_EVENTS.md)和[周期/外交示例](examples/scenario-recurrence-diplomacy/README.md)。可针对任意 AI 国家调拨三种资源、设置两国敌友关系，并保存周期进度。
 
 ## 按修改目标找文件
 

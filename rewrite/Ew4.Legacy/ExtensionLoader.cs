@@ -20,12 +20,16 @@ public sealed class ExtensionLoader
     public IReadOnlyList<ExtensionBinding> CommanderBindings { get; }
     public IReadOnlyDictionary<string, ExtensionVictoryRules> Victories { get; }
     public IReadOnlyDictionary<string, ExtensionLayout> Layouts { get; }
+    public IReadOnlyDictionary<string, ScriptedScenarioEvent[]> ScenarioEvents { get; }
     public bool Enabled => Revision.Length > 0;
+    public int ApiVersion { get; private set; } = 1;
     private ExtensionLoader(RuleEventBus bus, string revision, ExtensionBinding[] units, ExtensionBinding[] commanders,
-        Dictionary<string, ExtensionVictoryRules> victories, Dictionary<string, ExtensionLayout> layouts)
-    { Bus = bus; Revision = revision; UnitBindings = units; CommanderBindings = commanders; Victories = victories; Layouts = layouts; }
+        Dictionary<string, ExtensionVictoryRules> victories, Dictionary<string, ExtensionLayout> layouts,
+        Dictionary<string, ScriptedScenarioEvent[]> scenarioEvents)
+    { Bus = bus; Revision = revision; UnitBindings = units; CommanderBindings = commanders; Victories = victories; Layouts = layouts; ScenarioEvents = scenarioEvents; }
     private sealed record Manifest(int Schema, int ApiVersion, string[]? Skills = null, string[]? Traits = null,
-        string? UnitBindings = null, string? CommanderBindings = null, string? VictoryRules = null, string? Presentation = null, string[]? Scripts = null);
+        string? UnitBindings = null, string? CommanderBindings = null, string? VictoryRules = null, string? Presentation = null, string[]? Scripts = null,
+        string? ScenarioEvents = null, string[]? Statuses = null);
 
     public static bool PathValid(string? p) => p != null && p.StartsWith("rewrite/", StringComparison.Ordinal) && p.Length < 240
         && !p.Contains('\\') && !p.Contains(':') && p.Split('/').All(s => s.Length > 0 && s != "." && s != "..")
@@ -42,7 +46,7 @@ public sealed class ExtensionLoader
         byte[] bytes;
         try { bytes = read("rewrite/extension.json"); }
         catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException or KeyNotFoundException)
-        { return new(new(new Dictionary<string, ExtensionSkill>()), "", [], [], new(), new()); }
+        { return new(new(new Dictionary<string, ExtensionSkill>()), "", [], [], new(), new(), new()); }
         var loaded = new SortedDictionary<string, byte[]>(StringComparer.Ordinal);
         T Read<T>(string path)
         {
@@ -53,20 +57,50 @@ public sealed class ExtensionLoader
             return ParseJson<T>(data);
         }
         var m = Read<Manifest>("rewrite/extension.json");
-        if (m.Schema != 1 || m.ApiVersion != 1) throw new RuleViolation("extension.version", "Unsupported extension schema/API version");
+        if (m.Schema != 1 || m.ApiVersion is not (1 or 2)) throw new RuleViolation("extension.version", "Unsupported extension schema/API version");
+        if (m.ApiVersion == 1 && m.Statuses != null) throw new RuleViolation("extension.version", "Statuses require API 2");
         var skills = new Dictionary<string, ExtensionSkill>(StringComparer.Ordinal);
         foreach (string path in (m.Skills ?? []).Concat(m.Traits ?? []))
             foreach (var skill in Read<ExtensionSkill[]>(path))
             {
                 if (skill == null || skill.Id == null || skill.Effects == null || skill.Cost == null
-                    || skill.NameKey == null || skill.DescriptionKey == null || !Id(skill.Id) || skill.Kind is not ("passive" or "active" or "tag") || skill.Target is not ("self" or "ally" or "enemy")
+                    || skill.NameKey == null || skill.DescriptionKey == null || !Id(skill.Id) || skill.Kind is not ("passive" or "active" or "tag")
+                    || skill.Target is not ("self" or "ally" or "enemy" or "cell") || skill.Target == "cell" && (m.ApiVersion < 2 || skill.Kind != "active")
                     || skill.Range < 0 || skill.Cooldown < 0 || !skills.TryAdd(skill.Id, skill)
                     || skill.Icon != null && (!PathValid(skill.Icon) || !skill.Icon.EndsWith(".png", StringComparison.Ordinal)))
                     throw new RuleViolation("extension.skill", "Invalid/duplicate skill: " + skill?.Id);
                 skill.Cost.Validate();
                 if (skill.Cost.Money < 0 || skill.Cost.Industry < 0 || skill.Cost.Food < 0) throw new RuleViolation("extension.cost", skill.Id);
-                foreach (var e in skill.Effects) ValidateEffect(e);
+                foreach (var e in skill.Effects)
+                {
+                    ValidateEffect(e, m.ApiVersion);
+                    if (e.Operation is "summon" or "teleport" && (skill.Kind != "active" || skill.Target != "cell"))
+                        throw new RuleViolation("extension.effect", "Summon and teleport require an active cell skill");
+                    if (e.Event == "skill.activate" && skill.Kind != "active" || e.Event != "skill.activate" && skill.Kind == "active")
+                        throw new RuleViolation("extension.effect", "Effect event does not match skill kind");
+                }
             }
+        var statuses = new Dictionary<string, ExtensionStatus>(StringComparer.Ordinal);
+        foreach (string path in m.Statuses ?? []) foreach (var status in Read<ExtensionStatus[]>(path))
+        {
+            if (status == null || status.Id == null || !Id(status.Id) || skills.ContainsKey(status.Id) || !statuses.TryAdd(status.Id, status)
+                || status.NameKey == null || status.DescriptionKey == null || status.Effects == null || status.MaxStacks is < 1 or > 32
+                || status.Stacking is not ("refresh" or "replace" or "stack")
+                || status.Icon != null && (!PathValid(status.Icon) || !status.Icon.EndsWith(".png", StringComparison.Ordinal)))
+                throw new RuleViolation("extension.status", "Invalid or duplicate status");
+            foreach (var effect in status.Effects)
+            {
+                ValidateEffect(effect, m.ApiVersion);
+                if (effect.Event is not ("combat.modify_damage" or "combat.modify_incoming_damage" or "combat.counterattack" or "combat.attack_count"
+                    or "movement.modify" or "turn.start" or "turn.end"))
+                    throw new RuleViolation("extension.status", "Unsupported status event");
+            }
+        }
+        var effects = skills.Values.SelectMany(s => s.Effects).Concat(statuses.Values.SelectMany(s => s.Effects)).ToArray();
+        foreach (var effect in effects.Where(e => e.Operation is "apply_status" or "remove_status"))
+            if (effect.Status == null || !statuses.ContainsKey(effect.Status)
+                || effect.Operation == "apply_status" && effect.Script == null && (effect.Value < 1 || effect.Value > statuses[effect.Status].MaxStacks))
+                throw new RuleViolation("extension.status_reference", effect.Status ?? "Missing status");
         var units = m.UnitBindings == null ? [] : Read<ExtensionBinding[]>(m.UnitBindings);
         var commanders = m.CommanderBindings == null ? [] : Read<ExtensionBinding[]>(m.CommanderBindings);
         foreach (var binding in units.Concat(commanders))
@@ -75,12 +109,23 @@ public sealed class ExtensionLoader
                 throw new RuleViolation("extension.binding", "Invalid binding target/mode");
             var slots = binding.Skills ?? [];
             if (slots.Any(s => s == null || string.IsNullOrWhiteSpace(s.Id) || !Known(s.Id) || s.Level < 1 || string.IsNullOrWhiteSpace(s.InstanceId) || s.InstanceId.Contains('/')
-                || s.InstanceId.Length > 64 || s.X.HasValue != s.Y.HasValue || !float.IsFinite(s.X ?? 0) || !float.IsFinite(s.Y ?? 0))
+                || s.InstanceId.Length > 64 || s.InstanceId.StartsWith("status.", StringComparison.Ordinal)
+                || s.X.HasValue != s.Y.HasValue || !float.IsFinite(s.X ?? 0) || !float.IsFinite(s.Y ?? 0))
                 || slots.Select(s => s.InstanceId).Distinct().Count() != slots.Length || (binding.Traits ?? []).Any(t => string.IsNullOrWhiteSpace(t) || !Known(t)))
                 throw new RuleViolation("extension.binding", "Invalid skill reference/instance/position: " + binding.Target);
         }
         var victories = m.VictoryRules == null ? new Dictionary<string, ExtensionVictoryRules>() : Read<Dictionary<string, ExtensionVictoryRules>>(m.VictoryRules);
         foreach (var v in victories.Values) ValidateVictory(v);
+        var scenarioEvents = m.ScenarioEvents == null ? new Dictionary<string, ScriptedScenarioEvent[]>() : Read<Dictionary<string, ScriptedScenarioEvent[]>>(m.ScenarioEvents);
+        foreach (var events in scenarioEvents.Values) Core.ScenarioRules.ValidateDefinitions(events);
+        foreach (string image in scenarioEvents.Values.SelectMany(v => v).Select(e => e.Popup?.Image).OfType<string>().Distinct())
+        {
+            var data = read(image);
+            if (data.Length > 4 * 1024 * 1024) throw new RuleViolation("extension.size", image);
+        }
+        var scenarioHandlers = scenarioEvents.Values.SelectMany(v => v).SelectMany(e =>
+            Core.ScenarioRules.Conditions(e).Where(c => c.Script != null).Select(c => (Script: c.Script!, Function: c.Function!))
+                .Concat(Core.ScenarioRules.Effects(e).Where(a => a.Script != null).Select(a => (Script: a.Script!, Function: a.Function!)))).ToArray();
         var layouts = m.Presentation == null ? new Dictionary<string, ExtensionLayout>() : Read<Dictionary<string, ExtensionLayout>>(m.Presentation);
         foreach (var layout in layouts)
             if (layout.Value == null || layout.Key is not ("commander" or "unit") || layout.Value.Mode is not ("list" or "grid" or "positioned")
@@ -88,9 +133,9 @@ public sealed class ExtensionLoader
                 || layout.Value.MaxHeight is < 40 or > 400 || layout.Value.Left is < 0 or > 560 || layout.Value.Top is < 0 or > 300
                 || layout.Value.Width is < 40 or > 560 || layout.Value.Height is < 20 or > 300) throw new RuleViolation("extension.layout", layout.Key);
         var scripts = new Dictionary<string, string>(StringComparer.Ordinal);
-        foreach (string path in skills.Values.SelectMany(s => s.Effects).Select(e => e.Script)
+        foreach (string path in effects.Select(e => e.Script)
             .Concat(victories.Values.SelectMany(v => Conditions(v.Win).Concat(v.Lose == null ? [] : Conditions(v.Lose))).Select(c => c.Script))
-            .Where(s => s != null).Select(s => s!).Concat(m.Scripts ?? []).Distinct())
+            .Where(s => s != null).Select(s => s!).Concat(scenarioHandlers.Select(h => h.Script)).Concat(m.Scripts ?? []).Distinct())
         {
             if (!PathValid(path) || !path.EndsWith(".lua", StringComparison.Ordinal)) throw new RuleViolation("extension.path", path);
             var data = read(path);
@@ -98,16 +143,17 @@ public sealed class ExtensionLoader
             loaded[path] = data; scripts[path] = Encoding.UTF8.GetString(data);
         }
         var runtime = new ExtensionScriptRuntime(scripts);
-        foreach (var effect in skills.Values.SelectMany(s => s.Effects).Where(e => e.Script != null)) runtime.ValidateHandler(effect.Script!, effect.Function!);
+        foreach (var handler in scenarioHandlers) runtime.ValidateHandler(handler.Script, handler.Function);
+        foreach (var effect in effects.Where(e => e.Script != null)) runtime.ValidateHandler(effect.Script!, effect.Function!);
         foreach (var condition in victories.Values.SelectMany(v => Conditions(v.Win).Concat(v.Lose == null ? [] : Conditions(v.Lose))).Where(c => c.Type == "script"))
             runtime.ValidateHandler(condition.Script!, condition.Function!);
-        foreach (var skill in skills.Values) if (skill.Icon != null)
+        foreach (var icon in skills.Values.Select(s => s.Icon).Concat(statuses.Values.Select(s => s.Icon)).OfType<string>().Distinct())
         {
-            var data = read(skill.Icon);
-            if (data.Length > 4 * 1024 * 1024) throw new RuleViolation("extension.size", skill.Icon);
+            var data = read(icon);
+            if (data.Length > 4 * 1024 * 1024) throw new RuleViolation("extension.size", icon);
         }
         string revision = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join('\n', loaded.Select(p => p.Key + ":" + Convert.ToHexStringLower(SHA256.HashData(p.Value)))))));
-        return new(new(skills, runtime), revision, units, commanders, victories, layouts);
+        return new(new(skills, runtime, statuses), revision, units, commanders, victories, layouts, scenarioEvents) { ApiVersion = m.ApiVersion };
         bool Known(string id) => skills.ContainsKey(id) || id.StartsWith("ew4.skill.", StringComparison.Ordinal)
             && int.TryParse(id[10..], out int value) && value is >= 0 and < 40 || BuiltinTraits.Contains(id);
     }
@@ -123,21 +169,36 @@ public sealed class ExtensionLoader
         }
         else if (node.ValueKind == JsonValueKind.Array) foreach (var v in node.EnumerateArray()) Unique(v);
     }
-    private static void ValidateEffect(ExtensionEffect e)
+    private static void ValidateEffect(ExtensionEffect e, int apiVersion)
     {
         if (e == null) throw new RuleViolation("extension.effect", "Null effect");
         bool valid = e.Event switch {
             "combat.modify_damage" => e.Operation is "damage_multiplier" or "damage_add",
+            "combat.modify_incoming_damage" when apiVersion >= 2 => e.Operation is "damage_multiplier" or "damage_add",
+            "movement.modify" when apiVersion >= 2 => e.Operation == "movement_add",
             "combat.counterattack" => e.Operation == "counterattack",
             "combat.attack_count" => e.Operation == "attack_count_add",
             "unit.recruited" or "unit.move_end" or "unit.captured" or "combat.after" or "unit.damaged" or "unit.destroyed" or "turn.start" or "turn.end" or "scenario.start"
-                => e.Operation is "heal" or "money" or "industry" or "food",
-            "skill.activate" => e.Operation is "heal" or "damage" or "money" or "industry" or "food",
+                => e.Operation is "heal" or "money" or "industry" or "food" || apiVersion >= 2 && e.Operation is "damage" or "movement",
+            "skill.activate" => e.Operation is "heal" or "damage" or "money" or "industry" or "food"
+                || apiVersion >= 2 && e.Operation is "summon" or "teleport" or "apply_status" or "remove_status" or "movement",
             _ => false };
-        if (!valid || !double.IsFinite(e.Value) || e.Value < 0 || e.Script == null != (e.Function == null)
+        bool query = e.Event.StartsWith("combat.", StringComparison.Ordinal) && e.Event != "combat.after" || e.Event == "movement.modify";
+        if (!valid || !double.IsFinite(e.Value) || e.Value < 0 && e.Operation is not ("movement" or "movement_add") || e.Script == null != (e.Function == null)
+            || e.Scope is not ("source" or "target" or "area") || e.Relation is not ("any" or "ally" or "enemy")
+            || e.Radius is < 0 or > 32 || e.Scope != "area" && e.Radius != 0
+            || (query || e.Operation is "money" or "industry" or "food" or "summon" or "teleport") && (e.Scope != "target" || e.Relation != "any" || e.Radius != 0)
+            || apiVersion == 1 && (e.Scope != "target" || e.Relation != "any" || e.Radius != 0 || e.Profile != null || e.Status != null || e.Duration != 0)
+            || e.Operation == "summon" && (e.Profile == null || !Id(e.Profile) || e.Value != 1) || e.Operation != "summon" && e.Profile != null
+            || e.Operation is "apply_status" or "remove_status" && (e.Status == null || !Id(e.Status))
+            || e.Operation is not ("apply_status" or "remove_status") && e.Status != null
+            || (e.Operation == "apply_status" ? e.Duration is < 1 or > 1000 : e.Duration != 0)
             || e.Function != null && !System.Text.RegularExpressions.Regex.IsMatch(e.Function, "^[A-Za-z_][A-Za-z0-9_]*$"))
             throw new RuleViolation("extension.effect", "Invalid event/operation/handler: " + e.Event + "/" + e.Operation);
     }
+
+    public void ConfigureRuntime(LegacyRuntimeCatalog runtime) => Bus.RegisterUnitTemplates(runtime.Profiles.Values
+        .Select(u => new SkillSummonTemplate(u.Profile, new UnitSupport { FoodConsumption = u.FoodConsumption })));
     private static IEnumerable<VictoryCondition> Conditions(VictoryCondition c)
     {
         var pending = new Stack<(VictoryCondition Condition, int Depth)>();

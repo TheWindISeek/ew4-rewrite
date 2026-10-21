@@ -182,7 +182,9 @@ public static class WorldActions
             if (state.Cells[destination].Owner != next.Cells[destination].Owner)
                 next = rules.Extensions.Dispatch(next, "unit.captured", unitId, new Ew4Random(next.RandomState));
         }
-        if (rules.PlayerCamp != null)
+        var scenarioEvents = ScenarioRules.Evaluate(next, rules.Extensions?.Scripts);
+        next = scenarioEvents.State; notices.AddRange(scenarioEvents.Notices);
+        if (rules.PlayerCamp != null && next.Outcome == BattleOutcome.Continue && (next.ScenarioEvents.Count == 0 || next.PendingDialogue == null))
         {
             var outcome = WorldVictory.Evaluate(next, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
             if (outcome != BattleOutcome.Continue)
@@ -221,7 +223,7 @@ public static class WorldActions
         state.Validate();
         var unit = state.Units.SingleOrDefault(u => u.Id == unitId)
             ?? throw new RuleViolation("movement.unit", "Unknown unit");
-        if (unit.RemainingMovement < 1 || unit.Combatant.Profile.Movement < 1 || unit.Morale.Effective == -3)
+        if (unit.RemainingMovement < 1 || unit.Morale.Effective == -3)
             return new Dictionary<int, ReachableCell>();
         return MovementRange(state, unit, configuration ?? new());
     }
@@ -229,19 +231,26 @@ public static class WorldActions
     internal static IReadOnlyDictionary<int, ReachableCell> MovementRange(WorldState state, UnitState unit, WorldMoveRules rules)
     {
         var context = MovementContext(state, unit);
+        if (rules.Extensions != null)
+        {
+            int budget = rules.Extensions.MovementBudget(unit.Combatant);
+            context = (context.Cells, context.Actor with { FullBudget = budget, Remaining = Math.Min(unit.RemainingMovement, budget) });
+        }
         return Movement.Reachable(new(state.Width, state.Height), context.Cells, unit.Cell, context.Actor, rules.Search);
     }
 
     internal static (MovementCell[] Cells, MovementActor Actor) MovementContext(WorldState state, UnitState unit)
     {
         var campIndex = state.Factions.ToDictionary(f => f.Id, f => f.Camp, StringComparer.Ordinal);
+        if (state.DiplomaticRelations.Count > 0)
+            campIndex = state.Factions.ToDictionary(f => f.Id, f => WorldDiplomacy.Allied(state, unit.Owner, f.Id) ? "allied" : "other", StringComparer.Ordinal);
         var occupied = state.Units.GroupBy(u => u.Cell).ToDictionary(g => g.Key, g => campIndex[g.First().Owner]);
         var cells = state.Cells.Select((c, i) => c.Terrain with { OccupantCamp = occupied.TryGetValue(i, out string camp) ? camp : null }).ToArray();
         var actor = new MovementActor
         {
             Category = unit.Combatant.Profile.Category, Camp = campIndex[unit.Owner], Transport = unit.Transport,
             Geography = unit.Combatant.Geography || unit.Combatant.Has(Ew4Combat.Skill(1)),
-            FullBudget = unit.Combatant.Profile.Movement, Remaining = unit.RemainingMovement
+            FullBudget = Math.Max(unit.ExtensionMovementLimit ?? unit.Combatant.Profile.Movement, unit.RemainingMovement), Remaining = unit.RemainingMovement
         };
         return (cells, actor);
     }

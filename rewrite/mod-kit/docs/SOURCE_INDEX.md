@@ -4,7 +4,9 @@
 
 需要从旧文件或原生函数反查时，先读[原包入库/运行入口对照](porting/ENTRYPOINTS.md)，包括原SO基线、Ghidra标识和证据文件，避免混用不同库版本的地址。
 
-## 规则扩展API 1
+## 规则扩展API 1/2
+
+API 2通用操作在`Ew4.Core/SkillWorldEffects.cs`：RegisterUnitTemplates、ValidCellTarget、ApplyEffect、MovementBudget、ExpireStatuses、ChangeNotices；状态保存在Combatant.Statuses，移动上限缓存在UnitState.ExtensionMovementLimit。ExtensionLoader.ConfigureRuntime注册召唤模板；WorldSkillActions.Execute接收可选targetCell。验证入口为CommonSkillChecks、CommonSkillModChecks及tools/verify_common_skills_web.cjs。
 
 完整格式及源码映射见[规则接口指南](porting/RULE_EXTENSIONS.md)。主入口：`Ew4.Legacy/ExtensionLoader.cs`的Load/PatchCatalog/ValidateVictoryScripts，`ExtensionScriptRuntime.cs`的Run/Execute，`Ew4.Core/RuleExtensions.cs`的RuleEventBus和WorldSkillActions.Execute，`ExtensionVictory.cs`的Evaluate，`Ew4.ModTool/VictoryCommands.cs`的Run。UI在`wwwroot/skill-ui.js`及menus.commanderInfo/app.openUnitInfo/openSkillAction；将领不固定四技能位。
 
@@ -36,6 +38,10 @@
 | `rewrite/Ew4.Android/MainActivity.cs` | OnCreate/Pick/OnActivityResult；ImportBridge | 手机系统文件选择、私有缓存及JS桥接 |
 
 ## 剧本、规则、存档
+
+自定义剧本事件：`rewrite/Ew4.Core/ScenarioRules.cs` 的 Match/Evaluate/Choose，`ClientScenarioEvents.cs` 的 ScenarioPopupView；格式见[事件接口](porting/SCENARIO_EVENTS.md)。名册派遣候选由 `ClientDeployment.cs` 的 Deployment 和 `RosterDeployment.CanDeploy` 共用校验，前端 `Menus.deployGeneral` 查询可用将领后进入名册选择。
+
+周期调度与资源短缺事务也在 `ScenarioRules.cs`；双边关系在 `WorldDiplomacy.cs` 的 Set/Relation/Allied/Hostile，移动、战斗、AI、支援及 `WorldVictory.cs`/`ExtensionVictory.cs` 共用该关系。专项回归为 `ScenarioRecurrenceDiplomacyChecks.cs`，前端关系投影检查为 `tools/verify_scenario_diplomacy_ui.cjs`。
 
 | 源码路径 | 类/函数 | 负责内容 |
 | --- | --- | --- |

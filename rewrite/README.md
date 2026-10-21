@@ -1,6 +1,10 @@
 # 现代核心重构
 
-已提供[开放规则API 1](mod-kit/docs/porting/RULE_EXTENSIONS.md)：兵种标签、动态兵种/将领技能、外置Lua、技能列表/网格/自定义坐标和征服/战役胜负条件。包根`rewrite/extension.json`注册，电脑与Android共享后端；[完整示例](mod-kit/examples/rule-extension/README.md)可pack为离线Mod。无配置时保留原规则，AI主动选择扩展技能尚未接入。
+2026-10-21：本轮发行0.2.6包含通用技能API 2、剧本周期事件/独立外交及字体启动兼容修复。[发行说明](RELEASE_0.2.6_20261021.md)，[技能交付记录](../reverse/COMMON_SKILLS_20261021.md)。以下各阶段“未重打APK”等说明为当时状态；本轮产物与远端核验见 `../build/release-0.2.6-20261021/`。
+
+2026-10-21：修复战场上将名册被画布遮挡，增加后端候选校验与任命自动保存；公主整编后按当前名册重新领取。[剧本事件接口](mod-kit/docs/porting/SCENARIO_EVENTS.md)已支持组合条件→直接结果，或条件→自定义按钮弹窗→所选结果，含资源、城市、死亡、回合、阵营及 Lua；[中文示例](mod-kit/examples/scenario-events/README.md)。验证与预览见[交付记录](../reverse/SCENARIO_RULES_20261021.md)，未重打 APK。
+
+已提供[开放规则API 1/2](mod-kit/docs/porting/RULE_EXTENSIONS.md)：兵种标签、动态兵种/将领技能、外置Lua、技能布局及征服/战役胜负条件；API 2增加地块目标、召唤、传送、范围效果、持续状态与移动力。包根`rewrite/extension.json`注册，电脑与Android共享后端；[原规则示例](mod-kit/examples/rule-extension/README.md)和[六技能示例](mod-kit/examples/common-skills/README.md)可pack为离线Mod，制作步骤见[Mod修改指南README](mod-kit/docs/porting/README.md)。无配置时保留原规则，AI主动选择扩展技能尚未接入。
 
 真实Mod兼容实测见 [当前修复与阻塞](../reverse/MOD_RESOURCE_COMPAT_20261019.md)：原版、皇凯、一战、大鏖战通过逐单人剧本开局、代表行动与保存重载，大前线和君临天下仍受新增技能/爵位等规则阻塞。大鏖战strength=-999已实现一次性飞弹。核心309367、共享59、浏览器16项16图通过，未完整通关或Android验收。详细制作资料见[配置字段](mod-kit/docs/CONFIG_REFERENCE.md)、[源码函数](mod-kit/docs/SOURCE_INDEX.md)、[排错表](mod-kit/docs/TROUBLESHOOTING.md)及各资源目录README；工具包已同步。
 

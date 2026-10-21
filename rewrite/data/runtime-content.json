@@ -560,7 +560,7 @@
     {
       "path": "original/eastasia.bin",
       "bytes": 257872,
-      "sha256": "aa765c0efd1b9b3d41a4a336ec7d269512452be6f903b85596d9824725fd6bfb"
+      "sha256": "dcd1d5dc6777742b1cb0d677178097ea29e81b0f7db09bfe80cdf2c9bc0b3ed1"
     },
     {
       "path": "original/eastasia.map.json",
@@ -574,8 +574,8 @@
     },
     {
       "path": "original/maptextpos_eastasia.xml",
-      "bytes": 12300,
-      "sha256": "b1386a8318670c70f18fbc5077bec84e9a3e8ac524c90cf8e24193585c45230b"
+      "bytes": 12289,
+      "sha256": "8e3440e19169cf16deb56af77fa571dc23099e69e074394c8bec50d8e59adbcb"
     },
     {
       "path": "original/stringtable_cn.ini",
@@ -674,8 +674,8 @@
     },
     {
       "path": "client/animations/maptext.json",
-      "bytes": 388877,
-      "sha256": "f55f8a2639ffe6d1f46af87d36574e45a0f049514324e24b68f408ed3e2e8f6d"
+      "bytes": 399378,
+      "sha256": "462855cff4b95bdcce6361adedefda6d4f862c0394407a7bf40054f41162e58d"
     },
     {
       "path": "client/animations/strategicmap.json",
@@ -689,8 +689,8 @@
     },
     {
       "path": "client/fonts/coverage.json",
-      "bytes": 3569,
-      "sha256": "63f367e04b63266adf9b59cc3438f7433f7a42b2d367234d383ebb76a11e9e85"
+      "bytes": 912735,
+      "sha256": "ff15ca4a99371a3315185d18a882835046acfccfa7181b08708bfbe5d67ae332"
     },
     {
       "path": "client/fonts/Jigmo-LICENSE.txt",
@@ -698,19 +698,9 @@
       "sha256": "437ca31a127c9f1b191ff9a42bb563e5f7e414ae819006dca4635d9fb34aeb94"
     },
     {
-      "path": "client/fonts/Jigmo.woff2",
-      "bytes": 7270828,
-      "sha256": "eb3eb8838bceca9fa3c2e9cc2776caf9857ed844a8eb65b4902158bce9baecd1"
-    },
-    {
-      "path": "client/fonts/Jigmo2.woff2",
-      "bytes": 12976228,
-      "sha256": "738367ae2a55579a842c3f492929ed3b41f4521f99342f1c881e5029f1e46fec"
-    },
-    {
-      "path": "client/fonts/Jigmo3.woff2",
-      "bytes": 3048560,
-      "sha256": "098a5400514c8f5a5018435e00619495bca05dacb16de7500c9ee808f47efd99"
+      "path": "client/fonts/LXGWWenKai-OFL.txt",
+      "bytes": 5171,
+      "sha256": "1a25e35da1031c6c3436fde545bb9cb5aca954e9873afe510c834b8b79bd21a0"
     },
     {
       "path": "client/fonts/NotoSerifSC-OFL.txt",
@@ -718,24 +708,1734 @@
       "sha256": "5e0da210fb04058a8c0087985d2d456b931c2579811a49655721d3cf0c36b6d6"
     },
     {
-      "path": "client/fonts/NotoSerifSC-Regular.woff2",
-      "bytes": 5733396,
-      "sha256": "18f742f46aa8f5b7760a5ec96cf7fe85710ec5d72d27cffce7e1ba15784fa65a"
+      "path": "client/fonts/parts/Jigmo-000.woff2",
+      "bytes": 9684,
+      "sha256": "8a5a1acd6f1690d58f5d6edf0af10b87e04945b7ed4a15b14da929e5fa2ef46b"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-002.woff2",
+      "bytes": 29208,
+      "sha256": "633e61b5422977c9d9e8ceb7d3c6aa2bf703af5d7bf374c1e55de899087d430c"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-005.woff2",
+      "bytes": 43604,
+      "sha256": "49c4f85c57dd7c66337aad9a0089de8e44a3e9ca5ec6b2702663c2ed6d07263c"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-006.woff2",
+      "bytes": 348656,
+      "sha256": "4c5d6cb4d8cc99b7ce0ab40ffa6720a582411bf1412cd81765991b2b67ea9110"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-007.woff2",
+      "bytes": 469804,
+      "sha256": "8006578155350e0ac38998b16bacf8f8eef19f550c96df6f369c474ac31ed09d"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-008.woff2",
+      "bytes": 475928,
+      "sha256": "8a0209d52ff432992b0a0a90fd8510deaab859c6b42b516e32003f999e2a19b5"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-009.woff2",
+      "bytes": 460004,
+      "sha256": "48c9c647f1f2886d7927816ff82329a4fe31b0c28709a43751d024aec025e67d"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-00a.woff2",
+      "bytes": 366224,
+      "sha256": "64ed9872ed58a52dac53341529b8daaed4a1368a38e89a4432ce18d582378343"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-00b.woff2",
+      "bytes": 398488,
+      "sha256": "21cb6fbd19eeef34f3d1f5ccccbef10071d37c002db40650294912c64c82ca7b"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-00c.woff2",
+      "bytes": 391312,
+      "sha256": "20c941594304b078a32a1008209002e2f32d283661c03fc4b0fc2fb9d584ed95"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-00d.woff2",
+      "bytes": 434048,
+      "sha256": "18f47f10997853219568d1169732c140f334393892b746445cfa4df153a8cb26"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-00e.woff2",
+      "bytes": 425712,
+      "sha256": "bf379e2558f882e5f8341c7692a816d585e7caf7bb7f577446ab2ebb660e2cf6"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-00f.woff2",
+      "bytes": 451108,
+      "sha256": "daaa00846f00b98cd7cfcfca9c30f0ac16c4481c344007603d21ef0fdb7577f2"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-010.woff2",
+      "bytes": 420860,
+      "sha256": "85ac4eaa8977e5321dfa5eca5920097235228c28610849c601f731cd846457fa"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-011.woff2",
+      "bytes": 416800,
+      "sha256": "066c4f903dfee3d0f29e959abc2d16b36c4f450a6dd9e8dad4522b83ba03b5e3"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-012.woff2",
+      "bytes": 418796,
+      "sha256": "1aa01e0a4f50dea98553121189e3deb4b844191164cbaf700e0bb3fd6322f7e2"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-013.woff2",
+      "bytes": 520968,
+      "sha256": "f1e0f41fb2eedc2c9a245c20246a119e741ad49d26403b530ed1857408ed1f01"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-015.woff2",
+      "bytes": 37348,
+      "sha256": "f9643595122d275b4367d4acb21f2b3523f3b3c1befd7dac665dcb992ab6eecb"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-016.woff2",
+      "bytes": 51264,
+      "sha256": "a2de47492aa59e610d0f149ea75d31004c2a8da37bd41f9626168803fad38ac5"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-017.woff2",
+      "bytes": 52420,
+      "sha256": "7c1a9cdf09b3acb2cab5ab8d0745d83094abac0a3288a9fba9fb1ec37da0b47e"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-018.woff2",
+      "bytes": 53300,
+      "sha256": "89b533d0ee27ef0855755f103c4d46d8aa21b7107ee8ea4ebdc612bc650cfddc"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-019.woff2",
+      "bytes": 57204,
+      "sha256": "7f2a916dcdc774c947044059ad5a3ef77bf1e8dec7a077ccc7995c981a0e732b"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-01a.woff2",
+      "bytes": 68076,
+      "sha256": "d565c95b92e2d624fc1e3956625316001c8cf9ff99642a8ef6dc12c1f02b63cf"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-01f.woff2",
+      "bytes": 128560,
+      "sha256": "13f5b9930d2619ab7a725a47af2231e4788a0f682026acc32414e9652f83293f"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-02d.woff2",
+      "bytes": 1232,
+      "sha256": "9eb40a052e9196986511a771e3aa244f113ad20929596164a5caf764057daafa"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-035.woff2",
+      "bytes": 2248,
+      "sha256": "14b7a3d11f64bfe96cf6883c4e65019166a0bc2c8d91a8a1e3c799efa0645913"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-036.woff2",
+      "bytes": 104536,
+      "sha256": "57ee480658a755d5677ef453a9f37bdf294b2b085545e4b8dc298ada2abf096e"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-03a.woff2",
+      "bytes": 1112,
+      "sha256": "1b33e90fab5bfe27c068bf1db26c95f91c3e121e159993f5525e0e57300a653d"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-03e.woff2",
+      "bytes": 26964,
+      "sha256": "63bd6837863aa7f503afedb6a3734b26ffeb7e95fb9be7f05a1e95d839a5317b"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-03f.woff2",
+      "bytes": 4180,
+      "sha256": "db1b1f0fbe808f1c8d61e9e1c527fb6eff359e2a13af964c68005ae975d95987"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-040.woff2",
+      "bytes": 988,
+      "sha256": "142619e5d7de976813712ccd2d9a8afe65ccc6da9fa82a4bd934990348edff4b"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-200.woff2",
+      "bytes": 389076,
+      "sha256": "0a4e2b0a7448da1c0760fa7e4b8f809e91d6ccac544a8a301609d05a3d6b7895"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-201.woff2",
+      "bytes": 380100,
+      "sha256": "8b33aa9b6567f6ee6280cfb31a5f0969da88dfce9a5f9869886fe8a5a771d6a6"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-202.woff2",
+      "bytes": 398412,
+      "sha256": "c1dcb24f26311968fb80af9507d6edd880e7728dcf58374cf60f0d8a7122ade4"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-203.woff2",
+      "bytes": 388268,
+      "sha256": "a2f1587ebbcea15fced932d477ac7d71e8bcb48133dcd21c73fb7fa55f459127"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo-204.woff2",
+      "bytes": 283496,
+      "sha256": "da6f384cd8d50f08a02bb8386e599d452b19294aebe5c3aa03e19fb01bcebc72"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-000.woff2",
+      "bytes": 9688,
+      "sha256": "8cbfc7645a5a94b7442a761477643e3904f4d612a3af932509e37113c8640590"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-006.woff2",
+      "bytes": 924,
+      "sha256": "d4c7f0ee974e98f46002fa70dbdc06125921bd0b6d5758c692c0e6d9e557095f"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-009.woff2",
+      "bytes": 956,
+      "sha256": "43eba0e345ecfd470d50bcaad327b85e93fdb083808100bb4844cdba7b1d27cf"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-040.woff2",
+      "bytes": 431832,
+      "sha256": "00f1683c569ca4d01da9e9739a58eb44cacaa351175b9b8f1683105c52e89303"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-041.woff2",
+      "bytes": 425988,
+      "sha256": "a28334c7ca4df6e1cf67f81d09c7d44ceefc237ec10c2c86445b8e08ab5b9151"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-042.woff2",
+      "bytes": 478440,
+      "sha256": "c8d39e5f11e1a19200f3237f5c0e27214ec45f0ee5752783e2ff72760f6aa0c6"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-043.woff2",
+      "bytes": 476748,
+      "sha256": "9ab60af2fd910e2520133be28523776c707010b9750446e02733c9a939e45e0a"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-044.woff2",
+      "bytes": 445820,
+      "sha256": "e42de7126ac3c41dbc26805d0ce45a565efaafa7533a16a5625850317d3d4c25"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-045.woff2",
+      "bytes": 492304,
+      "sha256": "2cca33def46fb38b0cc3cd0d37cf976215e5b619cf218fd6eda15c55b7c47822"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-046.woff2",
+      "bytes": 462708,
+      "sha256": "c5c49bd879595ece168d45604f1e9cb976578233b68ff9b35a83fdce9c5d5a84"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-047.woff2",
+      "bytes": 488788,
+      "sha256": "5fea1a2de36705dc8972709a6bcde1fa2f1079826d18383412cdf6c974e3f00f"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-048.woff2",
+      "bytes": 530576,
+      "sha256": "b0ce7537d8c4105cc482399d2031903c2d37a7187cb15cf4a34d2c751b8a455f"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-049.woff2",
+      "bytes": 472848,
+      "sha256": "2ce5141a6e836b255cb328d748e26a7eaa721ed11cda8f116f590a4a3158ef5a"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-04a.woff2",
+      "bytes": 446072,
+      "sha256": "4f21c6f279a65b48dc27ae45ba46e1d5e30e3b17a3bf19cfa2318afb0d44a9ab"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-04b.woff2",
+      "bytes": 513460,
+      "sha256": "333dca30e3cb4a3a727a99e968b078bd0f4fdb2e6ff9e84d7f81ff5610f698a5"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-04c.woff2",
+      "bytes": 501040,
+      "sha256": "4619dde1a1f4787a757c4e0660ec41c1b7dcc09580e811143d7e0e94fc984226"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-04d.woff2",
+      "bytes": 480780,
+      "sha256": "a6e59e1ddf47afd088612a0f5c0f1d3d6cd9e57b0ca3f08363103de726b94941"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-04e.woff2",
+      "bytes": 532784,
+      "sha256": "28b1cc121f6f27d75ede67e47324cb88ef190912d0de71ef72ecd43e5a03bd3d"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-04f.woff2",
+      "bytes": 472444,
+      "sha256": "c8c34ae53e0339399b6a32fa60f739deb538815550463ac2b172f2c6778fb640"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-050.woff2",
+      "bytes": 462280,
+      "sha256": "0159c0c6bed4563b3d5439fc39d20421cddf5ebb60489b56fb56cb9e7e41bd09"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-051.woff2",
+      "bytes": 488268,
+      "sha256": "6bd621ed19d7b7b054b6eea11650ca09acf10e9ccc5ec608fa779749a8769fbe"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-052.woff2",
+      "bytes": 494216,
+      "sha256": "65de0c9d06dfc7ce5b7ffc7bd5254384120ac519638315fd1045391291026efe"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-053.woff2",
+      "bytes": 538300,
+      "sha256": "feebcc8a928239848ce832b2a77a1f9a668c1932849f83bcde15e36cf709429e"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-054.woff2",
+      "bytes": 575452,
+      "sha256": "474b27524a0f51af03df74e605da9d5a6b454cc655b9780a00ebd76123697072"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-055.woff2",
+      "bytes": 493844,
+      "sha256": "b12ed8751c80d12936ad559a0c9a9e5a5c4c702cd8a90aafaf3ffa1f1fa08b3f"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-056.woff2",
+      "bytes": 531540,
+      "sha256": "3313da57d3d148e696c6480b42147a113ab936e12f1a7c6926a50c710c3d2a1b"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-057.woff2",
+      "bytes": 486576,
+      "sha256": "a637ab9c2cc7dac4c0caa6826ad68996d40e065a04d6ff1efa28b268ee1bcc8d"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-058.woff2",
+      "bytes": 514472,
+      "sha256": "3c5110da210ce76e84aa084287c916d9c8c66f590e7b73032b6c64483777950e"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-059.woff2",
+      "bytes": 512272,
+      "sha256": "4b12c60e3b2150315e32f94967ce68b102140985f9cb11156bfdbb75d2d98335"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-05a.woff2",
+      "bytes": 480884,
+      "sha256": "6ddf95de4e286dce4759f9b9ae43931ee2aeac706263e5d80193d7674391c085"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-05b.woff2",
+      "bytes": 494152,
+      "sha256": "3dab01b79c91e68a8416e9b616bee30968a0574322027d159ea4709134d74451"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-05c.woff2",
+      "bytes": 521872,
+      "sha256": "a289899e216be58fb1d21d0b35154caf543cd7f9bc0e236e43e8c0741119f910"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-05d.woff2",
+      "bytes": 426264,
+      "sha256": "f1d5dbfdfdedf34168e159d27e29e93aaa256314023b9844581fc79105a8d97b"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-05f.woff2",
+      "bytes": 133216,
+      "sha256": "2ffe41695aebab92aa76ff8ac2cb01e0f2fbc7e22c669363bbe1d55d6a5b8e8d"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo2-200.woff2",
+      "bytes": 340668,
+      "sha256": "25b39391d1127cae5a5798d79e82de956ae506ae29155d72d04912af0587842a"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-000.woff2",
+      "bytes": 9688,
+      "sha256": "9e23563214f68f0ea9fe78c0af808ce385e435851b9cdb94fd4d20772f62a4ba"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-006.woff2",
+      "bytes": 924,
+      "sha256": "022ca47d0c99ffc29d42a9c74e4d7e0eb8576207851e0f3843dc9e4be1bd94cc"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-009.woff2",
+      "bytes": 964,
+      "sha256": "a32aae43ec061de1f0456088d176f11bfea44ede4a9c1a50e5ac90bbfc3f081a"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-060.woff2",
+      "bytes": 472504,
+      "sha256": "c3d26bcde83a7538c9dedeff535d5268ac76210cc097def6e8d7b177bb31fdc2"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-061.woff2",
+      "bytes": 489684,
+      "sha256": "f80d9d129d571f9b13f85cfa96f4e44657b610302a8b38fd09d226d263446caf"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-062.woff2",
+      "bytes": 520912,
+      "sha256": "556cd1fe5d9b78b439495b21beef65651ddccdd063a65f01ecdf38d3ade9d4b2"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-063.woff2",
+      "bytes": 521416,
+      "sha256": "c65bd461bc7f7908e92949032eb404f5cd60de173dae58ec24f97645280fc0e7"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-064.woff2",
+      "bytes": 519904,
+      "sha256": "9cf8c8cfbb65abf85a5adec0332fab406b1eef7a706953563f70120f4755ace4"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-065.woff2",
+      "bytes": 541084,
+      "sha256": "5abf7f7a910bca66dc74c9e2084b0652dc7f6083d679cbef9258f34b78d74095"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-066.woff2",
+      "bytes": 335968,
+      "sha256": "04b46ba96676deb8196205bb7bcbba2e5db22475b2c249ba933f929167105738"
+    },
+    {
+      "path": "client/fonts/parts/Jigmo3-200.woff2",
+      "bytes": 1768,
+      "sha256": "005d8bba424404dd6812a6a0f4e4ae0a3789c84ed19b28bc7eab1e0b167f7123"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-000.woff2",
+      "bytes": 27212,
+      "sha256": "af5b7eedffeb5f43d012951ff0030fc068192bc03323c6f41b764692c3459366"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-001.woff2",
+      "bytes": 936,
+      "sha256": "074470cfe3fb1da63b5fac246a8f5e02b72a0f47ed8d13efd8ee0aeff5cf98bd"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-003.woff2",
+      "bytes": 20560,
+      "sha256": "69fddc5caabd6ee6684f1e1e692f8462a4c7be880c130bba7a16a9d4a0d92a3b"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-004.woff2",
+      "bytes": 64120,
+      "sha256": "077c42753827d93dfb578a9c593bd29f9105ee836a05cf0197a3fb0cc1188f8a"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-005.woff2",
+      "bytes": 57316,
+      "sha256": "bfd4b35b739c6fd1d58cd30021febabdbeab86cfe63dfbbc717f9a6ad7b1cfdf"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-006.woff2",
+      "bytes": 408832,
+      "sha256": "0537084c679ab441a566e717090dd34d613b7d8d323ecd9dad3e3952ce6b62ea"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-007.woff2",
+      "bytes": 620576,
+      "sha256": "8ba3ed24d87ef82e77d7b6be50ad96b80ade5ab229807cdecbe0382d0dfe894f"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-008.woff2",
+      "bytes": 647428,
+      "sha256": "1a4004f374f72f48d4034da62c74c56f36c4fcd051ee8904786f71a747376912"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-009.woff2",
+      "bytes": 613748,
+      "sha256": "848bd28f038e3df15c94b78875ce5178aa7e3899f739b47194a0b7aea76a7b1a"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-00a.woff2",
+      "bytes": 447896,
+      "sha256": "f4ec297ea758bf59e7c9d4615126ce7f3a0944f7a055bf9a5f7f392afe6ccfbc"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-00b.woff2",
+      "bytes": 494732,
+      "sha256": "90f8d866b35c73f33e23c5ab9ff69b8c6bcffd6aba648f0d4282cbf171602438"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-00c.woff2",
+      "bytes": 491980,
+      "sha256": "fce152c593284e3b96de39b47a04c4db4151fb490ae08a3ae6dc4bd3b85a6a4a"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-00d.woff2",
+      "bytes": 548900,
+      "sha256": "348f47aa62cc486f473311a2459c65f9c80eebbbb2f4dbf5224a5b84cbda69e7"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-00e.woff2",
+      "bytes": 531972,
+      "sha256": "e053cd07aec3cae4280c0806f354922e5f6166b9c97d8ad810e3c3bf7c7b75b2"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-00f.woff2",
+      "bytes": 560124,
+      "sha256": "2845d7ed66a3251bf57670fc27de904bbc66fe2258a01b3d258171b855cb12fb"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-010.woff2",
+      "bytes": 550148,
+      "sha256": "07e3b45332f473f7fbd78170c21b7a43013f1ff156b18a7fb981afa113804457"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-011.woff2",
+      "bytes": 543376,
+      "sha256": "9d6fb441aad1e47fca7cfaaddc52787bdb73d093a3c9821075b5ba6ef233b797"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-012.woff2",
+      "bytes": 561600,
+      "sha256": "4c5ee890e46decb3a486e139009e72e007446def59f5d451567e5a172ca708a8"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-013.woff2",
+      "bytes": 632156,
+      "sha256": "e18831f743cffaa97462e37d10eee1c1810a43989223108215e019a54ddd3d19"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-014.woff2",
+      "bytes": 5544,
+      "sha256": "2cb718c4392a49014316639f65fdd82b80fae7c56fe9fccc2d94df165fe0e0bf"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-015.woff2",
+      "bytes": 32952,
+      "sha256": "f2e4b407cea300e0006d5c2ada74c186564474fcd1cbdf1b1f75c2a3d2bb675a"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-016.woff2",
+      "bytes": 54024,
+      "sha256": "9ca901f28c68b275c2d17406dd733ae331d6fa41179bb1f8bb09113d35c36731"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-017.woff2",
+      "bytes": 56396,
+      "sha256": "9660a10bdb3ea6a519aeb5ac2d6c422b7d4dc336f7a059774b660b2ff1402f8d"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-018.woff2",
+      "bytes": 56944,
+      "sha256": "0b83e0c3659e76bb284f604d81b8c75b87a4c5bb9722233c6e95c9fcc3806101"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-019.woff2",
+      "bytes": 54908,
+      "sha256": "86bf8b1b3904489081da878d70f3a30c493f43b0a54b2dcb9ca4f268646169e1"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-01a.woff2",
+      "bytes": 62752,
+      "sha256": "5c4d8bdce1fc9bcda0e461b52d458fae7c571b243aabf5f5721bcc1cccd9a399"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-01c.woff2",
+      "bytes": 6264,
+      "sha256": "470f189ee7a31a364896901575327fbec4d90b1387f227d931888b2de5f3472b"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-01d.woff2",
+      "bytes": 672,
+      "sha256": "d9ab3f057dd7a339ed2943ea7e79da734f9f8f32fdecc7459189fcb3d0cd0486"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-01e.woff2",
+      "bytes": 792,
+      "sha256": "edbfacab605ff31821f3a05f4728f75cfc50c48949b03867ccd2d6d106e15d7e"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-01f.woff2",
+      "bytes": 151704,
+      "sha256": "73c88cde5870c653b0e4b7fdb179ef4fcf7a52ac60aa32f8d064cb90f27cd55a"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-020.woff2",
+      "bytes": 764,
+      "sha256": "aedbeba53985adf1582fb29b6a95a792c507deb12f5fd9c01cfb2d8b059dd8b6"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-023.woff2",
+      "bytes": 756,
+      "sha256": "e3f4750c8b431e5572ac6ee0b455a65164fb628f725551223ccaf94567a8d64e"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-02d.woff2",
+      "bytes": 1244,
+      "sha256": "78892c89eb0c92ab8035b2ee72c911da81ec0b22ea5cfd7cb293e713490a25c4"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-036.woff2",
+      "bytes": 1016,
+      "sha256": "422e5a78bcfc7342acef21d73d4c6049e2853936f7aea73a08a7fee5d036154b"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-03a.woff2",
+      "bytes": 2656,
+      "sha256": "03ec8eaf4e9f9d3fb7ee4a19221b343413fa5ee2949de18d1892a937f09eb076"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-03e.woff2",
+      "bytes": 47140,
+      "sha256": "4b9925a1a90e06d3df451c7f247d8f711e8405ba4db88f0dbedf17246542714f"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-03f.woff2",
+      "bytes": 4648,
+      "sha256": "d8cbd40d7ec4000dd2b1da7340179b09e90dc61851f4c806c035d4226ead3419"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-040.woff2",
+      "bytes": 33556,
+      "sha256": "66bf150b1c89b63b97138edc1186bec0d6d7fecdad3c14d1057cb3664a469c2b"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-041.woff2",
+      "bytes": 35124,
+      "sha256": "f4f79c3493eeda50d99d0153642d4d31ee84a43116e76525003115ddae74805c"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-042.woff2",
+      "bytes": 29656,
+      "sha256": "ca76a22ff91bab0fd63d3751b82ef084ee6c374dc1900196c017a1d4932cadef"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-043.woff2",
+      "bytes": 34828,
+      "sha256": "ff9a4fe150b543845b216da214c7a3a72cbf153d6e0144f6872e3f081ed9ff76"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-044.woff2",
+      "bytes": 19680,
+      "sha256": "e4fed062a109dc9f4eb1a54386eb57c3a83c59efc9a9f5b4156c2b7964e211bd"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-045.woff2",
+      "bytes": 38540,
+      "sha256": "9f6c4667ce3e263dceb80d696599e8301032fe7ba67ad4997b6cec62c37413e5"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-046.woff2",
+      "bytes": 34940,
+      "sha256": "b1e8736b93736d68173cda01e9ba6de8ab6151dbeee9b7c3f947121afc28c805"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-047.woff2",
+      "bytes": 26824,
+      "sha256": "623c4d4b44a3e11f4e09a7e9e3831825cd92caf318bc6f6710b8903cd3251cfa"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-048.woff2",
+      "bytes": 33804,
+      "sha256": "28b9ce39455f6f00fadfdb3b519ab8922b6b9e85db054e5ba722db46c0d9ca5c"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-049.woff2",
+      "bytes": 31784,
+      "sha256": "f9bd56f4e1f50abe8aac30910ce3baa6898fcf258b0d8864eef87052658d9ae9"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-04a.woff2",
+      "bytes": 29312,
+      "sha256": "b02c08b704c3ee728cbd88960a11c6314edfa658907a94e5b93467f9a896484c"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-04b.woff2",
+      "bytes": 42364,
+      "sha256": "896a7c2c42694ed407b65931a0fad2e5bcf5ca991c8ec0bc4af5cfdcfc9328fb"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-04c.woff2",
+      "bytes": 36632,
+      "sha256": "6ac57e3e1ba0c02d07d116c223cc986dec8ce645366235a7b62500cea7fdef6a"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-04d.woff2",
+      "bytes": 35616,
+      "sha256": "e525951f06ab240bb361fd4f92a0cca9ab9cba8be27b096221dc25082230a9cd"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-04e.woff2",
+      "bytes": 43520,
+      "sha256": "fd8e8daa9194bbad0c8e313a39b89245affc73005e04d6b09abf279d4cb0a816"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-04f.woff2",
+      "bytes": 33816,
+      "sha256": "2405945fc184dbed5f7ab2e82e56b50928130f2f9edaf305f5a319917b283a9d"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-050.woff2",
+      "bytes": 40368,
+      "sha256": "a3d069ae5719e016529c3eebc8da12ffbb52fcd8096da54cc9e1504cedf6c0ba"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-051.woff2",
+      "bytes": 38116,
+      "sha256": "2240075bf9ab6394d58231cdbe03f85fb907d24921f1c733b2dc7bcb11e7c5ac"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-052.woff2",
+      "bytes": 31008,
+      "sha256": "1ed1f96452337afc47c236d06f1cc4e4db552dc1368e6c9da9a0dae3340b39df"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-053.woff2",
+      "bytes": 46116,
+      "sha256": "1c7a4c371c776e11c4bf733ad1f4430b119fe9a7fbda72233a18291a84069cdc"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-054.woff2",
+      "bytes": 51056,
+      "sha256": "e93a76479d17ea7d283755f15cb7d150853508af44529ee094ed593d7d493f1c"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-055.woff2",
+      "bytes": 13532,
+      "sha256": "f94a2f4aed87ad61935b46fe95098223e7ccd6878bc3e6483c2aa96882a60a6e"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-056.woff2",
+      "bytes": 55784,
+      "sha256": "6cac57e040f91e76fe5bd430e65e1e5b6e5e648b17649936af58b8402756587f"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-057.woff2",
+      "bytes": 26200,
+      "sha256": "46bb2f22814737bcbec84a39dc21a2906cba6cb9a23aec046000e980c364fb31"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-058.woff2",
+      "bytes": 23884,
+      "sha256": "7fc5e5da95049fb68994f02f698d73888f10d447cdf404094bd1f5d043c4ef16"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-059.woff2",
+      "bytes": 38004,
+      "sha256": "8c3ff5be14d509ff55689b6c9843fde14132d0c1c6aab1a947cc043e9f77de67"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-05a.woff2",
+      "bytes": 6172,
+      "sha256": "3e214921b12bcb09b2754a800ae376728fb92482b2b121975e003b1dd7f65d2c"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-05b.woff2",
+      "bytes": 6036,
+      "sha256": "98272d33e1c22efdffd2b12ab548f1f1f7e3c91db719bded7fe870113e42453c"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-05c.woff2",
+      "bytes": 13252,
+      "sha256": "75b55088f3db0cc85fec8972ed1ca55e851f892d01ede2c2a8ce11db30e6758e"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-05d.woff2",
+      "bytes": 17448,
+      "sha256": "65122fb5f631c3d4f651c510a99a436bd3f4f73959f75782ea6584b41140484a"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-05f.woff2",
+      "bytes": 16820,
+      "sha256": "916d4c793d027c9b2a29298b5aece8ec46bdf5e41113b913e61b576ec295c5cc"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-060.woff2",
+      "bytes": 22400,
+      "sha256": "7bea65b80c8b1b0d51b2cea4dcfd44e3999a839813deb271cb9bb542017a9e1d"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-061.woff2",
+      "bytes": 31472,
+      "sha256": "30004dedd4e83b3f5da93fc58f06ebc539eb3f04abfb4e155fb27f2244a50455"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-062.woff2",
+      "bytes": 27328,
+      "sha256": "fe6d2a5804a23c2ea640eba58dad68c8d848f5f0c762ab7eea2f9a165014d83e"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-063.woff2",
+      "bytes": 10392,
+      "sha256": "dc51284ba43235024e9fbb2a81c4126252d2313dc7da9d880e5f68a7261ecde1"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-064.woff2",
+      "bytes": 11972,
+      "sha256": "0f6243b667b01e72b7de3d4a86505e485f9e614c1dfc7eca0a7739a3228fdbd8"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-065.woff2",
+      "bytes": 5756,
+      "sha256": "b5d6e1e314efcda08285ec6e46752b6f798e328c3963e569dcef06a6e804ddb7"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-066.woff2",
+      "bytes": 4508,
+      "sha256": "a45b4ad0c47129381cc94b1c1e89014297e7b74319282c6222b8b6ecbccda7f4"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-07a.woff2",
+      "bytes": 2476,
+      "sha256": "cfc01275148eaa4c885466f7c1884d60fbbe4013445bb8ecc5557d9fdf60e1e0"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-07b.woff2",
+      "bytes": 1744,
+      "sha256": "04fc37afcc1cb347a4082fc0f2b350b07a11bbf1234fecee3ea30360c531afc1"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-07c.woff2",
+      "bytes": 2864,
+      "sha256": "10d653edf26a3f0b10a463f522c1e550bb0b77385b7d882b7d7d150642131023"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-07d.woff2",
+      "bytes": 2052,
+      "sha256": "684f3022dd6a13ea8ceb8753bfb5bdd76f620d9c42bcd9acc416d834265f21fd"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-07e.woff2",
+      "bytes": 1608,
+      "sha256": "8b08f6fb4dd3dfbf12fb713ffbc007157413585383c94bd98671a99c783efab2"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-07f.woff2",
+      "bytes": 5980,
+      "sha256": "2b5ed90c9adec2195bccf592faf5844a9f0d7b35d369b9cca9be80d05606691a"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-1ff.woff2",
+      "bytes": 1056,
+      "sha256": "2612e9b9b3a12a814402ab7c92f2d96f99e74b13e6d1f4b9970c774f3d61893c"
+    },
+    {
+      "path": "client/fonts/parts/LXGWWenKai-Regular-core.woff2",
+      "bytes": 365824,
+      "sha256": "3da56ee4885451ddbca1d27d2e21a060bf12681f646b99a09ec6a0580e3aa532"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-000.woff2",
+      "bytes": 12512,
+      "sha256": "73dd09f1c3dea8814f2b367e85e05cb1f07ecc2110366251e439986a493f836c"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-003.woff2",
+      "bytes": 5288,
+      "sha256": "af2ffad911d603f37f5c465950e34be88aa4aa421e890e3fe832ca0abf8c6ec3"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-004.woff2",
+      "bytes": 36448,
+      "sha256": "a04bc4277a1aaee9b84d390cbb85f3e789e7478b6c3baf676aa42b2d2003be6d"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-005.woff2",
+      "bytes": 42064,
+      "sha256": "4f1490c8d43b29a59753e7dc44ab0aebbbb508f0d07b7bd5e07bac8ffee8d795"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-006.woff2",
+      "bytes": 381580,
+      "sha256": "f3a73740c5c4be592cf379f69f905aaa006e208a557ed9bea446ef5c53301a28"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-007.woff2",
+      "bytes": 434400,
+      "sha256": "ff12a455b228e4a0857ca4c0a5098a74060cd72e9289284e704b37d0bf65fa6a"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-008.woff2",
+      "bytes": 431896,
+      "sha256": "15e938b68a8448c11716d817cd6b96523504e67dc1efb7709728c4ed4ce28d1d"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-009.woff2",
+      "bytes": 406676,
+      "sha256": "f2abdb5cfb974d1c0f0af184cd94f3e83661702a6c1ef1b5eb8be69f9db1cec6"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-00a.woff2",
+      "bytes": 344908,
+      "sha256": "8ffd015601460dee9743b407de6b97af2587da2000e1170d6dd2e6a023c7af91"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-00b.woff2",
+      "bytes": 386648,
+      "sha256": "ae76f4f752fee58e34a73c8f64b4f0f2b544b78a716035538d516e8d8f136b3b"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-00c.woff2",
+      "bytes": 372032,
+      "sha256": "8389c146e9a2524a956585f90481117c05d0c9047534f12c6d620cd08b2f0804"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-00d.woff2",
+      "bytes": 432460,
+      "sha256": "42b641dc185ded5670c812d07443e97c4dcdc98529f84113adc40633f29da1e6"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-00e.woff2",
+      "bytes": 424052,
+      "sha256": "ea426ff52a5f832ed2159df4c0087361cf00e6fe4c0fd8800ebeef5bb989660f"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-00f.woff2",
+      "bytes": 465456,
+      "sha256": "2bca87fc396289d75ced4aaf560c4cc4a8173abf7118e64f5e495b9ddff8675f"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-010.woff2",
+      "bytes": 418796,
+      "sha256": "deaa10311018342cc3f9b1677a2edf6e7926db13a73ea2fbdaffa386e8dd86ac"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-011.woff2",
+      "bytes": 411932,
+      "sha256": "cecee8326e3466dc52c59743ca7138e8013ccaa3bbec414446e360f3f7c445bf"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-012.woff2",
+      "bytes": 437600,
+      "sha256": "5fabdf8a7ec1c26a1d8094109fe845603328bfe1f27c04c6b82a2f5b34b59919"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-013.woff2",
+      "bytes": 520496,
+      "sha256": "e9d7d2222a73a39a71a812de1f116bfc4b57944b6e550af928385c2e7563c27f"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-01f.woff2",
+      "bytes": 58176,
+      "sha256": "cf27f841660c01ea2da67793792a333bbeb2e216199ebc04892443b06efca0c8"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-03e.woff2",
+      "bytes": 24904,
+      "sha256": "3d40628d3e3ab3b68c928efcccb0471e3973d8a3264f52184adcfdc88d9f1041"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-040.woff2",
+      "bytes": 1512,
+      "sha256": "e0f284bd22291bfc6753e1d1b44b5d38585b7450c6b0490c8f662d7351663f8a"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-041.woff2",
+      "bytes": 988,
+      "sha256": "92db7ebcc367c4c5cd8077f5b7437a8a3278555b8af7e5dc16a2081e262e67eb"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-042.woff2",
+      "bytes": 1480,
+      "sha256": "4990a1d49a072406cf3873c41a5fe8d1ad8e09bdfd660dfcf6334b59c1b15649"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-045.woff2",
+      "bytes": 920,
+      "sha256": "222a4f948e15b88ea7b410bf72a82f6514ae290447bd9e6969500182b2e5e7a6"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-046.woff2",
+      "bytes": 1104,
+      "sha256": "86c47ed85de931616b68cd06ab851d8e26e4e73d359ed42c45fa08af6d51ba1e"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-047.woff2",
+      "bytes": 1500,
+      "sha256": "cb71928eab0d20dd454ee0ba1eadb29af9c84e24a7298e79d7a66a1a8ffb4262"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-048.woff2",
+      "bytes": 1324,
+      "sha256": "628c52c7a966ccaf4829a2eed46f095ca94fc3beca11e94d9dcbab1c029f7b99"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-049.woff2",
+      "bytes": 2196,
+      "sha256": "d2091bd3c392b9a4af68cf50f95381ec2158e7722ed47624ac12ee665464d689"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-04a.woff2",
+      "bytes": 1608,
+      "sha256": "7016d00378e55a1f598a59515bd75e68913c9975ca893eeb597f37e3ce51476a"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-04b.woff2",
+      "bytes": 1052,
+      "sha256": "4d126135ae32b06a936eb353aa9f7b0c8a09162bc93a5240805f9aba3c61ec11"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-04c.woff2",
+      "bytes": 2092,
+      "sha256": "8013e14d679f16ed1278489290c11a9def9f1ae9414ebf1f58e6bec289337785"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-04d.woff2",
+      "bytes": 1340,
+      "sha256": "448ba1bbcf368bf227d929964af7e9dc21d308a8480b9ac1342912fc65ea1a47"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-04f.woff2",
+      "bytes": 1640,
+      "sha256": "c2ad7aee570a19ef37b0c34a80ce7012b2e5ed84660ff8feaea7e86f18cb8cae"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-050.woff2",
+      "bytes": 1920,
+      "sha256": "f70b7687e1ddba0cab72a7fdd6c01f6e0442aa9c3b407ff17a786f3d26c9ccba"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-051.woff2",
+      "bytes": 2892,
+      "sha256": "2f8247df2f6e3742d25553e12f7f9e62a31b20a3cca16721c9ac8902455a22c0"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-052.woff2",
+      "bytes": 924,
+      "sha256": "c42d20f8dafa838bba58634085889b9df0cd241b3e8c090cdec113ab3cf8ce32"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-053.woff2",
+      "bytes": 2140,
+      "sha256": "5c8281d21f5e3a854fe064b025c95c1725579a32486172d581be35f8d88c604f"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-054.woff2",
+      "bytes": 1020,
+      "sha256": "54c511a17dfbae9f568e22ffa01ecde1f1dcf07a91dbf1fd31afa16437126fa7"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-055.woff2",
+      "bytes": 2508,
+      "sha256": "5d35b1c563151f47ba7fe9ee3214f9d81fd798d515eb31a9f9e0a0709c88f695"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-056.woff2",
+      "bytes": 12764,
+      "sha256": "6013324a659772ec310da40f27aef9d75447a8150d0ea730273b83b62618ce35"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-057.woff2",
+      "bytes": 4432,
+      "sha256": "ce18d1ce83d61c0141ebde33de083e60cd89516e40f02b0f0bf34cdd8c645e18"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-058.woff2",
+      "bytes": 9608,
+      "sha256": "03c16bd1324fd9ad5659a39739a35a8e7033ef543dcfb27ea3df42d2a36341cc"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-059.woff2",
+      "bytes": 17756,
+      "sha256": "34617f8f1c4fb2135842172d82d31a5e18ba7daffd99d8a90c3c878c60d6b141"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-05a.woff2",
+      "bytes": 808,
+      "sha256": "1081b35a2ac42d27de39c5ff91383eb5b1f34fc0068e87d44873354b5a66a1a7"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-05f.woff2",
+      "bytes": 2072,
+      "sha256": "45665b9e00273dcc669e9cd43d9bafce9e99b409d1eb53843391361711944dd3"
+    },
+    {
+      "path": "client/fonts/parts/NotoSerifSC-Regular-core.woff2",
+      "bytes": 283588,
+      "sha256": "2c2b476fa6e55925119c5ac7164bac98937f2f2096b4b9500cd99ed1c2713716"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-000.woff2",
+      "bytes": 15136,
+      "sha256": "e50f5c1438fe399f369b0826bfe2803d9d14362667be7100993bce88515a18ed"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-001.woff2",
+      "bytes": 23476,
+      "sha256": "47fe187c6e3534f131f53c89288e5319b3135ecf196e80c61c5a2dc22f1de135"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-002.woff2",
+      "bytes": 21060,
+      "sha256": "596c950f29be87805aff4acb511b64356f6fc6bb013ecec50a7832fa8f54c092"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-003.woff2",
+      "bytes": 22356,
+      "sha256": "3c0a3607d0cf6aaf0993261c731f06ca799c5a495580becfcf3944be3c27c80a"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-004.woff2",
+      "bytes": 27516,
+      "sha256": "64d55af424208c26a309b85735d792f37c788fdf0b4615c7884f221f47a2aece"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-005.woff2",
+      "bytes": 25884,
+      "sha256": "98dcdbabc84526bacef24643c096627650b3e80851845a12de11e4b448085610"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-006.woff2",
+      "bytes": 45036,
+      "sha256": "dad041bf99ef071bcff976b3837bce0e7623dcf385a0dde7ddb49d383f0d2ca6"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-007.woff2",
+      "bytes": 59508,
+      "sha256": "fd8a8976f8c639387c2a320ab94d4642851ea88f8b1776ff050a41788c46bf87"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-008.woff2",
+      "bytes": 59964,
+      "sha256": "9c30141a72decc86a3efeb575ff990f5f583aef8e7cb2a50315b207b816d9ea0"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-009.woff2",
+      "bytes": 55872,
+      "sha256": "c2ce5e551b1b825f9e825732a95cf61692bfe6c6df2de6c001e4c13bc893f4ef"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-00a.woff2",
+      "bytes": 48804,
+      "sha256": "d30bd5370c495061ed15324680a3fc65a1acac8971a25817d969f7cf207de090"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-00b.woff2",
+      "bytes": 49384,
+      "sha256": "eaff1d23fe1565bc665a69b685421a7d4108a5e59d20e41e2d41aee0a9e9e031"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-00c.woff2",
+      "bytes": 49660,
+      "sha256": "db6b7888f19cb897d4d1777b65bced0429cee5bd0acc51cf163ee6edeab550a4"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-00d.woff2",
+      "bytes": 54780,
+      "sha256": "a76723c514aa6c13e777098650e34fe63f87fd20895e0a7d048a53a816f0916c"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-00e.woff2",
+      "bytes": 56128,
+      "sha256": "c53b487931bdfa297968204f04879b26a4c7bc353d6536a11999e1840c64853c"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-00f.woff2",
+      "bytes": 53924,
+      "sha256": "b3c4eb6f1223af6b2868b86d9b1a888186de576d8ce157431f3e6cb830d189c8"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-010.woff2",
+      "bytes": 54828,
+      "sha256": "f5e34956fb05560b89368b8abdd7b7a4ee58d10a25a97a6fe409da4f18ac0f0d"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-011.woff2",
+      "bytes": 54512,
+      "sha256": "832db56ebf949b9ec746f8ab8e5533df817480820baf8e4c6fa5191e81350159"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-012.woff2",
+      "bytes": 53348,
+      "sha256": "2648ecbfaefd39552ad357361558fa134e2b649b874cc3097ab32a7be3a099ef"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-013.woff2",
+      "bytes": 58228,
+      "sha256": "96a50949ef7124be4cb68a099b7f53688268a0831ee3a3db41e8c835977bc2f3"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-014.woff2",
+      "bytes": 24992,
+      "sha256": "e069ca19dd63215d07a012018fb4b15f8d236e039b0df667262be7181575ccb9"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-015.woff2",
+      "bytes": 19788,
+      "sha256": "4258a08b87a2edd741ed3ffc45abdfd078b94cfeb3c8ac836f2eab3205dd157d"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-016.woff2",
+      "bytes": 12316,
+      "sha256": "66d1d0832d6e4ac9e9a086c3eba215bb393db9fa98845d693ae0f6d76b942b3e"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-017.woff2",
+      "bytes": 13476,
+      "sha256": "3408c3d0238f34d261d538ba4ccbd000b99a367e683e34c3a08eeee135de786d"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-018.woff2",
+      "bytes": 13564,
+      "sha256": "7d3ca6abacb994456cb949bf908740816751eb7f156bc57ab56f6df117b452c1"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-019.woff2",
+      "bytes": 13548,
+      "sha256": "b3da5535a7f7122a3774a42a82937fefd2e8045e052f567ed927a1a1bd795654"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-01a.woff2",
+      "bytes": 14248,
+      "sha256": "34f945bab80a1c28f756870cb9e3f4912544f7939d7468c13efcf1a245622691"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-01f.woff2",
+      "bytes": 31324,
+      "sha256": "3df5a85cd995d5a30b4ebadeeb991c19ed7915d47c445d3673a5d3591a336ef6"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-03e.woff2",
+      "bytes": 664,
+      "sha256": "ed9df261167ce5101726dccf906e3dd24f5089091339b5089bcaf88b834d139d"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-040.woff2",
+      "bytes": 1932,
+      "sha256": "cd78edf15e2cd119a83fc798a07dfb750d989ba982c83f6a647c867c257fe115"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-041.woff2",
+      "bytes": 3092,
+      "sha256": "362000980afb434a1de14ec39d64ed56c3b88abb1cf16f4c219a0ba73f7c2af3"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-042.woff2",
+      "bytes": 2740,
+      "sha256": "a174a539563eb3fda9fe7d4c2d1bb410d9fdcc0d0afa4072c05829cfdab865fa"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-043.woff2",
+      "bytes": 1860,
+      "sha256": "c7429e69106d1e016cd4bab354ea307e534db9780a3e811ef486254fa8ff709f"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-044.woff2",
+      "bytes": 1372,
+      "sha256": "40ad9be50c0157f03fe3cf5c5aa2d1bf167b6e1074e4f7c67cdbd7e1c345ad83"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-045.woff2",
+      "bytes": 2420,
+      "sha256": "a229c314298c674c08eb459dd04959ca8ba96a10625e8f5a75105737c72ca3d3"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-046.woff2",
+      "bytes": 2380,
+      "sha256": "db7a37cd676c59c20b2102d670d322c6d89fde42ab956624aa637c4feb40e9a7"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-047.woff2",
+      "bytes": 2000,
+      "sha256": "f51391d3ada2dd4a722f4227284a6dbda1aef7918579762cd8d09ebd57f1e272"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-048.woff2",
+      "bytes": 1996,
+      "sha256": "4eec0b3d520950128c430daf1ca660941fa78a22d013ae9ff8b34105ded76bc3"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-049.woff2",
+      "bytes": 2056,
+      "sha256": "31bac709161c47932240d082460868a49edf82100ef43ac726b8f88bda7cd854"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-04a.woff2",
+      "bytes": 2192,
+      "sha256": "2e47a199c0011af54feb7c4311372edbf272e0e6e15724eabfb189c0228309df"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-04b.woff2",
+      "bytes": 2188,
+      "sha256": "f2475fd2f5fbd8b5a543b41f3863e85338af10e1b7048b391d25e5e2dbcfb104"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-04c.woff2",
+      "bytes": 1904,
+      "sha256": "298e68dfd8143879343fb84fab00c13d0b6bbbdf0592aafca53219aee45ba165"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-04d.woff2",
+      "bytes": 2244,
+      "sha256": "e38bd3aeefbf8ed92df51f090ed72595bf50532a0ed13f53cce7b144de07f4c8"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-04e.woff2",
+      "bytes": 1876,
+      "sha256": "1158b00147661ced4a83c8efc9c46528e12f7ee4f1294303d46ed4d8f393880f"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-04f.woff2",
+      "bytes": 1868,
+      "sha256": "f9ac0c661cf78bcf7b3d71034575482deb2ea456003d0c27a25a58860fbef180"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-050.woff2",
+      "bytes": 2276,
+      "sha256": "62124d9d614cf4529fdc9875d29ccdf67e6de34d42641ed25e26b5e2f8855f2c"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-051.woff2",
+      "bytes": 2980,
+      "sha256": "6fc6c7c1785f74caaf83ea6ca5d05d2e6af1333e31fad082c29702b37275bff2"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-052.woff2",
+      "bytes": 1548,
+      "sha256": "1c666e680840aee05a53b16a6eb77772976193c151ca7c74c8919dec0b22b9bd"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-053.woff2",
+      "bytes": 2216,
+      "sha256": "ae6ba08198d7bcdcd0b2c8d1243d0577ed416305e86d15eee548e2e5f47deb55"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-054.woff2",
+      "bytes": 1960,
+      "sha256": "4c8d6ef6d2adc6d3cab7d3a7627d7d3a4eadc4081e37994bc502bfc39103abde"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-055.woff2",
+      "bytes": 1548,
+      "sha256": "7f77dbdac9b40a6d74c2c4eedfbab23b12692400d324b62ee71a76b23eaa9cff"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-056.woff2",
+      "bytes": 10124,
+      "sha256": "862917366b2068ef8249ec1167f416f0f1c6a85b153e548438b5b7aac5455014"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-057.woff2",
+      "bytes": 3132,
+      "sha256": "d38f45d24f90670f4bd5f1a441a3b6477a7795d222fb3b9fdcfcf3e6b3967bbe"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-058.woff2",
+      "bytes": 2612,
+      "sha256": "7306937e1b9dc898eb8d7203045528a978fc9fae75af6ec8e28882ad1b7b70b4"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-059.woff2",
+      "bytes": 3960,
+      "sha256": "73e3766457c06f1b87ecf42ef9c74384ace868e9d36ed6b06c1db6af62b35808"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-05a.woff2",
+      "bytes": 792,
+      "sha256": "c8e4ebc2bb061285260330efa1f45e53800f6398d9a5dec26ad48f18bda97eb0"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-05b.woff2",
+      "bytes": 760,
+      "sha256": "72a8ca4a2da3f1307b51f9a8e9a19d25fd9cc48e0bd586ceb435d25d9a509c14"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-05c.woff2",
+      "bytes": 1432,
+      "sha256": "11ebcc0aa529d15f3dd25eaf5c6313c952bef488e0b18c74ea7d1c168e429bc2"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-05d.woff2",
+      "bytes": 20172,
+      "sha256": "57fe9d70e53d36c375c3c9cc8082f533058fb4bfdc51da65f5c594a0a6f77094"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-05f.woff2",
+      "bytes": 736,
+      "sha256": "b6cbd6a5ace6b827985e038b526223a5079943a91f50dc63bdb18c6fbca7a6c0"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-060.woff2",
+      "bytes": 1096,
+      "sha256": "d914d36658206de1112b20450ebfd3b6397d4972655425a5713f4b140ffaae68"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-061.woff2",
+      "bytes": 1772,
+      "sha256": "f5963ca2bcb3e93657c1b108782f0da918c0d6c06535693b491ccafb5ab20a98"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-062.woff2",
+      "bytes": 1528,
+      "sha256": "2a22688f225dfeeb09444fcaba0fc83409badb8655e46d98bb34661fca765030"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-063.woff2",
+      "bytes": 1096,
+      "sha256": "d200cfa224c2b354f297f4cdb87d81e10f763d4c444bc7b0b8ad8207ba8ec6ef"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-064.woff2",
+      "bytes": 988,
+      "sha256": "bdbcbd5214dbd68676fefc28fe085ebcd296d9baf4e93f42ce708859317f6e2a"
+    },
+    {
+      "path": "client/fonts/parts/Unifont-core.woff2",
+      "bytes": 50944,
+      "sha256": "0c7fd2c29b7187c755ddcc56f968b92a4a0fd4a8a23e81fdf5e0cf4bf633c9de"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-000.woff2",
+      "bytes": 624,
+      "sha256": "82f4de07bf65e33254c3bda0b40ad598111997d94d18f5775abcaf44b938e369"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-020.woff2",
+      "bytes": 25612,
+      "sha256": "22cd7cbe0c9ba162118eb79aac1b160e6ed7310034aad8848a942dcd2b4ab9c0"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-021.woff2",
+      "bytes": 21136,
+      "sha256": "782c7d464977a26e27dcbc023e231d51dbdda40aa16a3892fdef2a1b78059ee3"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-022.woff2",
+      "bytes": 23312,
+      "sha256": "d14b3e3cb7af6750c388426a69f26eef37f3228b959260917edb84ce42f24d05"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-023.woff2",
+      "bytes": 19056,
+      "sha256": "b134e69afaec18a8f563f6ac3d817e86180cae0adf0231fff9ba1867bec61082"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-024.woff2",
+      "bytes": 5372,
+      "sha256": "665f1de52fac76773963a3363f758d619ad819e683961a57f74a2ca8570046c3"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-025.woff2",
+      "bytes": 12028,
+      "sha256": "33a807218f8103c5c91d5ddebcafeaab72e75a9dc6f46d6bf867c2ba5fcd0b72"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-026.woff2",
+      "bytes": 1428,
+      "sha256": "68a5864ac73e676cb80c25e90d41e0cdb73ee9117e8eaefd7ae378c85f030e65"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-028.woff2",
+      "bytes": 3284,
+      "sha256": "72b2af8460dad440d8ed0e7a8efbd42e9b3242bde42cfd4b951104f63f27dca4"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-029.woff2",
+      "bytes": 10704,
+      "sha256": "89622d24a117e69ed92d320f5053d7eeb76c65e3b0dee0291ab47f02de186163"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-02a.woff2",
+      "bytes": 10988,
+      "sha256": "fd7f9c587232a250fd2d3c4762411d9aacb47b8218b50e770fe1b3359ef73177"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-02b.woff2",
+      "bytes": 10776,
+      "sha256": "75469306d92548c1af559fa8c10de646014f55e87d17d0d7fdf86663514fe12d"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-02c.woff2",
+      "bytes": 11936,
+      "sha256": "d552255b6ebb9bc79ef907771eb66da9eefab44d280f072c2055fa1d6debd7c9"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-02d.woff2",
+      "bytes": 14028,
+      "sha256": "e28e765afdff459dd6ee15ffaf24a3047f0eba74706027fe15be72e1e3ac538e"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-031.woff2",
+      "bytes": 13556,
+      "sha256": "f973f751526cd73c3d709e44b2710ae697f20245bb20d53104f389fd3d602796"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-032.woff2",
+      "bytes": 11252,
+      "sha256": "f614e46732cfbb21005d0af81dbce3e3dd0dcd54cf9077d2338cd37ee7543644"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-033.woff2",
+      "bytes": 10924,
+      "sha256": "96334073c560cc97594f8804e1836419ce3d713b6e2e93c9a3a87e95b64b743a"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-034.woff2",
+      "bytes": 11344,
+      "sha256": "c8dba09a760a134ec058f76d16f6dea8e2459eabf6ce6018ad48e959d0ceb77b"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-035.woff2",
+      "bytes": 10956,
+      "sha256": "323b9d36d18d8d0c852063ce9f7c70b81ad08779f64ec48eb076566714b45569"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-036.woff2",
+      "bytes": 26864,
+      "sha256": "6261371da259c79811693ab2a95e5e22409a0f76a5a30b91eb4a4ebe4f77cdfa"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-037.woff2",
+      "bytes": 11948,
+      "sha256": "cde745d79368b5b1a4968ab99f8de1ed36f92381dd84968545303859a7282bf7"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-038.woff2",
+      "bytes": 11308,
+      "sha256": "c994212b5e9b33b26031e19f907070b4ec3561692b9d8920c775200122c01774"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-039.woff2",
+      "bytes": 15928,
+      "sha256": "b8acc4f8215f75ef778739c4371d035af64e7a84ee929891a8e1d4175d7aaf5a"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-03a.woff2",
+      "bytes": 19124,
+      "sha256": "faad62b26a326e0e152aecbb14cdeacec49d1df3aeac3605ad034a33efd897e8"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-03b.woff2",
+      "bytes": 15920,
+      "sha256": "a63178d45161b2ab8ac6cf8cb0aa0c25ec3cc917a1e246574b5dfc0ead71e6fd"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-03c.woff2",
+      "bytes": 15696,
+      "sha256": "9917849fc5d2fb382abc8d14f7aa3b5ffbeb62680507294f7dc3f6e7cbb66cc7"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-03d.woff2",
+      "bytes": 16508,
+      "sha256": "260499aceb41e81f44466e8beee8c988df7f416f5c7d75e06501ba413831e73d"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-03e.woff2",
+      "bytes": 37288,
+      "sha256": "01b9b929274f6803fbe93412ab6686ab50acff258e381da0d49bd3b92f904fc3"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-03f.woff2",
+      "bytes": 21860,
+      "sha256": "d744ef953a55fd1e4dd441106f4faf2603f43b915b5907a50a9eb04e216d5fee"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-040.woff2",
+      "bytes": 56576,
+      "sha256": "2d8a0efa0e5281ac95a4579fb40f56ee15f084c380d91f5f13a9fa17a89c462f"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-041.woff2",
+      "bytes": 5960,
+      "sha256": "4cbd0c6d82d651038ccab0f8da868c74845662bd8db029d6725109450311a479"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-042.woff2",
+      "bytes": 3048,
+      "sha256": "39f40a5a335ed30a7658c3b4db4bef1769e463501afb28e838fb24c4ffc1d0f8"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-043.woff2",
+      "bytes": 2452,
+      "sha256": "9e72f1a03426cf5af114162bc490446314ce158f5a92321879b6a238a1643c90"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-044.woff2",
+      "bytes": 1940,
+      "sha256": "a94869bccba7825cbf80825d7d288e02f2f68f0933b6ea262a38408f2b734881"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-045.woff2",
+      "bytes": 3100,
+      "sha256": "fbfaaaee182e31a5ecbfdef8158463588e815492e233cfa26fa957d911c45c6e"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-046.woff2",
+      "bytes": 2996,
+      "sha256": "4436865c2a612901bbb9755181ee75dde474bd0363b56260dc5377b36433932b"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-047.woff2",
+      "bytes": 2672,
+      "sha256": "52b9dd96e88622ec6eccfa61e0dbc524354ca59c96644120fb03aa7504a283cf"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-048.woff2",
+      "bytes": 2752,
+      "sha256": "ee3fbaebc6e0ac6dd68cf4532a14f126fbd84ebf35719b6a5579f77aa2244df5"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-049.woff2",
+      "bytes": 2772,
+      "sha256": "997e27573bdf0cb142316c217db6ad371eb9dad009b636f866afca08b28353bc"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-04a.woff2",
+      "bytes": 2748,
+      "sha256": "6d2dc322dbd5da44a5164962a30892498554120677be3ccb6e09b9111d6f51d5"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-04b.woff2",
+      "bytes": 2768,
+      "sha256": "e690fb71357ddf906276ff531ac51f18f444b8a48f29132e36ef54b3e9e29e78"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-04c.woff2",
+      "bytes": 2764,
+      "sha256": "b1d28661f6c9dbc549b18b4a395df822dee942d85295b876957ca0e4d679df40"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-04d.woff2",
+      "bytes": 3056,
+      "sha256": "1bb9de771186befc69bdefc3895f266df711329805c4dc179861dff7c8b0a3f5"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-04e.woff2",
+      "bytes": 2604,
+      "sha256": "d38a5eedefcd57dbbeb9a43f621b403ae841f2a6c01d817e777edaec9d498902"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-04f.woff2",
+      "bytes": 26704,
+      "sha256": "06e9a8df9e2afdf5591f4356ecd1c6d2d65334f94593c897655797937dfe8d56"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-050.woff2",
+      "bytes": 2888,
+      "sha256": "b937c1a4876761109ddbb035ae65c2171b99cfd0044e36ccafb964f88734dd1a"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-051.woff2",
+      "bytes": 3256,
+      "sha256": "7fa298f160d9ec8ea1f47c002b36d5ad943684ab5d9fd2d677cb4454d220038d"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-052.woff2",
+      "bytes": 2044,
+      "sha256": "63dbbf5a62406e5e40519c3379fbc489c50694aa9a41e88f682a9485623ce808"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-053.woff2",
+      "bytes": 43728,
+      "sha256": "8d54378d51eb2b22830468110af408cdd9c85a4d63371468ef1cb43eb7a3f2e0"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-054.woff2",
+      "bytes": 10464,
+      "sha256": "232392d1fa9da10aa9fd599cd9241ce6739dd0089501fe97fa0f8779c8776848"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-055.woff2",
+      "bytes": 1728,
+      "sha256": "628b75d2a5a6bae9e0fd421a25c093c667e717e88aafb8ef02e376665ab883f0"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-056.woff2",
+      "bytes": 10828,
+      "sha256": "a246f7ef13035da83e454d4830ce35b0775b3ada2960180960ded262e48ec626"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-057.woff2",
+      "bytes": 3584,
+      "sha256": "f0f7abbe7ecc78a2770eb315500f61bcacf190c350a306b166a73ab87563b60c"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-058.woff2",
+      "bytes": 2976,
+      "sha256": "1581e12aa55afbc84c5e0d994df781a439231252f2051b65142ffbf84e0619d9"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-059.woff2",
+      "bytes": 4812,
+      "sha256": "e9dd246c33dceeaee1fd9abcfea34a7f5e9a01b7dbf953dac4d2ccbd7fbed43b"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-05a.woff2",
+      "bytes": 1016,
+      "sha256": "e8b1c69b1d5341d578d8f7aa67dcd5991d8ec784fe0ab92812416142af5aadd9"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-05b.woff2",
+      "bytes": 944,
+      "sha256": "033bc52bc09851c0933136364a795605e18ab9d6d71524fed2b08c5d4933554c"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-05c.woff2",
+      "bytes": 1584,
+      "sha256": "6c2cb52267d280b7e2803649ad43b619a696302e61cfaccf0cd626275c678d63"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-05d.woff2",
+      "bytes": 20224,
+      "sha256": "e53b3d28756031d8de0df4cc3d1639b249f005ce04027c901dc07c0fcb22d5c0"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-05f.woff2",
+      "bytes": 796,
+      "sha256": "78d2661f3a1bdf736b58cf852e492f56ffe0faa8a39ff93a63f6f6d333613ff4"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-060.woff2",
+      "bytes": 18376,
+      "sha256": "51e1f895a91a311e6136d53dca1fc24dccc16af3d874d514b01204987439ae86"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-061.woff2",
+      "bytes": 3440,
+      "sha256": "f666e4624604b08ab044163749a878f514e1eca4d8ac1cc4dffb2d3588fbbb87"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-062.woff2",
+      "bytes": 1816,
+      "sha256": "7fb76081e8fea58f63b95223094109c0dbe24118227741d3d8fbb1ff0f2c0ed6"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-063.woff2",
+      "bytes": 1140,
+      "sha256": "faab9042c653d4fdc69853837e3f9a2a47a0ba66d1ad282731e92231f57c6683"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-064.woff2",
+      "bytes": 11780,
+      "sha256": "0de88875f1f5eff7829ecf0f4679b1fe9abe7b1614dd47fca60a5cd3842d49ec"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-065.woff2",
+      "bytes": 4192,
+      "sha256": "4585d78ce7cc4c5b4f0e60cd1dc438d042cfea43a719bec2f607c9fb56204516"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-066.woff2",
+      "bytes": 3108,
+      "sha256": "9e078b1d27e811ad9158fd5bc92a1a8bef61ec0df023743986d7d4e1ef31d745"
+    },
+    {
+      "path": "client/fonts/parts/UnifontUpper-1c0.woff2",
+      "bytes": 2164,
+      "sha256": "d382f96034b8d136785008c3e08262562e91a5d4d3477b48211d4eb85c978023"
     },
     {
       "path": "client/fonts/Unifont-LICENSE.txt",
       "bytes": 24142,
       "sha256": "1e74cb82bf476843e97c2596297b04219b1a7e51f7238944a8c031cb9401fa87"
-    },
-    {
-      "path": "client/fonts/Unifont.woff2",
-      "bytes": 911908,
-      "sha256": "cbcb179f24c8e863dfd85b24341b1dd17941aa9f289d56d8d9ceab17345b7933"
-    },
-    {
-      "path": "client/fonts/UnifontUpper.woff2",
-      "bytes": 571800,
-      "sha256": "d8e0e53304fbff8ac2b6bd27ca1a41ed61c5a3ee853d87d9a3a075586f69a3ed"
     },
     {
       "path": "client/images/anim_fire.png",
@@ -1309,8 +3009,8 @@
     },
     {
       "path": "client/manifest.json",
-      "bytes": 2101351,
-      "sha256": "8ae269bff4689b7934d4534a1935ad183f1ad7f9ebfbddc0ecc86b8655855ab4"
+      "bytes": 2063690,
+      "sha256": "127952c0202a36bd4c56cdee5e23859f84b10ce156b800836092251f87fa6b9a"
     },
     {
       "path": "client/maps/america/0_0.png",

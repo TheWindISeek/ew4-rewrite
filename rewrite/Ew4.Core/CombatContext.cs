@@ -29,8 +29,7 @@ public static class CombatContext
 {
     public static CombatAura Auras(WorldState state, HexMap map, UnitState unit)
     {
-        string camp = state.Factions.Single(f => f.Id == unit.Owner).Camp;
-        var allies = new HashSet<string>(state.Factions.Where(f => f.Camp == camp).Select(f => f.Id), StringComparer.Ordinal);
+        var allies = new HashSet<string>(state.Factions.Where(f => WorldDiplomacy.Allied(state, f.Id, unit.Owner)).Select(f => f.Id), StringComparer.Ordinal);
         var adjacent = state.Units.Where(u => u.CommanderId != null && allies.Contains(u.Owner) && state.Cells[u.Cell].Terrain.Active
             && map.Distance(unit.Cell, u.Cell) == 1).ToArray();
         return new(checked((int)adjacent.Sum(u => (long)u.Support.AdjacentAttack)), checked((int)adjacent.Sum(u => (long)u.Support.AdjacentDefense)));

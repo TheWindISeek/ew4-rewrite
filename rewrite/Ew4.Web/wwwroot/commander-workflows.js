@@ -4,6 +4,32 @@
   proto.native=function(id,onClose){return new Ew4NativeUI.Layout(this.api,id,onClose);};
   proto.held=function(id){return this.data.roster.find(c=>c.id===id);};
   proto.definition=function(held){return this.data.definitions.find(d=>d.id===held.definitionId);};
+  proto.progressionBadge=function(track,state){
+    const threshold=this.data.progression?.[track]?.[state.level],capped=threshold===null,known=Number.isFinite(threshold)&&threshold>0;
+    const ratio=capped?1:known?Math.max(0,Math.min(1,state.experience/threshold)):0;
+    const badge=document.createElement('span');badge.className='rank-gauge';badge.dataset.track=track;badge.dataset.level=state.level;badge.dataset.experience=state.experience;
+    badge.setAttribute('role','progressbar');badge.setAttribute('aria-label',track==='rank'?'军衔经验':'爵位经验');
+    badge.setAttribute('aria-valuemin','0');if(capped||known){badge.setAttribute('aria-valuemax',capped?1:threshold);badge.setAttribute('aria-valuenow',capped?1:Math.min(threshold,state.experience));}
+    badge.setAttribute('aria-valuetext',capped?'MAX':known?state.experience+' / '+threshold:String(state.experience));badge.title=badge.getAttribute('aria-label')+' '+badge.getAttribute('aria-valuetext');
+    badge.dataset.sweep=ratio*180;
+    const canvas=document.createElement('canvas');canvas.width=canvas.height=57;canvas.setAttribute('aria-hidden','true');badge.append(canvas);
+    const board=this.api.uiImage(track==='rank'?'borad_rank.png':'borad_standing.png',57),bar=this.api.uiImage(track==='rank'?'bar_rank.png':'bar_standing.png',70,40);
+    const icon=state.level>0?this.api.uiImage((track==='rank'?'rank_':'class_')+state.level+'.png',42,48):null;
+    Promise.all([board,bar,icon].filter(Boolean).map(image=>image.decode())).then(()=>{
+      const draw=canvas.getContext('2d');draw.drawImage(board,0,0,57,57);
+      if(ratio>0){
+        const overlay=document.createElement('canvas');overlay.width=overlay.height=57;const ink=overlay.getContext('2d');
+        ink.beginPath();ink.moveTo(28,28);ink.arc(28,28,60,Math.PI,Math.PI+ratio*Math.PI);ink.closePath();ink.clip();ink.drawImage(bar,-7,-2,70,40);
+        // Clip the paint to the original gray track before scaling the whole badge.
+        const base=draw.getImageData(0,0,57,57).data,paint=ink.getImageData(0,0,57,57);
+        for(let i=0;i<base.length;i+=4)paint.data[i+3]*=base[i]===base[i+1]&&base[i]===base[i+2]?Math.min(1,base[i]/64)*base[i+3]/255:0;
+        ink.putImageData(paint,0,0);draw.drawImage(overlay,0,0);
+      }
+      if(icon){const scale=Math.min(42/icon.naturalWidth,48/icon.naturalHeight),w=icon.naturalWidth*scale,h=icon.naturalHeight*scale;draw.drawImage(icon,28-w/2,28-h/2,w,h);}
+      badge.dataset.ready='true';
+    }).catch(error=>this.api.notice(error.message));
+    return badge;
+  };
   proto.reopenCommander=function(id){const held=this.held(id);if(held)this.commanderInfo(this.definition(held),held,this.commanderReturn);};
   proto.updateAccount=async function(args){this.data=await this.api.rpc('commander',{revision:this.data.revision,...args});this.drawRoster();};
   proto.headquartersControls=function(){
@@ -58,7 +84,7 @@
     l.fill('tcmder',this.card(definition,held,()=>{}));
     const list=this.data.roster,index=list.indexOf(held);
     for(const [name,offset] of [['btn_prev',-1],['btn_next',1]])l.action(name,offset<0?'上一位将领':'下一位将领',()=>this.equipment(list[index+offset].id),index+offset>=0&&index+offset<list.length);
-    for(const [key,kind] of [['rank_military','rank'],['rank_nobility','class']]){const level=held.learning[kind==='rank'?'rank':'title'].level;l.fill(key,...(level?[this.api.uiImage(kind+'_'+level+'.png',21,24)]:[]));}
+    for(const [key,track] of [['rank_military','rank'],['rank_nobility','title']])l.fill(key,this.progressionBadge(track,held.learning[track]));
     l.text('text_life',held.healthBonus);l.text('text_apply',held.healing);
     let chosen=null,removing=false;
     const choose=(item,remove,b)=>{chosen=item;removing=remove;for(const n of l.body.querySelectorAll('.native-item'))n.setAttribute('aria-pressed',String(n===b));l.text('intitle_desc',item.name);l.text('text_desc',item.description);l.text('btn_equip',this.text(remove?'text_unequip':'btn_equip').replace('text_unequip','卸下'));l.action('btn_equip',remove?'卸下 '+item.name:'装备 '+item.name,async()=>{await this.updateAccount({op:remove?'unequip':'equip',commander:id,item:item.id});this.equipment(id);},!held.locked&&(remove||!item.consumable&&held.items.length<(this.data.equipmentCapacity??Infinity)&&!held.items.includes(item.id)));};
@@ -73,9 +99,9 @@
   proto.promotion=function(id,onClose){
     const held=this.held(id),definition=this.definition(held),l=this.native('form_generalupgrade',onClose||(()=>this.reopenCommander(id)));
     l.fill('tcmder',this.card(definition,held,()=>{}));
-    for(const [kind,track,price,effects,prefix] of [['military','rank',held.rankPrice,this.data.rankHealth,'rank_'],['nobility','title',held.titlePrice,this.data.titleHealing,'class_']]){
+    for(const [kind,track,price,effects] of [['military','rank',held.rankPrice,this.data.rankHealth],['nobility','title',held.titlePrice,this.data.titleHealing]]){
       const level=held.learning[track].level,next=price===null?level:level+1,path='group_'+kind+'/';
-      l.fill(path+'rank_from',...(level?[this.api.uiImage(prefix+level+'.png',21,24)]:[]));l.fill(path+'rank_to',...(next?[this.api.uiImage(prefix+next+'.png',21,24)]:[]));
+      l.fill(path+'rank_from',this.progressionBadge(track,held.learning[track]));l.fill(path+'rank_to',this.progressionBadge(track,{level:next,experience:price===null?held.learning[track].experience:0}));
       l.text(path+'text_lifefrom',effects[level]);l.text(path+'text_lifeto',effects[next]);l.text(path+'btn_'+kind+'full/text_medal',price??'MAX');
       l.action(path+'btn_'+kind+'full',track==='rank'?'晋升军衔':'晋升爵位',async()=>{await this.updateAccount({op:track,commander:id});this.promotion(id,onClose);},!held.locked&&price!==null&&price<=this.data.medals);
     }
@@ -93,7 +119,9 @@
     for(let i=0;i<(this.data.equipmentCapacity??2);i++)l.get('lbox_equipitem').append(this.api.uiImage(this.data.items.find(d=>d.id===donor.items[i])?.image||'item_blank.png',45));
     const preview=await this.api.rpc('commander',{op:'preview_inherit',revision:this.data.revision,commander:id,target:donorId});
     if(!l.current())return;
-    for(const [key,track,kind] of [['rank_military','rank','rank'],['rank_nobility','title','class']]){const level=preview.learning[track].level;l.fill(key,...(level?[this.api.uiImage(kind+'_'+level+'.png',21,24)]:[]));}
+    for(const [key,track] of [['rank_military','rank'],['rank_nobility','title']])l.fill(key,this.progressionBadge(track,preview.learning[track]));
+    l.text('text_life',this.data.rankHealth[preview.learning.rank.level]);
+    l.text('text_apply',this.data.titleHealing[preview.learning.title.level]);
     const grid=l.get('grid_preview');for(const [key,value] of Object.entries(preview.learning.abilities).filter(([key,value])=>value>receiver.learning.abilities[key])){const row=document.createElement('div');row.append(this.api.uiImage((key==='naval'?'upgrade_tag_ship':key==='fort'?'upgrade_tag_fortress':'upgrade_tag_'+key)+'.png',20),this.lettering(value,'font_char_2_hd'));grid.append(row);}
     l.action('btn_regroup',this.text('btn_regroup'),()=>{
       const confirm=this.api.detail('title_notice',320,170,async()=>{await this.updateAccount({op:'inherit',commander:id,target:donorId});this.reopenCommander(id);},()=>this.regroup(id,donorId));confirm.className='regroup-confirm';

@@ -1,18 +1,25 @@
-"""Build offline WOFF2 fonts and an exact Unicode coverage index, without subsetting."""
+"""Build bounded offline font subsets without reducing the complete Unicode coverage."""
 
 import hashlib
 import json
+import logging
 from pathlib import Path
 import sys
+import shutil
+import struct
 from zipfile import ZipFile
 
 sys.path.insert(0, str(Path.home() / ".codex/tools/ew4-inspect-deps"))
 from fontTools.ttLib import TTFont
 from fontTools.varLib.instancer import instantiateVariableFont
+from fontTools import subset
 
 ROOT = Path(__file__).resolve().parents[1]
 SOURCES = ROOT / "rewrite/local/font-sources-20261020"
 OUTPUT = ROOT / "rewrite/data/client/fonts"
+FULL = SOURCES / "full-woff2"
+MAX_DECODED_BYTES = 8 * 1024 * 1024
+logging.getLogger("fontTools.ttLib.tables._h_e_a_d").setLevel(logging.ERROR)
 
 
 def ranges(points):
@@ -25,8 +32,46 @@ def ranges(points):
     return result
 
 
+def bootstrap_points():
+    points = set(range(32, 0x250)) | {0xFFFD, 0x3000}
+    for directory in (ROOT / "rewrite/data/original", ROOT / "rewrite/Ew4.Web/wwwroot"):
+        for file in directory.rglob("*"):
+            if file.suffix.lower() not in (".xml", ".ini", ".json", ".html", ".js"):
+                continue
+            data = file.read_bytes()
+            for encoding in ("utf-16" if data.startswith((b"\xff\xfe", b"\xfe\xff")) else "utf-8-sig", "gb18030"):
+                try:
+                    points.update(map(ord, data.decode(encoding)))
+                    break
+                except UnicodeError:
+                    continue
+    return points
+
+
+def build_subset(source, destination, points):
+    font = TTFont(source)
+    options = subset.Options()
+    options.recalc_timestamp = False
+    options.drop_tables += ["FFTM"]
+    cutter = subset.Subsetter(options=options)
+    cutter.populate(unicodes=points)
+    cutter.subset(font)
+    # Shared glyph aliases can retain extra cmap entries outside this subset's range.
+    for table in font["cmap"].tables:
+        if table.isUnicode() and hasattr(table, "cmap"):
+            table.cmap = {point: glyph for point, glyph in table.cmap.items() if point in points}
+    if "fvar" in font:
+        font = instantiateVariableFont(font, {"wght": 400}, inplace=True)
+    font.flavor = "woff2"
+    font.save(destination)
+    font.close()
+
+
 def main():
     OUTPUT.mkdir(parents=True, exist_ok=True)
+    FULL.mkdir(parents=True, exist_ok=True)
+    (OUTPUT / "parts").mkdir(exist_ok=True)
+    common = bootstrap_points()
     with ZipFile(SOURCES / "Jigmo-20250912.zip") as archive:
         for name in ("Jigmo.ttf", "Jigmo2.ttf", "Jigmo3.ttf", "LICENSE.txt"):
             matches = [n for n in archive.namelist() if Path(n).name == name]
@@ -36,6 +81,7 @@ def main():
             destination.write_bytes(archive.read(matches[0]))
 
     recipes = [
+        ("LXGWWenKai-Regular.ttf", "LXGWWenKai-Regular.woff2", "EW4 Kai", "A", "https://github.com/lxgw/LxgwWenKai/releases/tag/v1.530"),
         ("NotoSerifSC-Variable.ttf", "NotoSerifSC-Regular.woff2", "EW4 Serif", "A", "https://github.com/google/fonts/tree/main/ofl/notoserifsc"),
         ("Jigmo.ttf", "Jigmo.woff2", "EW4 Han", "\u4e00", "https://kamichikoichi.github.io/jigmo/Jigmo-20250912.zip"),
         ("Jigmo2.ttf", "Jigmo2.woff2", "EW4 Han Plane 2", "\U00020000", "https://kamichikoichi.github.io/jigmo/Jigmo-20250912.zip"),
@@ -43,46 +89,64 @@ def main():
         ("unifont-17.0.05.otf", "Unifont.woff2", "EW4 Unicode", "A", "https://unifoundry.com/pub/unifont/unifont-17.0.05/"),
         ("unifont_upper-17.0.05.otf", "UnifontUpper.woff2", "EW4 Unicode Supplement", "\U00010000", "https://unifoundry.com/pub/unifont/unifont-17.0.05/"),
     ]
+    (OUTPUT / "LXGWWenKai-OFL.txt").write_bytes((SOURCES / "OFL.txt").read_bytes())
     all_points = set()
     faces = []
     for source_name, filename, family, probe, upstream in recipes:
         source = SOURCES / source_name
-        destination = OUTPUT / filename
+        destination = FULL / filename
+        previous = OUTPUT / filename
+        if not destination.exists() and previous.exists():
+            shutil.copyfile(previous, destination)
         source_hash = hashlib.sha256(source.read_bytes()).hexdigest()
-        cached = SOURCES / (filename + ".source.json")
-        if cached.exists() and destination.exists() and json.loads(cached.read_text())["sha256"] == source_hash:
-            font = TTFont(destination)
-        else:
-            font = TTFont(source)
-            if "fvar" in font:
-                font = instantiateVariableFont(font, {"wght": 400}, inplace=True)
-            points_before = set(font.getBestCmap())
-            font.flavor = "woff2"
-            font.save(destination)
-            font.close()
-            font = TTFont(destination)
-            assert set(font.getBestCmap()) == points_before, "Compression must not drop characters"
-            cached.write_text(json.dumps({"sha256": source_hash}) + "\n", encoding="utf-8")
+        font = TTFont(source)
         points = {point for point, glyph in font.getBestCmap().items() if glyph != ".notdef"}
         assert ord(probe) in points, family
         all_points.update(points)
-        faces.append(dict(file=filename, family=family, probe=probe, glyphs=len(points),
-                          bytes=destination.stat().st_size, sha256=hashlib.sha256(destination.read_bytes()).hexdigest(),
-                          sourceSha256=source_hash, upstream=upstream))
         font.close()
-        print(f"{filename}: {len(points)} characters, {destination.stat().st_size} bytes", flush=True)
+        core = points & common if family in ("EW4 Kai", "EW4 Serif", "EW4 Unicode") else set()
+        groups = [("core", core)] if core else []
+        remaining = points - core
+        for block in sorted({point // 2048 for point in remaining}):
+            groups.append((f"{block:03x}", {point for point in remaining if point // 2048 == block}))
+        for key, characters in groups:
+            relative = f"parts/{Path(filename).stem}-{key}.woff2"
+            target = OUTPUT / relative
+            signature = hashlib.sha256((source_hash + json.dumps(sorted(characters))).encode()).hexdigest()
+            cache_file = SOURCES / (target.name + ".subset.json")
+            if not target.exists() or not cache_file.exists() or json.loads(cache_file.read_text())["sha256"] != signature:
+                build_subset(source, target, characters)
+                cache_file.write_text(json.dumps({"sha256": signature}) + "\n", encoding="utf-8")
+            with TTFont(target) as check:
+                actual = {point for point, glyph in check.getBestCmap().items() if glyph != ".notdef"}
+            if actual != characters:
+                build_subset(source, target, characters)
+                with TTFont(target) as check:
+                    actual = {point for point, glyph in check.getBestCmap().items() if glyph != ".notdef"}
+            assert actual == characters, relative
+            data = target.read_bytes()
+            decoded = struct.unpack_from(">I", data, 16)[0]
+            assert decoded <= MAX_DECODED_BYTES, f"Font subset exceeds decoded limit: {relative} ({decoded})"
+            faces.append(dict(file=relative, family=family, probe=chr(min(characters)), glyphs=len(characters),
+                              bootstrap=key == "core", ranges=ranges(characters), decodedBytes=decoded,
+                              bytes=len(data), sha256=hashlib.sha256(data).hexdigest(), sourceSha256=source_hash, upstream=upstream))
+        if previous.exists():
+            assert previous.read_bytes() == destination.read_bytes(), "Preserve the previous full font before removing its runtime copy"
+            previous.unlink()
+        print(f"{family}: {len(points)} characters, {len(groups)} bounded subsets", flush=True)
     assert 0xFFFD in all_points
-    manifest = dict(schema=1, unicodeVersion="17.0", faces=faces, characters=len(all_points), ranges=ranges(all_points))
+    manifest = dict(schema=1, loading="subsets-v1", unicodeVersion="17.0", faces=faces,
+                    characters=len(all_points), ranges=ranges(all_points))
     (OUTPUT / "coverage.json").write_text(json.dumps(manifest, ensure_ascii=True, indent=2) + "\n", encoding="utf-8", newline="\n")
     index_file = ROOT / "rewrite/data/runtime-content.json"
     index = json.loads(index_file.read_text(encoding="utf-8"))
     font_position = next((i for i, entry in enumerate(index["files"]) if entry["path"].startswith("client/fonts/")), len(index["files"]))
     index["files"] = [entry for entry in index["files"] if not entry["path"].startswith("client/fonts/")]
     font_entries = []
-    for file in sorted(OUTPUT.iterdir()):
+    for file in sorted(OUTPUT.rglob("*")):
         if file.name == "README.md" or not file.is_file():
             continue
-        font_entries.append(dict(path="client/fonts/" + file.name, bytes=file.stat().st_size,
+        font_entries.append(dict(path="client/fonts/" + file.relative_to(OUTPUT).as_posix(), bytes=file.stat().st_size,
                                    sha256=hashlib.sha256(file.read_bytes()).hexdigest()))
     index["files"][font_position:font_position] = font_entries
     index_file.write_text(json.dumps(index, indent=2) + "\n", encoding="utf-8", newline="\n")

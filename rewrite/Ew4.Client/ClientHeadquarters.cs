@@ -49,6 +49,8 @@ public sealed partial class ClientGame
             healthBonus = content.Catalogs.Combat.RankHealth[c.Learning.Rank.Level.ToString(CultureInfo.InvariantCulture)],
             healing = content.Catalogs.Combat.TitleHealing[c.Learning.Title.Level.ToString(CultureInfo.InvariantCulture)] }),
             rankHealth = content.Catalogs.Combat.RankHealth, titleHealing = content.Catalogs.Combat.TitleHealing,
+            progression = new { rank = content.Catalogs.Combat.RankProgression.Levels.Select(l => l.ExperienceToNext),
+                title = content.Catalogs.Combat.TitleProgression.Levels.Select(l => l.ExperienceToNext) },
             definitions = sources.EnumerateArray().Select(e =>
             {
                 var a = e.GetProperty("attributes");
@@ -67,8 +69,7 @@ public sealed partial class ClientGame
             items = ItemViews(account), equipmentCapacity = content.Catalogs.Accounts.Rules().EquipmentCapacity,
             princesses = content.PrincessDefinitions.Select(p => new { id = "princess." + (string)p.Attribute("id")!,
                 definitionId = "ew4.commander." + (string)p.Attribute("commanderid")!, image = (string)p.Attribute("name")! + ".png",
-                unlocked = true, claimed = account.ClaimedRewards.Contains("princess." + (string)p.Attribute("id")!)
-                    || account.Roster.Any(c => c.DefinitionId == "ew4.commander." + (string)p.Attribute("commanderid")!) }) };
+                unlocked = true, claimed = account.Roster.Any(c => c.DefinitionId == "ew4.commander." + (string)p.Attribute("commanderid")!) }) };
     }
     // Original 60030/195150: three offer pools, distinct from individual ability stars.
     private static readonly int[] BadgePrices = [0, 0, 0, 3, 3, 4, 6, 8];
@@ -114,14 +115,14 @@ public sealed partial class ClientGame
             var reward = content.PrincessDefinitions.SingleOrDefault(p => "princess." + (string)p.Attribute("id")! == command.Offer)
                 ?? throw new RuleViolation("account.reward", "Unknown princess reward");
             int id = (int)reward.Attribute("commanderid")!;
-            if (account.ClaimedRewards.Contains(command.Offer!) || account.Roster.Any(c => c.DefinitionId == "ew4.commander." + id))
+            if (account.Roster.Any(c => c.DefinitionId == "ew4.commander." + id))
                 throw new RuleViolation("account.reward_claimed", "Princess already claimed");
             if (account.Roster.Count >= rules.MaximumRoster) throw new RuleViolation("account.capacity", "Roster is full");
-            var owned = content.Catalogs.Accounts.FromDefinition(id, "local.commander." + id);
+            var owned = content.Catalogs.Accounts.FromDefinition(id, "local.commander." + id + "." + Guid.NewGuid().ToString("N"));
             var inventory = account.Inventory.ToDictionary(p => p.Key, p => p.Value);
             foreach (string item in owned.Items) inventory[item] = checked(inventory.GetValueOrDefault(item) + 1);
             next = account.Copy() with { Revision = checked(account.Revision + 1), Roster = account.Roster.Append(owned).ToArray(), Inventory = inventory,
-                ClaimedRewards = account.ClaimedRewards.Append(command.Offer!).ToArray() };
+                ClaimedRewards = account.ClaimedRewards.Append(command.Offer!).Distinct(StringComparer.Ordinal).ToArray() };
         }
         else if (command.Op == "preview_inherit")
         {

@@ -32,7 +32,7 @@ const root=path.resolve(__dirname,'..'),folder=path.join(root,'maps/eastasia_rew
         }
       }return result;
     });
-    check(report.glyphs.length===142,'Both languages render every geographic name without clipping');
+    check(report.glyphs.length===144,'Both languages render every geographic name without clipping');
     for(const city of ['en','zh'])for(const geo of ['en','zh']){
       await page.evaluate(()=>openSettings());await language('city-language',city);await language('geographic-language',geo);await page.locator('#confirm-settings').click();await settle();
       const data=await page.evaluate(()=>{
@@ -84,14 +84,14 @@ const root=path.resolve(__dirname,'..'),folder=path.join(root,'maps/eastasia_rew
       const typography=await page.evaluate(()=>{
         const city=originalTextRenderer.element('城市名称','font_city_labels_hd');
         return{width:innerWidth,height:innerHeight,family:originalTextRenderer.fontFamily,cityFamily:city.dataset.typeface,
-          geographicFamily:Ew4OriginalUI.fontFamily,buttons:[...document.querySelectorAll('.pause-dialog>button')].map(b=>{
+          buttons:[...document.querySelectorAll('.pause-dialog>button')].map(b=>{
             const label=b.firstElementChild,c=label.firstElementChild,p=c.getContext('2d').getImageData(0,0,c.width,c.height).data;
             let ink=0,white=0;for(let i=0;i<p.length;i+=4)if(p[i+3]){ink++;if(p[i]>=250&&p[i+1]>=250&&p[i+2]>=250)white++;}
             const r=b.getBoundingClientRect(),t=label.getBoundingClientRect();
             return{id:b.id,family:label.dataset.typeface,color:label.dataset.color,ink,white,fits:t.left>=r.left&&t.right<=r.right&&t.top>=r.top&&t.bottom<=r.bottom};
           })};
       });
-      check(typography.family===typography.cityFamily&&typography.family===typography.geographicFamily&&typography.buttons.every(b=>b.family===typography.family),'City, geography and menu share one serif font stack');
+      check(typography.family===typography.cityFamily&&typography.buttons.every(b=>b.family===typography.family),'City and menu use the bundled UI font stack');
       check(typography.buttons.length===4&&typography.buttons.every(b=>b.white>0&&b.white===b.ink&&b.fits),'All pause buttons have white text and fit');
       report.typography.push(typography);await page.locator('#resume').click();
     }

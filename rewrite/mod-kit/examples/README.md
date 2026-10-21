@@ -1,6 +1,12 @@
 # 最小覆盖示例
 
+自定义剧本条件、直接结果和多个选择按钮见[剧本事件示例](scenario-events/README.md)。
+
+固定回合扣军费、AI 三资源支援、资源短缺结果和阶段性双边外交见[周期与外交示例](scenario-recurrence-diplomacy/README.md)。
+
 新增技能/标签、七技能将领、Lua和征服胜利条件可直接从[可打包规则示例](rule-extension/README.md)开始；详细字段见[API 1](../docs/porting/RULE_EXTENSIONS.md)。
+
+召唤、传送、范围炮击、群体急行军、叠层中毒与解毒见[API 2六技能示例](common-skills/README.md)。这些通用后端操作可以由作者用JSON/Lua组合，不必为每个技能重新编译；需要支持API 2的游戏版本。
 
 只换主菜单背景：在作者自己的空目录下创建 `client/ui/main.png`，保持原图比例与足够分辨率。执行：
 

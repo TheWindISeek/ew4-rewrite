@@ -97,7 +97,7 @@ public static partial class WorldAi
                     {
                         if (index == unit.Cell || !distances.TryGetValue(index, out long distance) || distance >= sourceDistance) continue;
                         var cell = state.Cells[index];
-                        bool allied = cell.Owner != null && cell.Owner != faction.Id && factions[cell.Owner].Camp == faction.Camp;
+                        bool allied = cell.Owner != null && cell.Owner != faction.Id && WorldDiplomacy.Allied(state, cell.Owner, faction.Id);
                         landings.Add(new(index, distance, map.Distance(unit.Cell, index), occupants.ContainsKey(index), cell.Environment, allied, cell.BuildingKind));
                     }
                     int chosen = AiStrategy.SelectDestination(landings, behavior.AdjacentOnly, rules.Strategy.Landing, random.Next);

@@ -54,9 +54,10 @@ public sealed record GameSession
         if (RosterDeployments.Select(q => q.Faction).Distinct(StringComparer.Ordinal).Count() != RosterDeployments.Count
             || RosterDeployments.SelectMany(q => q.CommanderIds).Distinct(StringComparer.Ordinal).Count() != RosterDeployments.Sum(q => q.CommanderIds.Count))
             throw new RuleViolation("session.roster_history", "Duplicate deployment faction or owned commander history");
+        // History belongs to the deploying country even if an event later transfers the commander.
         foreach (var quota in RosterDeployments)
             if (!World.Factions.Any(f => f.Id == quota.Faction) || quota.Limit < 0 || quota.CommanderIds.Count > quota.Limit
-                || quota.CommanderIds.Any(id => !Account.Roster.Any(c => c.Id == id) || !World.Commanders.Any(c => c.Id == id && c.Owner == quota.Faction)))
+                || quota.CommanderIds.Any(id => !Account.Roster.Any(c => c.Id == id) || !World.Commanders.Any(c => c.Id == id)))
                 throw new RuleViolation("session.roster_history", "Invalid deployment quota or historical commander reference");
     }
     public GameSession Copy() => this with { World = World.Copy(), Account = Account.Copy(),

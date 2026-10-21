@@ -1,6 +1,6 @@
 # 原版 Mod 移植到 rewrite
 
-本文面向已有欧四 APK/资源包的作者。更新时间：2026-10-20。路径以工具包或作者覆盖包根目录为准；`rewrite/...` 是源码仓库位置，不是发行包中缺失的文件。
+本文面向已有欧四 APK/资源包的作者。更新时间：2026-10-21。路径以工具包或作者覆盖包根目录为准；`rewrite/...` 是源码仓库位置，不是发行包中缺失的文件。
 
 按文件和函数找入口请读[原包入库与rewrite入口对照表](ENTRYPOINTS.md)：列出原资源、转换产物、转换函数、运行函数，以及已核实原SO函数地址和反编译证据；原版函数与rewrite不强求一对一。
 
@@ -13,12 +13,36 @@
 | UI资源 | 转换贴图和布局树；背景拼接/裁切及部分控件读取布局 | 完整控件、交互、动画、功能绑定及专用界面适配机制 |
 | UI切换 | 重载页面；按包版本区分资源地址 | 全生命周期清理、游戏请求绑定内容/会话标识 |
 | 文字 | 原文本内容配合rewrite自带字体；城市白字黑描边 | 经验证的表现包字体配置接口 |
-| 兵种与技能 | 原规则加API 1定义/标签/动态槽/布局/Lua事件，见[规则接口](RULE_EXTENSIONS.md) | 未列出的事件/写操作、主动技能AI规划仍需支持版本 |
+| 兵种与技能 | API 1原有能力；API 2增加地块目标、召唤、传送、范围效果、持续状态和移动力，见[规则接口](RULE_EXTENSIONS.md) | 未列出的事件/写操作、主动技能AI规划仍需支持版本 |
 | 胜负条件 | Mod配置或BTL VICT覆盖；组合/目标/回合/资源/Lua条件 | 可视化条件编辑器 |
 | 辖区 | BTL可含JURI v1逐格中心记录；缺省自动计算，战局保存固定辖区 | 含布兵/设施/事件的新剧本容器及可视化辖区编辑器 |
 | 账户 | 原版与Mod按ID和逻辑指纹分目录 | 独立档案身份、ID冲突处理和版本迁移 |
 
 当前技能入口是包根`rewrite/extension.json`及其定义/绑定/脚本引用，不是向mod.json添加skills字段。尚无`uiPackage`、任意UI功能bindings或新完整剧本容器入口。实际入口见[配置索引](../CONFIG_REFERENCE.md)与[可打包示例](../../examples/rule-extension/README.md)。
+
+## 使用外置代码制作新技能（API 2）
+
+支持此更新的游戏已内置通用技能后端，作者可用包内 JSON 和 Lua 组合新技能，无须逐个技能重新编译游戏。旧发行版必须先升级到支持 API 2 的版本；直接导入新版配置不会给旧引擎增加能力。原 SO/DEX/DLL 仍不作为插件加载。
+
+1. 在作者覆盖包根创建 `rewrite/extension.json`，保留 `schema:1`，填写 `apiVersion:2`。
+2. `skills` 指向技能数组；`statuses` 指向持续状态数组；`unitBindings` 或 `commanderBindings` 绑定兵种/将领完整 ID；`scripts` 登记外置 Lua。
+3. 在效果中选择通用 `operation`，用 `script/function` 计算其数值。Lua 返回数值或 `{value=数值,state={计数=整数}}`；后端统一校验、执行和保存，不能通过修改 Lua 快照直接改变世界。
+4. 修改后重新 pack、verify、import、启用并开新局。先验费用、目标、冷却、保存重载，再验死亡/外交/回合结算。
+
+| 制作目标 | 技能定义的关键字段 |
+| --- | --- |
+| 召唤部队 | `target:"cell"`；效果 `operation:"summon", profile:"完整兵种ID", value:1` |
+| 传送自身 | `target:"cell"`；效果 `operation:"teleport"`；仅友方/无主合法落点，不占领领土 |
+| 范围伤害/治疗 | 效果 `scope:"area", radius:1, relation:"enemy"` 或 `"ally"`，操作为 `damage/heal` |
+| 中毒、鼓舞等状态 | 效果 `operation:"apply_status", status:"my.status", duration:3, value:1`；状态自身声明回合和战斗效果 |
+| 清除指定状态 | 效果 `operation:"remove_status", status:"my.status"` |
+| 恢复/扣减当前移动力 | 效果 `operation:"movement", value:3` 或负数；不重置行动标记 |
+| 修改移动上限 | 被动技能或状态内 `event:"movement.modify", operation:"movement_add", value:3`；可为负数 |
+| 限时减伤 | 状态内 `event:"combat.modify_incoming_damage", operation:"damage_multiplier", value:0.8` |
+
+`range` 是施法距离，`radius` 是效果范围，单位均为六角格。状态时长按受影响单位所属方的回合结束递减；同名状态按 `refresh/replace/stack` 处理。范围效果只扣一次费用、记录一次冷却，单目标计算失败则整次动作不提交。玩家和 AI 单位都使用被动与状态规则；AI 尚不主动选择自定义主动技能。
+
+可直接使用[六技能完整示例](../../examples/common-skills/README.md)，其中包含召唤、传送、范围炮击、群体急行军、叠层中毒和解毒。所有字段、Lua上下文及规则边界见[完整技能接口](RULE_EXTENSIONS.md)的“API 2 通用技能”。
 
 ## 1. 备份并列出改动
 

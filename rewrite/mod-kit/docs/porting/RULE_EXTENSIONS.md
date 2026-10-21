@@ -1,6 +1,8 @@
-# 技能、特性与胜负规则扩展（API 1）
+# 技能、特性与胜负规则扩展（API 1/2）
 
-本指南对应 `rewrite/extension.json` 的 `schema:1 / apiVersion:1`。电脑与 Android 共用 C# 加载器和 MoonSharp Lua 解释器；制作好离线包后两端都能导入，不需要服务器。原 APK 的 SO、DEX、DLL 不能作为此接口的脚本执行，需要将行为移植到下列事件和操作。
+2026-10-21 增补：[剧本条件、直接结果与多按钮弹窗](SCENARIO_EVENTS.md)，入口 `scenarioEvents`；包括资源、城市、死亡、回合、阵营、组合条件及 Lua。
+
+本指南对应 `rewrite/extension.json` 的 `schema:1 / apiVersion:1或2`。API 1继续兼容；使用下文通用技能新字段时须声明API 2，旧发行版会拒绝该版本。电脑与 Android 共用 C# 加载器和 MoonSharp Lua 解释器；制作好离线包后两端都能导入，不需要服务器。原 APK 的 SO、DEX、DLL 不能作为此接口的脚本执行，需要将行为移植到下列事件和操作。
 
 注意路径：下文 `rewrite/definitions/skills.json` 是 **Mod 包内部路径**。源码同名的顶层 `rewrite/` 则是项目目录，两者不是同一层。不要把扩展放进 `client/` 或工具的 `data/`。
 
@@ -95,7 +97,7 @@
 
 效果value默认1、必须为有限非负数；heal/damage/资源操作取整。heal封顶最大生命，damage经过统一死亡处理，包括将领退场、事件及势力存活判定。资源奖励给技能来源的国家；heal/damage用于所选目标。战斗数值修改顺序为damage_multiplier后damage_add，不跟随effects中跨操作的排列；同类效果按绑定和数组顺序处理。最终值需在0～Int32.MaxValue之间，越界拒绝事务。
 
-伤害与死亡始终以后端结算为准，界面只能发出请求。自定义伤害也不能让已被主动攻击杀死的受击方反击。没有声明的事件/操作会拒绝导入；当前不提供任意修改地图、创建单位、改建造资格或替代AI规划的Lua写接口。
+伤害与死亡始终以后端结算为准，界面只能发出请求。自定义伤害也不能让已被主动攻击杀死的受击方反击。没有声明的事件/操作会拒绝导入；API 2提供下文受校验的召唤等操作，仍不提供任意世界对象写入、改建造资格或替代AI规划的Lua接口。
 
 ## 3. 给单位与将领绑定，移除四技能限制
 
@@ -184,6 +186,114 @@ cell/unit/faction仅在带world的普通事件及胜利检查可用，伤害取�
 
 每脚本不超过256 KiB，模块初始化和处理函数合用200000条VM指令预算。无文件、网络、系统或CLR对象接口；禁用load/require、math.random/randomseed及部分原生批量字符串函数。Lua标准库并非完整开放，不应依赖string.rep/format/gsub或table.concat。指令预算不是进程级内存配额，避免构造巨型字符串/表。运行异常使当前动作不提交，原资金和原世界保留；修脚本并重新打包后再试。
 
+## API 2 通用技能
+
+### 入口与新增字段
+
+```json
+{
+  "schema": 1, "apiVersion": 2,
+  "skills": ["rewrite/definitions/skills.json"],
+  "statuses": ["rewrite/definitions/statuses.json"],
+  "unitBindings": "rewrite/definitions/unit-bindings.json",
+  "commanderBindings": "rewrite/definitions/commander-bindings.json",
+  "scripts": ["rewrite/scripts/abilities.lua"]
+}
+```
+
+这些路径按实际文件选择，未使用的字段应省略。`statuses` 是状态定义数组，技能/特性/状态ID共用唯一命名空间。`target` 新增 `cell`，仅主动技能可用。前端从后端提供的 `cells` 中选择坐标；请求为 `{op:"skill",unit:"单位实例ID",offer:"技能实例ID",cell:绝对格ID,revision:当前版本}`，不同时传 `target`。原单位目标请求继续使用 `target`。
+
+| effect字段 | 默认值与限制 |
+| --- | --- |
+| scope | `target`作用于选定单位或选定格上的单位；`source`作用于施法者；`area`以所选单位/格为中心选取范围单位。未单独选目标时中心为自身 |
+| radius | `area`专用，0～32，包含中心及距离不超过该值的单位；施法距离由技能的range控制，范围可延伸到range之外 |
+| relation | `any/ally/enemy`，默认any；相对技能来源单位判断，按当前双边外交。enemy包含未结盟的中立，伤害或施加状态会触发相应外交 |
+| profile | summon专用，完整catalog profiles ID，加载时检查存在 |
+| status | apply_status/remove_status专用，引用statuses中的ID |
+| duration | apply_status专用，1～1000个受影响单位所属方回合结束；不按全图各国轮流行动次数递减 |
+
+`scope/radius/relation`对治疗、伤害、状态、当前移动力有效。金钱/工业/粮食只能用默认scope和relation，每条效果给来源国家奖励一次；不能按范围单位重复发放。战斗数值和移动上限修正也使用默认scope和relation，按当前参与计算的单位工作。
+
+### 新操作与触发点
+
+| event | 新增operation | 说明 |
+| --- | --- | --- |
+| skill.activate | summon / teleport | 仅active且target=cell；默认scope/radius/relation |
+| skill.activate | apply_status / remove_status / movement | 支持单目标、自身和范围 |
+| 原有开局/回合/移动/占领/战后/招募/受伤/死亡事件 | damage / movement | 在原heal和资源操作之外开放；死亡来源不会被治疗复活 |
+| combat.modify_incoming_damage | damage_multiplier / damage_add | 普通战斗伤害的承受方被动修正；此时ctx.source是防守方，ctx.target是伤害来源 |
+| movement.modify | movement_add | 被动技能或状态修改移动上限，支持负数，最终下限0；不自动赠送当前移动力 |
+
+效果按数组顺序执行，每条范围效果按单位ID的序数顺序固定目标；每个受影响单位分别运行Lua。每条效果开始时选取目标快照，执行时已不存在的单位跳过。一次主动施法只扣一次资源、写一次冷却、提交一次revision；任何计算/校验异常均不提交。施法者死亡后不再执行余下主动效果。
+
+`damage`为直接扣血，不走普通攻击护甲、减伤、反击或攻击次数；`combat.modify_incoming_damage`只影响普通战斗伤害。直接致死共用将领退场、死亡事件、势力存活处理。伤害通知不会无限递归触发新的伤害通知。
+
+召唤每条效果固定生成一支部队，`value`必须为1；Lua也必须返回1。模板取自完整兵种ID，包含基础兵种属性、兵种绑定技能和粮食消耗，不复制将领、装备或当前单位状态，不额外调用普通招募费用/建筑资格。落点必须有效、海陆合法、有容量且属于友方或无主；不支持召唤要塞。新单位本回合已行动且移动为0，之后按普通单位存活，不自动消失。召唤受势力单位上限约束。
+
+传送移动施法者自身，绕过路径消耗；仍检查range、地形、容量、外交与海陆适配，不能传送要塞、不能落在敌方领土或原格。无主或友方目的地不被占领，沿途没有领土变化；到达后剩余移动为0，更新海上/设施/局部士气并触发unit.move_end。`endsAction:false`可保留攻击资格。技能动作会清理此前移动撤回记录，防止撤回绕过费用和状态。
+
+### 持续状态
+
+`statuses.json`示例：
+
+```json
+[
+  {
+    "id": "my.haste", "nameKey": "急行军", "descriptionKey": "移动力上限增加3。",
+    "stacking": "refresh", "maxStacks": 1,
+    "effects": [{"event":"movement.modify","operation":"movement_add","value":3}]
+  },
+  {
+    "id": "my.poison", "nameKey": "中毒", "descriptionKey": "每层每回合受到4点伤害。",
+    "stacking": "stack", "maxStacks": 3,
+    "effects": [{"event":"turn.start","operation":"damage","value":4}]
+  }
+]
+```
+
+技能效果用 `{"event":"skill.activate","operation":"apply_status","status":"my.poison","duration":3,"value":1}` 施加一层。`value`为层数，取整后须在1～maxStacks；`maxStacks`默认为1、最大32。每单位最多64种状态。状态定义可有nameKey/descriptionKey/icon，图标路径和预算同技能。
+
+| stacking | 同ID再次施加时 |
+| --- | --- |
+| refresh（默认） | 保留原层数，剩余时长取原值与新值的较大者 |
+| stack | 层数相加并封顶maxStacks，剩余时长取较大者 |
+| replace | 用新层数、时长替换，清除旧脚本计数 |
+
+再次施加时更新来源和技能等级；移除状态会清除该状态脚本计数，到期同样清除。相同ID不按施法者分成多个独立状态。状态在受影响单位的turn.end效果执行后减1，到0移除；当前己方回合施加的duration=1状态在本回合结束就到期。
+
+状态效果只允许战斗修正、反击资格、攻击取样次数、移动上限、turn.start和turn.end；不能在状态内施加新状态、召唤或传送。状态随战局保存，切换/更换将领不清除单位状态；不写入局外将领培养数据。部队信息列表中的状态名称后显示“层数/剩余回合”。
+
+没有Lua时，固定加值/治疗/伤害按层数相乘，倍率按 `value^层数` 计算。有Lua时返回值直接使用，脚本自行按ctx.stacks计算，不再自动乘层数。状态脚本中的ctx.source是持有状态的单位，ctx.target是本次实际目标；伤害结算保留最近施加者的国家来源。
+
+### 移动力与Lua
+
+`movement`只增减当前剩余移动，封顶当前有效移动上限，下限0；不重置Acted，不解除混乱，也不恢复攻击次数。`movement.modify/movement_add`改变上限，参与回合刷新和寻路；施加减速或清除加速后会裁剪超出的剩余移动。要立即获得加速收益，先apply_status，再movement，见群体急行军示例。
+
+API 2新增Lua上下文：
+
+| 字段 | 语义 |
+| --- | --- |
+| ctx.targetCell | 普通事件/主动技能所选中心绝对格ID；范围效果各目标共享该中心。战斗和移动上限查询为nil |
+| ctx.stacks / ctx.remainingTurns | 当前状态层数和剩余时长；普通技能分别为1和0 |
+| ctx.source.statuses / ctx.target.statuses | 以状态ID为键的快照，每项有turns/stacks/level；修改快照不影响实际世界 |
+
+普通事件及范围施法可用 `ctx:unit(id)`、`ctx:cell(id)`、unitIds等查询。战斗和movement.modify仍为无状态查询，没有世界快照，round=0，返回state不保存。移动上限查询使用独立固定随机种子，不推进战斗RNG，建议只写纯数值逻辑。
+
+```lua
+function blast(ctx)
+    return { value = ctx.value * ctx.level,
+             state = { hits = (ctx.state.hits or 0) + 1 } }
+end
+
+function poison_tick(ctx)
+    return ctx.value * ctx.stacks
+end
+```
+
+技能自身的计数按“施法单位/技能实例”共享，范围内逐目标累积；状态计数按“受影响单位/status.状态ID”分别保存。`status.`是实例ID保留前缀，作者技能实例不要使用。原Lua脚本大小、VM指令预算、禁用库和事务约束继续适用。脚本不能返回任意世界操作列表，也不加载外部DLL。
+
+完整可打包文件见[API 2六技能示例](../../examples/common-skills/README.md)。新增通用操作只需引擎实现一次，作者随后可自行组合新技能；未列出的新操作仍需更新引擎。AI会结算被动及状态，尚不会主动选择这些自定义主动技能。
+
 ## 5. 征服、战役胜负条件
 
 没有扩展时保留原规则：征服击败所有敌对战斗阵营国家（未被玩家挑衅的中立不计）；战役按敌方红点清除及己方关键目标保护等原判定。自定义配置可以覆盖这套胜负条件。
@@ -266,6 +376,7 @@ export产生规则本身，不是按剧本ID嵌套的字典；apply/strip保留�
 | 清单/JSON/绑定/原技能覆盖 | `rewrite/Ew4.Legacy/ExtensionLoader.cs` Load/ParseJson/PatchCatalog/ValidateVictory/ValidateVictoryScripts |
 | Lua装载/预算/快照 | `rewrite/Ew4.Legacy/ExtensionScriptRuntime.cs` ValidateHandler/Run/Execute |
 | 技能槽/事件/事务 | `rewrite/Ew4.Core/RuleExtensions.cs` SkillSlot.Validate、RuleEventBus.Slots/Bound/Modify/Dispatch、WorldSkillActions.Execute |
+| API 2通用操作/状态/移动力 | `rewrite/Ew4.Core/SkillWorldEffects.cs` RegisterUnitTemplates/ValidCellTarget/ApplyEffect/MovementBudget/ExpireStatuses/ChangeNotices |
 | 原生伤害接入/致死判断 | `rewrite/Ew4.Core/Combat.cs` Ew4Combat.Calculate；`WorldBattle.cs` Attack/Preview |
 | 移动/回合/客户端事务事件 | `rewrite/Ew4.Core/WorldActions.cs` Move；`WorldTurns.cs` EndTurn/Resume；`rewrite/Ew4.Client/ClientGame.cs` Commit |
 | 动态将领与原效果禁用 | `rewrite/Ew4.Core/Commanders.cs` Ew4Commander.Attach/Resolve；`AccountCommanders.cs` Inherit |
@@ -275,4 +386,4 @@ export产生规则本身，不是按剧本ID嵌套的字典；apply/strip保留�
 | UI布局/说明/主动请求 | `rewrite/Ew4.Web/wwwroot/skill-ui.js` Ew4SkillUI.layout/icon；`menus.js` commanderInfo/skillTip；`app.js` openUnitInfo/openSkillAction |
 | 回归与离线包验证 | `rewrite/Ew4.Verify/ExtensionChecks.cs` Run；`rewrite/Ew4.ModChecks/ExtensionModChecks.cs` Run；`tools/verify_extensions_web.cjs` |
 
-源码验证命令：`dotnet run --project rewrite/Ew4.Verify -- <仓库根> --extension-only`；再运行`Ew4.ModChecks`同参数。浏览器脚本需独立5185和独立存档，禁止对正在玩的5184执行自动化动作。Android用Compile验证共享接口，实机运行需另行验收。
+源码验证命令：`dotnet run --project rewrite/Ew4.Verify -- <仓库根> --extension-only`；再运行`Ew4.ModChecks`同参数，均包含API 1/2专项。API 1浏览器脚本使用独立5185；API 2为`tools/verify_common_skills_web.cjs`，使用独立5206及独立存档，运行前确认端口属于本次预览进程，禁止对玩家服务执行自动化动作。Android用Compile验证共享接口，实机运行需另行验收。

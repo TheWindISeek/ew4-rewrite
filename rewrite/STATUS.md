@@ -1,5 +1,23 @@
 # 重构短锚点
 
+- **通用技能API 2及0.2.6发布：`../reverse/COMMON_SKILLS_20261021.md`。** 地块目标、召唤/传送/范围效果、持续状态、移动力及减伤已接JSON/Lua、兵种/将领和存档；API 1兼容。Mod修改指南mod-kit/docs/porting/README.md与common-skills六例已补。核心309913/客户端862/API 2专项68/导入18/发行Web浏览器26项9图及分发2570项通过；Web/APK及资源程序集签名对齐核验。产物../build/release-0.2.6-20261021/assets，远端状态以该目录审计为准；无Android设备运行。独立预览5206，旧玩家服务未重启。
+
+- **周期事件与独立双边外交：`../reverse/SCENARIO_RECURRENCE_DIPLOMACY_20261021.md`。** repeat整轮调度/进度持久化/短缺事务，relation两国独立关系及default恢复；战斗/AI/移动/支援/胜利/客户端颜色共同使用。完整指南SCENARIO_EVENTS.md，可选示例mod-kit/examples/scenario-recurrence-diplomacy；报告reports/scenario-recurrence-diplomacy-20261021。完整核心309845、事件207（新增102）、客户端862、前端24、Web/Android Compile及示例导入导出通过。5192仍为旧独立运行时，无新APK/旧发行包更新。
+
+- **设定选项支持上下滚动：`../reverse/EVENT_POPUP_LAYOUT_20261021.md`末段。** #settings-content自动纵向排列/滚动，标题与底部确认固定；手机横竖屏/桌面、控件及关闭通过，无浏览器错误。记录reports/settings-scroll-20261021；缓存20261021.9，无重启/新APK。
+
+- **设定新增“事件弹窗大小”：`../reverse/EVENT_POPUP_LAYOUT_20261021.md`末段。** range滑条即时线性调节/百分比/保存；默认100%、60～180%，实际上限随窗口适配。设定面板高度单独约束，实际拖动/刷新/手机横竖屏及56组尺寸检查通过，恢复100%；缓存20261021.8，无重启/新APK。
+
+- **事件正文固定横线已修：`../reverse/EVENT_POPUP_LAYOUT_20261021.md`末段。** 仅正文改用内置字体DOM排版，长Canvas不再生成；双区滚动保持。5192中段/末尾及390×844、1136×640实际验证通过，截图reports/scenario-event-lines-20261021；original-ui.js缓存20261021.7，无重启/新APK。
+
+- **弹窗尺寸收紧：`../reverse/EVENT_POPUP_LAYOUT_20261021.md`末段。** 360×264基础尺寸/竖屏最高400，放大上限1.5，实际不超视窗84%宽/74%高；主体/选项独立滚动。6尺寸34项只读检查通过，状态无改变。缓存20261021.6，5192刷新即可，无需导包/重启，无新APK。
+
+- **5192封装图文包启用完成：`../reverse/EVENT_POPUP_LAYOUT_20261021.md`后续段。** 旧启动错误为上次测试包基线过旧；交付包已真实导入启用8351b878…，图片/正文/12按钮/双区滚动/存档等9项通过。原revision1已保存，新包第一征服待选择；PID11500未重启。源码manifest与当前进程缓存已有区别，后续重启须重新导入原素材封包，不能改清单跳过校验。
+
+- **事件图文与独立滚动：`../reverse/EVENT_POPUP_LAYOUT_20261021.md`。** 主体支持图片/文字/图文及长文本滚动，选项固定下方独立滚动，横屏双列/竖屏单列。popup新增image/imageAlt，包内PNG校验/存档/旧事件兼容；指南已补。事件105、客户端862、浏览器27项9图及Web/Android Compile通过。5192 PID11500保留原Mod并恢复revision1；图文测试包reports/scenario-event-layout-20261021/scenario-event-layout.ew4mod，独立5195已停，无新APK。
+
+- **上将、公主重领与剧本事件：`../reverse/SCENARIO_RULES_20261021.md`。** 名册不再被战场遮挡，可用将领查询/任命/自动存档已接；公主缺席名册即可重新领取。scenarioEvents支持组合条件、直接结果和多按钮选择结果，资源/城市/死亡/回合/阵营及Lua可配置；指南mod-kit/docs/porting/SCENARIO_EVENTS.md，中文示例mod-kit/examples/scenario-events。完整核心309734、最新事件99、客户端862、扩展导入18、浏览器17项6图及Web/Android Compile通过。独立预览5192 PID11404，无新APK或旧发行包更新；用户档案和5193未操作。
+
 - **内置字库与0.2.4发行：`../reverse/BUNDLED_FONTS_20261020.md`。** 统一Noto Serif SC 400/Jigmo/Unifont六份WOFF2，不使用系统字体；192816码位，六APK XML/INI无缺字，Canvas仍白填充黑描边。源码/发行版浏览器各42项10图、客户端859/Mod77/Web资源3670通过。APK0.2.4/code6资源及程序集/签名/对齐核验，未本版设备运行。指南与许可同步Mod工具包；发行说明RELEASE_0.2.4_20261020.md，Web双击Start-Web.cmd。
 
 - **目录整理与东亚测试包：`../reverse/RUNTIME_LAYOUT_20261020.md`。** 通用Mod管理产物在local/mod-management，5190兼容预览在local/eastasia-preview；8项场景/40旧存档哈希不变。content/eastasia-test-conquest.ew4mod供0.2.0导入后在征服第二页检查东亚，7809项及发行版导入/开局/存读档/删除保留存档通过。说明见RUNTIME_DIRECTORIES.md及content/README.md；无新APK/上传。

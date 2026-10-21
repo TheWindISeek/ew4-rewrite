@@ -92,7 +92,7 @@ internal static class ExtensionChecks
         var lethal = Ew4Combat.Calculate(attack, target, 1, new(5), new() { Extensions = bus, LethalStrikePreventsCounterattack = true });
         Check(lethal.DefenderDamage >= 1 && !lethal.Counterattack && lethal.AttackerDamage == 0, "extension damage precedes lethal counter check");
         var originalManifest = overrides["rewrite/extension.json"];
-        Put("rewrite/extension.json", new { schema = 1, apiVersion = 2 }); Reject(() => ExtensionLoader.Load(Read), "unknown API");
+        Put("rewrite/extension.json", new { schema = 1, apiVersion = 99 }); Reject(() => ExtensionLoader.Load(Read), "unknown API");
         overrides["rewrite/extension.json"] = originalManifest;
         var originalSkills = overrides["rewrite/definitions/skills.json"];
         Put("rewrite/definitions/skills.json", new[] { boost with { Effects = [new() { Event = "invented", Operation = "heal" }] } });

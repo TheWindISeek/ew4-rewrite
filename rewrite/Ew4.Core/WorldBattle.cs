@@ -82,7 +82,7 @@ public static class WorldBattle
         var defender = state.Units.SingleOrDefault(u => u.Id == defenderId);
         if (attacker == null || defender == null || attacker.Owner != state.ActiveFaction
             || state.Factions.Single(f => f.Id == attacker.Owner).Defeated
-            || state.Factions.Single(f => f.Id == attacker.Owner).Camp == state.Factions.Single(f => f.Id == defender.Owner).Camp)
+            || WorldDiplomacy.Allied(state, attacker.Owner, defender.Owner))
             throw new RuleViolation("attack.target", "Attacker or hostile target is unavailable");
         var map = new HexMap(state.Width, state.Height);
         int distance = map.Distance(attacker.Cell, defender.Cell);
@@ -181,9 +181,15 @@ public static class WorldBattle
             if (battle.Counterattack) ConsumeWeapon(defender.Id);
             RefreshLocalMorale();
             if (rules.Combat.Extensions != null)
+            {
+                var beforeEffects = state;
                 foreach (string id in new[] { attacker.Id, defender.Id })
                     state = rules.Combat.Extensions.Dispatch(state, "combat.after", id, new Ew4Random(state.RandomState));
-            if (rules.PlayerCamp != null)
+                notices.AddRange(RuleEventBus.ChangeNotices(beforeEffects, state));
+            }
+            var scenarioEvents = ScenarioRules.Evaluate(state, rules.Combat.Extensions?.Scripts);
+            state = scenarioEvents.State; notices.AddRange(scenarioEvents.Notices);
+            if (rules.PlayerCamp != null && state.Outcome == BattleOutcome.Continue && (state.ScenarioEvents.Count == 0 || state.PendingDialogue == null))
             {
                 var outcome = WorldVictory.Evaluate(state, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
                 if (outcome != BattleOutcome.Continue)

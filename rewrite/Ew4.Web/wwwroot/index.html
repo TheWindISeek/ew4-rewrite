@@ -5,9 +5,8 @@
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self'">
   <title>欧陆战争4</title>
-  <link rel="preload" href="/content/fonts/NotoSerifSC-Regular.woff2" as="font" type="font/woff2" crossorigin>
-  <link rel="stylesheet" href="style.css?v=20261020.5">
-  <link rel="stylesheet" href="original-ui.css?v=20261020.5">
+  <link rel="stylesheet" href="style.css?v=20261021.6">
+  <link rel="stylesheet" href="original-ui.css?v=20261021.11">
   <link rel="stylesheet" href="mods.css?v=20261020.4">
 </head>
 <body>
@@ -16,7 +15,7 @@
       <main id="main-menu">
         <button id="mod-open" class="native-command" hidden title="本地 Mod" aria-label="本地 Mod">Mod</button>
         <img class="game-title" src="content/ui/title.png" alt="欧陆战争4 拿破仑">
-        <nav aria-label="游戏模式"><button class="main-entry" data-mode="1" data-label="campaign_label">战役</button><button class="main-entry" data-mode="2" data-label="conquest_label">征服</button><button class="main-entry" data-mode="4" data-label="tutorial_label">教程</button><button class="main-entry" id="headquarters" data-label="headquarters_label">指挥部</button><button class="main-entry" id="main-settings" data-label="settings_label">设定</button></nav>
+        <nav aria-label="游戏模式"><button class="main-entry" data-mode="1" data-label="campaign_label" disabled>战役</button><button class="main-entry" data-mode="2" data-label="conquest_label" disabled>征服</button><button class="main-entry" data-mode="4" data-label="tutorial_label" disabled>教程</button><button class="main-entry" id="headquarters" data-label="headquarters_label" disabled>指挥部</button><button class="main-entry" id="main-settings" data-label="settings_label" disabled>设定</button></nav>
       </main>
       <section id="scenario-menu" hidden>
         <header class="menu-bar"><button id="menu-back" class="back-icon" aria-label="返回" title="返回"></button><h1 id="mode-title" data-label="conquest_label">征服</h1><button id="continue" class="load-icon" aria-label="载入" title="载入"></button></header>
@@ -58,10 +57,25 @@
     <footer id="status" role="status"></footer>
     <div id="pause" class="modal" hidden><div class="dialog pause-dialog"><header class="menu-bar"><button id="resume" class="close-icon" aria-label="返回战场" title="返回战场"></button><h2 data-label="pause_label">暂停</h2></header><p id="turn"></p><button id="save" data-label="save_label">保存</button><button id="pause-settings" data-label="settings_label">设定</button><button id="restart" data-label="restart_label">重新开始</button><button id="return-menu" data-label="main_label">退出</button></div></div>
     <div id="dialogue" hidden><button id="dialogue-ok" aria-label="继续对白"><img id="dialogue-portrait" alt=""><div class="talk-content"><div id="dialogue-speaker"></div><p id="dialogue-text"></p></div></button></div>
+    <div id="scenario-event" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="scenario-event-title"><section class="dialog scenario-event-dialog"><div class="menu-bar"><h2 id="scenario-event-title"></h2></div><div id="scenario-event-content" tabindex="0" role="region" aria-label="事件内容"><img id="scenario-event-image" alt="" hidden><p id="scenario-event-text" hidden></p></div><div id="scenario-event-choices" tabindex="0" role="group" aria-label="事件选项"></div></section></div>
     <div id="tutorial-talk" hidden><img id="tutorial-portrait" alt="拿破仑"><div class="talk-content"><div id="tutorial-speaker"></div><p id="tutorial-text"></p></div></div><div id="tutorial-focus" hidden></div>
   </section>
   <div id="detail-modal" class="modal" hidden><div class="dialog original-dialog"><header class="menu-bar"><button id="close-detail" class="close-icon" aria-label="关闭信息" title="关闭"></button><h2 id="detail-title"></h2></header><div id="detail-content"></div><button id="detail-confirm" class="confirm-corner" aria-label="确认" title="确认"></button></div></div>
-  <div id="settings" class="modal" hidden><div class="dialog settings-dialog"><header class="menu-bar"><button id="close-settings" class="close-icon" aria-label="关闭" title="关闭"></button><h2 data-label="settings_label">设定</h2></header><label class="volume music"><span data-label="name_music">音乐</span><input id="music-volume" type="range" min="0" max="100" aria-label="音乐音量"></label><label class="volume sound"><span data-label="name_sound">音效</span><input id="sound-volume" type="range" min="0" max="100" aria-label="音效音量"></label><label class="setting-row speed"><span data-label="name_gamespeed">游戏速度</span><input id="game-speed" type="range" min="1" max="5" step="1" aria-label="游戏速度"></label><label class="setting-row grid"><span data-label="name_showgrid">显示网格</span><input id="show-grid" type="checkbox"></label><label class="setting-row hd"><span data-label="name_hdversion">高清模式</span><input id="hd-mode" type="checkbox"></label><label class="setting-row screen"><span data-label="name_screen_extra">屏幕尺寸</span><input id="screen-size" type="range" min="80" max="100" value="100" aria-label="屏幕尺寸"></label><button id="confirm-settings" class="confirm-corner" aria-label="确认设定" title="确认"></button></div></div>
+  <div id="settings" class="modal" hidden><div class="dialog settings-dialog">
+    <header class="menu-bar"><button id="close-settings" class="close-icon" aria-label="关闭" title="关闭"></button><h2 data-label="settings_label">设定</h2></header>
+    <div id="settings-content" tabindex="0" role="region" aria-label="设定选项">
+      <div class="settings-audio">
+        <label class="volume music"><span data-label="name_music">音乐</span><input id="music-volume" type="range" min="0" max="100" aria-label="音乐音量"></label>
+        <label class="volume sound"><span data-label="name_sound">音效</span><input id="sound-volume" type="range" min="0" max="100" aria-label="音效音量"></label>
+      </div>
+      <label class="setting-row speed"><span data-label="name_gamespeed">游戏速度</span><input id="game-speed" type="range" min="1" max="5" step="1" aria-label="游戏速度"></label>
+      <label class="setting-row grid"><span data-label="name_showgrid">显示网格</span><input id="show-grid" type="checkbox"></label>
+      <label class="setting-row hd"><span data-label="name_hdversion">高清模式</span><input id="hd-mode" type="checkbox"></label>
+      <label class="setting-row screen"><span data-label="name_screen_extra">屏幕尺寸</span><input id="screen-size" type="range" min="80" max="100" value="100" aria-label="屏幕尺寸"></label>
+      <label class="setting-row event-size"><span>事件弹窗大小</span><output id="event-size-value" for="event-size">100%</output><input id="event-size" type="range" min="60" max="180" step="1" value="100" aria-label="事件弹窗大小"></label>
+    </div>
+    <div class="settings-footer"><button id="confirm-settings" class="confirm-corner" aria-label="确认设定" title="确认"></button></div>
+  </div></div>
   <div id="notice" role="alert" hidden></div>
   <div id="mod-manager" class="modal" hidden><div class="dialog mod-dialog">
     <header class="menu-bar"><button id="mod-close" class="close-icon" title="关闭" aria-label="关闭"></button><h2>本地 Mod</h2></header>
@@ -73,19 +87,20 @@
     <h2 id="mod-delete-title">删除 Mod</h2><p id="mod-delete-description"></p>
     <div class="mod-confirm-actions"><button id="mod-delete-cancel" class="native-command blue" autofocus>取消</button><button id="mod-delete-submit" class="native-command red">删除</button></div>
   </dialog>
+  <div id="startup-status" role="status" aria-live="polite"><span id="startup-message">正在载入…</span><button id="startup-retry" type="button" title="重试载入" aria-label="重试载入" hidden>&#8635;</button></div>
   <div id="loading-screen" role="status" aria-label="载入" hidden><div class="loading-stage"><img src="content/ui/title.png" alt="欧陆战争4 拿破仑"><div id="loading-tip"></div><div id="loading-word"></div></div></div>
   <script src="camera.js"></script>
   <script src="map-surface.js"></script>
-  <script src="battlefield.js?v=20261020.5"></script>
-  <script src="original-ui.js?v=20261020.5"></script>
+  <script src="battlefield.js?v=20261021.11"></script>
+  <script src="original-ui.js?v=20261021.11"></script>
   <script src="menu-art.js?v=20261019.17"></script>
   <script src="effects.js?v=20261019.12"></script>
-  <script src="native-layout.js?v=20261020.1"></script>
-  <script src="menus.js?v=20261020.1"></script>
-  <script src="commander-workflows.js?v=20261019.12"></script>
+  <script src="native-layout.js?v=20261021.2"></script>
+  <script src="menus.js?v=20261021.2"></script>
+  <script src="commander-workflows.js?v=20261021.4"></script>
   <script src="tutorial.js"></script>
   <script src="skill-ui.js?v=20261020.3"></script>
-  <script src="app.js?v=20261020.4"></script>
+  <script src="app.js?v=20261021.11"></script>
   <script src="mods.js?v=20261020.4"></script>
 </body>
 </html>

@@ -1,5 +1,9 @@
 # 配置索引：从目标定位到文件
 
+剧本条件/结果/选择按钮：`rewrite/extension.json` 的 `scenarioEvents` 指向事件 JSON；全字段及函数入口见[剧本事件接口](porting/SCENARIO_EVENTS.md)。
+
+事件顶层 `repeat` 配置周期，`insufficientResourcesEffects` 配置资源不足结果；条件/结果 `type:"relation"` 使用 `faction`、`otherFaction`、`relation` 控制独立双边外交。示例见[周期与外交](../examples/scenario-recurrence-diplomacy/README.md)。
+
 下面路径以作者覆盖包根目录为准。原格式输入则去掉original前缀，放ZIP根目录或统一assets下。所有JSON为整文件替换，文件名/键名区分大小写。
 
 | 目标 | 文件及关键节点 | 加载/执行入口 |
@@ -7,6 +11,7 @@
 | 导入包标识/版本/文件哈希 | 根mod.json：schema/id/name/version/baseRevision/scenarios/files/warnings/logicRevision | ModStore.Seal/Validate |
 | 将领基础属性和四技能 | original/def_commander.xml：commander的id/name及能力/skill1～4 | LegacyCatalogConverter.Convert；LegacyRuntimeCatalog.FromJson |
 | 自定义技能/特性/Lua | rewrite/extension.json及其skills/traits/scripts引用 | ExtensionLoader.Load；RuleEventBus.Modify/Dispatch；[完整接口](porting/RULE_EXTENSIONS.md) |
+| 召唤/传送/范围/状态/移动力 | apiVersion:2；skills效果及statuses状态定义 | RuleEventBus.ApplyEffect/MovementBudget/ExpireStatuses；[制作步骤](porting/README.md)、[六技能示例](../examples/common-skills/README.md) |
 | 动态技能数量/顺序/坐标 | extension.json的unitBindings/commanderBindings/presentation | ExtensionLoader.PatchCatalog；Ew4SkillUI.layout；不限制将领四槽 |
 | 自定义征服/战役胜负 | extension.json的victoryRules或BTL的VICT v1 | ExtensionVictory.Evaluate；LegacyBattle.WithVictory；[规则及CLI](porting/RULE_EXTENSIONS.md) |
 | 将领名字 | original/stringtable_cn.ini：name_Napoleon等 | ClientContent.Label；Menus.text |

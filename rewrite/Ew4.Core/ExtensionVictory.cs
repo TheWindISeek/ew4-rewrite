@@ -36,13 +36,15 @@ public static class ExtensionVictory
     }
     private static bool Match(WorldState state, string camp, IReadOnlyCollection<string> neutral, VictoryCondition c, IRuleScriptRuntime? scripts)
     {
-        bool Owned(int cell) => state.Cells[cell].Owner is string owner && state.Factions.Single(f => f.Id == owner).Camp == camp;
+        bool Owned(int cell) => state.Cells[cell].Owner is string owner && (state.ScenarioPlayerFaction is string player
+            ? WorldDiplomacy.Allied(state, owner, player) : state.Factions.Single(f => f.Id == owner).Camp == camp);
         switch (c.Type)
         {
             case "all": return c.Conditions.All(v => Match(state, camp, neutral, v, scripts));
             case "any": return c.Conditions.Any(v => Match(state, camp, neutral, v, scripts));
-            case "enemy_factions_defeated": return !WorldVictory.Facts(state, neutral).Any(f => !f.Defeated && f.Camp != camp
-                && (c.IncludeProvokedNeutrals ? f.Combatant : !neutral.Contains(f.Camp)));
+            case "enemy_factions_defeated": return !WorldVictory.Facts(state, neutral).Any(f => !f.Defeated && f.Camp != camp && f.Combatant
+                && (c.IncludeProvokedNeutrals ? f.Combatant : !neutral.Contains(state.Factions.Single(s => s.Id == f.Id).Camp)
+                    || state.ScenarioPlayerFaction is string player && WorldDiplomacy.Override(state, player, f.Id) == "hostile"));
             case "factions_defeated": return c.Factions.All(id => state.Factions.Single(f => f.Id == id).Defeated);
             case "units_destroyed": return c.Units.All(id => state.Units.All(u => u.Id != id));
             case "units_lost": return c.Units.Any(id => state.Units.All(u => u.Id != id));
@@ -54,7 +56,8 @@ public static class ExtensionVictory
                 && f.Resources.Industry >= c.Resources.Industry && f.Resources.Food >= c.Resources.Food);
             case "script":
                 var values = new Dictionary<string, long>(state.ExtensionState) { ["round"] = state.Round,
-                    ["enemyUnits"] = state.Units.Count(u => state.Factions.Single(f => f.Id == u.Owner).Camp != camp),
+                    ["enemyUnits"] = state.Units.Count(u => state.DiplomaticRelations.Count > 0 && state.ScenarioPlayerFaction is string observer
+                        ? WorldDiplomacy.Hostile(state, observer, u.Owner, neutral) : state.Factions.Single(f => f.Id == u.Owner).Camp != camp),
                     ["enemyObjectives"] = WorldVictory.Facts(state, neutral).Where(f => f.Combatant && f.Camp != camp).Sum(f => (long)f.Objectives) };
                 return scripts!.Run(c.Script!, c.Function!, new("scenario.victory", null, null, 1, state.Round, 0, values, state, camp), new Ew4Random(state.RandomState)).Value != 0;
             default: throw new RuleViolation("extension.victory_type", "Unknown victory condition: " + c.Type);

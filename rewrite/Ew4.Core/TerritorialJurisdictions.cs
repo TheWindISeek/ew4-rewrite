@@ -158,7 +158,7 @@ public static class JurisdictionClaims
         && state.Jurisdictions.CellCenters[first] == state.Jurisdictions.CellCenters[second];
 
     private static bool AlliedTerritory(WorldState state, int cell, string owner) => state.Cells[cell].Owner is string previous
-        && previous != owner && state.Factions.Single(f => f.Id == previous).Camp == state.Factions.Single(f => f.Id == owner).Camp;
+        && previous != owner && WorldDiplomacy.Allied(state, previous, owner);
 
     private static IReadOnlyList<CellState> PreserveAllies(WorldState state, IReadOnlyList<CellState> proposed, string owner, HashSet<int>? occupied = null) =>
         proposed.Select((c, i) => c.Owner != state.Cells[i].Owner && AlliedTerritory(state, i, owner)

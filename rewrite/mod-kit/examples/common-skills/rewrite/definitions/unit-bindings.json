@@ -1,0 +1,10 @@
+[
+  {"target": "ew4.unit.fra.heavy_artillery.1", "mode": "append", "skills": [
+    {"id": "example.summon", "instanceId": "unit.summon", "order": 0},
+    {"id": "example.teleport", "instanceId": "unit.teleport", "order": 1},
+    {"id": "example.blast", "instanceId": "unit.blast", "order": 2, "level": 2},
+    {"id": "example.rally", "instanceId": "unit.rally", "order": 3},
+    {"id": "example.poison", "instanceId": "unit.poison", "order": 4},
+    {"id": "example.cleanse", "instanceId": "unit.cleanse", "order": 5}
+  ]}
+]

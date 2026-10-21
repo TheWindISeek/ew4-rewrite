@@ -32,6 +32,7 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
                         unlockedCampaigns = Account().UnlockedCampaigns, hasSave = File.Exists(Slot), extensionLayouts = content.Extensions.Layouts },
                     "/api/countries" => Countries(Command(body)),
                     "/api/headquarters" => Headquarters(),
+                    "/api/deployment" => Deployment(Command(body)),
                     "/api/commander" => CommanderAction(Command(body)),
                     "/api/commerce" => Commerce(Command(body)),
                     "/api/exchange" => Exchange(Command(body)),
@@ -44,7 +45,7 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
                 };
                 return JsonSerializer.Serialize(new { ok = true, data = result }, Json);
             }
-            catch (Exception error) when (error is RuleViolation or IOException or JsonException or InvalidOperationException or ArgumentException or KeyNotFoundException)
+            catch (Exception error) when (error is RuleViolation or IOException or JsonException or InvalidOperationException or ArgumentException or KeyNotFoundException or OverflowException)
             {
                 return JsonSerializer.Serialize(new { ok = false, code = error is RuleViolation rule ? rule.Code : "client.failure", message = error.Message }, Json);
             }
@@ -112,6 +113,16 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
         if (command.Revision != session.Revision) throw new RuleViolation("client.stale", "State changed; refresh the command");
         var active = world.Factions.Single(f => f.Id == world.ActiveFaction);
         if (command.Op == "select") return Selection(command.Cell);
+        if (command.Op == "event_choice")
+        {
+            var chosen = ScenarioRules.Choose(world, world.Revision, command.Offer!, command.Target!, content.Extensions.Bus.Scripts);
+            if (chosen.State.PendingDialogue == null && chosen.State.Phase is not (TurnPhase.Active or TurnPhase.Finished))
+            {
+                var resumed = WorldTurns.Resume(chosen.State, chosen.State.Revision, rules.Turns);
+                chosen = new(resumed.State, chosen.Notices.Concat(resumed.Notices).ToArray());
+            }
+            Commit(chosen); AutoSave(); return View();
+        }
         if (command.Op == "dialogue")
         {
             if (world.PendingDialogue == null) throw new RuleViolation("client.dialogue", "No dialogue is waiting");
@@ -139,22 +150,22 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
         if (command.Op == "deploy")
         {
             var change = RosterDeployment.Deploy(session, session.Revision, command.Unit!, command.Commander!, rules.Roster);
-            game = current with { Session = change.State, Notices = change.Notices };
-            StoreAccount(change.State.Account);
+            CommitSession(change);
+            AutoSave();
             return View();
         }
         if (command.Op == "hire")
         {
             var hired = SessionActions.DeployTavern(session, session.Revision, command.Unit!, command.Offer!, rules.Tavern);
-            game = current with { Session = hired.State, Notices = hired.Notices };
-            StoreAccount(hired.State.Account);
+            CommitSession(hired);
             AutoSave();
             return View();
         }
         var preview = command.Op == "attack" ? WorldBattle.Preview(world, world.Revision, command.Unit!, command.Target!, rules.Battle) : null;
         WorldChange action = command.Op switch
         {
-            "skill" => WorldSkillActions.Execute(world, world.Revision, command.Unit!, command.Offer!, command.Target, content.Extensions.Bus, rules.Movement),
+            "skill" => WorldSkillActions.Execute(world, world.Revision, command.Unit!, command.Offer!, command.Target, content.Extensions.Bus, rules.Movement,
+                command.Cell < 0 ? null : command.Cell),
             "move" => WorldActions.Move(world, world.Revision, command.Unit!, command.Cell, rules.Movement),
             "disband" => WorldDisband.Execute(world, world.Revision, command.Unit!, DisbandConfiguration()),
             "attack" => WorldBattle.Attack(world, world.Revision, command.Unit!, command.Target!, rules.Battle),
@@ -168,17 +179,21 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
         };
         int[]? movedPath = command.Op == "move" ? WorldActions.Reachable(world, command.Unit!, rules.Movement)[command.Cell].Path.ToArray() : null;
         Commit(action);
-        if (movedPath != null) movementHistory.Record(world, action.State, command.Unit!, movedPath);
+        if (movedPath != null && game!.Session.World.TriggeredScenarioEvents.Count == world.TriggeredScenarioEvents.Count)
+            movementHistory.Record(world, action.State, command.Unit!, movedPath);
         if (command.Op == "attack") movementHistory.Attack(command.Unit!);
+        if (command.Op == "skill") movementHistory.Reset(action.State);
         if (command.Op == "disband") { movementHistory.Forget(command.Unit!); AutoSave(); }
         return View(world, combat: preview == null ? null : new { attacker = preview.Attacker, defender = preview.Defender, counterattack = preview.Main.Counterattack,
             damage = preview.Main.DefenderDamage, counterDamage = preview.Main.AttackerDamage,
             critical = preview.Main.OffensiveProc && !preview.Main.DefensiveProc, counterCritical = false,
             splashTarget = preview.SplashTarget, splashDamage = preview.SplashDamage });
     }
-    private void Commit(WorldChange change)
+    private WorldChange PrepareChange(WorldChange change)
     {
         var current = Require();
+        var scenarioChange = ScenarioRules.Evaluate(change.State, content.Extensions.Bus.Scripts);
+        change = new(scenarioChange.State, change.Notices.Concat(scenarioChange.Notices).ToArray());
         if (content.Extensions.Enabled || current.Rules.Turns.Victory.Custom != null)
         {
             var world = change.State;
@@ -188,19 +203,43 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
                 if (current.Session.World.Units.FirstOrDefault(u => u.Id == notice.Subject) is UnitState before)
                     world = content.Extensions.Bus.Dispatch(world, notice.Kind == "unit.destroyed" ? "unit.destroyed" : "unit.damaged",
                         before.Id, new Ew4Random(world.RandomState), eventSource: before);
-            if (current.Rules.Turns.Victory.Custom != null && world.Outcome == BattleOutcome.Continue)
+            var scenarioEvents = ScenarioRules.Evaluate(world, content.Extensions.Bus.Scripts);
+            world = scenarioEvents.State;
+            change = change with { Notices = change.Notices.Concat(scenarioEvents.Notices).ToArray() };
+            if ((current.Rules.Turns.Victory.Custom != null || world.ScenarioEvents.Count > 0) && world.Outcome == BattleOutcome.Continue && world.PendingDialogue == null)
             {
                 var outcome = WorldVictory.Evaluate(world, current.Rules.Turns.PlayerCamp!, current.Rules.Turns.Victory, current.Rules.Turns.NeutralCamps);
                 if (outcome != BattleOutcome.Continue) world = world with { Outcome = outcome, Phase = TurnPhase.Finished };
             }
             change = change with { State = world };
         }
+        return change with { State = change.State with { Revision = checked(current.Session.World.Revision + 1) } };
+    }
+    private void Commit(WorldChange change)
+    {
+        var current = Require();
+        change = PrepareChange(change);
         var session = SessionActions.CommitWorld(current.Session, current.Session.Revision, change);
-        var settled = session.State with { Account = CampaignProgress.Settle(content, session.State) };
-        game = current with { Session = settled, Notices = change.Notices };
+        InstallSession(current, session.State, change.Notices);
+    }
+    private void CommitSession(SessionChange change)
+    {
+        var current = Require();
+        var world = PrepareChange(new(change.State.World, change.Notices));
+        var next = change.State with { World = world.State };
+        next.Validate();
+        InstallSession(current, next, world.Notices);
+    }
+    private void InstallSession(LegacyScenarioStart current, GameSession next, IReadOnlyList<WorldNotice> notices)
+    {
+        var settled = next with { Account = CampaignProgress.Settle(content, next) };
+        game = current with { Session = settled, Notices = notices };
         StoreAccount(settled.Account);
-        movementHistory.Observe(change.State);
-        if(change.State.Round != current.Session.World.Round || change.State.ActiveFaction != current.Session.World.ActiveFaction || change.State.Outcome != current.Session.World.Outcome)
+        movementHistory.Observe(next.World);
+        if (next.World.TriggeredScenarioEvents.Count != current.Session.World.TriggeredScenarioEvents.Count
+            || next.World.ScenarioChoices.Count != current.Session.World.ScenarioChoices.Count) movementHistory.Reset(next.World);
+        if(next.World.Round != current.Session.World.Round || next.World.ActiveFaction != current.Session.World.ActiveFaction || next.World.Outcome != current.Session.World.Outcome
+            || next.World.PendingDialogue != current.Session.World.PendingDialogue && next.World.ScenarioEvents.Count > 0)
             AutoSave();
     }
     private object Selection(int cell)
@@ -233,8 +272,7 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
     private static IEnumerable<UnitState> AttackTargets(WorldState world, UnitState unit)
     {
         var map = new HexMap(world.Width, world.Height);
-        var camps = world.Factions.ToDictionary(f => f.Id, f => f.Camp);
-        return world.Units.Where(target => camps[target.Owner] != camps[unit.Owner]
+        return world.Units.Where(target => !WorldDiplomacy.Allied(world, target.Owner, unit.Owner)
             && AttackLegality.Check(true, true, unit.Combatant.ConstructionTurns, unit.Acted, unit.Morale.Effective,
                 map.Distance(unit.Cell, target.Cell), unit.Combatant.Profile.MinimumRange, unit.Combatant.Profile.MaximumRange) == AttackBlock.None);
     }
@@ -300,8 +338,10 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
             world.Round, phase = world.Phase.ToString(), outcome = world.Outcome.ToString(), world.ActiveFaction, session.PlayerFaction,
             dialogue = world.PendingDialogue == null ? null : current.Rules.Dialogues.TryGetValue(world.PendingDialogue, out var dialogue) ? dialogue.Text : world.PendingDialogue,
             dialoguePresentation = DialoguePresentation(),
+            scenarioPopup = ScenarioPopupView(world),
             medals = session.Account.Medals,
             factions = world.Factions.Select(f => new { f.Id, f.Name, f.Camp, f.Human, f.Defeated, f.Resources,
+                relation = WorldDiplomacy.Relation(world, session.PlayerFaction, f.Id, current.Rules.Turns.NeutralCamps),
                 neutral = WorldDiplomacy.NeutralTo(world, f.Id, session.PlayerFaction, current.Rules.Turns.NeutralCamps),
                 country = factionSources[f.Id].CountryId, flag = factionSources[f.Id].Variant,
                 color = factionColors[f.Id] }),
@@ -312,7 +352,7 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
                 facility = sites.TryGetValue(i, out var service) ? service.State6 switch { 1 => "trade", 2 => "shop", 3 => "bar", _ => (string?)null } : null,
                 buildingImage = BuildingImage(i, c), buildingStyle = sites.TryGetValue(i, out var site) ? site.State7 : 1 }),
             units = world.Units.Select(u => new { u.Id, u.Owner, u.Cell, profile = u.Combatant.Profile.Id, category = u.Combatant.Profile.Category,
-                skills = SkillViews(u.Combatant), traits = u.Combatant.Profile.Traits.Where(content.Extensions.Bus.Skills.ContainsKey)
+                skills = SkillViews(u.Combatant), statuses = StatusViews(u.Combatant), traits = u.Combatant.Profile.Traits.Where(content.Extensions.Bus.Skills.ContainsKey)
                     .Select(id => SkillView(new SkillSlot(id, "trait." + id))).ToArray(),
                 health = u.Combatant.Health, maxHealth = u.Combatant.Profile.MaxHealth, u.RemainingMovement, u.Acted, u.CommanderId, u.Transport, u.Burning, u.Objective,
                 objectiveMarker = u.Objective ? 1 : originalUnits.TryGetValue(u.Id, out var markedUnit) && markedUnit.Objective == 2 ? 2 : 0,

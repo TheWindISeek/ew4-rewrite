@@ -1,0 +1,39 @@
+[
+  {
+    "id": "example.summon", "nameKey": "召集步兵", "descriptionKey": "在三格内友方或无主空地生成一队法国线列步兵，新部队本回合不可行动。",
+    "kind": "active", "target": "cell", "range": 3, "cooldown": 3,
+    "cost": {"money": 5, "industry": 0, "food": 0},
+    "effects": [{"event": "skill.activate", "operation": "summon", "profile": "ew4.unit.fra.line_infantry.0", "value": 1}]
+  },
+  {
+    "id": "example.teleport", "nameKey": "战术转移", "descriptionKey": "传送到三格内友方或无主空地，不占领沿途领土，结束行动。",
+    "kind": "active", "target": "cell", "range": 3, "cooldown": 2,
+    "cost": {"money": 3, "industry": 0, "food": 0},
+    "effects": [{"event": "skill.activate", "operation": "teleport"}]
+  },
+  {
+    "id": "example.blast", "nameKey": "范围炮击", "descriptionKey": "对选定地块及相邻一圈非友军造成15乘技能等级的直接伤害。",
+    "kind": "active", "target": "cell", "range": 3, "cooldown": 2,
+    "cost": {"money": 4, "industry": 2, "food": 0},
+    "effects": [{"event": "skill.activate", "operation": "damage", "scope": "area", "radius": 1,
+      "relation": "enemy", "value": 15, "script": "rewrite/scripts/abilities.lua", "function": "blast"}]
+  },
+  {
+    "id": "example.rally", "nameKey": "群体急行军", "descriptionKey": "自身及相邻友军获得两回合鼓舞，并恢复3点移动力。不会重置已经结束的行动。",
+    "kind": "active", "target": "self", "range": 0, "cooldown": 2, "endsAction": false,
+    "effects": [
+      {"event": "skill.activate", "operation": "apply_status", "scope": "area", "radius": 1, "relation": "ally", "status": "example.vigor", "duration": 2},
+      {"event": "skill.activate", "operation": "movement", "scope": "area", "radius": 1, "relation": "ally", "value": 3}
+    ]
+  },
+  {
+    "id": "example.poison", "nameKey": "毒弹", "descriptionKey": "对三格内非友军施加三回合中毒，最多三层。",
+    "kind": "active", "target": "enemy", "range": 3, "cooldown": 1,
+    "effects": [{"event": "skill.activate", "operation": "apply_status", "status": "example.poisoned", "duration": 3}]
+  },
+  {
+    "id": "example.cleanse", "nameKey": "解毒", "descriptionKey": "清除三格内一支友军的中毒状态。",
+    "kind": "active", "target": "ally", "range": 3, "cooldown": 1, "endsAction": false,
+    "effects": [{"event": "skill.activate", "operation": "remove_status", "status": "example.poisoned"}]
+  }
+]

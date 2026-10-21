@@ -36,6 +36,8 @@ public sealed class ExtensionScriptRuntime : IRuleScriptRuntime
         var ctx = new Table(script);
         ctx.Set("event", DynValue.NewString(context.Event)); ctx.Set("level", DynValue.NewNumber(context.Level));
         ctx.Set("round", DynValue.NewNumber(context.Round)); ctx.Set("value", DynValue.NewNumber(context.Value));
+        ctx.Set("targetCell", context.TargetCell.HasValue ? DynValue.NewNumber(context.TargetCell.Value) : DynValue.Nil);
+        ctx.Set("stacks", DynValue.NewNumber(context.Stacks)); ctx.Set("remainingTurns", DynValue.NewNumber(context.RemainingTurns));
         Table Combatant(Combatant? unit)
         {
             var t = new Table(script);
@@ -43,6 +45,14 @@ public sealed class ExtensionScriptRuntime : IRuleScriptRuntime
             t.Set("health", DynValue.NewNumber(unit.Health)); t.Set("maxHealth", DynValue.NewNumber(unit.Profile.MaxHealth));
             t.Set("category", DynValue.NewString(unit.Profile.Category)); t.Set("profile", DynValue.NewString(unit.Profile.Id));
             t.Set("atSea", DynValue.NewBoolean(unit.AtSea));
+            var statuses = new Table(script);
+            foreach (var status in unit.Statuses)
+            {
+                var saved = new Table(script);
+                saved.Set("turns", DynValue.NewNumber(status.RemainingTurns)); saved.Set("stacks", DynValue.NewNumber(status.Stacks));
+                saved.Set("level", DynValue.NewNumber(status.Level)); statuses.Set(status.Id, DynValue.NewTable(saved));
+            }
+            t.Set("statuses", DynValue.NewTable(statuses));
             t.Set("has_tag", DynValue.NewCallback((_, args) => DynValue.NewBoolean(unit.Profile.Traits.Contains(args[args.Count - 1].String))));
             return t;
         }
@@ -52,6 +62,36 @@ public sealed class ExtensionScriptRuntime : IRuleScriptRuntime
         ctx.Set("targetId", context.TargetId == null ? DynValue.Nil : DynValue.NewString(context.TargetId));
         if (context.World is WorldState world)
         {
+            ctx.Set("width", DynValue.NewNumber(world.Width)); ctx.Set("height", DynValue.NewNumber(world.Height));
+            ctx.Set("activeFaction", DynValue.NewString(world.ActiveFaction));
+            ctx.Set("playerFaction", world.ScenarioPlayerFaction == null ? DynValue.Nil : DynValue.NewString(world.ScenarioPlayerFaction));
+            Table Ids(IEnumerable<string> ids)
+            { var t = new Table(script); int i = 1; foreach (var id in ids) t.Set(i++, DynValue.NewString(id)); return t; }
+            ctx.Set("unitIds", DynValue.NewTable(Ids(world.Units.Select(u => u.Id))));
+            ctx.Set("factionIds", DynValue.NewTable(Ids(world.Factions.Select(f => f.Id))));
+            ctx.Set("commanderIds", DynValue.NewTable(Ids(world.Commanders.Select(c => c.Id))));
+            ctx.Set("relation", DynValue.NewCallback((_, args) =>
+            {
+                string first = args[args.Count - 2].String, second = args[args.Count - 1].String;
+                return world.Factions.Any(f => f.Id == first) && world.Factions.Any(f => f.Id == second)
+                    ? DynValue.NewString(WorldDiplomacy.Relation(world, first, second)) : DynValue.Nil;
+            }));
+            ctx.Set("event_count", DynValue.NewCallback((_, args) =>
+            {
+                string id = args[args.Count - 1].String;
+                return DynValue.NewNumber(world.ScenarioEventProgress.TryGetValue(id, out var progress) ? progress.Occurrences
+                    : world.TriggeredScenarioEvents.Contains(id) ? 1 : 0);
+            }));
+            ctx.Set("unit_destroyed", DynValue.NewCallback((_, args) => DynValue.NewBoolean(world.DestroyedScenarioUnits.Contains(args[args.Count - 1].String))));
+            ctx.Set("commander_dead", DynValue.NewCallback((_, args) => DynValue.NewBoolean(world.DeadScenarioCommanders.Contains(args[args.Count - 1].String))));
+            ctx.Set("commander", DynValue.NewCallback((_, args) =>
+            {
+                var commander = world.Commanders.SingleOrDefault(c => c.Id == args[args.Count - 1].String);
+                if (commander == null) return DynValue.Nil;
+                var t = new Table(script); t.Set("id", DynValue.NewString(commander.Id)); t.Set("owner", DynValue.NewString(commander.Owner));
+                t.Set("withdrawn", DynValue.NewBoolean(commander.Withdrawn)); t.Set("rank", DynValue.NewNumber(commander.Rank.Level));
+                t.Set("title", DynValue.NewNumber(commander.Title.Level)); return DynValue.NewTable(t);
+            }));
             ctx.Set("cell", DynValue.NewCallback((_, args) =>
             {
                 double raw = args[args.Count - 1].Number;
@@ -61,6 +101,9 @@ public sealed class ExtensionScriptRuntime : IRuleScriptRuntime
                 t.Set("camp", cell.Owner == null ? DynValue.Nil : DynValue.NewString(world.Factions.Single(f => f.Id == cell.Owner).Camp));
                 t.Set("kind", cell.BuildingKind == null ? DynValue.Nil : DynValue.NewString(cell.BuildingKind));
                 t.Set("level", DynValue.NewNumber(cell.BuildingLevel));t.Set("objective", DynValue.NewBoolean(cell.Objective));
+                t.Set("name", cell.Name == null ? DynValue.Nil : DynValue.NewString(cell.Name));
+                t.Set("environment", DynValue.NewNumber(cell.Environment));
+                t.Set("installation", cell.InstallationKind == null ? DynValue.Nil : DynValue.NewString(cell.InstallationKind));
                 t.Set("active", DynValue.NewBoolean(cell.Terrain.Active));t.Set("sea", DynValue.NewBoolean(cell.Terrain.Sea));return DynValue.NewTable(t);
             }));
             ctx.Set("unit", DynValue.NewCallback((_, args) =>
@@ -68,6 +111,11 @@ public sealed class ExtensionScriptRuntime : IRuleScriptRuntime
                 string id = args[args.Count - 1].String;var unit = world.Units.SingleOrDefault(u => u.Id == id);
                 if (unit == null) return DynValue.Nil;
                 var t = Combatant(unit.Combatant);t.Set("id", DynValue.NewString(unit.Id));t.Set("owner", DynValue.NewString(unit.Owner));
+                t.Set("commander", unit.CommanderId == null ? DynValue.Nil : DynValue.NewString(unit.CommanderId));
+                t.Set("morale", DynValue.NewNumber(unit.Morale.Effective)); t.Set("movement", DynValue.NewNumber(unit.RemainingMovement));
+                t.Set("acted", DynValue.NewBoolean(unit.Acted)); t.Set("objective", DynValue.NewBoolean(unit.Objective));
+                t.Set("transport", DynValue.NewBoolean(unit.Transport)); t.Set("experience", DynValue.NewNumber(unit.Experience));
+                t.Set("burning", DynValue.NewNumber(unit.Burning));
                 t.Set("cell", DynValue.NewNumber(unit.Cell));t.Set("camp", DynValue.NewString(world.Factions.Single(f => f.Id == unit.Owner).Camp));return DynValue.NewTable(t);
             }));
             ctx.Set("faction", DynValue.NewCallback((_, args) =>

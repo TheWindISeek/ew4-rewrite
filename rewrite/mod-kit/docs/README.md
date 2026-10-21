@@ -1,5 +1,9 @@
 # Mod制作与排查导航
 
+[剧本事件接口](porting/SCENARIO_EVENTS.md)支持自定义条件→直接结果，或条件→多按钮弹窗→所选结果；含完整条件/结果表、存档语义与[中文示例](../examples/scenario-events/README.md)。
+
+周期事件、军团补给费用及独立双边外交已接入同一接口，见[周期与外交示例](../examples/scenario-recurrence-diplomacy/README.md)。
+
 这份手册对应当前rewrite实现，不是“所有原包改版均已兼容”的承诺。真实APK的兼容性应以逐包测试结果为准；只通过内置版或构造样本不足以证明某个改版能运行。
 
 已有作品先读[原版Mod移植指南](porting/README.md)。其中列出UI/布局/交互、将领与规则、资源/账户隔离、函数入口及发布验收，并单列尚未实现的规划，避免使用不存在的接口。
@@ -8,7 +12,7 @@
 
 [BTL手工辖区指南](porting/BTL_JURISDICTIONS.md)提供逐格中心配置、导出/写回/撤销命令、JURI v1二进制协议、编号规则和函数入口。无扩展的旧BTL继续自动划分。
 
-[技能与胜负规则API 1](porting/RULE_EXTENSIONS.md)提供自定义标签、动态兵种/将领技能、外置Lua、布局、主动技能和VICT条件；含字段、事件、函数表及[完整示例](../examples/rule-extension/README.md)。
+[技能与胜负规则API 1/2](porting/RULE_EXTENSIONS.md)提供自定义标签、动态兵种/将领技能、外置Lua、布局、主动技能和VICT条件；API 2新增召唤、传送、范围效果、持续状态和移动力。制作步骤见[修改指南README](porting/README.md)，另有[API 1示例](../examples/rule-extension/README.md)和[API 2六技能示例](../examples/common-skills/README.md)。
 
 ## 先选制作方式
 
@@ -17,7 +21,7 @@
 | 修改后的APK | 主菜单Mod → 填标识/名称 → 导入APK → 等待校验 → 启用 | 不安装该APK、不先到电脑转换 |
 | 原assets资源 | 将修改文件按原相对路径压ZIP；根目录放原文件，或统一放assets下 | 不把原PKM直接改名PNG |
 | 已转换的rewrite资源 | 自建覆盖文件夹，放client/original/legacy/frontend，pack后导入/导出 | 不把DLL/SO当资源加载 |
-| 自定义技能/标签/胜负规则 | 按API 1放rewrite/extension.json、定义与Lua，pack导入 | 支持事件内无需重新编译；超出接口需新支持版本 |
+| 自定义技能/标签/胜负规则 | 按API 1/2放rewrite/extension.json、定义与Lua，pack导入 | 支持事件及操作内无需重新编译；API 2需新版引擎 |
 
 标识例如`my-history-mod`，1～64位小写字母/数字/点/横线/下划线；不可使用builtin和系统保留名称。同一个项目更新保持ID，多个不相干项目不要复用ID。
 

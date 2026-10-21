@@ -14,6 +14,7 @@
     <Content Include="../mod-kit/THIRD_PARTY_NOTICES.md" Link="THIRD_PARTY_NOTICES.md" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../mod-kit/licenses/**/*" Link="licenses/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../mod-kit/docs/**/*" Link="docs/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
+    <Content Include="../mod-kit/examples/**/*" Link="examples/%(RecursiveDir)%(Filename)%(Extension)" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../data/client/**/*" Exclude="../data/client/**/README.md" Link="data/client/%(RecursiveDir)%(Filename)%(Extension)"
              CopyToOutputDirectory="PreserveNewest" CopyToPublishDirectory="PreserveNewest" />
     <Content Include="../data/original/**/*" Link="data/original/%(RecursiveDir)%(Filename)%(Extension)"

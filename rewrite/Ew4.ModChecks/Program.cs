@@ -19,7 +19,8 @@ if (args.ElementAtOrDefault(1) == "--deletion-only")
 
 if (args.ElementAtOrDefault(1) == "--extension-only")
 {
-    Console.WriteLine(JsonSerializer.Serialize(new { extensionModChecks = ExtensionModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
+    Console.WriteLine(JsonSerializer.Serialize(new { extensionModChecks = ExtensionModChecks.Run(Path.GetFullPath(args[0])),
+        commonSkillModChecks = CommonSkillModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
 }
 
 if (args.ElementAtOrDefault(1) == "--jurisdiction-only")

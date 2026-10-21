@@ -35,6 +35,7 @@ public sealed class ClientContent
         }
         Extensions = ExtensionLoader.Load(read);
         var runtime = LegacyRuntimeCatalog.FromJson(Extensions.PatchCatalog(System.Text.Encoding.UTF8.GetString(read("data/catalog.json"))));
+        Extensions.ConfigureRuntime(runtime);
         runtime.VerifySources(name => read("original/" + name));
         var buildings = LegacyBuildingCatalog.Read(Text("def_construction.xml"), Text("def_capital.xml"));
         var combat = LegacyCombatCatalog.Read(System.Text.Encoding.UTF8.GetString(read("data/runtime_rule_tables.json")),
@@ -95,6 +96,8 @@ public sealed class ClientContent
                 : n.StartsWith("tutorial", StringComparison.Ordinal) ? 4 : n.StartsWith("multiplay", StringComparison.Ordinal) ? 3 : 1)).OrderBy(s => s.Mode).ThenBy(s => s.Id, StringComparer.Ordinal).ToArray();
         if (Extensions.Victories.Keys.Any(id => !Scenarios.Any(s => s.Id == id)))
             throw new RuleViolation("extension.victory_scenario", "Victory rules reference an unknown scenario");
+        if (Extensions.ScenarioEvents.Keys.Any(id => !Scenarios.Any(s => s.Id == id)))
+            throw new RuleViolation("scenario.reference", "Event rules reference an unknown scenario");
     }
 
     public string Label(string key) => Strings.TryGetValue(key, out string? label) ? label : Strings.TryGetValue("name_" + key, out label) ? label : key;
@@ -142,18 +145,33 @@ public sealed class ClientContent
             var turns = rules.Turns with { Extensions = Extensions.Bus, Victory = victory };
             var combat = rules.Battle with { Combat = rules.Battle.Combat with { Extensions = Extensions.Bus }, Victory = victory };
             started = started with { Rules = rules with { Movement = movement, Turns = turns, Battle = combat,
+                Commanders = rules.Commanders with { Extensions = Extensions.Bus },
+                Roster = rules.Roster with { Assignment = rules.Roster.Assignment with { Extensions = Extensions.Bus } },
+                Tavern = rules.Tavern with { Assignment = rules.Tavern.Assignment with { Extensions = Extensions.Bus } },
+                Production = rules.Production.ToDictionary(p => p.Key, p => p.Value with {
+                    Commanders = p.Value.Commanders == null ? null : p.Value.Commanders with { Extensions = Extensions.Bus } }),
                 Ai = rules.Ai with { Movement = movement } } };
             if (Extensions.Enabled)
             {
                 var world = started.Session.World;
                 string revision = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(world.ContentRevision + ":" + Extensions.Revision)));
-                world = world with { ContentRevision = revision };
+                world = world with { ContentRevision = revision, ScenarioPlayerFaction = started.Session.PlayerFaction, DiplomacyNeutralCamps = turns.NeutralCamps.ToArray(),
+                    ScenarioEvents = Extensions.ScenarioEvents.GetValueOrDefault(id) ?? [] };
+                world = world with { Units = world.Units.Select(unit => {
+                    int budget = Extensions.Bus.MovementBudget(unit.Combatant);
+                    return unit with { ExtensionMovementLimit = budget, RemainingMovement = unit.RemainingMovement == unit.Combatant.Profile.Movement
+                        ? budget : Math.Min(unit.RemainingMovement, budget) };
+                }).ToArray() };
+                ScenarioRules.Validate(world, initial: true);
                 foreach (string unit in world.Units.Select(u => u.Id).ToArray())
                     world = Extensions.Bus.Dispatch(world, "scenario.start", unit, new Ew4Random(world.RandomState));
                 world.Validate();
                 started = started with { Session = started.Session with { World = world } };
             }
-            if (customVictory != null)
+            var scenarioChange = ScenarioRules.Evaluate(started.Session.World, Extensions.Bus.Scripts);
+            started = started with { Session = started.Session with { World = scenarioChange.State },
+                Notices = started.Notices.Concat(scenarioChange.Notices).ToArray() };
+            if (customVictory != null && started.Session.World.PendingDialogue == null && started.Session.World.Outcome == BattleOutcome.Continue)
             {
                 var world = started.Session.World;
                 var outcome = WorldVictory.Evaluate(world, turns.PlayerCamp!, victory, turns.NeutralCamps);

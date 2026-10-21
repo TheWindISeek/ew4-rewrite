@@ -10,7 +10,7 @@ Windows 10/11 x64用户：完整解压ZIP到可写文件夹，双击 `Start-Web.
 
 也可以在包目录的PowerShell中手动运行 `./Ew4.Web.exe --urls http://127.0.0.1:5191`，然后用浏览器打开该地址。需要自定义存档位置时附加 `--save-root "D:\EW4-saves"`；同一存档目录不要同时启动多个实例。
 
-开放技能/特性/胜负规则见[API 1指南](docs/porting/RULE_EXTENSIONS.md)，包含包内文件、Lua、动态技能位置、BTL VICT和函数对照。旧Android安装包需升级到包含此接口的版本才能执行扩展；当前源码编译通过不等于旧包自动更新。
+开放技能/特性/胜负规则见[API 1/2指南](docs/porting/RULE_EXTENSIONS.md)，包含外置Lua、召唤、传送、范围效果、持续状态、移动力、动态技能位置及BTL VICT。制作流程见[Mod修改指南](docs/porting/README.md)，包内附[六技能示例](examples/common-skills/README.md)。旧Android安装包需升级到包含此接口的版本才能执行扩展。
 
 | 目录/文件 | 用途 |
 | --- | --- |

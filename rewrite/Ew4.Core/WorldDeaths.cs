@@ -14,6 +14,8 @@ internal static class WorldDeaths
         var notices = new List<WorldNotice> { new("unit.destroyed", unitId) };
         var next = state with
         {
+            DestroyedScenarioUnits = state.DestroyedScenarioUnits.Append(unit.Id).Distinct(StringComparer.Ordinal).ToArray(),
+            DeadScenarioCommanders = unit.CommanderId == null ? state.DeadScenarioCommanders : state.DeadScenarioCommanders.Append(unit.CommanderId).Distinct(StringComparer.Ordinal).ToArray(),
             Units = state.Units.Where(u => u.Id != unitId).ToArray(),
             Cells = unit.Combatant.Profile.Category == "fort" && successor != null && successor != unit.Owner
                 ? JurisdictionClaims.DestroyFort(state, unit.Cell, successor) : state.Cells,

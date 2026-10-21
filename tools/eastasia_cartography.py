@@ -9,34 +9,11 @@ import numpy as np
 from shapely.affinity import rotate, translate
 from shapely.geometry import Point, box
 from shapely.ops import unary_union
+from eastasia_lettering import glyphs
 
 
 def world(runtime, lon, lat):
     return tuple(float(v)*runtime.SCALE for v in runtime.geo.PROJ.pixels(lon, lat))
-
-
-def glyphs(library, text, height, sea, length=0):
-    family = 's_s_c' if sea else 'l_s'
-    items = {item['name']: item for item in library['items']}
-    sprites = {sprite['name']: sprite for sprite in library['atlas']['sprites']}
-    names = [f'{family}_{letter}' for letter in 'abcdefghijklmnopqrstuvwxyz']
-    scale = height/max(float(sprites[name+'.png']['h']) for name in names)
-    letters = []
-    cursor = 0
-    for char in text:
-        if char == ' ':
-            cursor += height*.48
-            continue
-        item = items[f'{family}_{char.lower()}']
-        sprite = sprites[item['name']+'.png']
-        width, h = float(sprite['w'])*scale, float(sprite['h'])*scale
-        letters.append((item, cursor, h, scale))
-        cursor += width
-    if len(letters) > 1 and length > cursor:
-        spacing = (length-cursor)/(len(letters)-1)
-        letters = [(item, x+i*spacing, h, scale) for i, (item, x, h, scale) in enumerate(letters)]
-        cursor = length
-    return letters, cursor
 
 
 def building_bounds(placements, facilities):
@@ -82,6 +59,9 @@ def labels(runtime, mask, placements, facilities):
     for index, entry in entries:
         text_zh = plan['chineseNames'][entry['text']]
         anchor_x, anchor_y = world(runtime, entry['lon'], entry['lat'])
+        fixed = plan.get('regionalLayout', {}).get(entry['text'], {})
+        if 'x' in fixed and 'y' in fixed:
+            anchor_x, anchor_y = fixed['x'], fixed['y']
         angle = entry.get('angle', 0)
         sea = entry.get('sea', False)
         lake = lake_shapes.get(entry.get('lake'))
@@ -99,6 +79,9 @@ def labels(runtime, mask, placements, facilities):
                 footprint = translate(local, xoff=x, yoff=y)
                 if not box(0, 0, runtime.IMAGE_W-64, runtime.IMAGE_H-90).contains(footprint):
                     continue
+                if 'x' in fixed and 'y' in fixed:
+                    selected = (x, y, height, letters, width, footprint, dx, dy)
+                    break
                 if footprint.intersects(obstacles) or any(footprint.intersects(p) for p in occupied):
                     continue
                 # Check the whole word, so sea labels cannot run across a nearby island.
@@ -141,6 +124,8 @@ def labels(runtime, mask, placements, facilities):
                            opacity=entry.get('opacity', plan.get('labelOpacity', 60/255)),
                            lake=entry.get('lake'), letteringLength=round(width, 2),
                            displacement=round(math.hypot(dx, dy), 2), polygon=list(footprint.exterior.coords)))
+    from eastasia_lettering import regional_labels
+    result = regional_labels(library, result, plan)
     runtime.write_json(runtime.OUT/'client/animations/maptext.json', library)
     runtime.write_json(runtime.REPORT/'geographic_labels.json', result)
     return result
@@ -169,7 +154,8 @@ def waves(runtime, data, mask, placements, facilities, labels):
     rng = random.Random(plan['waveSeed'])
     manifest = json.loads((runtime.BASE/'client/manifest.json').read_text(encoding='utf-8'))
     occupied = building_bounds(placements, facilities)
-    occupied += [box(e['left'], e['top'], e['left']+e['width'], e['top']+e['height']) for e in labels]
+    occupied += [box(e['left'], e['top'], e['left']+e['width'], e['top']+e['height'])
+                 for e in labels if e.get('geographicStyle') != 'regional']
     obstacles = unary_union(occupied)
     ocean = sorted(ocean_cells(runtime, data))
     target = round(len(ocean)*plan['waveDensity'])
@@ -229,7 +215,8 @@ def verify(runtime, data, manifest):
     occupied = []
     for label in labels:
         polygon = Polygon(label['polygon'])
-        assert not polygon.intersects(obstacles), label['text']+' overlaps a building'
+        if label.get('geographicStyle') != 'regional':
+            assert not polygon.intersects(obstacles), label['text']+' overlaps a building'
         assert not any(polygon.intersects(p) for p in occupied), label['text']+' overlaps another label'
         occupied.append(polygon)
         assert any(item['name'] == label['libName'] for item in extended['items'])
@@ -240,7 +227,8 @@ def verify(runtime, data, manifest):
     assert {o['image'] for o in overlays} == {f'wave_{i}.png' for i in range(1, 8)}
     mask = np.asarray(runtime.Image.open(runtime.REPORT/'land_mask.png'))
     wave_rectangles = []
-    reserved = unary_union([obstacles]+[box(e['left'], e['top'], e['left']+e['width'], e['top']+e['height']) for e in labels])
+    reserved = unary_union([obstacles]+[box(e['left'], e['top'], e['left']+e['width'], e['top']+e['height'])
+                                      for e in labels if e.get('geographicStyle') != 'regional'])
     for overlay in overlays:
         row, col = divmod(overlay['cell'], runtime.GRID_W)
         record = data[row, col]

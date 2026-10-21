@@ -60,7 +60,7 @@ public static class SplashCombat
         if (cell < 0) return null;
         var target = state.Units.FirstOrDefault(u => u.Cell == cell && u.Id != attacker.Id && u.Id != defender.Id);
         if (target != null && !rules.AllowFriendlyFire
-            && state.Factions.Single(f => f.Id == attacker.Owner).Camp == state.Factions.Single(f => f.Id == target.Owner).Camp) return null;
+            && WorldDiplomacy.Allied(state, attacker.Owner, target.Owner)) return null;
         return target;
     }
 }

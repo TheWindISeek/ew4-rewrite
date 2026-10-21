@@ -75,6 +75,7 @@ public sealed record UnitState
     public UnitCommanderBase? CommanderBase { get; init; }
     public MoraleState Morale { get; init; } = new();
     public int RemainingMovement { get; init; }
+    public int? ExtensionMovementLimit { get; init; }
     public bool Acted { get; init; }
     public bool Objective { get; init; }
     public long Experience { get; init; }
@@ -160,10 +161,19 @@ public sealed record WorldState
     public IReadOnlyList<CellState> Cells { get; init; } = Array.Empty<CellState>();
     public TerritorialJurisdictions? Jurisdictions { get; init; }
     public IReadOnlyList<NeutralHostility> NeutralHostilities { get; init; } = Array.Empty<NeutralHostility>();
+    public IReadOnlyList<DiplomaticRelation> DiplomaticRelations { get; init; } = Array.Empty<DiplomaticRelation>();
+    public IReadOnlyList<string> DiplomacyNeutralCamps { get; init; } = Array.Empty<string>();
     public IReadOnlyList<UnitState> Units { get; init; } = Array.Empty<UnitState>();
     public IReadOnlyList<CommanderRuntime> Commanders { get; init; } = Array.Empty<CommanderRuntime>();
     public IReadOnlyList<CommanderDeploymentOffer> CommanderOffers { get; init; } = Array.Empty<CommanderDeploymentOffer>();
     public IReadOnlyList<ScenarioEvent> Events { get; init; } = Array.Empty<ScenarioEvent>();
+    public string? ScenarioPlayerFaction { get; init; }
+    public IReadOnlyList<ScriptedScenarioEvent> ScenarioEvents { get; init; } = Array.Empty<ScriptedScenarioEvent>();
+    public IReadOnlyList<string> TriggeredScenarioEvents { get; init; } = Array.Empty<string>();
+    public IReadOnlyDictionary<string, string> ScenarioChoices { get; init; } = new Dictionary<string, string>();
+    public IReadOnlyDictionary<string, ScenarioEventProgress> ScenarioEventProgress { get; init; } = new Dictionary<string, ScenarioEventProgress>();
+    public IReadOnlyList<string> DestroyedScenarioUnits { get; init; } = Array.Empty<string>();
+    public IReadOnlyList<string> DeadScenarioCommanders { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> TriggeredEvents { get; init; } = Array.Empty<string>();
     public string? PendingDialogue { get; init; }
     public IReadOnlyList<string> QueuedDialogues { get; init; } = Array.Empty<string>();
@@ -190,6 +200,12 @@ public sealed record WorldState
         }
         var factionIds = Ids(Factions.Select(f => f.Id));
         var factionIndex = Factions.ToDictionary(f => f.Id, StringComparer.Ordinal);
+        if (DiplomaticRelations == null || DiplomacyNeutralCamps == null
+            || DiplomacyNeutralCamps.Any(string.IsNullOrWhiteSpace) || DiplomacyNeutralCamps.Distinct().Count() != DiplomacyNeutralCamps.Count
+            || DiplomaticRelations.Any(p => p == null || !factionIds.Contains(p.First) || !factionIds.Contains(p.Second)
+                || string.CompareOrdinal(p.First, p.Second) >= 0 || p.Relation is not ("allied" or "neutral" or "hostile"))
+            || DiplomaticRelations.Select(p => (p.First, p.Second)).Distinct().Count() != DiplomaticRelations.Count)
+            throw new RuleViolation("world.diplomacy", "Invalid bilateral relations");
         if (NeutralHostilities.Any(h => !factionIds.Contains(h.First) || !factionIds.Contains(h.Second) || string.CompareOrdinal(h.First, h.Second) >= 0)
             || NeutralHostilities.Distinct().Count() != NeutralHostilities.Count)
             throw new RuleViolation("world.diplomacy", "Invalid neutral hostility pairs");
@@ -250,7 +266,9 @@ public sealed record WorldState
             }
             if (!factionIds.Contains(unit.Owner) || factionIndex[unit.Owner].Defeated
                 || unit.Cell < 0 || unit.Cell >= Cells.Count || !Cells[unit.Cell].Terrain.Active || unit.Experience < 0
-                || unit.RemainingMovement < 0 || unit.RemainingMovement > unit.Combatant.Profile.Movement
+                || unit.ExtensionMovementLimit < 0 || unit.RemainingMovement < 0
+                || unit.RemainingMovement > (unit.ExtensionMovementLimit ?? unit.Combatant.Profile.Movement)
+                || unit.Combatant.Statuses.Any(s => s.SourceOwner != null && !factionIds.Contains(s.SourceOwner))
                 || unit.Morale.Effective != unit.Combatant.Morale
                 || unit.Burning < 0 || unit.LocalPenalty < 0 || unit.LocalPenalty > 2 || unit.BehaviorExpiry < 1
                 || string.IsNullOrWhiteSpace(unit.Veterancy) || string.IsNullOrWhiteSpace(unit.Behavior) || string.IsNullOrWhiteSpace(unit.RestoreBehavior)
@@ -290,9 +308,12 @@ public sealed record WorldState
                     || (rule.Effect == EventEffectKind.EnvironmentSpread && (rule.Cell < 0 || rule.Cell >= Cells.Count)))
                     throw new RuleViolation("world.event", "Invalid scenario event rule");
         }
-        if (PendingDialogue != null && !Events.Any(e => fired.Contains(e.Id) && e.DialogueId == PendingDialogue))
+        ScenarioRules.Validate(this);
+        bool KnownDialogue(string id) => Events.Any(e => fired.Contains(e.Id) && e.DialogueId == id)
+            || ScenarioEvents.Any(e => e.Popup != null && TriggeredScenarioEvents.Contains(e.Id) && !ScenarioChoices.ContainsKey(e.Id) && ScenarioRules.DialogueId(e.Id) == id);
+        if (PendingDialogue != null && !KnownDialogue(PendingDialogue))
             throw new RuleViolation("world.dialogue", "Dialogue does not belong to a fired event");
-        if ((QueuedDialogues.Count > 0 && PendingDialogue == null) || QueuedDialogues.Any(d => !Events.Any(e => fired.Contains(e.Id) && e.DialogueId == d)))
+        if ((QueuedDialogues.Count > 0 && PendingDialogue == null) || QueuedDialogues.Any(d => !KnownDialogue(d)))
             throw new RuleViolation("world.dialogue", "Invalid pending dialogue queue");
     }
 
@@ -307,7 +328,7 @@ public sealed record WorldState
 
     private static Combatant CopyCombatant(Combatant value) => value with
     {
-        Skills = value.Skills.ToArray(), SkillSlots = value.SkillSlots.ToArray(), Profile = value.Profile with
+        Skills = value.Skills.ToArray(), SkillSlots = value.SkillSlots.ToArray(), Statuses = value.Statuses.ToArray(), Profile = value.Profile with
         {
             SkillSlots = value.Profile.SkillSlots.ToArray(), LegacySkillOverrides = value.Profile.LegacySkillOverrides.ToArray(),
             AttackBands = value.Profile.AttackBands.ToArray(), Traits = value.Profile.Traits.ToArray(),
@@ -328,10 +349,15 @@ public sealed record WorldState
         Cells = Cells.Select(c => c with { Terrain = c.Terrain with { } }).ToArray(),
         Jurisdictions = Jurisdictions?.Copy(),
         NeutralHostilities = NeutralHostilities.ToArray(),
+        DiplomaticRelations = DiplomaticRelations.ToArray(), DiplomacyNeutralCamps = DiplomacyNeutralCamps.ToArray(),
         Units = Units.Select(u => u with { Combatant = CopyCombatant(u.Combatant),
             CommanderBase = u.CommanderBase == null ? null : u.CommanderBase with { Combatant = CopyCombatant(u.CommanderBase.Combatant) } }).ToArray(),
         Commanders = Commanders.ToArray(), CommanderOffers = CommanderOffers.ToArray(),
         Events = Events.Select(e => e with { Rules = e.Rules.ToArray() }).ToArray(),
+        ScenarioEvents = ScenarioEvents.Select(ScenarioRules.Copy).ToArray(), TriggeredScenarioEvents = TriggeredScenarioEvents.ToArray(),
+        ScenarioChoices = ScenarioChoices.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal),
+        ScenarioEventProgress = ScenarioEventProgress.ToDictionary(p => p.Key, p => p.Value with { }, StringComparer.Ordinal),
+        DestroyedScenarioUnits = DestroyedScenarioUnits.ToArray(), DeadScenarioCommanders = DeadScenarioCommanders.ToArray(),
         TriggeredEvents = TriggeredEvents.ToArray(), QueuedDialogues = QueuedDialogues.ToArray()
     };
 }

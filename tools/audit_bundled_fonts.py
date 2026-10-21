@@ -4,6 +4,7 @@ import hashlib
 import json
 from pathlib import Path
 import sys
+import struct
 import unicodedata
 from zipfile import ZipFile
 
@@ -43,12 +44,22 @@ def strings(value):
 def main():
     coverage = json.loads((FONTS / "coverage.json").read_text())
     points = set()
+    by_family = {}
     for face in coverage["faces"]:
         file = FONTS / face["file"]
-        assert hashlib.sha256(file.read_bytes()).hexdigest() == face["sha256"], file
+        data = file.read_bytes()
+        assert hashlib.sha256(data).hexdigest() == face["sha256"], file
+        if coverage.get("loading") == "subsets-v1":
+            decoded = struct.unpack_from(">I", data, 16)[0]
+            assert decoded == face["decodedBytes"] and decoded <= 8 * 1024 * 1024, file
         font = TTFont(file)
         cmap = {p for p, glyph in font.getBestCmap().items() if glyph != ".notdef"}
         assert len(cmap) == face["glyphs"], file
+        if "ranges" in face:
+            assert cmap == {p for start, end in face["ranges"] for p in range(start, end + 1)}, file
+            family_points = by_family.setdefault(face["family"], set())
+            assert not family_points.intersection(cmap), "Overlapping subsets in " + face["family"]
+            family_points.update(cmap)
         points.update(cmap)
         font.close()
     indexed = {p for start, end in coverage["ranges"] for p in range(start, end + 1)}

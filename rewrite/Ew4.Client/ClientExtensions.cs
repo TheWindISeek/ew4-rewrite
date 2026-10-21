@@ -19,20 +19,30 @@ public sealed partial class ClientGame
             number > 0 ? "skill_" + number.ToString("00") + ".png" : null, "passive", "self", 0, new(0, 0, 0));
     }
     private ClientSkillView[] SkillViews(Combatant unit) => RuleEventBus.Slots(unit).OrderBy(s => s.Order).Select(SkillView).ToArray();
+    private ClientSkillView[] StatusViews(Combatant unit) => unit.Statuses.Select(saved =>
+    {
+        var status = content.Extensions.Bus.Statuses[saved.Id];
+        return new ClientSkillView(status.Id, "status." + status.Id, saved.Level, 0, null, null,
+            content.Label(string.IsNullOrEmpty(status.NameKey) ? status.Id : status.NameKey) + " (" + saved.Stacks + "/" + saved.RemainingTurns + ")",
+            content.Label(status.DescriptionKey), status.Icon == null ? null : "extensions/" + status.Icon[8..],
+            "status", "self", 0, new(0, 0, 0));
+    }).ToArray();
     private object[] ActiveSkills(WorldState world, UnitState unit)
     {
         var faction = world.Factions.Single(f => f.Id == unit.Owner);
         return SkillViews(unit.Combatant).Where(s => s.Kind == "active").Select(s =>
         {
             var def = content.Extensions.Bus.Skills[s.Id];
+            var cells = def.Target != "cell" ? [] : Enumerable.Range(0, world.Cells.Count)
+                .Where(cell => content.Extensions.Bus.ValidCellTarget(world, unit, def, cell)).ToArray();
             long ready = world.ExtensionState.GetValueOrDefault(unit.Id + "/" + s.InstanceId + "/ready");
-            var targets = world.Units.Where(t => new HexMap(world.Width, world.Height).Distance(unit.Cell, t.Cell) <= def.Range
+            var targets = def.Target == "cell" ? [] : world.Units.Where(t => new HexMap(world.Width, world.Height).Distance(unit.Cell, t.Cell) <= def.Range
                 && (def.Target == "self" ? t.Id == unit.Id : def.Target == "ally"
-                    ? world.Factions.Single(f => f.Id == t.Owner).Camp == faction.Camp
-                    : world.Factions.Single(f => f.Id == t.Owner).Camp != faction.Camp)).Select(t => t.Id).ToArray();
-            bool available = !unit.Acted && unit.Morale.Effective != -3 && ready <= world.Round && targets.Length > 0
+                    ? WorldDiplomacy.Allied(world, t.Owner, faction.Id)
+                    : !WorldDiplomacy.Allied(world, t.Owner, faction.Id))).Select(t => t.Id).ToArray();
+            bool available = !unit.Acted && unit.Morale.Effective != -3 && ready <= world.Round && (targets.Length > 0 || cells.Length > 0)
                 && faction.Resources.Money >= def.Cost.Money && faction.Resources.Industry >= def.Cost.Industry && faction.Resources.Food >= def.Cost.Food;
-            return (object)new { skill = s, available, remainingCooldown = Math.Max(0, ready - world.Round), targets };
+            return (object)new { skill = s, available, remainingCooldown = Math.Max(0, ready - world.Round), targets, cells };
         }).ToArray();
     }
 }

@@ -71,6 +71,7 @@ public sealed record Combatant
     public IReadOnlyCollection<string> Skills { get; init; } = Array.Empty<string>();
     public IReadOnlyList<SkillSlot> SkillSlots { get; init; } = Array.Empty<SkillSlot>();
     public int Stars { get; init; }
+    public IReadOnlyList<SkillStatus> Statuses { get; init; } = Array.Empty<SkillStatus>();
     public int AttackBonus { get; init; }
     public int DefenseBonus { get; init; }
     public int Armor { get; init; }
@@ -88,6 +89,10 @@ public sealed record Combatant
     {
         Profile.Validate();
         SkillSlot.Validate(Profile.SkillSlots.Concat(SkillSlots));
+        if (Statuses == null || Statuses.Count > 64 || Statuses.Any(s => s == null || string.IsNullOrWhiteSpace(s.Id)
+            || s.Id.Length > 128 || s.RemainingTurns is < 1 or > 1000 || s.Level < 1 || s.Stacks is < 1 or > 32)
+            || Statuses.Select(s => s.Id).Distinct(StringComparer.Ordinal).Count() != Statuses.Count)
+            throw new RuleViolation("combatant.status", "Invalid saved status");
         if (Health <= 0 || Health > Profile.MaxHealth || Morale < -3 || Morale > sbyte.MaxValue || Stars < 0
             || ConstructionTurns < 0 || Evasion < 0 || Evasion > 1 || float.IsNaN(Evasion)
             || EvasionIgnoringBuilding < 0 || EvasionIgnoringBuilding > 1 || float.IsNaN(EvasionIgnoringBuilding))
@@ -202,6 +207,8 @@ public static class Ew4Combat
         {
             damage = rules.Extensions.Modify("combat.modify_damage", "damage_multiplier", damage, source, target, random);
             damage = rules.Extensions.Modify("combat.modify_damage", "damage_add", damage, source, target, random);
+            damage = rules.Extensions.Modify("combat.modify_incoming_damage", "damage_multiplier", damage, target, source, random);
+            damage = rules.Extensions.Modify("combat.modify_incoming_damage", "damage_add", damage, target, source, random);
         }
         return Math.Max(rules.MinimumDamage, checked((int)damage));
     }

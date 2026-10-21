@@ -29,23 +29,32 @@ public sealed record RosterDeploymentRules
 
 public static class RosterDeployment
 {
+    public static bool CanDeploy(GameSession state, string unitId, string commanderId, RosterDeploymentRules rules)
+    {
+        var world = state.World;
+        var unit = world.Units.SingleOrDefault(u => u.Id == unitId);
+        var quota = state.RosterDeployments.SingleOrDefault(q => q.Faction == world.ActiveFaction);
+        return world.Phase == TurnPhase.Active && world.PendingDialogue == null && world.ActiveFaction == state.PlayerFaction
+            && world.Factions.Any(f => f.Id == world.ActiveFaction && f.Human && !f.Defeated)
+            && unit != null && unit.Owner == world.ActiveFaction && unit.CommanderId == null
+            && world.Cells[unit.Cell].Terrain.Active && world.Cells[unit.Cell].Owner == unit.Owner
+            && quota != null && !(quota.CommanderIds.Count >= quota.Limit)
+            && state.Account.Roster.Any(c => c.Id == commanderId)
+            && world.Commanders.All(c => c.Id != commanderId) && state.TavernCandidates.All(c => c.CommanderId != commanderId)
+            && state.RosterDeployments.All(q => !q.CommanderIds.Contains(commanderId))
+            && (rules.Assignment.DeploymentBuilding != BuildingRequirement.Required || world.Cells[unit.Cell].BuildingKind != null)
+            && (rules.Assignment.DeploymentBuilding != BuildingRequirement.Forbidden || world.Cells[unit.Cell].BuildingKind == null);
+    }
+
     public static SessionChange Deploy(GameSession state, long expectedRevision, string unitId, string commanderId, RosterDeploymentRules rules)
     {
         state.Validate();
         if (state.Revision != expectedRevision) throw new RuleViolation("session.revision", "Stale session command");
         var faction = WorldActions.Ready(state.World, state.World.Revision);
-        var quota = state.RosterDeployments.SingleOrDefault(q => q.Faction == faction.Id);
-        var owned = state.Account.Roster.SingleOrDefault(c => c.Id == commanderId);
-        var unit = state.World.Units.SingleOrDefault(u => u.Id == unitId);
-        if (faction.Id != state.PlayerFaction || !faction.Human || quota == null || owned == null || unit == null
-            || unit.Owner != faction.Id || unit.CommanderId != null || !state.World.Cells[unit.Cell].Terrain.Active
-            || state.World.Cells[unit.Cell].Owner != faction.Id || state.World.Commanders.Any(c => c.Id == commanderId)
-            || state.TavernCandidates.Any(c => c.CommanderId == commanderId)
-            || state.RosterDeployments.Any(q => q.CommanderIds.Contains(commanderId))
-            || quota.CommanderIds.Count >= quota.Limit
-            || (rules.Assignment.DeploymentBuilding == BuildingRequirement.Required && state.World.Cells[unit.Cell].BuildingKind == null)
-            || (rules.Assignment.DeploymentBuilding == BuildingRequirement.Forbidden && state.World.Cells[unit.Cell].BuildingKind != null))
+        if (!CanDeploy(state, unitId, commanderId, rules))
             throw new RuleViolation("session.roster_unavailable", "Owned commander or deployment quota/location is unavailable");
+        var owned = state.Account.Roster.Single(c => c.Id == commanderId);
+        var unit = state.World.Units.Single(u => u.Id == unitId);
         var template = rules.Resolve(owned, faction.Id);
         var definitions = rules.Assignment.Definitions.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
         if (!definitions.TryAdd(commanderId, template.Definition))

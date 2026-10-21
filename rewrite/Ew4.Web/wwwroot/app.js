@@ -4,6 +4,7 @@ const canvas = $('map'), ctx = canvas.getContext('2d', {alpha: false});
 let catalog, manifest, cityNames={}, state, selected, selection, busy = false, mode = 2;
 let conquestPages, conquestPage=0, conquestEntering=false, conquestRender=0;
 let originalTextRenderer, menuArt, imageRevision=0;
+let startupReady=false,startupRunning=false,startupError='';
 let effects,damageNumbers;
 let originalTextQueued=false;
 const originalTextChanges=new MutationObserver(()=>{
@@ -28,13 +29,27 @@ const menus = new Ew4Menus.Menus({rpc,button,uiImage,labels:labelImage,text:(val
   refresh:async()=>{if(state&&!$('play').hidden){await installState(await rpc('action',{op:'state',revision:state.revision}));}},get menuArt(){return menuArt;},closeDetail});
 let chosenScenario, chosenCountry, countryChoices = [], showGrid = false, selectedAt = 0;
 let tutorial, tutorialRect;
-let settings={music:50,sound:50,speed:2,hd:true,screen:100,cityLanguage:'en',geographicLanguage:'en'};
+let settings={music:50,sound:50,speed:2,hd:true,screen:100,eventSize:100,cityLanguage:'en',geographicLanguage:'en'};
 try { settings={...settings,...JSON.parse(localStorage.getItem('ew4.settings')||'{}')}; } catch (_) {}
+settings.eventSize=Number.isFinite(settings.eventSize)?Math.max(60,Math.min(180,settings.eventSize)):100;
 try { showGrid = localStorage.getItem('ew4.showGrid') === 'true'; } catch (_) { /* Storage can be unavailable in restricted WebViews. */ }
 function sizeUi() {
-  const scale = Math.min(innerWidth / 568, innerHeight / 320)*settings.screen/100;
+  const reserve=startupReady&&!$('startup-status').hidden?Math.ceil($('startup-status').getBoundingClientRect().height)+24:0;
+  document.documentElement.style.setProperty('--startup-reserve',reserve+'px');
+  const scale = Math.min(innerWidth / 568, Math.max(1,innerHeight-reserve) / 320)*settings.screen/100;
   document.documentElement.style.setProperty('--ui-scale', scale);
   document.documentElement.style.setProperty('--battle-scale', Math.max(.8, scale));
+  const baseEventScale = Math.min(1.5, innerWidth*.84/360, innerHeight*.74/264)*settings.screen/100;
+  const eventHeight=innerHeight>=innerWidth?Math.min(400,innerHeight*.74/baseEventScale):264;
+  // Bound the slider itself so each step still enlarges the popup on small screens.
+  const maxEventSize=Math.min(180,Math.floor(Math.min(innerWidth*.96/360,innerHeight*.92/eventHeight)/baseEventScale*100));
+  const eventSize=Math.min(settings.eventSize,maxEventSize);
+  const eventScale=baseEventScale*eventSize/100;
+  document.documentElement.style.setProperty('--event-scale', eventScale);
+  document.documentElement.style.setProperty('--event-available-height', eventHeight+'px');
+  document.documentElement.style.setProperty('--settings-scale',Math.min(scale,(innerWidth-16)/362,(innerHeight-16)/340));
+  $('event-size').max=maxEventSize;$('event-size').value=eventSize;
+  $('event-size-value').textContent=eventSize+'%';
   clampView();
 }
 function labelImage(key, text, host) {
@@ -288,8 +303,35 @@ function refreshHud() {
   $('skip-ai').disabled = skipAi;
   $('ai-action').hidden = active.human || state.phase === 'Finished' || !!state.dialogue;
   $('ai-flag').src = '/content/ui/image_flag_hd/' + active.flag + '1.png';
-  $('dialogue').hidden = !state.dialogue;
-  if(state.dialogue){
+  $('dialogue').hidden = !state.dialogue || !!state.scenarioPopup;
+  $('scenario-event').hidden = !state.scenarioPopup;
+  if(state.scenarioPopup){
+    const popup=state.scenarioPopup;
+    const content=$('scenario-event-content'), choices=$('scenario-event-choices'), event=$('scenario-event');
+    const sameEvent=event.dataset.event===popup.id;
+    const contentScroll=sameEvent?content.scrollTop:0, choicesScroll=sameEvent?choices.scrollTop:0;
+    event.dataset.event=popup.id;
+    content.classList.toggle('image-only',!!popup.image&&!popup.text);
+    $('scenario-event-title').textContent=popup.title;
+    const picture=$('scenario-event-image');
+    picture.hidden=!popup.image;
+    if(popup.image){
+      const source='/content/extensions/'+popup.image.slice('rewrite/'.length).split('/').map(encodeURIComponent).join('/');
+      if(picture.getAttribute('src')!==source)picture.src=source;
+      picture.alt=popup.imageAlt||popup.title;
+    }else picture.removeAttribute('src');
+    const eventText=$('scenario-event-text');
+    eventText.textContent=Ew4OriginalUI.availableText(popup.text);
+    void Ew4OriginalUI.prepareText(popup.text).then(()=>{if(state?.scenarioPopup===popup)eventText.textContent=Ew4OriginalUI.availableText(popup.text);});
+    $('scenario-event-text').hidden=!popup.text;
+    choices.replaceChildren();
+    for(const choice of popup.choices){
+      const b=button(choice.text,()=>act('event_choice',{offer:popup.id,target:choice.id}),$('scenario-event-choices'));
+      b.dataset.choice=choice.id;b.disabled=busy||!choice.available;
+    }
+    content.scrollTop=contentScroll;choices.scrollTop=choicesScroll;
+  }else delete $('scenario-event').dataset.event;
+  if(state.dialogue&&!state.scenarioPopup){
     const talk=state.dialoguePresentation;
     $('dialogue-ok').classList.toggle('speaker-right',talk?.left===false);
     $('dialogue-text').replaceChildren(originalTextRenderer.element(state.dialogue,'font_text_1_cn_hd','#404040',216));
@@ -306,7 +348,7 @@ async function act(op, extra = {}) {
     const next = await rpc('action', {op, revision:state.revision, unit:selected?.id, ...extra});
     await installState(next);
   } finally { busy = false; refreshHud(); }
-  if (op === 'end' || op === 'dialogue') await runAi();
+  if (op === 'end' || op === 'dialogue' || op === 'event_choice') await runAi();
 }
 async function runAi() {
   if (aiRunning) return;
@@ -347,7 +389,7 @@ async function selectCell(cell,restore=false) {
     }
     $('terrain-info').append(column);
   }
-  if(selection.deploy) toolButton('general','任命将领',()=>menus.headquarters(target.id));
+  if(selection.deploy) toolButton('general','任命将领',()=>menus.deployGeneral(target.id,state.revision));
   if(selection.upgrade) toolButton('buildupgrade','升级建筑',()=>confirmUnitAction('upgrade','升级建筑',{cell}));
   if(selection.installations.length) toolButton('builddefense','防御',()=>openDefense(cell));
   if(own&&target.commanderId) toolButton('training','培训',()=>confirmUnitAction('train','培训'));
@@ -422,7 +464,7 @@ function abilityGrid(profile,unit){
 }
 function descriptionBox(parent,name,text){const desc=document.createElement('section');desc.className='unit-description';const h=document.createElement('h3');h.textContent=name;const p=document.createElement('p');p.textContent=text;desc.append(h,p);parent.append(desc);}
 function openUnitInfo(unit){
-  const p=manifest.profiles[unit.profile],entries=[...(unit.traits||[]),...(unit.skills||[])],body=detailWindow('info_label',330,entries.length?300:187);
+  const p=manifest.profiles[unit.profile],entries=[...(unit.traits||[]),...(unit.skills||[]),...(unit.statuses||[])],body=detailWindow('info_label',330,entries.length?300:187);
   const card=unitCard(unit.profile);card.classList.add('info-unit-card');body.append(card);
   const grid=abilityGrid(unit.profile,unit);grid.classList.add('info-abilities');body.append(grid);
   descriptionBox(body,p.name,p.description);
@@ -440,15 +482,16 @@ function openSkillDescription(skill){
   detailReturn=()=>{if(selected)openUnitInfo(selected);};
 }
 function openSkillAction(unit,entry){
-  const skill=entry.skill;let target=entry.targets[0];
-  const body=detailWindow('info_label',300,220,()=>act('skill',{offer:skill.instanceId,target}));
+  const skill=entry.skill,isCell=skill.target==='cell',choices=isCell?(entry.cells||[]):entry.targets;let target=choices[0];
+  const body=detailWindow('info_label',300,220,()=>act('skill',{offer:skill.instanceId,...(isCell?{cell:target}:{target})}));
+  $('detail-confirm').disabled=!entry.available||target===undefined;
   const box=document.createElement('div');box.className='skill-action-description';
   box.append(originalTextRenderer.element(skill.name,'font_text_2_cn_hd','#404040'),originalTextRenderer.element(skill.description,'font_text_2_cn_hd','#404040',270));
   const cost=document.createElement('div');cost.className='skill-action-cost';
   for(const [key,icon] of [['money','money'],['industry','industry'],['food','food']]){const span=document.createElement('span');span.append(uiImage('marker_'+icon+'.png',16),originalTextRenderer.element(skill.cost[key]||0,'font_char_2_hd','#404040'));cost.append(span);}box.append(cost);
   const targets=document.createElement('div');targets.className='skill-targets';
-  for(const id of entry.targets){const t=state.units.find(u=>u.id===id),b=button('',()=>{target=id;for(const n of targets.children)n.setAttribute('aria-pressed',String(n===b));},targets);
-    b.setAttribute('aria-pressed',String(id===target));b.append(originalTextRenderer.element(manifest.profiles[t.profile].name+' ('+(t.cell%state.width)+','+Math.floor(t.cell/state.width)+')','font_text_2_cn_hd','#404040'));}
+  for(const id of choices){const t=isCell?null:state.units.find(u=>u.id===id),cell=isCell?id:t.cell,b=button('',()=>{target=id;for(const n of targets.children)n.setAttribute('aria-pressed',String(n===b));},targets);
+    b.setAttribute('aria-pressed',String(id===target));b.append(originalTextRenderer.element((isCell?'':manifest.profiles[t.profile].name+' ')+'('+(cell%state.width)+','+Math.floor(cell/state.width)+')','font_text_2_cn_hd','#404040'));}
   box.append(targets);body.append(box);
 }
 function confirmUnitAction(op,title,extra={}){
@@ -623,20 +666,20 @@ canvas.addEventListener('pointerup',e=>{pointers.delete(e.pointerId);if(!dragged
 canvas.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);dragged=true;});
 function zoom(factor,x=viewport.w/2,y=viewport.h/2){const before=screenToWorld(x,y);view.zoom*=factor;clampView();const after=screenToWorld(x,y);view.x+=before.x-after.x;view.y+=before.y-after.y;clampView();}
 canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(-e.deltaY*.001),e.clientX,e.clientY);},{passive:false});
-document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=async()=>{if(!catalog)return;mode=Number(b.dataset.mode);if(mode===4){menus.tutorialMenu();return;}$('main-menu').hidden=true;$('scenario-menu').hidden=false;$('countries').hidden=true;$('conquest-pagination').hidden=mode!==2;$('scenario-menu').classList.toggle('campaign-mode',mode===1);menuArt.apply(mode);$('mode-title').replaceChildren(labelImage(b.dataset.label,b.getAttribute('aria-label')));if(!await menus.open(mode))scenarioList();});
+document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=async()=>{if(!startupReady)return;mode=Number(b.dataset.mode);if(mode===4){menus.tutorialMenu();return;}$('main-menu').hidden=true;$('scenario-menu').hidden=false;$('countries').hidden=true;$('conquest-pagination').hidden=mode!==2;$('scenario-menu').classList.toggle('campaign-mode',mode===1);menuArt.apply(mode);$('mode-title').replaceChildren(labelImage(b.dataset.label,b.getAttribute('aria-label')));if(!await menus.open(mode))scenarioList();});
 $('conquest-prev').onclick=()=>turnConquestPage(-1);
 $('conquest-next').onclick=()=>turnConquestPage(1);
 $('cancel-country').onclick=()=>$('countries').hidden=true;
 $('confirm-country').onclick=()=>{if(chosenScenario&&chosenCountry&&!busy)start(chosenScenario,chosenCountry).catch(e=>notice(e.message));};
 $('menu-back').onclick=showMain;
-$('headquarters').onclick=()=>menus.headquarters().catch(e=>notice(e.message));
+$('headquarters').onclick=()=>{if(startupReady)menus.headquarters().catch(e=>notice(e.message));};
 const languageControls=[['city-language','cityLanguage','城市名称'],['geographic-language','geographicLanguage','地理名称']];
 for(const [id,key,title] of languageControls){
   const row=document.createElement('div');row.className='setting-row language-row '+id;
   const caption=document.createElement('span');caption.textContent=title;row.append(caption);
   const choice=button('',()=>{settings[key]=settings[key]==='zh'?'en':'zh';syncLanguages();
     if(key==='cityLanguage')battlefield.cityLabels.clear();else battlefield.mapLabels.clear();persistSettings();},row);
-  choice.id=id;choice.title=title+'语言';$('settings').firstElementChild.append(row);
+  choice.id=id;choice.title=title+'语言';$('settings-content').append(row);
 }
 function syncLanguages(){for(const [id,key,title] of languageControls){const choice=$(id),text=settings[key]==='zh'?'中文':'English';
   choice.setAttribute('aria-label',title+'：'+text);choice.dataset.language=settings[key];
@@ -644,10 +687,10 @@ function syncLanguages(){for(const [id,key,title] of languageControls){const cho
   else choice.textContent=text;
 }}
 function openSettings(){for(const [id,key] of [['music-volume','music'],['sound-volume','sound'],['game-speed','speed'],['screen-size','screen']])$(id).value=settings[key];syncLanguages();$('hd-mode').checked=settings.hd;$('show-grid').checked=showGrid;$('settings').hidden=false;}
-$('main-settings').onclick=openSettings;$('pause-settings').onclick=openSettings;
+$('main-settings').onclick=()=>{if(startupReady)openSettings();};$('pause-settings').onclick=openSettings;
 $('close-settings').onclick=()=>$('settings').hidden=true;
 $('confirm-settings').onclick=()=>$('settings').hidden=true;
-for(const [id,key] of [['music-volume','music'],['sound-volume','sound'],['game-speed','speed'],['screen-size','screen']])$(id).oninput=e=>{settings[key]=Number(e.target.value);persistSettings();sizeUi();};
+for(const [id,key] of [['music-volume','music'],['sound-volume','sound'],['game-speed','speed'],['screen-size','screen'],['event-size','eventSize']])$(id).oninput=e=>{settings[key]=Number(e.target.value);persistSettings();sizeUi();};
 $('hd-mode').onchange=e=>{settings.hd=e.target.checked;persistSettings();};
 function persistSettings(){try{localStorage.setItem('ew4.settings',JSON.stringify(settings));}catch(_){} }
 $('close-detail').onclick=async()=>{closeDetail();await tutorialUi('winbtn_close');};
@@ -680,5 +723,44 @@ window.ew4Back=()=>{
   return visible('main-menu')?'exit':'handled';
 };
 window.addEventListener('resize',sizeUi);sizeUi();
-Promise.all([rpc('catalog'),fetch('/content/manifest.json?v=20261019.2').then(r=>r.json()),fetch('city-names.json').then(r=>r.json()),fetch('/content/effects.json').then(r=>r.json()),fetch('conquest-pages.json?v=20261019.14').then(r=>r.json())]).then(async([c,m,names,fx,pages])=>{const text=new Ew4OriginalUI.TextRenderer(m);await text.prepare();catalog=c;manifest=m;cityNames=names;conquestPages=pages;menuArt=new Ew4MenuArt.MenuArt({manifest:m,image});await menuArt.prepare();effects=new Ew4Effects.Effects({image,sprite,animation,libraries,get manifest(){return manifest;},volume:()=>settings.sound},fx);originalTextRenderer=text;damageNumbers=new Ew4Effects.DamageNumbers(text);$('continue').disabled=false;originalLabels();showMain();}).catch(e=>notice(e.message));
+function startupStatus(){
+  const failures=Ew4OriginalUI.fontStatus.failures;
+  $('startup-status').hidden=startupReady&&!failures.length&&!startupRunning;
+  $('startup-message').textContent=startupRunning?'正在载入…':startupError||
+    (failures.length?'字体载入失败，已使用内置备用字体：\n'+failures.map(face=>face.file+'：'+face.message).join('\n'):'');
+  $('startup-retry').hidden=startupRunning||!startupError&&!failures.length;
+  sizeUi();
+}
+async function startupJson(url){
+  const response=await fetch(url,{cache:'no-store'});
+  if(!response.ok)throw Error('资源载入失败：'+url+' ('+response.status+')');
+  return response.json();
+}
+async function initializeClient(){
+  if(startupRunning)return;
+  startupRunning=true;startupError='';startupStatus();
+  document.querySelectorAll('.main-entry').forEach(button=>button.disabled=true);$('continue').disabled=true;
+  try{
+    const [c,m,names,fx,pages]=await Promise.all([rpc('catalog'),startupJson('/content/manifest.json'),startupJson('city-names.json'),startupJson('/content/effects.json'),startupJson('conquest-pages.json')]);
+    const text=new Ew4OriginalUI.TextRenderer(m);await text.prepare();
+    const art=new Ew4MenuArt.MenuArt({manifest:m,image});await art.prepare();
+    catalog=c;manifest=m;cityNames=names;conquestPages=pages;menuArt=art;
+    effects=new Ew4Effects.Effects({image,sprite,animation,libraries,get manifest(){return manifest;},volume:()=>settings.sound},fx);
+    originalTextRenderer=text;damageNumbers=new Ew4Effects.DamageNumbers(text);originalLabels();showMain();
+    startupReady=true;
+    document.querySelectorAll('.main-entry').forEach(button=>button.disabled=false);$('continue').disabled=false;
+  }catch(error){startupError=error.message||String(error);}
+  finally{startupRunning=false;startupStatus();}
+}
+$('startup-retry').onclick=async()=>{
+  if(startupRunning)return;
+  startupRunning=true;startupError='';startupStatus();
+  try{await Ew4OriginalUI.retryFonts();}
+  catch(error){startupError=error.message||String(error);}
+  finally{startupRunning=false;startupStatus();}
+  if(!startupReady&&!startupError){for(const [key,img] of images)if(img.complete&&!img.naturalWidth)images.delete(key);await initializeClient();}
+};
+window.addEventListener('ew4fontstatus',startupStatus);
+window.addEventListener('ew4fontsloaded',()=>{battlefield.mapLabels.clear();});
+void initializeClient();
 requestAnimationFrame(render);

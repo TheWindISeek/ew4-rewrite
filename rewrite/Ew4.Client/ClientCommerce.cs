@@ -80,8 +80,7 @@ public sealed partial class ClientGame
                 var change = command.Op == "buy"
                     ? SessionActions.BuyItem(current.Session, command.Revision, market.Id, command.Offer!, TradingRules())
                     : SessionActions.SellItem(current.Session, command.Revision, market.Id, command.Item!, TradingRules());
-                game = current with { Session = change.State, Notices = change.Notices };
-                StoreAccount(change.State.Account);
+                CommitSession(change);
                 market = change.State.Markets.Single(m => m.Market.Id == market.Id).Market;
             }
         }

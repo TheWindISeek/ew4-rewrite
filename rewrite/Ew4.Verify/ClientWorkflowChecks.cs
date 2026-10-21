@@ -19,6 +19,13 @@ internal static class ClientWorkflowChecks
         }
         long Revision(JsonElement data) => data.GetProperty("revision").GetInt64();
         var hq = Call("headquarters");
+        foreach (var track in new[] { "rank", "title" })
+        {
+            var costs = hq.GetProperty("progression").GetProperty(track);
+            Check(costs.GetArrayLength() == (track == "rank" ? content.Catalogs.Combat.RankProgression : content.Catalogs.Combat.TitleProgression).Levels.Count
+                && costs[costs.GetArrayLength() - 1].ValueKind == JsonValueKind.Null
+                && costs.EnumerateArray().SkipLast(1).All(c => c.GetInt64() > 0), "configured " + track + " experience thresholds and final stage exposed");
+        }
         Check(hq.GetProperty("princesses").GetArrayLength() == 8 && hq.GetProperty("princesses").EnumerateArray().All(p => p.GetProperty("unlocked").GetBoolean()), "all eight old-friends rewards exposed");
         string reward = hq.GetProperty("princesses")[0].GetProperty("id").GetString()!;
         hq = Call("commander", new { op = "claim", revision = Revision(hq), offer = reward });
@@ -56,7 +63,9 @@ internal static class ClientWorkflowChecks
         Check(Call("headquarters").GetRawText() == hq.GetRawText(), "inheritance preview has no side effects");
         hq = Call("commander", new { op = "inherit", revision = Revision(hq), commander = receiver, target = donor });
         Check(hq.GetProperty("roster").GetArrayLength() == 1 && hq.GetProperty("roster")[0].GetProperty("learning").GetRawText() == preview.GetProperty("learning").GetRawText(), "inheritance matches preview and consumes donor");
-        Call("commander", new { op = "claim", revision = Revision(hq), offer = donorReward }, "account.reward_claimed");
+        Check(!hq.GetProperty("princesses")[1].GetProperty("claimed").GetBoolean(), "consumed princess becomes claimable");
+        hq = Call("commander", new { op = "claim", revision = Revision(hq), offer = donorReward });
+        Check(hq.GetProperty("roster")[1].GetProperty("id").GetString() != donor, "reclaimed princess has a fresh instance identity");
         long full = hq.GetProperty("roster")[0].GetProperty("fullPrice").GetInt64(), medals = hq.GetProperty("medals").GetInt64();
         hq = Call("commander", new { op = "full", revision = Revision(hq), commander = receiver });
         Check(hq.GetProperty("medals").GetInt64() == medals - full && hq.GetProperty("roster")[0].GetProperty("fullPrice").GetInt64() == 0, "full promotion charges previewed amount and reaches final stages");

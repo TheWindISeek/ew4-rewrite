@@ -13,12 +13,13 @@ parser.add_argument("--build", default="build/release-0.2.4-20261020")
 parser.add_argument("--version", default="0.2.4")
 parser.add_argument("--date", default="20261020")
 parser.add_argument("--notes", default="rewrite/RELEASE_0.2.4_20261020.md")
+parser.add_argument("--rule-api", type=int, choices=(1, 2), default=1)
 args = parser.parse_args()
 build = ROOT / args.build
 assets = build / "assets"
 assets.mkdir(exist_ok=True)
 head = subprocess.check_output(["git", "rev-parse", "HEAD"], cwd=ROOT, text=True).strip()
-assert not subprocess.check_output(["git", "status", "--porcelain"], cwd=ROOT).strip(), "Commit source before packaging"
+assert not subprocess.check_output(["git", "status", "--porcelain", "--untracked-files=no"], cwd=ROOT).strip(), "Commit tracked source before packaging"
 web = build / "web"
 assert (web / "Ew4.Web.exe").is_file() and (web / "MoonSharp.Interpreter.dll").is_file()
 assert all((web / name).is_file() for name in ("Start-Web.cmd", "Open-Web-When-Ready.cmd")), "Publish the Web launchers before packaging"
@@ -26,7 +27,7 @@ assert not (web / "saves").exists(), "Do not package user profiles"
 report = json.loads((build / "android-verification.json").read_text(encoding="utf-8"))
 source_apk = ROOT / report["apk"]
 assert hashlib.sha256(source_apk.read_bytes()).hexdigest() == report["sha256"]
-info = dict(version=args.version, source=head, ruleApi=1, builtinMaps=["europe", "america", "eastasia"],
+info = dict(version=args.version, source=head, ruleApi=args.rule_api, builtinMaps=["europe", "america", "eastasia"],
             formalScenarios=95, androidDeviceExecution=False, apkCertificate="Android development certificate")
 (web / "release-info.json").write_text(json.dumps(info, indent=2) + "\n", encoding="utf-8", newline="\n")
 shutil.copyfile(ROOT / args.notes, web / "RELEASE_NOTES.md")

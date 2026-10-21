@@ -115,11 +115,18 @@
     }
     async headquarters(deployment=null){
       this.data=await this.api.rpc('headquarters');this.deployment=deployment;this.recruiting=false;
+      if(deployment)document.getElementById('play').hidden=true;
       for(const id of ['main-menu','scenario-menu','countries','campaign-screen'])document.getElementById(id).hidden=true;
       document.getElementById('hq-screen').hidden=false;document.getElementById('menu').hidden=false;
       this.drawRoster();
     }
-    closeRoster(){document.getElementById('hq-screen').hidden=true;if(this.deployment)document.getElementById('menu').hidden=true;this.deployment=null;}
+    async deployGeneral(unit,revision){
+      const available=await this.api.rpc('deployment',{unit,revision});
+      await this.headquarters(unit);
+      this.data.roster=this.data.roster.map(c=>({...c,locked:!available.commanders.includes(c.id)}));
+      this.drawRoster();
+    }
+    closeRoster(){document.getElementById('hq-screen').hidden=true;if(this.deployment){document.getElementById('menu').hidden=true;document.getElementById('play').hidden=false;}this.deployment=null;}
     card(definition,held,action){
       const card=document.createElement('div');card.className='commander-card';card.setAttribute('role','group');card.setAttribute('aria-label',definition.name);card.append(this.portrait(definition.image));
       const name=document.createElement('span');name.className='commander-name';name.append(this.lettering(definition.name,'font_text_2_cn_hd','#ebe6e1',74,'center',{singleLine:true}));card.append(name);
@@ -208,13 +215,13 @@
         }skills.append(row);
       }Ew4SkillUI.layout(skills,this.data.skillLayout,definition.skills);body.append(skills);
       const ranks=document.createElement('div');ranks.className='commander-ranks';
-      for(const [kind,level,effect,value] of [['rank',held?.learning.rank.level??definition.rank,'hp',held?.healthBonus??definition.healthBonus],['class',held?.learning.title.level??definition.title,'recover',held?.healing??definition.healing]]){const row=document.createElement('div');if(level>0){const img=this.api.uiImage(kind+'_'+level+'.png',21,24);img.className='rank-image';row.append(img);}const icon=this.api.uiImage('marker_'+effect+'_dark.png',17);icon.className='rank-effect';row.append(icon,this.lettering(value,'font_char_2_hd'));ranks.append(row);}body.append(ranks);
+      for(const [track,effect,value] of [['rank','hp',held?.healthBonus??definition.healthBonus],['title','recover',held?.healing??definition.healing]]){const row=document.createElement('div');row.append(this.progressionBadge(track,held?.learning[track]??{level:definition[track],experience:0}));const icon=this.api.uiImage('marker_'+effect+'_dark.png',17);icon.className='rank-effect';row.append(icon,this.lettering(value,'font_char_2_hd'));ranks.append(row);}body.append(ranks);
       const abilities=document.createElement('div');abilities.className='commander-abilities';const values=held?.learning.abilities||definition.abilities;
       for(const [key,icon] of [['infantry','upgrade_tag_infantry'],['cavalry','upgrade_tag_cavalry'],['artillery','upgrade_tag_artillery'],['naval','upgrade_tag_ship'],['fort','upgrade_tag_fortress'],['commerce','generalsinfo_trade'],['movement','generalsinfo_move'],['training','generalsinfo_training']]){
         const row=document.createElement('div');row.className='commander-ability';row.setAttribute('aria-label',key+' '+(key==='training'?(held?.training??definition.training):values[key]));row.append(this.api.uiImage(icon+'.png',22,21.5));const stars=document.createElement('div');stars.className='ability-stars';for(let i=0;i<(key==='training'?(held?.training??definition.training):values[key]);i++)stars.append(this.api.uiImage('star_middle.png',13.5,12.5));row.append(stars);abilities.append(row);
       }body.append(abilities);
       if(held&&!this.deployment){for(const [kind,text,action] of [['regroup','btn_regroup',()=>this.regroup(held.id)],['equip','btn_equip',()=>this.equipment(held.id)]]){const b=this.api.button('',action,equipment);b.className='native-command '+(kind==='equip'?'blue ':'')+kind;b.disabled=held.locked;b.setAttribute('aria-label',this.text(text));b.append(this.lettering(this.text(text),'font_text_3_cn_hd','#ebe6e1'));}}
-      if(this.deployment&&held){const b=this.api.button('',async()=>{await this.api.deploy(this.deployment,held.id);document.getElementById('detail-modal').hidden=true;this.closeRoster();},equipment);b.className='native-command blue equip';b.disabled=held.locked;b.append(this.lettering(this.text('btn_deploy'),'font_text_3_cn_hd','#ebe6e1'));}
+      if(this.deployment&&held){const b=this.api.button('',async()=>{await this.api.deploy(this.deployment,held.id);document.getElementById('detail-modal').hidden=true;this.closeRoster();},equipment);b.className='native-command blue equip';b.disabled=held.locked;b.setAttribute('aria-label',this.text('btn_deploy'));b.append(this.lettering(this.text('btn_deploy'),'font_text_3_cn_hd','#ebe6e1'));}
     }
   }
   root.Ew4Menus={Menus};

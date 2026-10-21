@@ -120,7 +120,7 @@ public static partial class WorldAi
             if (cellId == unit.Cell || state.Units.Any(u => u.Cell == cellId)) continue;
             var site = state.Cells[cellId];
             var owner = site.Owner == null ? null : state.Factions.Single(f => f.Id == site.Owner);
-            var relation = owner?.Id == faction.Id ? AiTerritoryRelation.Owned : owner?.Camp == faction.Camp ? AiTerritoryRelation.Allied
+            var relation = owner?.Id == faction.Id ? AiTerritoryRelation.Owned : owner != null && WorldDiplomacy.Allied(state, owner.Id, faction.Id) ? AiTerritoryRelation.Allied
                 : owner == null || !WorldDiplomacy.Hostile(state, faction.Id, owner.Id, rules.NeutralCamps) ? AiTerritoryRelation.NonAllied : AiTerritoryRelation.Hostile;
             var facts = new AiMoveFacts(sourceValue, AiTactics.Location(Site(state, cellId, rules), null, rules.Tactics), relation,
                 site.Environment, site.BuildingKind == null ? 0 : site.BuildingLevel, unit.Combatant.Health < unit.Combatant.Profile.MaxHealth, owner?.Human == true);

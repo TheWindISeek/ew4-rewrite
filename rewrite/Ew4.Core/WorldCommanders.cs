@@ -9,6 +9,7 @@ public sealed record CommanderDeploymentOffer(string Id, string CommanderId, str
     Resources Cost, string TurnGroup = "commander.deployment", int? PerTurnLimit = null);
 public sealed record WorldCommanderRules
 {
+    public RuleEventBus? Extensions { get; init; }
     public IReadOnlyDictionary<string, Commander> Definitions { get; init; } = new Dictionary<string, Commander>();
     public IReadOnlyDictionary<int, int> TitleHealing { get; init; } = new Dictionary<int, int>();
     public IReadOnlyCollection<string> ImmobileCategories { get; init; } = new[] { "fort" };
@@ -77,11 +78,15 @@ public static class WorldCommanders
         int maximum = checked(original.Profile.MaxHealth + commander.RankHealthBonus);
         int movement = rules.ImmobileCategories.Contains(original.Profile.Category) ? 0 : attached.Profile.Movement;
         int health = CommanderAttachment.ResizeHealth(unit.Combatant.Health, unit.Combatant.Profile.MaxHealth, original.Profile.MaxHealth, maximum);
+        attached = attached with { Health = health, Profile = attached.Profile with { MaxHealth = maximum, Movement = movement } };
+        int oldBudget = unit.ExtensionMovementLimit ?? unit.Combatant.Profile.Movement;
+        int budget = rules.Extensions?.MovementBudget(attached) ?? Math.Max(0, checked(movement + oldBudget - unit.Combatant.Profile.Movement));
         var updated = unit with
         {
             CommanderId = commanderId, CommanderBase = new(original with { Health = original.Profile.MaxHealth }, support),
-            RemainingMovement = CommanderAttachment.RebaseMovement(unit.RemainingMovement, unit.Combatant.Profile.Movement, movement, rules.RefillAvailableMovement),
-            Combatant = attached with { Health = health, Profile = attached.Profile with { MaxHealth = maximum, Movement = movement } },
+            RemainingMovement = CommanderAttachment.RebaseMovement(unit.RemainingMovement, oldBudget, budget, rules.RefillAvailableMovement),
+            ExtensionMovementLimit = unit.ExtensionMovementLimit.HasValue || rules.Extensions != null ? budget : null,
+            Combatant = attached,
             Support = support with
             {
                 FieldHealing = checked(support.FieldHealing + effects.FieldHealing),
@@ -107,13 +112,16 @@ public static class WorldCommanders
         if (unit == null || unit.Owner != faction.Id || unit.CommanderId == null)
             throw new RuleViolation("commander.unavailable", "No active faction commander to detach");
         var original = Unassigned(unit);
+        int oldBudget = unit.ExtensionMovementLimit ?? unit.Combatant.Profile.Movement;
+        int budget = rules.Extensions?.MovementBudget(original)
+            ?? Math.Max(0, checked(original.Profile.Movement + oldBudget - unit.Combatant.Profile.Movement));
         var detached = unit with
         {
             Combatant = original with { Health = CommanderAttachment.ResizeHealth(unit.Combatant.Health, unit.Combatant.Profile.MaxHealth,
                 original.Profile.MaxHealth, original.Profile.MaxHealth) },
             Support = unit.CommanderBase!.Support, CommanderId = null, CommanderBase = null,
-            RemainingMovement = CommanderAttachment.RebaseMovement(unit.RemainingMovement, unit.Combatant.Profile.Movement,
-                original.Profile.Movement, rules.RefillAvailableMovement)
+            RemainingMovement = CommanderAttachment.RebaseMovement(unit.RemainingMovement, oldBudget, budget, rules.RefillAvailableMovement),
+            ExtensionMovementLimit = unit.ExtensionMovementLimit.HasValue || rules.Extensions != null ? budget : null
         };
         detached = RefreshMorale(state, detached);
         var next = (state with { Units = state.Units.Select(u => u.Id == unitId ? detached : u).ToArray(), Revision = checked(state.Revision + 1) }).Copy();

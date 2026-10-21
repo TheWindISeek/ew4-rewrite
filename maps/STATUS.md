@@ -1,5 +1,7 @@
 # 地图阶段短锚点
 
+- **2026-10-21 地理文字与底图反馈：先读`eastasia_rewrite/LETTERING_20261021.md`。** 当前72名（39陆地/12海域/21湖泊），包内中文字体与原版英文字形；修正of比例、祁连/外兴安岭/太白山脉走向及南海/东海位置，新增中英文濑户内海。浪花723→289，仅删海浪前景；实际底图范围限制镜头，四角不露灰框。地形规则、278城/272设施/54桥渡与原图集不变；4哈希同步，测试包7525字节重封装。144缓存/22图0异常缺失、875镜头及7809引擎通过。5194 PID34424现有状态只读验证、无重启/写档；5192/5193未操作，无新APK。
+
 - **最新目录整理：先读`../rewrite/RUNTIME_DIRECTORIES.md`。** 通用Mod管理构建/日志移至`rewrite/local/mod-management`；5190宿主/资源快照/Mod/存档移至`rewrite/local/eastasia-preview`，PID33196，conquest7 revision4/round1，8项场景一致、40原存档哈希不变。通用识别/删除报告移至`reverse/reports/mod-*-browser-verification-20261020.json`，截图在`rewrite/reports/mod-management-20261020`。当前测试征服导入`rewrite/content/eastasia-test-conquest.ew4mod`，征服第二页“东亚/地图检查”；内置验证7809项及发行版导入/开局/存读档/删除保留存档通过。下方runtime路径/PID是迁移前历史。
 
 - **最新内置整合与0.2.0：** 东亚BIN、地图/城市目录、图集/文字及PNG移入rewrite/data，278城、272设施、54通桥节点、71双语地貌名；eastasia.map.json保存无归属城市/设施/桥梁模板，未添加正式征服/战役。`builtin-integration.json`及`rewrite/RELEASE_20261020.md`为入口，真实引擎7809项通过。旧v1–v5和重复content/eastasia已取消跟踪，保留本地与Git历史。5190 PID37444仍用兼容引擎，data指向runtime/preview-data-before-builtin，40原存档哈希不变；新发布包使用最新后端。
