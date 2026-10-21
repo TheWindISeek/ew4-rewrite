@@ -16,6 +16,7 @@ public sealed record LegacyScenarioRequest
     public string Id { get; init; } = "";
     public int Mode { get; init; }
     public string? SelectedCountry { get; init; }
+    public IReadOnlyList<string>? LocalPlayers { get; init; }
     public int Warzone { get; init; }
     public IReadOnlyList<int>? TechnologySnapshot { get; init; }
     public ulong CombatSeed { get; init; }
@@ -77,11 +78,19 @@ public static class LegacyScenarioHost
             throw new RuleViolation("legacy.start_neutral_player", "Selected player camp is configured as noncombatant; choose a combatant or change the explicit camp policy");
         string Camp(int value) => "ew4.camp." + value.ToString(CultureInfo.InvariantCulture);
         string[] ids = initialized.Records.Select((f, i) => LegacyScenarioInitialization.FactionId(request.Id, i, f)).ToArray();
+        if (request.LocalPlayers != null && (request.Mode is not (1 or 2) || request.LocalPlayers.Count == 0
+            || request.LocalPlayers.Distinct(StringComparer.Ordinal).Count() != request.LocalPlayers.Count
+            || !request.LocalPlayers.Contains(ids[initialized.PlayerIndex]) || request.LocalPlayers.Any(id => !ids.Contains(id))))
+            throw new RuleViolation("local.selection", "Local players must include the original country and use unique scenario faction IDs");
         var importedMap = LegacyScenarioMap.Import(map, battle, ids, LegacyBuildingCatalog.Kinds,
             LegacyRecruitmentCatalog.InstallationKinds, request.CityNames, catalogs.Buildings);
         var bySource = initialized.Records.Select((f, i) => LegacyFactionRules.Import(f, ids[i],
             request.CountryNames.TryGetValue(f.CountryId, out string? name) ? name : f.CountryId,
             Camp(f.Camp), catalogs.Cards, catalogs.Runtime)).ToArray();
+        if (request.LocalPlayers != null)
+            bySource = bySource.Select(f => f with { Human = request.LocalPlayers.Contains(f.Id),
+                IncomeMultiplier = request.LocalPlayers.Contains(f.Id) ? 1 : f.IncomeMultiplier,
+                AiEvasionBonus = request.LocalPlayers.Contains(f.Id) ? 0 : f.AiEvasionBonus }).ToArray();
         var bindings = new List<LegacyUnitBinding>();
         for (int i = 0; i < battle.Armies.Count; i++)
         {
@@ -104,14 +113,14 @@ public static class LegacyScenarioHost
             { PlayerCamp = playerCamp, Victory = initialized.Victory, NeutralCamps = neutral, RoundEvents = request.RoundEvents };
         var movement = new WorldMoveRules { PlayerCamp = playerCamp, Victory = initialized.Victory, NeutralCamps = neutral };
         var combat = catalogs.Combat.BattleRules() with { PlayerCamp = playerCamp, Victory = initialized.Victory, NeutralCamps = neutral };
-        var transport = catalogs.Cards.Transport();
+        var transport = catalogs.Cards.Transport(catalogs.Combat.SkillParameters);
         var ai = LegacyAiCatalog.Rules(catalogs.Combat, movement, transport) with { NeutralCamps = neutral };
         var production = new Dictionary<string, WorldProductionRules>(StringComparer.Ordinal);
         var recruitment = new Dictionary<string, IReadOnlyDictionary<string, RecruitmentOffer>>(StringComparer.Ordinal);
         var variants = new Dictionary<string, WorldProductionRules>(StringComparer.Ordinal);
         var definitions = bindings.Where(b => b.Definition != null).ToDictionary(b => b.Definition!.Id, b => b.Definition!, StringComparer.Ordinal);
         foreach (var definition in commerce.Tavern.Assignment.Definitions) definitions.Add(definition.Key, definition.Value);
-        var commanders = new WorldCommanderRules { Definitions = new ReadOnlyDictionary<string, Commander>(definitions),
+        var commanders = new WorldCommanderRules { LegacySkills = catalogs.Combat.SkillParameters, Definitions = new ReadOnlyDictionary<string, Commander>(definitions),
             TitleHealing = commerce.Tavern.Assignment.TitleHealing, DeploymentBuilding = BuildingRequirement.Any };
         for (int i = 0; i < ids.Length; i++)
         {
@@ -128,27 +137,36 @@ public static class LegacyScenarioHost
         var rules = new LegacyScenarioRules(turns, movement, combat, ai,
             new ReadOnlyDictionary<string, WorldProductionRules>(production),
             new ReadOnlyDictionary<string, IReadOnlyDictionary<string, RecruitmentOffer>>(recruitment), commanders,
-            catalogs.Accounts.DeploymentRules(catalogs.Combat), catalogs.Combat.Training, catalogs.Buildings.UpgradeRules(),
-            catalogs.Cards.Installations(), transport, commerce.Tavern, commerce.Trading, events.Dialogues,
+            catalogs.Accounts.DeploymentRules(catalogs.Combat), catalogs.Combat.Training, catalogs.Buildings.UpgradeRules(catalogs.Combat.SkillParameters),
+            catalogs.Cards.Installations(catalogs.Combat.SkillParameters), transport, commerce.Tavern, commerce.Trading, events.Dialogues,
             events.MissingReferences, initialized.HighestRatingRound);
         turns.Validate(); combat.Validate(); commanders.Validate(); rules.Training.Validate(); rules.Upgrades.Validate();
         foreach (var policy in production.Values) policy.Validate();
         var initial = new WorldState { ScenarioId = request.Id, ContentRevision = "initializing", Width = map.Width, Height = map.Height,
+            LocalMultiplayer = request.LocalPlayers == null ? null : new(player,
+                initialized.TurnOrder.Select(i => ids[i]).Where(request.LocalPlayers.Contains).ToArray()),
             Factions = initialized.TurnOrder.Select(i => bySource[i]).ToArray(), ActiveFaction = player, Cells = importedMap.Cells,
             Units = bindings.Select(b => b.Unit).ToArray(), Commanders = bindings.Where(b => b.Commander != null).Select(b => b.Commander!).ToArray(),
             Events = events.Events, TriggeredEvents = events.TriggeredEvents, Limits = request.Limits with { },
             RandomState = request.CombatSeed, AiRandomState = request.AiSeed, Phase = TurnPhase.RoundEvents };
+        if (initial.LocalMultiplayer != null)
+            initial = initial with { LocalMultiplayer = initial.LocalMultiplayer with {
+                InitialObjectiveOwner = LocalMultiplayerGame.InitialObjectiveOwner(initial, turns.Victory.UnitObjectiveOwnership),
+                HadObjectives = initial.Cells.Any(c => c.Objective) || initial.Units.Any(u => u.Objective) } };
         string worldRevision = Fingerprint(new { schema = 1, initialized.SourceRevision, map = importedMap.SourceRevision,
             events = events.SourceRevision, commerce = commerce.SourceRevision, rules,
             sourceHashes = catalogs.Runtime.SourceHashes, initial = initial with { RandomState = 0, AiRandomState = 0 } });
         initial = initial with { ContentRevision = worldRevision };
         initial.Validate();
         var entered = WorldTurns.Resume(initial, 0, turns);
+        if (request.LocalPlayers != null) entered = entered with { State = LocalMultiplayerGame.Resolve(entered.State, turns.Victory) };
         string sessionRevision = Fingerprint(new { schema = 1, worldRevision, account = account.ContentRevision, roster = rules.Roster,
             commerce = commerce.SourceRevision });
         var session = new GameSession { ContentRevision = sessionRevision, PlayerFaction = player, World = entered.State,
             Account = account.Copy(), Markets = commerce.Markets, TavernCandidates = commerce.Candidates,
-            RosterDeployments = [new(player, initialized.Records[initialized.PlayerIndex].Count172, Array.Empty<string>())] };
+            RosterDeployments = request.LocalPlayers == null ? [new(player, initialized.Records[initialized.PlayerIndex].Count172, Array.Empty<string>())]
+                : initialized.TurnOrder.Where(i => request.LocalPlayers.Contains(ids[i]))
+                    .Select(i => new RosterDeploymentState(ids[i], initialized.Records[i].Count172, Array.Empty<string>())).ToArray() };
         session.Validate();
         return new(session.Copy(), rules, entered.Notices.ToArray(), map) { MapDiagnostics = importedMap.Diagnostics };
     }
@@ -169,8 +187,12 @@ public static class LegacyScenarioHost
                 {
                     // Optional runtime districts must not change the pre-existing source-content binding.
                     if (property.Name == nameof(WorldState.Jurisdictions) && property.Value.ValueKind == JsonValueKind.Null) continue;
+                    if (property.Name == nameof(FactionState.Appearance) && property.Value.ValueKind == JsonValueKind.Null) continue;
+                    if (property.Name is nameof(WorldState.LocalMultiplayer) or nameof(WorldState.ScenarioVictory) or nameof(WorldState.ScenarioEnding)
+                        && property.Value.ValueKind == JsonValueKind.Null) continue;
                     if (property.Name == nameof(WorldState.NeutralHostilities) && property.Value.ValueKind == JsonValueKind.Array && property.Value.GetArrayLength() == 0) continue;
                     if (property.Name == nameof(CombatRules.LethalStrikePreventsCounterattack) && property.Value.ValueKind == JsonValueKind.False) continue;
+                    if (property.Name == nameof(CombatRules.LegacySkills) && property.Value.ValueKind == JsonValueKind.Null) continue;
                     writer.WritePropertyName(property.Name); Write(property.Value, writer);
                 }
                 writer.WriteEndObject();

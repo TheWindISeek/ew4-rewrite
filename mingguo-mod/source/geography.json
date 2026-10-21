@@ -1,0 +1,26 @@
+{
+  "regions": {
+    "日本及琉球桦太": "jp", "朝鲜半岛": "jp", "台湾及澎湖": "jp",
+    "苏联中亚西伯利亚及远东": "ru", "蒙古及图瓦": "mn",
+    "西藏及喜马拉雅": "tibet", "青藏高原": "tibet", "新疆": "xinjiang",
+    "港澳租借地及殖民据点": "uk", "暹罗及其他周边": "siam", "瓦罕走廊": "afghan"
+  },
+  "cities": {
+    "澳门": "portugal", "广州湾": "fr", "海防": "fr", "老街": "fr", "万象": "fr",
+    "谅山": "fr", "琅勃拉邦": "fr", "河内": "fr", "顺化": "fr", "岘港": "fr", "河静": "fr",
+    "拉瓦格": "usa", "阿帕里": "usa", "克孜勒": "ru", "大连": "jp", "曲麻莱": "ma"
+  },
+  "backgrounds": [
+    {"id":"jp","name":"日本","headquarters":"东京"},
+    {"id":"ru","name":"俄国及苏联远东","headquarters":"符拉迪沃斯托克"},
+    {"id":"mn","name":"外蒙古","headquarters":"库伦"},
+    {"id":"uk","name":"英国殖民军","headquarters":"加尔各答"},
+    {"id":"fr","name":"法国印度支那军","headquarters":"河内"},
+    {"id":"tibet","name":"西藏地方","headquarters":"拉萨"},
+    {"id":"xinjiang","name":"新疆地方","headquarters":"迪化"},
+    {"id":"siam","name":"暹罗及泰国","headquarters":"清迈"},
+    {"id":"usa","name":"美国与菲律宾部队","headquarters":"阿帕里"},
+    {"id":"portugal","name":"澳门葡军","headquarters":"澳门"},
+    {"id":"afghan","name":"阿富汗边地","headquarters":"萨尔哈德"}
+  ]
+}

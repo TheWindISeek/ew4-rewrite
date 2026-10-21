@@ -1,0 +1,28 @@
+{
+  "conquest1": [
+    {
+      "id": "objective.stage1",
+      "effects": [
+        {"type":"victory_rules","victoryRules":{"win":{"type":"round_reached","round":4},"lose":{"type":"round_reached","round":8},"descriptionKey":"第一阶段：坚持至第2回合"}}
+      ]
+    },
+    {
+      "id": "objective.stage2",
+      "condition": {"type":"all","conditions":[{"type":"event_completed","key":"objective.stage1"},{"type":"round","value":2}]},
+      "effects": [
+        {"type":"victory_rules","victoryRules":{"win":{"type":"all","conditions":[{"type":"round_reached","round":4},{"type":"resources","resources":{"money":1000,"industry":0,"food":0}}]},"lose":{"type":"round_reached","round":8},"descriptionKey":"第二阶段：准备1000金钱，第3回合更新目标"}}
+      ]
+    },
+    {
+      "id": "objective.stage3",
+      "condition": {"type":"all","conditions":[{"type":"event_completed","key":"objective.stage2"},{"type":"round","value":3}]},
+      "popup": {
+        "title":"最终目标",
+        "text":"条件已更新。确认后坚持至第4回合获胜。",
+        "choices":[{"id":"accept","text":"确认","effects":[
+          {"type":"victory_rules","victoryRules":{"win":{"type":"round_reached","round":4},"lose":{"type":"round_reached","round":8},"descriptionKey":"第三阶段：坚持至第4回合"}}
+        ]}]
+      }
+    }
+  ]
+}

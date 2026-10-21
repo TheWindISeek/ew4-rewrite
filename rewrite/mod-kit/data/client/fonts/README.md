@@ -6,6 +6,8 @@
 
 ## 修改入口
 
+战斗伤害数字是位图例外：使用原版 `font_fight_num_hd.png` 及独立的 `client/fight-font.json` 度量，保留减号和素材自带描边，不经过通用文字渲染器。原APK导入可提供成对的 `font_fight_num[_hd].fnt/.png`；新导入器保留其度量和PNG。已有Mod缺少此专用度量时使用基础资源，不必为了本次显示修复重新导入。下文“不导入FNT/PNG样式”适用于普通界面文字。
+
 | 目标 | 当前入口 |
 | --- | --- |
 | 将领名、按钮文字、说明 | 原`stringtable_cn.ini`和相关XML，修改后重导入 |

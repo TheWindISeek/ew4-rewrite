@@ -81,6 +81,7 @@ internal static class ClientChecks
                 Check(Call("action", new { op="select", revision=undoRevision, cell=destination }).GetProperty("undo").GetBoolean(), "move undo available without quota");
                 if (attempt==0) { Call("save"); Check(Call("load").GetProperty("undoUnit").GetString()==id,"movement history survives load"); }
                 var undone=Call("action",new { op="undo", revision=undoRevision, unit=id });
+                Check(undone.GetProperty("movements")[0].GetProperty("instant").GetBoolean(),"movement undo is an instantaneous return");
                 Check(undone.GetProperty("units").GetRawText()==view.GetProperty("units").GetRawText(),"movement undo restores unit positions and movement");
                 Check(undone.GetProperty("factions").GetRawText()==view.GetProperty("factions").GetRawText(),"undo does not refund resources");
                 Check(undone.GetProperty("cells").GetRawText()==view.GetProperty("cells").GetRawText(),"undo restores movement territory");
@@ -175,6 +176,27 @@ internal static class ClientChecks
         Check(deploymentView.GetProperty("units").EnumerateArray().Any(u => u.GetProperty("commanderId").GetString() == ownedId), "owned commander deploys through real session rules");
         Check(RosterCall("headquarters").GetProperty("roster")[0].GetProperty("locked").GetBoolean(), "deployed commander locked in headquarters");
         Check(RosterCall("commander", new { op = "rank", revision = 2, commander = ownedId }, false).GetString() == "account.deployed", "cannot mutate deployed commander stats behind combat state");
+        RosterCall("save", new { slot = 1, mode = 2 });
+        var savedFiles = Directory.GetFiles(profileDirectory, "*", SearchOption.AllDirectories)
+            .ToDictionary(p => p, File.ReadAllBytes);
+        Check(RosterCall("leave", new { revision = -1 }, false).GetString() == "client.stale", "stale exit cannot release the active session");
+        Check(RosterCall("headquarters").GetProperty("roster")[0].GetProperty("locked").GetBoolean(), "rejected exit preserves deployment lock");
+        RosterCall("leave", new { revision = deploymentView.GetProperty("revision").GetInt64() });
+        Check(!RosterCall("headquarters").GetProperty("roster")[0].GetProperty("locked").GetBoolean(), "returning to menu releases deployed commander lock");
+        Check(RosterCall("action", new { op = "state" }, false).GetString() == "client.no_session", "exited battle no longer accepts gameplay commands");
+        RosterCall("leave", new { });
+        Check(Directory.GetFiles(profileDirectory, "*", SearchOption.AllDirectories).Length == savedFiles.Count
+            && savedFiles.All(p => File.ReadAllBytes(p.Key).SequenceEqual(p.Value)), "repeated exits preserve all account and save bytes");
+        headquarters = RosterCall("commander", new { op = "rank", revision = 2, commander = ownedId });
+        Check(headquarters.GetProperty("revision").GetInt64() == 3, "commander promotion available after leaving battle");
+        foreach (int slot in new[] { 0, 1 })
+        {
+            deploymentView = RosterCall("load", new { slot, mode = 2 });
+            Check(deploymentView.GetProperty("units").EnumerateArray().Any(u => u.GetProperty("commanderId").GetString() == ownedId), "save retains deployed commander after exit, slot " + slot);
+            Check(RosterCall("headquarters").GetProperty("roster")[0].GetProperty("locked").GetBoolean(), "loading restores current battle lock, slot " + slot);
+            Check(RosterCall("commander", new { op = "rank", revision = 3, commander = ownedId }, false).GetString() == "account.deployed", "loaded battle still protects commander stats, slot " + slot);
+            RosterCall("leave", new { revision = deploymentView.GetProperty("revision").GetInt64() });
+        }
         int speakers=0;
         foreach (string scenario in new[] { "campaign1_01", "campaign3_08", "campaign3_08b", "tutorials1", "tutorials2" }) {
             var started=RosterCall("start", new { scenario });
@@ -191,6 +213,9 @@ internal static class ClientChecks
         }
         Check(speakers>0,"campaign dialogue presentation exercised");
         checks += ClientWorkflowChecks.Run(content, folder);
+        checks += ShopRefreshChecks.Run(content, folder);
+        checks += AiBatchChecks.Run(content, folder);
+        checks += FortConstructionChecks.Run(content, root);
         checks += CampaignProgressChecks.Run(content, folder, root);
         File.WriteAllText(Path.Combine(root, "rewrite/reports/client_host.json"), JsonSerializer.Serialize(new { checks, errors = 0,
             scope = "Original content loading, six conquest views, fort selection, actual move, stale/ownership validation and full save/load through shared UI API; not Android runtime or full game acceptance." }, new JsonSerializerOptions { WriteIndented = true }) + "\n");

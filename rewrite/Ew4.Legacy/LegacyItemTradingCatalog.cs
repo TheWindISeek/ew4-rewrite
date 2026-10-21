@@ -17,19 +17,23 @@ public sealed class LegacyItemTradingCatalog
         Items = new ReadOnlyDictionary<int, ItemTradeDefinition>(items); SourceXml = xml;
         SourceRevision = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(xml)));
     }
-    public static LegacyItemTradingCatalog Read(string xml)
+    public static LegacyItemTradingCatalog Read(string xml, bool correctOriginalEquipment = false)
     {
         var root = XDocument.Parse(xml).Root;
         if (root?.Name != "items") throw new RuleViolation("legacy.item_definition", "Unexpected item catalog root");
         var items = new Dictionary<int, ItemTradeDefinition>();
+        bool correctItems = correctOriginalEquipment && LegacyEquipmentCorrections.IsOriginal(
+            Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(xml))));
         foreach (var element in root.Elements("item"))
         {
             int Integer(string key, int fallback = 0) => (int?)element.Attribute(key) ?? fallback;
             int id = Integer("id", -1), price = Integer("price", -1), consumable = Integer("consumable"), flag = Integer("flag");
             string target = (string?)element.Attribute("target") ?? "all";
+            var equipment = new Equipment("ew4.item." + id.ToString(CultureInfo.InvariantCulture), Ew4Commander.Effect(Integer("function")),
+                Integer("value"), target == "all" ? null : target == "navy" ? "naval" : target, flag != 0, consumable != 0);
+            if (correctItems) equipment = LegacyEquipmentCorrections.Apply(equipment, (string)element.Attribute("name")!);
             if (id < 0 || price < 0 || consumable is not (0 or 1) || flag is not (0 or 1) || string.IsNullOrWhiteSpace(target)
-                || !items.TryAdd(id, new(new("ew4.item." + id.ToString(CultureInfo.InvariantCulture), Ew4Commander.Effect(Integer("function")),
-                    Integer("value"), target == "all" ? null : target == "navy" ? "naval" : target, flag != 0, consumable != 0), price, consumable == 0)))
+                || !items.TryAdd(id, new(equipment, price, consumable == 0)))
                 throw new RuleViolation("legacy.item_definition", "Invalid or duplicate item definition");
         }
         return new(items, xml);

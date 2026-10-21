@@ -1,0 +1,10 @@
+{
+  "type":"FeatureCollection",
+  "description":"游戏网格级历史区域草绘，不是测绘省界。先覆盖现代边界参考，再按城市组补齐。热河、察哈尔、绥远、西康须继续据历史地图精修。",
+  "features":[
+    {"type":"Feature","properties":{"region":"热河","accuracy":"draft"},"geometry":{"type":"Polygon","coordinates":[[[116.5,40.6],[119.8,40.5],[122.1,42.2],[122,44.8],[119.3,45.1],[117.3,43.5],[116.5,40.6]]]}},
+    {"type":"Feature","properties":{"region":"察哈尔","accuracy":"draft"},"geometry":{"type":"Polygon","coordinates":[[[113.5,39.8],[116.1,40.2],[117,42.6],[115.7,44.7],[113,44.7],[112.9,42.1],[113.5,39.8]]]}},
+    {"type":"Feature","properties":{"region":"绥远及内蒙古西部","accuracy":"draft"},"geometry":{"type":"Polygon","coordinates":[[[106.6,39.3],[111.9,39.5],[113.4,40.3],[113,42.4],[109.2,42.6],[106.6,41.5],[106.6,39.3]]]}},
+    {"type":"Feature","properties":{"region":"西康","accuracy":"draft"},"geometry":{"type":"Polygon","coordinates":[[[97,28],[101,27.5],[103,28.4],[102.8,31.2],[100.6,33.1],[97,32.5],[97,28]]]}}
+  ]
+}

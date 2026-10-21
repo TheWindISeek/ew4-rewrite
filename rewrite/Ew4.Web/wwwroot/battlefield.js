@@ -75,20 +75,44 @@
     constructor(api) {this.api=api;this.surface=new Ew4MapSurface.Surface();this.cityLabels=new Map();this.mapLabels=new Map();this.unitFrames=new Map();this.unitFramePixels=0;this.unitLibraryIds=new WeakMap();this.nextLibraryId=1;}
     frame(scene,time) {
       Object.assign(this,scene);this.time=time;
-      this.factions=new Map(this.state.factions.map(f=>[f.id,f]));
+      if(this.preparedState!==this.state){
+        if(this.preparedMap!==this.map){this.cityLabels.clear();this.mapLabels.clear();this.unitFrames.clear();this.unitFramePixels=0;}
+        this.preparedMap=this.map;this.preparedState=this.state;
+        this.factions=new Map(this.state.factions.map(f=>[f.id,f]));
+        this.stationed=new Map(this.state.units.map(u=>[u.cell,u]));
+        this.orderedUnits=[...this.state.units].sort((a,b)=>a.cell-b.cell);
+        this.objectiveCells=[];
+        this.state.cells.forEach((site,cell)=>{if(site.active&&objectiveMarker(site,this.stationed.get(cell)))this.objectiveCells.push(cell);});
+        this.groundSignature=JSON.stringify([this.state.width,this.state.cells,this.state.factions.map(f=>[f.id,f.color])]);
+        this.visibleKey=null;
+      }
+      const r=this.visibleRect,visibleKey=[r.left,r.top,r.width,r.height].join(',');
+      if(this.visibleKey!==visibleKey){
+        this.visibleKey=visibleKey;this.visibleCells=[];
+        const width=this.state.width,height=this.state.height;
+        const firstRow=Math.max(0,Math.floor((r.top-120+18)/54)),lastRow=Math.min(height-1,Math.ceil((r.top+r.height+120+18)/54));
+        for(let row=firstRow;row<=lastRow;row++){
+          const offset=row%2*32,firstCol=Math.max(0,Math.floor((r.left-120-offset)/64)),lastCol=Math.min(width-1,Math.ceil((r.left+r.width+120-offset)/64));
+          for(let col=firstCol;col<=lastCol;col++){const cell=row*width+col,p=point(cell,width);if(this.visible(p))this.visibleCells.push({cell,p,site:this.state.cells[cell]});}
+        }
+        this.visibleUnits=this.orderedUnits.filter(unit=>this.visible(point(unit.cell,width)));
+      }
+      this.animated=!!this.selection||this.visibleUnits.some(u=>u.burning>0||badgeAlpha(u,this.state,300)!==1||this.factions.get(u.owner)?.flag&&!this.factions.get(u.owner)?.flagImage)||
+        this.visibleCells.some(({site,cell})=>site.active&&(objectiveMarker(site,this.stationed.get(cell))||site.buildingKind==='port'&&site.owner&&!this.stationed.has(cell)));
       // Original 84e30: neutral/terrain, ownership, map mask/text/borders, grid, objects, selection.
       this.staticGround();this.objectives();this.flags();this.units();this.labels();this.highlights();
     }
     staticGround(){
       const target=this.draw,matrix=target.getTransform(),size=target.canvas;
-      const key=[matrix.a,matrix.b,matrix.c,matrix.d,matrix.e,matrix.f,size.width,size.height,this.api.imageRevision||0,this.api.geographicLanguage||'en'].join(',');
-      if(this.staticKey!==key||this.staticState!==this.state||this.staticMap!==this.map){
+      const key=[matrix.a,matrix.b,matrix.c,matrix.d,matrix.e,matrix.f,size.width,size.height,this.api.imageRevision||0,this.api.geographicLanguage||'en',Ew4OriginalUI.revision].join(',');
+      if(this.staticKey!==key||this.staticSignature!==this.groundSignature||this.staticMap!==this.map){
         const canvas=this.staticCanvas||(this.staticCanvas=document.createElement('canvas'));
         canvas.width=size.width;canvas.height=size.height;
         this.draw=canvas.getContext('2d');this.draw.setTransform(matrix);
         this.ground();this.facilities(true);this.terrain(false);this.ownership();this.mapTiles();this.mapText();this.borders();this.terrain(true);this.facilities(false);
-        this.draw=target;this.staticKey=key;this.staticState=this.state;this.staticMap=this.map;
+        this.draw=target;this.staticKey=key;this.staticSignature=this.groundSignature;this.staticMap=this.map;
       }
+      this.staticState=this.state;
       target.save();target.resetTransform();target.drawImage(this.staticCanvas,0,0);target.restore();
     }
     ground() {
@@ -98,11 +122,11 @@
     ownership() {
       const {draw}=this;
       // Land in the original texture is transparent. Ownership belongs BELOW coast/river tiles.
-      this.state.cells.forEach((c,i)=>{const p=point(i,this.state.width);if(!this.visible(p))return;
+      for(const {site:c,cell:i,p} of this.visibleCells){
         if(c.owner&&!c.sea){const color=Ew4MapSurface.rgba(this.factions.get(c.owner)?.color||0);
           hex(draw,p.x,p.y);draw.fillStyle=`rgba(${color[0]},${color[1]},${color[2]},${color[3]/255})`;draw.fill();}
         else {const neighbors=this.neighbors(i);if(neighbors.some(n=>n?.active&&!n.sea&&n.color))draw.drawImage(this.surface.coast(neighbors),p.x-32,p.y-36,64,72);}
-      });
+      }
     }
     neighbors(index){return Array.from({length:6},(_,d)=>{const cell=this.state.cells[neighbor(index,d,this.state.width,this.state.height)];
       return cell?{...cell,color:this.factions.get(cell.owner)?.color||0}:null;});}
@@ -114,10 +138,10 @@
     borders() {
       const {draw,state}=this,rules=this.api.manifest.mapDrawing;if(!rules)return;
       const texture=this.api.image(rules.borderTexture);
-      state.cells.forEach((c,i)=>{if(!c.active||c.sea||!c.owner)return;const p=point(i,state.width);if(!this.visible(p))return;
-        const mask=Ew4MapSurface.borderMask(c,this.neighbors(i));if(!mask)return;
+      for(const {site:c,cell:i,p} of this.visibleCells){if(!c.active||c.sea||!c.owner)continue;
+        const mask=Ew4MapSurface.borderMask(c,this.neighbors(i));if(!mask)continue;
         const bitmap=this.surface.border(mask,rules,texture);if(bitmap)draw.drawImage(bitmap,p.x-32,p.y-36,64,72);
-      });
+      }
     }
     terrain(seaForeground) {
       for(const overlay of this.map.overlays)if(!!overlay.seaForeground===seaForeground&&this.state.cells[overlay.cell]?.active&&this.visible(overlay))this.api.sprite('tiles',overlay.image,overlay.x,overlay.y,1,this.draw);
@@ -162,9 +186,8 @@
       }
     }
     facilities(farms) {
-      this.state.cells.forEach((c,i)=>{
-        if(!c.active||(c.buildingKind==='farmland')!==farms)return;
-        const p=point(i,this.state.width);if(!this.visible(p))return;
+      for(const {site:c,p} of this.visibleCells){
+        if(!c.active||(c.buildingKind==='farmland')!==farms)continue;
         if(c.buildingKind){
           const level=Math.max(1,c.buildingLevel),style=c.buildingStyle??1,region=style===1?'west':'east';
           const art=({city:`city_${region}_lv${level}.png`,industry:`factory_${region}_lv${level}.png`,stable:`stable_${region}_lv${level}.png`,port:`port_${style}.png`,farmland:`farm_${style}_lv${level}.png`})[c.buildingKind];
@@ -178,14 +201,13 @@
           if(!farms&&c.facility)this.api.sprite('buildings','marker_'+c.facility+'.png',p.x+17,p.y+25,1,this.draw);
         }
         if(!farms&&c.installationKind)this.api.sprite('buildings',({trench:'defense_moat.png',fence:'defense_fences.png',bunker:'defense_bunker.png'})[c.installationKind],p.x,p.y,1,this.draw);
-      });
+      }
     }
     objectives(){
       const lib=this.api.libraries.get('anim_smoke');if(!lib)return;
       if(this.objectiveSource!==lib.texture){this.objectiveSource=lib.texture;this.objectiveLibraries=new Map();}
-      const stationed=new Map(this.state.units.map(u=>[u.cell,u]));
-      for(let cell=0;cell<this.state.cells.length;cell++){
-        const site=this.state.cells[cell],unit=stationed.get(cell),marker=objectiveMarker(site,unit);
+      for(const cell of this.objectiveCells){
+        const site=this.state.cells[cell],unit=this.stationed.get(cell),marker=objectiveMarker(site,unit);
         if(!site.active||!(marker===1||marker===2))continue;
         const motion=!site.objectiveMarker&&!site.objective&&unit?this.motions.get(unit.id):null;
         const p=motion?pose(motion,this.state.width,this.time):point(cell,this.state.width);
@@ -199,39 +221,45 @@
         this.api.animation(tinted,tinted.byName.get('circle'),this.time/1000*tinted.fps,0,this.draw);this.draw.restore();
       }
     }
-    flag(flag,p,animated=true){
-      if(!flag)return;
+    flag(flag,p,animated=true,imagePath=null){
+      if(!flag&&!imagePath)return;
       const anchor=flagPosition(p);this.draw.save();this.draw.globalAlpha*=.5;this.api.sprite('buildings','flagpole.png',anchor.x,anchor.y,1,this.draw);this.draw.restore();
+      if(imagePath){
+        const image=this.api.image('extensions/'+imagePath.slice('rewrite/'.length));
+        if(image.complete&&image.naturalWidth)this.draw.drawImage(image,anchor.x,anchor.y,26,15);
+        return;
+      }
       this.api.sprite('buildings',flag+(animated?flagFrame(this.time):1)+'.png',anchor.x,anchor.y,1,this.draw);
     }
     flags(){
-      const occupied=new Set(this.state.units.map(u=>u.cell));
-      this.state.cells.forEach((site,cell)=>{
-        if(!site.active||!site.owner||!site.buildingKind||site.buildingKind==='farmland'||occupied.has(cell))return;
-        const p=point(cell,this.state.width);if(this.visible(p))this.flag(this.factions.get(site.owner)?.flag,p,site.buildingKind==='port');
-      });
+      for(const {site,cell,p} of this.visibleCells){
+        if(!site.active||!site.owner||!site.buildingKind||site.buildingKind==='farmland'||this.stationed.has(cell))continue;
+        const faction=this.factions.get(site.owner);this.flag(faction?.flag,p,site.buildingKind==='port',faction?.flagImage);
+      }
     }
     units() {
       const {draw,state,time}=this;
       // Native movement emitters render behind the unit bodies, using HD-to-map scale.
-      for(const unit of state.units){const motion=this.motions.get(unit.id);if(!motion)continue;
+      for(const [id,motion] of this.motions){const unit=state.units.find(u=>u.id===id);if(!unit)continue;
         const p=pose(motion,state.width,time);if(p.moving&&this.visible(p))this.api.effects?.trail(unit.id,p.x,p.y,unit.category,state.cells[p.cell??unit.cell]?.sea,time);
       }
       this.api.effects?.frame(draw,time,'ground',this.visibleRect);
-      for(const unit of [...state.units].sort((a,b)=>a.cell-b.cell)){
+      const units=this.motions.size?this.orderedUnits.filter(u=>this.motions.has(u.id)||this.visible(point(u.cell,state.width))):this.visibleUnits;
+      for(const unit of units){
         const motion=this.motions.get(unit.id),p=motion?pose(motion,state.width,time):point(unit.cell,state.width);
         if(!this.visible(p))continue;
         const profile=this.api.manifest.profiles[unit.profile],lib=this.api.libraries.get(profile?.library);if(!profile)continue;
         draw.save();
         const death=this.deaths?.get(unit.id),deathProgress=death?Math.max(0,Math.min(1,(time-death.started)/death.duration)):0;
-        if(death){draw.globalAlpha*=1-deathProgress;p.y+=12*deathProgress;}
+        if(deathProgress>=1){draw.restore();continue;}
         const facing=motion?p.facing:this.facings.get(unit.id)??(unit.facing===0?-1:1),sea=state.cells[p.cell??unit.cell]?.sea;
-        draw.save();const arrival=this.arrivals.get(unit.id);if(arrival!=null)draw.translate(0,recruitOffset(time-arrival,this.arrivalSpeed||1));
+        draw.save();if(death)draw.globalAlpha*=1-deathProgress;
+        const arrival=this.arrivals.get(unit.id);if(arrival!=null)draw.translate(0,recruitOffset(time-arrival,this.arrivalSpeed||1));
         if(sea&&unit.category!=='naval')this.api.sprite('buildings',facing>0?'transportship1.png':'transportship2.png',p.x,p.y);
         else if(lib){
           const combat=this.combatMotions?.get(unit.id),elapsed=combat?time-combat.started-(combat.delay||0):0;
           const segment=elapsed>=0?(combat?.segments.find(s=>elapsed<s.end)||combat?.segments.at(-1)):null;
-          const action=motion&&p.moving?'move':'ready',native=this.api.effects?.motion(unit.profile,action,facing),item=lib.byName.get(segment?.name||native?.name||profile.motions[action]||profile.motions.ready);
+          const action=unit.constructionTurns>0?'build':motion&&p.moving?'move':'ready',native=this.api.effects?.motion(unit.profile,action,facing),item=lib.byName.get(segment?.name||native?.name||profile.motions[action]||profile.motions.ready);
           const started=this.arrivals.get(unit.id)??(this.selected?.id===unit.id?this.selectedAt:null);
           const tick=segment?Math.min((elapsed-segment.start)*segment.speed/1000*lib.fps,Math.max(0,(item?.duration||1)-1)):action==='move'?(time-motion.started)/1000*lib.fps*Number(native?.speed||1)*(300/motion.stepMs):started!=null?Math.min((time-started)/1000*lib.fps*Number(native?.speed||1),Math.max(0,(item?.duration||1)-1)):0;
           const directional=segment?segment.directional:native?.dir==='left'||native?.dir==='right';
@@ -240,15 +268,16 @@
         }
         draw.restore();
         const color=badgeColor(state,unit.owner);
-        draw.save();draw.globalAlpha*=badgeAlpha(unit,state,time);
+        draw.save();draw.globalAlpha*=death?1:badgeAlpha(unit,state,time);
         this.api.sprite('buildings','hpbar_'+color+'.png',p.x-13,p.y+15);
-        draw.beginPath();draw.arc(p.x-13,p.y+15,9,Math.PI,Math.PI+Math.PI*Math.max(0,unit.health/unit.maxHealth));draw.strokeStyle='#00d96d';draw.lineWidth=2.5;draw.stroke();
+        draw.beginPath();draw.arc(p.x-13,p.y+15,9,Math.PI,Math.PI+Math.PI*Math.max(0,death?0:unit.health/unit.maxHealth));draw.strokeStyle='#00d96d';draw.lineWidth=2.5;draw.stroke();
         this.api.sprite('buildings','mark_unit_'+profile.unitIndex+'.png',p.x-13,p.y+15);
         draw.restore();
         if(unit.transport&&unit.category!=='naval'&&unit.category!=='fort')this.api.sprite('buildings','ship_mark.png',p.x+19,p.y+17);
         if(unit.burning>0){const fire=this.api.libraries.get('anim_fire'),item=fire?.byName.get(['1','3','2'][unit.burning-1]);if(item){draw.save();draw.globalAlpha=.5;draw.translate(p.x,p.y);this.api.animation(fire,item,time/1000*fire.fps);draw.restore();}}
         const rank=Number(unit.veterancy);if(rank>0)this.api.sprite('buildings','rank_'+rank+'.png',p.x+8,p.y-8);
-        this.flag(this.factions.get(unit.owner)?.flag,p);
+        if(death){draw.restore();continue;}
+        const faction=this.factions.get(unit.owner);this.flag(faction?.flag,p,true,faction?.flagImage);
         if(unit.commanderImage){
           // Portrait and pointer use different atlas anchors; the portrait sits inside
           // the white board, with the pointer tip on the unit (native board refy=74).
@@ -279,17 +308,18 @@
     labels() {
       if(this.zoom<=.5)return;
       const {draw,state}=this;
-      state.cells.forEach((c,i)=>{if(!c.active||!c.name)return;const p=point(i,state.width);if(!this.visible(p))return;
+      for(const {site:c,cell:i,p} of this.visibleCells){if(!c.active||!c.name)continue;
         const key=i+':'+c.name;
         if(!this.cityLabels.has(key))this.cityLabels.set(key,this.api.cityLabel(c.name,i).firstElementChild);
-        const label=this.cityLabels.get(key);draw.save();draw.shadowColor='#292929';draw.shadowBlur=2;draw.drawImage(label,p.x-label.width/4,p.y+29,label.width/2,label.height/2);draw.restore();});
+        const label=this.cityLabels.get(key);draw.save();draw.shadowColor='#292929';draw.shadowBlur=2;draw.drawImage(label,p.x-label.width/4,p.y+29,label.width/2,label.height/2);draw.restore();}
     }
     highlights() {
-      this.state.cells.forEach((c,i)=>{if(!c.active)return;const p=point(i,this.state.width);if(!this.visible(p))return;
+      const range=new Set(this.selection?.range),targets=new Set(this.selection?.targets);
+      for(const {site:c,cell:i,p} of this.visibleCells){if(!c.active)continue;
         if(this.showGrid){hex(this.draw,p.x,p.y);this.draw.strokeStyle='#33333360';this.draw.lineWidth=.7/this.zoom;this.draw.stroke();}
-        if(this.selection?.range.includes(i)&&i!==this.selection.cell&&!this.state.units.some(u=>u.cell===i))this.api.sprite('buildings','move.png',p.x,p.y);
-        if(this.selection?.targets?.includes(i))this.api.sprite('buildings','attack.png',p.x,p.y);
-      });
+        if(range.has(i)&&i!==this.selection.cell&&!this.stationed.has(i))this.api.sprite('buildings','move.png',p.x,p.y);
+        if(targets.has(i))this.api.sprite('buildings','attack.png',p.x,p.y);
+      }
       if(this.selection){const p=point(this.selection.cell,this.state.width);let lib=this.api.libraries.get('choose');
         if(lib&&selectionHostile(this.state,this.selection.cell)){
           if(this.redChoose?.source!==lib.texture){

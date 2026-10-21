@@ -22,14 +22,16 @@ public sealed class LegacyRuntimeCatalog
     public IReadOnlyDictionary<string, string> SourceHashes { get; }
     public JsonElement SourceTrees { get; }
     public JsonElement NativeTables { get; }
+    public LegacySkillParameters? SkillParameters { get; }
     private LegacyRuntimeCatalog(Dictionary<string, LegacyUnitDefinition> profiles, Dictionary<string, IReadOnlyDictionary<string, string>> variants,
         Dictionary<int, LegacyCommanderDefinition> commanders, Dictionary<int, Equipment> items, Dictionary<string, string> sources,
-        JsonElement trees, JsonElement tables)
+        JsonElement trees, JsonElement tables, LegacySkillParameters? skillParameters)
     {
         Profiles = new ReadOnlyDictionary<string, LegacyUnitDefinition>(profiles);
         Variants = new ReadOnlyDictionary<string, IReadOnlyDictionary<string, string>>(variants);
         Commanders = new ReadOnlyDictionary<int, LegacyCommanderDefinition>(commanders); Items = new ReadOnlyDictionary<int, Equipment>(items);
         SourceHashes = new ReadOnlyDictionary<string, string>(sources); SourceTrees = trees.Clone(); NativeTables = tables.Clone();
+        SkillParameters = skillParameters;
     }
 
     public void VerifySources(Func<string, byte[]> readSource)
@@ -75,7 +77,7 @@ public sealed class LegacyRuntimeCatalog
         return index >= 0 ? index : throw new RuleViolation("legacy.unit_definition", "Unknown legacy unit name");
     }
 
-    public static LegacyRuntimeCatalog FromJson(string json)
+    public static LegacyRuntimeCatalog FromJson(string json, bool correctOriginalEquipment = false, LegacySkillParameters? skillParameters = null)
     {
         using var document = JsonDocument.Parse(json);
         var root = document.RootElement;
@@ -110,13 +112,16 @@ public sealed class LegacyRuntimeCatalog
             variants.Add(variant.Name, new ReadOnlyDictionary<string, string>(values));
         }
         var items = new Dictionary<int, Equipment>();
+        bool correctItems = correctOriginalEquipment && LegacyEquipmentCorrections.IsOriginal(
+            root.GetProperty("source_sha256").GetProperty("def_item.xml").GetString()!);
         foreach (var item in trees.GetProperty("def_item.xml").GetProperty("children").EnumerateArray())
         {
             var attrs = item.GetProperty("attributes");
             int Integer(string key, int fallback = 0) => attrs.TryGetProperty(key, out var v) ? int.Parse(v.GetString()!, CultureInfo.InvariantCulture) : fallback;
             int id = Integer("id"); string target = attrs.GetProperty("target").GetString()!;
-            items.Add(id, new("ew4.item." + id, Ew4Commander.Effect(Integer("function")), Integer("value"),
-                target == "all" ? null : target == "navy" ? "naval" : target, Integer("flag") != 0, Integer("consumable") != 0));
+            var equipment = new Equipment("ew4.item." + id, Ew4Commander.Effect(Integer("function")), Integer("value"),
+                target == "all" ? null : target == "navy" ? "naval" : target, Integer("flag") != 0, Integer("consumable") != 0);
+            items.Add(id, correctItems ? LegacyEquipmentCorrections.Apply(equipment, attrs.GetProperty("name").GetString()!) : equipment);
         }
         int[] health = tables.GetProperty("commander_rank_health_bonus").EnumerateArray().Select(v => v.GetInt32()).ToArray();
         int[] healing = tables.GetProperty("commander_nobility_healing").EnumerateArray().Select(v => v.GetInt32()).ToArray();
@@ -151,6 +156,6 @@ public sealed class LegacyRuntimeCatalog
             commanders.Add(id, new(commander, rank, title, Integer("training"), health[rank], healing[title], Percent(1), Percent(2)));
         }
         var sources = root.GetProperty("source_sha256").EnumerateObject().ToDictionary(p => p.Name, p => p.Value.GetString()!, StringComparer.Ordinal);
-        return new(profiles, variants, commanders, items, sources, trees, tables);
+        return new(profiles, variants, commanders, items, sources, trees, tables, skillParameters);
     }
 }

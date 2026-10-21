@@ -70,9 +70,12 @@ public static class WorldImprovements
         return step != null && Affordable(faction.Resources, UpgradePrice(state, cellId, step, rules));
     }
 
-    public static WorldChange Train(WorldState state, long expectedRevision, string unitId, TrainingRules rules)
+    public static Resources TrainingCost(WorldState state, string unitId, TrainingRules rules) =>
+        PrepareTraining(state, WorldActions.Ready(state, state.Revision), unitId, rules).cost;
+
+    private static (UnitState unit, int level, Resources cost) PrepareTraining(WorldState state, FactionState faction,
+        string unitId, TrainingRules rules)
     {
-        var faction = WorldActions.Ready(state, expectedRevision);
         rules.Validate();
         var unit = state.Units.SingleOrDefault(u => u.Id == unitId);
         if (unit == null || unit.Owner != faction.Id || unit.CommanderId == null)
@@ -88,6 +91,13 @@ public static class WorldImprovements
             throw new RuleViolation("training.limit", "Commander or training track limit reached");
         var cost = new Resources(rules.Stages[level].MoneyToNext!.Value, 0,
             checked(unit.Support.FoodConsumption * rules.FoodMultiplier));
+        return (unit, level, cost);
+    }
+
+    public static WorldChange Train(WorldState state, long expectedRevision, string unitId, TrainingRules rules)
+    {
+        var faction = WorldActions.Ready(state, expectedRevision);
+        var (unit, level, cost) = PrepareTraining(state, faction, unitId, rules);
         if (!Affordable(faction.Resources, cost)) throw new RuleViolation("training.resources", "Insufficient training resources");
         var trained = unit with
         {
@@ -105,9 +115,12 @@ public static class WorldImprovements
         return new(next, new[] { new WorldNotice("unit.trained", unitId) });
     }
 
-    public static WorldChange UpgradeBuilding(WorldState state, long expectedRevision, int cellId, BuildingUpgradeRules rules)
+    public static Resources BuildingUpgradeCost(WorldState state, int cellId, BuildingUpgradeRules rules) =>
+        PrepareUpgrade(state, WorldActions.Ready(state, state.Revision), cellId, rules).cost;
+
+    private static (CellState cell, BuildingUpgradeStep step, Resources cost) PrepareUpgrade(WorldState state,
+        FactionState faction, int cellId, BuildingUpgradeRules rules)
     {
-        var faction = WorldActions.Ready(state, expectedRevision);
         rules.Validate();
         if (cellId < 0 || cellId >= state.Cells.Count) throw new RuleViolation("upgrade.site", "Unknown building site");
         var cell = state.Cells[cellId];
@@ -118,6 +131,13 @@ public static class WorldImprovements
         var step = rules.Steps.SingleOrDefault(s => s.Kind == cell.BuildingKind && s.FromLevel == cell.BuildingLevel)
             ?? throw new RuleViolation("upgrade.limit", "No configured upgrade from this building level");
         var cost = UpgradePrice(state, cellId, step, rules);
+        return (cell, step, cost);
+    }
+
+    public static WorldChange UpgradeBuilding(WorldState state, long expectedRevision, int cellId, BuildingUpgradeRules rules)
+    {
+        var faction = WorldActions.Ready(state, expectedRevision);
+        var (cell, step, cost) = PrepareUpgrade(state, faction, cellId, rules);
         if (!Affordable(faction.Resources, cost)) throw new RuleViolation("upgrade.resources", "Insufficient building upgrade resources");
         var upgraded = cell with { BuildingLevel = step.ToLevel, BuildingUpgradesThisTurn = checked(cell.BuildingUpgradesThisTurn + 1) };
         var next = (state with

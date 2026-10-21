@@ -183,6 +183,8 @@ internal static class ScenarioRuleChecks
         foreach (var p in overrides) { string target = Path.Combine(fixture, p.Key); Directory.CreateDirectory(Path.GetDirectoryName(target)!); File.WriteAllBytes(target, p.Value); }
         File.Copy(Path.Combine(root, "rewrite/data/original/conquest1.btl"), Path.Combine(fixture, "conquest1.btl"), true);
         checks += ScenarioRecurrenceDiplomacyChecks.Run(root);
+        checks += ScenarioFactionChecks.Run(root);
+        checks += ScenarioControlChecks.Run(root);
         File.WriteAllText(Path.Combine(folder, "core.json"), JsonSerializer.Serialize(new { checks, errors = 0, fixture, unitId, cell = availableUnit.GetProperty("cell").GetInt32() }));
         return checks;
     }

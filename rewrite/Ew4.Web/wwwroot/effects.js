@@ -18,27 +18,33 @@
   }
   function inView(rect,x,y,radius){return !rect||x+radius>=rect.left&&x-radius<=rect.left+rect.width&&y+radius>=rect.top&&y-radius<=rect.top+rect.height;}
   class DamageNumbers {
-    constructor(text){this.text=text;this.instances=[];this.cache=new Map();}
+    constructor(font,sheet){this.font=font;this.sheet=sheet;this.instances=[];this.cache=new Map();}
     clear(){this.instances=[];}
     add(amount,critical,x,y,speed=1){
       if(!Number.isFinite(amount)||amount<=0)return;
       const key=amount+':'+!!critical;
       if(!this.cache.has(key)){
-        const ink=this.text.element(String(amount),'font_char_3_hd',critical?'#ff3030':'#ffffff').firstChild;
-        const shadow=document.createElement('canvas');shadow.width=ink.width;shadow.height=ink.height;
-        const d=shadow.getContext('2d');d.drawImage(ink,0,0);d.globalCompositeOperation='source-in';d.fillStyle='#161616';d.fillRect(0,0,shadow.width,shadow.height);
-        const canvas=document.createElement('canvas');canvas.width=ink.width+4;canvas.height=ink.height+4;const draw=canvas.getContext('2d');
-        for(const [dx,dy] of [[-2,0],[2,0],[0,-2],[0,2],[-1,-1],[1,-1],[-1,1],[1,1]])draw.drawImage(shadow,2+dx,2+dy);
-        draw.drawImage(ink,2,2);this.cache.set(key,canvas);if(this.cache.size>128)this.cache.delete(this.cache.keys().next().value);
+        const glyphs=[...('-'+amount)].map(c=>this.font.glyphs[c.codePointAt(0)]);
+        let cursor=0,width=0;
+        for(const [,,w,,dx,,advance] of glyphs){width=Math.max(width,cursor-dx+w);cursor+=advance;}
+        const canvas=document.createElement('canvas');canvas.width=Math.ceil(width);canvas.height=this.font.height;const draw=canvas.getContext('2d');
+        cursor=0;
+        for(const [x,y,w,h,dx,dy,advance] of glyphs){draw.drawImage(this.sheet,x,y,w,h,cursor-dx,-dy,w,h);cursor+=advance;}
+        if(critical){
+          const pixels=draw.getImageData(0,0,canvas.width,canvas.height);
+          for(let i=0;i<pixels.data.length;i+=4){pixels.data[i+1]*=48/255;pixels.data[i+2]*=48/255;}
+          draw.putImageData(pixels,0,0);
+        }
+        this.cache.set(key,canvas);if(this.cache.size>128)this.cache.delete(this.cache.keys().next().value);
       }
-      this.instances.push({amount,critical:!!critical,x,y,started:performance.now(),duration:1000/speed,canvas:this.cache.get(key)});
+      this.instances.push({amount,critical:!!critical,x,y,speed,started:performance.now(),duration:1600/speed,canvas:this.cache.get(key)});
     }
     frame(draw,time,rect){
       this.instances=this.instances.filter(hit=>{
         const progress=Math.max(0,(time-hit.started)/hit.duration);if(progress>=1)return false;
-        const y=hit.y-36-32*progress;if(!inView(rect,hit.x,y,64))return true;
-        const width=hit.canvas.width*.6,height=hit.canvas.height*.6;
-        draw.save();draw.globalAlpha*=Math.min(1,(1-progress)/.3);draw.drawImage(hit.canvas,hit.x-width/2,y-height/2,width,height);draw.restore();return true;
+        const y=hit.y-30-64*progress;if(!inView(rect,hit.x,y,96))return true;
+        const scale=24/this.font.height,width=hit.canvas.width*scale,height=hit.canvas.height*scale;
+        draw.drawImage(hit.canvas,hit.x-width/2,y,width,height);return true;
       });
     }
   }

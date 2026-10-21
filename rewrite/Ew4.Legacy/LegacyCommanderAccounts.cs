@@ -46,10 +46,11 @@ public sealed class LegacyCommanderAccounts
         var commerce = data.GetProperty("title_commerce").EnumerateArray().Select((v, i) => (i, v: v.GetInt32())).ToDictionary(p => p.i, p => p.v);
         if (commerce.Count != combat.TitleProgression.Levels.Count || commerce.Values.Any(v => v < 0))
             throw new RuleViolation("legacy.metagame_tables", "Invalid title commerce stages");
+        var skills = combat.SkillParameters ?? LegacySkillParameters.Default;
         var inheritance = new CommanderInheritanceRules { Rank = combat.RankProgression, Title = combat.TitleProgression,
             RankPercent = data.GetProperty("rank_percent").EnumerateArray().Select(v => v.GetInt32()).ToArray(),
             TitlePercent = data.GetProperty("title_percent").EnumerateArray().Select(v => v.GetInt32()).ToArray(),
-            Abilities = Abilities.Select((id, i) => new InheritedAbilityRule(Ew4Combat.Skill(33 + i), id, 1, 5)).ToArray() };
+            Abilities = Abilities.Select((id, i) => new InheritedAbilityRule(Ew4Combat.Skill(33 + i), id, skills.Gain(33 + i), skills.Maximum(33 + i))).ToArray() };
         inheritance.Validate();
         var business = runtime.SourceTrees.GetProperty("def_commander.xml").GetProperty("children").EnumerateArray()
             .Select(v => v.GetProperty("attributes")).ToDictionary(v => int.Parse(v.GetProperty("id").GetString()!, CultureInfo.InvariantCulture),
@@ -64,7 +65,7 @@ public sealed class LegacyCommanderAccounts
         Items = new ReadOnlyDictionary<string, Equipment>(runtime.Items.Values.ToDictionary(i => i.Id, StringComparer.Ordinal)) };
     public RosterDeploymentRules DeploymentRules(LegacyCombatCatalog combat) => new() { Account = Rules(),
         RankHealth = combat.RankHealth.ToDictionary(p => int.Parse(p.Key, CultureInfo.InvariantCulture), p => p.Value),
-        Assignment = new() { TitleHealing = combat.TitleHealing.ToDictionary(p => int.Parse(p.Key, CultureInfo.InvariantCulture), p => p.Value),
+        Assignment = new() { LegacySkills = combat.SkillParameters, TitleHealing = combat.TitleHealing.ToDictionary(p => int.Parse(p.Key, CultureInfo.InvariantCulture), p => p.Value),
             DeploymentBuilding = BuildingRequirement.Any } };
     public OwnedCommander FromDefinition(int id, string instanceId)
     {

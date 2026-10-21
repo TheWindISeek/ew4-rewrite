@@ -45,13 +45,14 @@ public static class Progression
 public static class Ew4Experience
 {
     public static long CommanderGain(long amount, bool nobility, IReadOnlyCollection<string> skills,
-        int? equipmentPercent = null, bool training = false)
+        int? equipmentPercent = null, bool training = false, LegacySkillParameters? skillParameters = null)
     {
         if (amount < 0 || equipmentPercent < 0) throw new RuleViolation("experience.gain", "Invalid XP gain modifier");
         if (training) return amount;
         if (equipmentPercent.HasValue) return checked(amount * equipmentPercent.Value) / 100;
-        float factor = nobility ? (skills.Contains(Ew4Combat.Skill(19)) ? 1.5f : 1f)
-            : skills.Contains(Ew4Combat.Skill(21)) ? 1.8f : skills.Contains(Ew4Combat.Skill(20)) ? 1.4f : 1f;
+        var parameters = skillParameters ?? LegacySkillParameters.Default;
+        float factor = nobility ? (skills.Contains(Ew4Combat.Skill(19)) ? parameters.Multiplier(19) : 1f)
+            : skills.Contains(Ew4Combat.Skill(21)) ? parameters.Multiplier(21) : skills.Contains(Ew4Combat.Skill(20)) ? parameters.Multiplier(20) : 1f;
         return factor == 1f ? amount : checked((long)((float)amount * factor));
     }
 }

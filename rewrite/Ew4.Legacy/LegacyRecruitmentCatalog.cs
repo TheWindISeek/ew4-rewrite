@@ -74,18 +74,20 @@ public sealed class LegacyRecruitmentCatalog
     private LegacyCardDefinition RequiredCard(int id, string type) => Cards.TryGetValue(id, out var card) && card.Type == type
         ? card : throw new RuleViolation("legacy.card_reference", "Required original action card is absent or has another type");
 
-    public IReadOnlyDictionary<string, InstallationBuildRules> Installations()
+    public IReadOnlyDictionary<string, InstallationBuildRules> Installations(LegacySkillParameters? skillParameters = null)
     {
         var result = new Dictionary<string, InstallationBuildRules>(StringComparer.Ordinal);
         int[] skills = [27, 28, 25];
         foreach (var kind in InstallationKinds)
         {
             var card = RequiredCard(41 + kind.Key, "installation");
-            result.Add(card.Id, new() { Kind = kind.Value, Purchase = new() { Cost = card.Cost, DiscountSkill = Ew4Combat.Skill(skills[kind.Key]) } });
+            result.Add(card.Id, new() { Kind = kind.Value, Purchase = new() { Cost = card.Cost, DiscountSkill = Ew4Combat.Skill(skills[kind.Key]),
+                MoneyPercentWithSkill = (skillParameters ?? LegacySkillParameters.Default).Percent(skills[kind.Key]) } });
         }
         return new ReadOnlyDictionary<string, InstallationBuildRules>(result);
     }
 
-    public TransportPurchaseRules Transport() => new() { Purchase = new()
-        { Cost = RequiredCard(46, "special").Cost, DiscountSkill = Ew4Combat.Skill(26) } };
+    public TransportPurchaseRules Transport(LegacySkillParameters? skillParameters = null) => new() { Purchase = new()
+        { Cost = RequiredCard(46, "special").Cost, DiscountSkill = Ew4Combat.Skill(26),
+            MoneyPercentWithSkill = (skillParameters ?? LegacySkillParameters.Default).Percent(26) } };
 }

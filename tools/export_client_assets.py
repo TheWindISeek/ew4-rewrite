@@ -139,14 +139,16 @@ def main():
     background.crop((4, 184, 2044, 1256)).save(ui_folder / "conquest_background.png")
     background.crop((0, 120, 2048, 1328)).save(ui_folder / "campaign_background.png")
     fonts = {}
-    for name in ("font_text_1_cn_hd", "font_text_2_cn_hd", "font_text_3_cn_hd", "font_text_4_cn_hd", "font_char_1_hd", "font_char_2_hd", "font_char_3_hd", "font_char_4_hd", "font_ascii", "font_city", "font_city_hd"):
+    for name in ("font_text_1_cn_hd", "font_text_2_cn_hd", "font_text_3_cn_hd", "font_text_4_cn_hd", "font_char_1_hd", "font_char_2_hd", "font_char_3_hd", "font_char_4_hd", "font_ascii", "font_city", "font_city_hd", "font_fight_num", "font_fight_num_hd"):
         path = SOURCE / (name + ".fnt")
         track(path)
         font = BitmapFont.from_bytes(path.read_bytes())
         fonts[name] = {"height": font.line_height, "glyphs": {str(r[0]): list(r[1:]) for r in font.records}}
-        if name == "font_city_hd":
+        if name in ("font_city_hd", "font_fight_num", "font_fight_num_hd"):
             track(SOURCE / (name + ".png"))
             shutil.copyfile(SOURCE / (name + ".png"), images / (name + ".png"))
+    fight_fonts = {name: fonts.pop(name) for name in ("font_fight_num", "font_fight_num_hd")}
+    (OUTPUT / "fight-font.json").write_text(json.dumps(fight_fonts, separators=(",", ":")), encoding="utf-8")
     labels = {}
 
     def label(key, text, font_name="font_text_4_cn_hd", dark=False):

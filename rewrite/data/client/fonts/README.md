@@ -19,6 +19,11 @@ names failed files and provides a retry; failed promises are not permanent.
 unsupported code points with bundled U+FFFD, with a console warning. City labels
 use separate white fill and black outline. Imported FNT/PNG styling is ignored.
 
+Combat damage is a bitmap exception: `effects.js::DamageNumbers` uses the original
+`images/font_fight_num_hd.png` and `fight-font.json` glyph metrics, including the
+minus sign and original outline. Newly imported APKs can override the paired
+`font_fight_num[_hd].fnt/.png` resources; ordinary UI text keeps the fonts above.
+
 Licenses: LXGWWenKai-OFL.txt and NotoSerifSC-OFL.txt (SIL OFL 1.1), Jigmo-LICENSE.txt (CC0 1.0),
 Unifont-LICENSE.txt (compiled font dual license; distributed under SIL OFL 1.1).
 Keep these licenses when redistributing. Detailed author guidance is in

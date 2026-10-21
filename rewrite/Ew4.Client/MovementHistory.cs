@@ -14,6 +14,7 @@ public sealed class MovementHistory
     private readonly HashSet<string> attackers = new(StringComparer.Ordinal);
     private int round;
     private string faction = "";
+    public void Clear() { moves.Clear(); attackers.Clear(); round = 0; faction = ""; }
     public void Reset(WorldState world) { moves.Clear(); attackers.Clear(); round = world.Round; faction = world.ActiveFaction; }
     public void Observe(WorldState world) { if (world.Round != round || world.ActiveFaction != faction) Reset(world); }
     public void Attack(string unit) => attackers.Add(unit);

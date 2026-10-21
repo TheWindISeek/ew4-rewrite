@@ -1,0 +1,9 @@
+.modal:has(.victory-result){grid-template-columns:minmax(0,1fr);grid-template-rows:minmax(0,1fr)}
+.victory-result .result-generals{gap:7px;overflow-x:auto;overflow-y:hidden;scrollbar-width:none}
+.victory-result .result-generals::-webkit-scrollbar{display:none}
+.result-general{position:relative;flex:0 0 var(--result-card-width);width:var(--result-card-width);height:var(--result-card-height);background:#898783}
+.result-general>img:first-child{display:block;width:var(--result-card-width);height:var(--result-card-width);object-fit:contain}
+.result-general>.result-rank,.result-general>.result-title{position:absolute;top:calc(var(--result-card-width)*52/78);width:calc(var(--result-card-width)*21/78);height:calc(var(--result-card-width)*24/78);object-fit:contain}
+.result-general>.result-rank{left:0}.result-general>.result-title{right:0}
+.result-general.withdrawn>img:first-child{filter:grayscale(1)}
+.native-layout[data-layout=form_victory] [data-native-id=image_pattern]{pointer-events:none}

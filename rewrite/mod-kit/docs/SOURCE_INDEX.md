@@ -6,6 +6,12 @@
 
 ## 规则扩展API 1/2
 
+原版技能数值：`Ew4.Core/LegacySkillParameters.cs` 的 FromOverrides/Multiplier/Bonus/Percent/Gain/Maximum；`ExtensionLoader.Load` 读取 legacySkillParameters，`ClientContent` 向战斗、将领任命、原军队恢复、经验、折扣与教学传递同一组参数。验证入口 LegacySkillParameterChecks、LegacySkillParameterModChecks 和 tools/verify_legacy_skill_parameters_web.cjs，作者入口见[参数模板](../examples/legacy-skill-parameters/README.md)。
+
+势力事件：Ew4.Core/ScenarioFactions.cs 的 Create/Revive/Identity/Control，以及 ScenarioRules 的 Match/Apply/Validate；客户端 ClientContent.Start 配置新势力兵种与招募，ClientGame.View 投影名称、国土颜色和旗帜。格式见[势力接口](porting/SCENARIO_FACTIONS.md)，验证入口 ScenarioFactionChecks 和 tools/verify_scenario_factions_web.cjs。
+
+角色与胜负切换：SessionActions.SyncPlayer同步权限/派遣历史，WorldState.ScenarioVictory/ScenarioEnding保存本局目标与结局，WorldVictory.Evaluate使用事件覆盖；ExtensionVictory统一校验/复制，ExtensionLoader载入嵌套Lua。见[控制接口](porting/SCENARIO_CONTROL.md)、ScenarioControlChecks和tools/verify_scenario_control_web.cjs。
+
 API 2通用操作在`Ew4.Core/SkillWorldEffects.cs`：RegisterUnitTemplates、ValidCellTarget、ApplyEffect、MovementBudget、ExpireStatuses、ChangeNotices；状态保存在Combatant.Statuses，移动上限缓存在UnitState.ExtensionMovementLimit。ExtensionLoader.ConfigureRuntime注册召唤模板；WorldSkillActions.Execute接收可选targetCell。验证入口为CommonSkillChecks、CommonSkillModChecks及tools/verify_common_skills_web.cjs。
 
 完整格式及源码映射见[规则接口指南](porting/RULE_EXTENSIONS.md)。主入口：`Ew4.Legacy/ExtensionLoader.cs`的Load/PatchCatalog/ValidateVictoryScripts，`ExtensionScriptRuntime.cs`的Run/Execute，`Ew4.Core/RuleExtensions.cs`的RuleEventBus和WorldSkillActions.Execute，`ExtensionVictory.cs`的Evaluate，`Ew4.ModTool/VictoryCommands.cs`的Run。UI在`wwwroot/skill-ui.js`及menus.commanderInfo/app.openUnitInfo/openSkillAction；将领不固定四技能位。

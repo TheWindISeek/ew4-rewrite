@@ -127,6 +127,7 @@ public static partial class WorldAi
             var projected = WorldActions.Move(state, state.Revision, unit.Id, cellId, rules.Movement).State;
             long score = AiMovement.MoveScore(facts, rules.MoveScoring);
             if (score > 0 && (move == null || score > move.Score)) move = new(new(state.Revision, unit.Id, cellId), score);
+            if (projected.Phase == TurnPhase.Finished || projected.PendingDialogue != null) continue;
             foreach (var target in StrikeCandidates(projected, unit.Id, rules))
             {
                 var targetUnit = projected.Units.Single(u => u.Id == target.Action.TargetId);
@@ -148,7 +149,7 @@ public static partial class WorldAi
     {
         rules.Validate();
         var moved = WorldActions.Move(state, command.ExpectedRevision, command.UnitId, command.Destination, rules.Movement);
-        if (command.TargetId == null) return moved;
+        if (command.TargetId == null || moved.State.Phase == TurnPhase.Finished || moved.State.PendingDialogue != null) return moved;
         var attacked = WorldBattle.Attack(moved.State, moved.State.Revision, command.UnitId, command.TargetId, battleRules);
         var next = attacked.State with { Revision = checked(state.Revision + 1) };
         next.Validate();

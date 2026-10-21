@@ -21,13 +21,15 @@ public sealed class LegacyCombatCatalog
     public CombatContextRules Context { get; }
     public string NativeSourceHash { get; }
     public string SourceRevision { get; }
+    public LegacySkillParameters? SkillParameters { get; }
 
     private LegacyCombatCatalog(LegacyVeterancyLevel[] veterancy, ProgressionRules rank, ProgressionRules title,
-        int[] health, int[] healing, int[] training, CombatContextRules context, string nativeHash, string revision)
+        int[] health, int[] healing, int[] training, CombatContextRules context, string nativeHash, string revision, LegacySkillParameters? skillParameters)
     {
         Veterancy = Array.AsReadOnly(veterancy); RankProgression = rank; TitleProgression = title;
         RankHealth = Numbered(health); TitleHealing = Numbered(healing); Context = context;
         NativeSourceHash = nativeHash; SourceRevision = revision;
+        SkillParameters = skillParameters;
         UnitProgression = new() { Levels = Array.AsReadOnly(veterancy.Select((v, i) => new ProgressionLevel(Id(i),
             i == veterancy.Length - 1 ? null : veterancy[i + 1].ExperienceCost, v.PromotionHealing)).ToArray()),
             SingleAdvancePerAward = true, AccumulateAtCap = true, DiscardExperienceOnReachingCap = false };
@@ -46,7 +48,8 @@ public sealed class LegacyCombatCatalog
             throw new RuleViolation("legacy.native_source_changed", "Native tables differ from their preserved source");
     }
 
-    public static LegacyCombatCatalog Read(string tablesJson, string terrainXml, string installationXml, LegacyBuildingCatalog buildings)
+    public static LegacyCombatCatalog Read(string tablesJson, string terrainXml, string installationXml, LegacyBuildingCatalog buildings,
+        LegacySkillParameters? skillParameters = null)
     {
         using var document = JsonDocument.Parse(tablesJson);
         var tables = document.RootElement;
@@ -79,7 +82,9 @@ public sealed class LegacyCombatCatalog
             VeterancyArmor = Numbered(veterancy.Select(v => v.Armor)) };
         context.Validate(); Progression.Award(new(0, 0), 0, rank); Progression.Award(new(0, 0), 0, title);
         string revision = Convert.ToHexStringLower(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(new[] { tablesJson, terrainXml, installationXml, buildings.SourceRevision })));
-        return new(veterancy, rank, title, health, healing, training, context, nativeHash.ToLowerInvariant(), revision);
+        if (skillParameters != null)
+            revision = Convert.ToHexStringLower(SHA256.HashData(JsonSerializer.SerializeToUtf8Bytes(new { revision, skillParameters.Skills })));
+        return new(veterancy, rank, title, health, healing, training, context, nativeHash.ToLowerInvariant(), revision, skillParameters);
     }
 
     private static IReadOnlyDictionary<string, IReadOnlyDictionary<string, int>> Defense(string xml, string rootName, string elementName)
@@ -102,7 +107,7 @@ public sealed class LegacyCombatCatalog
         return new ReadOnlyDictionary<string, IReadOnlyDictionary<string, int>>(result);
     }
 
-    public WorldBattleRules BattleRules() => new() { Context = Context, UnitProgression = UnitProgression,
+    public WorldBattleRules BattleRules() => new() { Combat = new() { LegacySkills = SkillParameters }, Context = Context, UnitProgression = UnitProgression,
         RankProgression = RankProgression, TitleProgression = TitleProgression, RankHealthBonuses = RankHealth, TitleHealing = TitleHealing };
 
     public WorldTurnRules TurnRules(WorldTurnRules buildings) => buildings with { VeterancyHealing = Numbered(Veterancy.Select(v => v.TurnHealing)) };

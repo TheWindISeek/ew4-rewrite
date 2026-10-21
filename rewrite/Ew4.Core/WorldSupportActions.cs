@@ -102,13 +102,23 @@ public static class WorldSupportActions
         return faction.Resources.Money >= cost.Money && faction.Resources.Industry >= cost.Industry && faction.Resources.Food >= cost.Food;
     }
 
-    public static WorldChange BuyTransport(WorldState state, long expectedRevision, string unitId, TransportPurchaseRules rules)
+    public static Resources TransportCost(WorldState state, string unitId, TransportPurchaseRules rules) =>
+        PrepareTransport(state, state.Revision, unitId, rules).cost;
+
+    private static (FactionState faction, UnitState unit, Resources cost) PrepareTransport(WorldState state,
+        long expectedRevision, string unitId, TransportPurchaseRules rules)
     {
         if (rules.ExcludedCategories.Any(string.IsNullOrWhiteSpace)) throw new RuleViolation("transport.configuration", "Invalid transport category policy");
         var (faction, unit, _) = Ready(state, expectedRevision, unitId, rules.Purchase);
         if (unit.Transport || rules.ExcludedCategories.Contains(unit.Combatant.Profile.Category))
             throw new RuleViolation("transport.unavailable", "Unit already has transport or its category is excluded");
-        return Commit(state, faction, unit with { Transport = true }, null, Price(unit, rules.Purchase), "unit.transport_purchased");
+        return (faction, unit, Price(unit, rules.Purchase));
+    }
+
+    public static WorldChange BuyTransport(WorldState state, long expectedRevision, string unitId, TransportPurchaseRules rules)
+    {
+        var (faction, unit, cost) = PrepareTransport(state, expectedRevision, unitId, rules);
+        return Commit(state, faction, unit with { Transport = true }, null, cost, "unit.transport_purchased");
     }
 
     public static bool CanBuyTransport(WorldState state, string unitId, TransportPurchaseRules rules)

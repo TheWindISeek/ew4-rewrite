@@ -6,6 +6,14 @@ namespace Ew4.Core;
 
 public static class WorldVictory
 {
+    public static WorldState Resolve(WorldState state, string playerCamp, VictoryRules rules,
+        IReadOnlyCollection<string> neutralCamps)
+    {
+        if (state.LocalMultiplayer != null) return LocalMultiplayerGame.Resolve(state, rules);
+        var outcome = Evaluate(state, playerCamp, rules, neutralCamps);
+        return outcome == BattleOutcome.Continue ? state : state with { Outcome = outcome, Phase = TurnPhase.Finished };
+    }
+
     public static IReadOnlyCollection<FactionFacts> Facts(WorldState state, IReadOnlyCollection<string> neutralCamps,
         ObjectiveUnitOwnership ownership = ObjectiveUnitOwnership.UnitOwner)
     {
@@ -35,8 +43,15 @@ public static class WorldVictory
     public static BattleOutcome Evaluate(WorldState state, string playerCamp, VictoryRules rules,
         IReadOnlyCollection<string> neutralCamps)
     {
+        if (state.LocalMultiplayer != null)
+        {
+            string? winner = LocalMultiplayerGame.Winner(state, rules);
+            return winner == null ? BattleOutcome.Continue : state.LocalMultiplayer.HumanFactions.Contains(winner)
+                ? BattleOutcome.Victory : BattleOutcome.Defeat;
+        }
         if (state.ScenarioPlayerFaction != null)
             playerCamp = state.Factions.Single(f => f.Id == state.ScenarioPlayerFaction).Camp;
+        if (state.ScenarioVictory != null) rules = rules with { Custom = state.ScenarioVictory };
         if (rules.Custom == null) return Victory.Evaluate(playerCamp, state.Round,
             Facts(state, neutralCamps, rules.UnitObjectiveOwnership), rules);
         if (rules.Custom.RoundLimit.HasValue && state.Round > rules.Custom.RoundLimit.Value

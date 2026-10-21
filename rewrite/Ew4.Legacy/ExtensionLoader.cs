@@ -20,16 +20,19 @@ public sealed class ExtensionLoader
     public IReadOnlyList<ExtensionBinding> CommanderBindings { get; }
     public IReadOnlyDictionary<string, ExtensionVictoryRules> Victories { get; }
     public IReadOnlyDictionary<string, ExtensionLayout> Layouts { get; }
+    public IReadOnlyDictionary<string, VictoryPresentation> VictoryPresentations { get; private init; } = new Dictionary<string, VictoryPresentation>();
     public IReadOnlyDictionary<string, ScriptedScenarioEvent[]> ScenarioEvents { get; }
     public bool Enabled => Revision.Length > 0;
     public int ApiVersion { get; private set; } = 1;
+    public LegacySkillParameters? LegacySkills { get; private init; }
     private ExtensionLoader(RuleEventBus bus, string revision, ExtensionBinding[] units, ExtensionBinding[] commanders,
         Dictionary<string, ExtensionVictoryRules> victories, Dictionary<string, ExtensionLayout> layouts,
         Dictionary<string, ScriptedScenarioEvent[]> scenarioEvents)
     { Bus = bus; Revision = revision; UnitBindings = units; CommanderBindings = commanders; Victories = victories; Layouts = layouts; ScenarioEvents = scenarioEvents; }
     private sealed record Manifest(int Schema, int ApiVersion, string[]? Skills = null, string[]? Traits = null,
         string? UnitBindings = null, string? CommanderBindings = null, string? VictoryRules = null, string? Presentation = null, string[]? Scripts = null,
-        string? ScenarioEvents = null, string[]? Statuses = null);
+        string? ScenarioEvents = null, string[]? Statuses = null, string? VictoryPresentation = null, string? LegacySkillParameters = null);
+    private sealed record LegacySkillFile(int Schema, Dictionary<string, Dictionary<string, double>> Skills);
 
     public static bool PathValid(string? p) => p != null && p.StartsWith("rewrite/", StringComparison.Ordinal) && p.Length < 240
         && !p.Contains('\\') && !p.Contains(':') && p.Split('/').All(s => s.Length > 0 && s != "." && s != "..")
@@ -59,6 +62,14 @@ public sealed class ExtensionLoader
         var m = Read<Manifest>("rewrite/extension.json");
         if (m.Schema != 1 || m.ApiVersion is not (1 or 2)) throw new RuleViolation("extension.version", "Unsupported extension schema/API version");
         if (m.ApiVersion == 1 && m.Statuses != null) throw new RuleViolation("extension.version", "Statuses require API 2");
+        LegacySkillParameters? legacySkills = null;
+        if (m.LegacySkillParameters != null)
+        {
+            if (m.ApiVersion < 2) throw new RuleViolation("extension.version", "Original skill parameters require API 2");
+            var parameters = Read<LegacySkillFile>(m.LegacySkillParameters);
+            if (parameters.Schema != 1) throw new RuleViolation("legacy.skill_parameters", "Unsupported skill parameter schema");
+            legacySkills = LegacySkillParameters.FromOverrides(parameters.Skills);
+        }
         var skills = new Dictionary<string, ExtensionSkill>(StringComparer.Ordinal);
         foreach (string path in (m.Skills ?? []).Concat(m.Traits ?? []))
             foreach (var skill in Read<ExtensionSkill[]>(path))
@@ -118,15 +129,22 @@ public sealed class ExtensionLoader
         foreach (var v in victories.Values) ValidateVictory(v);
         var scenarioEvents = m.ScenarioEvents == null ? new Dictionary<string, ScriptedScenarioEvent[]>() : Read<Dictionary<string, ScriptedScenarioEvent[]>>(m.ScenarioEvents);
         foreach (var events in scenarioEvents.Values) Core.ScenarioRules.ValidateDefinitions(events);
-        foreach (string image in scenarioEvents.Values.SelectMany(v => v).Select(e => e.Popup?.Image).OfType<string>().Distinct())
+        var eventVictories = scenarioEvents.Values.SelectMany(v => v).SelectMany(Core.ScenarioRules.Effects)
+            .Select(e => e.VictoryRules).OfType<ExtensionVictoryRules>().ToArray();
+        foreach (string image in scenarioEvents.Values.SelectMany(v => v).Select(e => e.Popup?.Image)
+            .Concat(scenarioEvents.Values.SelectMany(v => v).SelectMany(Core.ScenarioRules.Effects).Select(e => e.FlagImage)).OfType<string>().Distinct())
         {
             var data = read(image);
             if (data.Length > 4 * 1024 * 1024) throw new RuleViolation("extension.size", image);
         }
         var scenarioHandlers = scenarioEvents.Values.SelectMany(v => v).SelectMany(e =>
             Core.ScenarioRules.Conditions(e).Where(c => c.Script != null).Select(c => (Script: c.Script!, Function: c.Function!))
-                .Concat(Core.ScenarioRules.Effects(e).Where(a => a.Script != null).Select(a => (Script: a.Script!, Function: a.Function!)))).ToArray();
+                .Concat(Core.ScenarioRules.Effects(e).Where(a => a.Script != null).Select(a => (Script: a.Script!, Function: a.Function!))))
+            .Concat(eventVictories.SelectMany(v => Conditions(v.Win).Concat(v.Lose == null ? [] : Conditions(v.Lose)))
+                .Where(c => c.Type == "script").Select(c => (Script: c.Script!, Function: c.Function!))).ToArray();
         var layouts = m.Presentation == null ? new Dictionary<string, ExtensionLayout>() : Read<Dictionary<string, ExtensionLayout>>(m.Presentation);
+        var victoryScreens = m.VictoryPresentation == null ? new Dictionary<string, VictoryPresentation>() : Read<Dictionary<string, VictoryPresentation>>(m.VictoryPresentation);
+        if (victoryScreens.Count > 0) VictoryPresentation.Validate(victoryScreens, read("client/manifest.json"), read);
         foreach (var layout in layouts)
             if (layout.Value == null || layout.Key is not ("commander" or "unit") || layout.Value.Mode is not ("list" or "grid" or "positioned")
                 || layout.Value.Columns is < 1 or > 16 || layout.Value.Gap is < 0 or > 32 || layout.Value.IconSize is < 12 or > 64
@@ -153,7 +171,8 @@ public sealed class ExtensionLoader
             if (data.Length > 4 * 1024 * 1024) throw new RuleViolation("extension.size", icon);
         }
         string revision = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join('\n', loaded.Select(p => p.Key + ":" + Convert.ToHexStringLower(SHA256.HashData(p.Value)))))));
-        return new(new(skills, runtime, statuses), revision, units, commanders, victories, layouts, scenarioEvents) { ApiVersion = m.ApiVersion };
+        return new(new(skills, runtime, statuses), revision, units, commanders, victories, layouts, scenarioEvents)
+            { ApiVersion = m.ApiVersion, VictoryPresentations = victoryScreens, LegacySkills = legacySkills };
         bool Known(string id) => skills.ContainsKey(id) || id.StartsWith("ew4.skill.", StringComparison.Ordinal)
             && int.TryParse(id[10..], out int value) && value is >= 0 and < 40 || BuiltinTraits.Contains(id);
     }
@@ -200,20 +219,7 @@ public sealed class ExtensionLoader
     public void ConfigureRuntime(LegacyRuntimeCatalog runtime) => Bus.RegisterUnitTemplates(runtime.Profiles.Values
         .Select(u => new SkillSummonTemplate(u.Profile, new UnitSupport { FoodConsumption = u.FoodConsumption })));
     private static IEnumerable<VictoryCondition> Conditions(VictoryCondition c)
-    {
-        var pending = new Stack<(VictoryCondition Condition, int Depth)>();
-        pending.Push((c, 0));
-        int count = 0;
-        while (pending.Count > 0)
-        {
-            var (condition, depth) = pending.Pop();
-            if (condition == null || condition.Conditions == null || condition.Factions == null || condition.Units == null
-                || condition.Cells == null || condition.Resources == null || depth > 12 || ++count > 1024)
-                throw new RuleViolation("extension.victory", "Null or excessive victory condition tree");
-            yield return condition;
-            foreach (var child in condition.Conditions.Reverse()) pending.Push((child, depth + 1));
-        }
-    }
+        => ExtensionVictory.Conditions(c);
     public void ValidateVictoryScripts(ExtensionVictoryRules rules)
     {
         foreach (var condition in Conditions(rules.Win).Concat(rules.Lose == null ? [] : Conditions(rules.Lose)).Where(c => c.Type == "script"))
@@ -224,27 +230,7 @@ public sealed class ExtensionLoader
         }
     }
     public static void ValidateVictory(ExtensionVictoryRules v)
-    {
-        if (v == null || v.Priority is not ("victory" or "defeat") || v.RoundLimit < 1 || v.DescriptionKey == null)
-            throw new RuleViolation("extension.victory", "Invalid outcome priority/round limit");
-        var conditions = Conditions(v.Win).Concat(v.Lose == null ? [] : Conditions(v.Lose)).ToArray();
-        if (conditions.Length > 1024) throw new RuleViolation("extension.victory", "Too many victory conditions");
-        foreach (var c in conditions)
-        {
-            if (c.Type is not ("all" or "any" or "enemy_factions_defeated" or "factions_defeated" or "units_destroyed" or "units_lost"
-                or "cells_owned" or "cells_lost" or "enemy_objectives_cleared" or "round_reached" or "resources" or "script")
-                || c.Type is "all" or "any" && c.Conditions.Count == 0 || c.Round < 1
-                || c.Type is "cells_owned" or "cells_lost" && c.Cells.Count == 0
-                || c.Type is "units_destroyed" or "units_lost" && c.Units.Count == 0
-                || c.Type == "factions_defeated" && c.Factions.Count == 0
-                || c.Factions.Any(string.IsNullOrWhiteSpace) || c.Units.Any(string.IsNullOrWhiteSpace)
-                || c.Cells.Any(i => i < 0) || c.Resources.Money < 0 || c.Resources.Industry < 0 || c.Resources.Food < 0
-                || c.Type == "script" && (c.Script == null || !PathValid(c.Script) || !c.Script.EndsWith(".lua", StringComparison.Ordinal)
-                    || c.Function == null || !System.Text.RegularExpressions.Regex.IsMatch(c.Function, "^[A-Za-z_][A-Za-z0-9_]*$")))
-                throw new RuleViolation("extension.victory", "Invalid condition: " + c.Type);
-            c.Resources.Validate();
-        }
-    }
+        => ExtensionVictory.Validate(v);
 
     public string PatchCatalog(string json)
     {

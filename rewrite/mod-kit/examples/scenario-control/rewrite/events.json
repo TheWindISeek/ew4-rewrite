@@ -1,0 +1,35 @@
+{
+  "conquest1": [
+    {
+      "id": "rebellion.choice",
+      "condition": { "type": "unit_at", "unit": "conquest1.unit.10", "cells": [493] },
+      "effects": [
+        { "type": "faction_create", "faction": "civil.rebels", "name": "地方共和国", "camp": "civil.rebels", "unitVariant": "rus", "flag": "rus", "color": "#237A4D" },
+        { "type": "unit_owner", "faction": "civil.rebels", "unit": "conquest1.unit.10" },
+        { "type": "cells_owner", "faction": "civil.rebels", "cells": [493] },
+        { "type": "money", "faction": "civil.rebels", "value": 1000 },
+        { "type": "industry", "faction": "civil.rebels", "value": 1000 },
+        { "type": "food", "faction": "civil.rebels", "value": 1000 }
+      ],
+      "popup": {
+        "title": "地方共和国成立", "text": "当地驻军宣布独立。你可以继续扮演原国家，也可以转为扮演地方共和国。",
+        "choices": [
+          { "id": "join", "text": "扮演地方共和国", "effects": [
+            { "type": "player_control", "faction": "civil.rebels" },
+            { "type": "victory_rules", "victoryRules": { "win": { "type": "round_reached", "round": 5 }, "requirePlayerSurvival": true } }
+          ] },
+          { "id": "stay", "text": "继续扮演原国家", "effects": [] }
+        ]
+      }
+    },
+    {
+      "id": "republic.ending",
+      "condition": { "type": "all", "conditions": [
+        { "type": "player_faction", "faction": "civil.rebels" }, { "type": "round", "value": 5 }
+      ] },
+      "popup": { "title": "独立得到巩固", "text": "地方共和国度过了最初的动荡。", "choices": [
+        { "id": "finish", "text": "结束本局", "effects": [ { "type": "ending", "key": "republic.independence", "outcome": "victory" } ] }
+      ] }
+    }
+  ]
+}

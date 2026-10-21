@@ -4,19 +4,20 @@ const fs=require('node:fs/promises');
 const {createRequire}=require('node:module');
 const deps=createRequire('C:/Users/WIN11/.cache/codex-runtimes/codex-primary-runtime/dependencies/node/node_modules/_probe.cjs');
 const {chromium}=deps('playwright');
-const folder='E:/Workplace/game/o4mod/rewrite/reports/custom-mechanics/followup';
+const folder=process.env.EW4_RENDER_REPORT||'E:/Workplace/game/o4mod/rewrite/reports/custom-mechanics/followup';
+const base=process.env.EW4_PERF_URL||'http://127.0.0.1:5185';
 (async()=>{
   await fs.mkdir(folder,{recursive:true});
   const browser=await chromium.launch({headless:true,executablePath:'C:/Program Files (x86)/Microsoft/Edge/Application/msedge.exe'});
   const page=await browser.newPage({viewport:{width:1280,height:720}});
   await page.route('**/*',r=>r.continue());
-  const report={checks:0,errors:[],missing:[],screenshots:[],scope:'5185 isolated profile, Edge headless on this machine; no device FPS claim'};
+  const report={checks:0,errors:[],missing:[],screenshots:[],scope:base+' isolated profile, Edge headless on this machine; no device FPS claim'};
   const check=(v,label)=>{assert.ok(v,label);report.checks++;};
   const shot=async name=>{await page.screenshot({path:folder+'/'+name+'.png'});report.screenshots.push(name);};
   page.on('pageerror',e=>report.errors.push(e.message));
   page.on('response',r=>{if(r.status()>=400)report.missing.push(r.url());});
   try{
-    await page.goto('http://127.0.0.1:5185/');await page.waitForFunction(()=>!!catalog&&!!originalTextRenderer);
+    await page.goto(base);await page.waitForFunction(()=>!!catalog&&!!originalTextRenderer);
     await page.evaluate(()=>start('conquest1','fra'));await page.waitForTimeout(350);
     report.relations=await page.evaluate(()=>({ally:state.factions.filter(f=>f.id!==state.playerFaction&&f.camp===state.factions.find(p=>p.id===state.playerFaction).camp).every(f=>Ew4Battlefield.badgeColor(state,f.id)==='blue'),neutral:state.factions.filter(f=>f.neutral).map(f=>({country:f.country,color:Ew4Battlefield.badgeColor(state,f.id)}))}));
     check(report.relations.ally,'all allied countries use blue badges');
@@ -30,7 +31,7 @@ const folder='E:/Workplace/game/o4mod/rewrite/reports/custom-mechanics/followup'
     await page.evaluate(()=>{centerPlayer();selected=undefined;selection=undefined;document.querySelector('#selection').hidden=true;});
     await page.waitForTimeout(250);
     report.cache=await page.evaluate(async()=>{
-      const wait=()=>new Promise(requestAnimationFrame),waitFrames=async()=>{await wait();await wait();};
+      const wait=()=>new Promise(requestAnimationFrame),waitFrames=async()=>{requestRender();await wait();await wait();};
       const key=battlefield.staticKey;await waitFrames();const reused=key===battlefield.staticKey;
       view.x+=48;await waitFrames();const panned=key!==battlefield.staticKey;
       const panKey=battlefield.staticKey;view.zoom*=.9;await waitFrames();const zoomed=panKey!==battlefield.staticKey;

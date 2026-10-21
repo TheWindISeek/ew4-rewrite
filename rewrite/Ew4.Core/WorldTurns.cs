@@ -149,11 +149,11 @@ public static class WorldTurns
         }
         if (rules.PlayerCamp != null)
         {
-            var outcome = WorldVictory.Evaluate(state, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
-            if (outcome != BattleOutcome.Continue)
+            state = WorldVictory.Resolve(state, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
+            if (state.Outcome != BattleOutcome.Continue)
             {
-                notices.Add(new("battle.finished", outcome.ToString()));
-                return state with { Outcome = outcome, Phase = TurnPhase.Finished };
+                notices.Add(new("battle.finished", state.Outcome.ToString()));
+                return state;
             }
         }
         if (state.Phase == TurnPhase.StartFaction)
@@ -175,11 +175,11 @@ public static class WorldTurns
         if (state.PendingDialogue != null || state.Phase == TurnPhase.Finished) return state;
         if (rules.PlayerCamp != null)
         {
-            var outcome = WorldVictory.Evaluate(state, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
-            if (outcome != BattleOutcome.Continue)
+            state = WorldVictory.Resolve(state, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
+            if (state.Outcome != BattleOutcome.Continue)
             {
-                notices.Add(new("battle.finished", outcome.ToString()));
-                return state with { Outcome = outcome, Phase = TurnPhase.Finished };
+                notices.Add(new("battle.finished", state.Outcome.ToString()));
+                return state;
             }
         }
         if (state.Phase == TurnPhase.EndFactionEvents && state.Factions.Single(f => f.Id == state.ActiveFaction).Defeated)

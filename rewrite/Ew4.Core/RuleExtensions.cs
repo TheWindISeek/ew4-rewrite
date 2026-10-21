@@ -175,8 +175,7 @@ public static class WorldSkillActions
         next = events.State;
         if (movement.PlayerCamp != null && next.Outcome == BattleOutcome.Continue && next.PendingDialogue == null)
         {
-            var outcome = WorldVictory.Evaluate(next, movement.PlayerCamp, movement.Victory, movement.NeutralCamps);
-            if (outcome != BattleOutcome.Continue) next = next with { Outcome = outcome, Phase = TurnPhase.Finished };
+            next = WorldVictory.Resolve(next, movement.PlayerCamp, movement.Victory, movement.NeutralCamps);
         }
         next.Validate();
         var notices = new List<WorldNotice> { new("skill.used", unitId) };

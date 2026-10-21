@@ -1,0 +1,38 @@
+{
+  "conquest1": [
+    {
+      "id": "local.independence",
+      "condition": {"type": "all", "conditions": [
+        {"type": "round", "value": 3},
+        {"type": "unit_at", "unit": "conquest1.unit.10", "cells": [493]}
+      ]},
+      "popup": {
+        "title": "地方起义",
+        "text": "地方驻军要求建立独立政权。",
+        "choices": [
+          {
+            "id": "recognize",
+            "text": "承认独立",
+            "effects": [
+              {"type": "faction_create", "faction": "civil.rebels", "name": "地方叛军", "camp": "rebels", "unitVariant": "rus", "flag": "rus", "color": "#237A4D"},
+              {"type": "unit_owner", "faction": "civil.rebels", "unit": "conquest1.unit.10"},
+              {"type": "cells_owner", "faction": "civil.rebels", "cells": [493]},
+              {"type": "money", "faction": "civil.rebels", "value": 500},
+              {"type": "industry", "faction": "civil.rebels", "value": 100},
+              {"type": "food", "faction": "civil.rebels", "value": 500}
+            ]
+          },
+          {"id": "decline", "text": "维持原状", "effects": []}
+        ]
+      }
+    },
+    {
+      "id": "republic.identity",
+      "condition": {"type": "faction_exists", "faction": "civil.rebels"},
+      "effects": [
+        {"type": "faction_identity", "faction": "civil.rebels", "name": "独立共和国", "color": "#C43D4D", "flag": "fra"},
+        {"type": "relation", "faction": "civil.rebels", "otherFaction": "@player", "relation": "neutral"}
+      ]
+    }
+  ]
+}

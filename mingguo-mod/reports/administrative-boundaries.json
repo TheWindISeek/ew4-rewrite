@@ -1,0 +1,7 @@
+{
+  "polygonMatchedLandCells": 5655,
+  "totalLandCells": 14195,
+  "source": "https://geo.datav.aliyun.com/areas_v3/bound/100000_full.json",
+  "modernReferenceSha256": "99adfeded5223848bbe37a0a12f8023e11ee12161c7800521c27db42fdeac275",
+  "warning": "现代省界仅作未变动区域参考；历史变动四区为粗略草绘，其他缺失区域按最近城市组补齐；不是已校勘的历史边界。"
+}

@@ -48,7 +48,7 @@ public static class LegacyScenarioCommerce
                 business.Add(id + ".commander", accounts.CommanderCommerce[source.CommanderId]);
             }
         }
-        var assignment = new WorldCommanderRules { Definitions = new ReadOnlyDictionary<string, Commander>(definitions),
+        var assignment = new WorldCommanderRules { LegacySkills = combat.SkillParameters, Definitions = new ReadOnlyDictionary<string, Commander>(definitions),
             TitleHealing = combat.TitleHealing.ToDictionary(p => int.Parse(p.Key, CultureInfo.InvariantCulture), p => p.Value) };
         assignment.Validate();
         var tavernRules = new TavernRules { Assignment = assignment, Templates = new ReadOnlyDictionary<string, CommanderRuntime>(templates) };

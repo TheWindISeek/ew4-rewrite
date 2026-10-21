@@ -1,9 +1,34 @@
 using System.Text.Json;
 using Ew4.Core;
 
-if (args.Length is not (1 or 2) || args.Length == 2 && args[1] is not ("--startup-only" or "--client-only" or "--mechanics-only" or "--jurisdiction-only" or "--extension-only" or "--scenario-only"))
+if (args.Length is not (1 or 2) || args.Length == 2 && args[1] is not ("--startup-only" or "--client-only" or "--mechanics-only" or "--jurisdiction-only" or "--extension-only" or "--scenario-only" or "--settlement-only" or "--equipment-only" or "--local-only" or "--consumables-only" or "--single-actions-only" or "--legacy-skills-only"))
     throw new ArgumentException("Usage: Ew4.Verify <project root> [--startup-only|--client-only|--mechanics-only|--jurisdiction-only]");
 string root = Path.GetFullPath(args[0]);
+if (args.Length == 2 && args[1] == "--legacy-skills-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { legacySkillParameterChecks = LegacySkillParameterChecks.Run(root), errors = 0 })); return;
+}
+if (args.Length == 2 && args[1] == "--single-actions-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { singleActionChecks = SingleActionChecks.Run(root),
+        improvementChecks = ImprovementChecks.Run(root), supportActionChecks = SupportActionChecks.Run(root), errors = 0 })); return;
+}
+if (args.Length == 2 && args[1] == "--consumables-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { consumableChecks = ConsumableChecks.Run(root), errors = 0 })); return;
+}
+if (args.Length == 2 && args[1] == "--local-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { localMultiplayerChecks = LocalMultiplayerChecks.Run(root), errors = 0 })); return;
+}
+if (args.Length == 2 && args[1] == "--equipment-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { equipmentChecks = EquipmentDescriptionChecks.Run(root), errors = 0 })); return;
+}
+if (args.Length == 2 && args[1] == "--settlement-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { settlementChecks = BattleSettlementChecks.Run(root), victoryModChecks = VictoryModChecks.Run(root), errors = 0 })); return;
+}
 if (args.Length == 2 && args[1] == "--scenario-only")
 {
     Console.WriteLine(JsonSerializer.Serialize(new { scenarioRuleChecks = ScenarioRuleChecks.Run(root), errors = 0 })); return;
@@ -87,6 +112,8 @@ foreach (var fixture in vectors.RootElement.GetProperty("fixtures").EnumerateArr
 }
 int contracts = Contracts.Run(root);
 int commanderChecks = CommanderChecks.Run(root);
+commanderChecks += EquipmentDescriptionChecks.Run(root);
+commanderChecks += ConsumableChecks.Run(root);
 int animationChecks = AnimationChecks.Run(root);
 int catalogChecks = CatalogChecks.Run(root);
 int worldChecks = WorldChecks.Run(root);
@@ -132,9 +159,10 @@ int legacyHostChecks = LegacyHostChecks.Run(root);
 int jurisdictionChecks = JurisdictionExtensionChecks.Run(root);
 int extensionChecks = ExtensionChecks.Run(root);
 int commonSkillChecks = CommonSkillChecks.Run(root);
+int legacySkillParameterChecks = LegacySkillParameterChecks.Run(root);
 int scenarioRuleChecks = ScenarioRuleChecks.Run(root);
 var report = new { combatVectors = cases, ruleChecks = contracts, commanderChecks, animationChecks, catalogChecks, worldChecks, progressionChecks, aiChecks, lifecycleChecks, actionChecks, movementCommitChecks, turnSettlementChecks, worldTurnChecks, battleCommitChecks, battleChainChecks, combatContextChecks, improvementChecks, aiTacticalChecks, splashChecks, supportActionChecks, aiMovementChecks, aiStrategyChecks, aiStrategySelectionChecks, aiUnitChecks, aiProductionChecks, aiOfferPoolChecks, aiConstructionChecks, aiWorldProductionChecks, commanderDeploymentChecks, hazardDeathChecks, legacyImportChecks, legacyArmyImportChecks, legacyEventChecks, legacyBuildingChecks, legacyFactionChecks, legacyCombatChecks, legacyActionAiChecks, legacyCommerceChecks, sessionAccountChecks, rosterDeploymentChecks, legacyTechnologyChecks, legacyStartupChecks, worldTurnEntryChecks, mapCatalogChecks, legacyHostChecks, jurisdictionChecks, errors = 0,
-    extensionChecks, commonSkillChecks, scenarioRuleChecks, limitations = new[] { "Headless scenario/session startup and core rules; rendering and Android require separate integration checks.",
+    extensionChecks, commonSkillChecks, legacySkillParameterChecks, scenarioRuleChecks, limitations = new[] { "Headless scenario/session startup and core rules; rendering and Android require separate integration checks.",
         "Native profile migration, commander purchase/cultivation, session tavern AI, tutorial controller, merge flows, full playthroughs and display/Android integration remain incomplete." } };
 Directory.CreateDirectory(Path.Combine(root, "rewrite/reports"));
 File.WriteAllText(Path.Combine(root, "rewrite/reports/core_validation.json"), JsonSerializer.Serialize(report, new JsonSerializerOptions { WriteIndented = true }) + "\n");

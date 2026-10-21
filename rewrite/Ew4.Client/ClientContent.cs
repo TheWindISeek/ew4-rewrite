@@ -23,9 +23,10 @@ public sealed class ClientContent
     public IReadOnlyDictionary<string, ScenarioPresentation> Presentations { get; }
     public IReadOnlyList<XElement> ItemDefinitions { get; }
     public IReadOnlyList<XElement> PrincessDefinitions { get; }
+    public bool CorrectOriginalEquipment { get; }
     private readonly IReadOnlyDictionary<string, IReadOnlyDictionary<int, string>> scenarioCityNames;
 
-    public ClientContent(Func<string, byte[]> read, IEnumerable<string> battleFiles)
+    public ClientContent(Func<string, byte[]> read, IEnumerable<string> battleFiles, bool correctOriginalEquipment = true)
     {
         this.read = read;
         string Text(string name)
@@ -34,16 +35,18 @@ public sealed class ClientContent
             return reader.ReadToEnd();
         }
         Extensions = ExtensionLoader.Load(read);
-        var runtime = LegacyRuntimeCatalog.FromJson(Extensions.PatchCatalog(System.Text.Encoding.UTF8.GetString(read("data/catalog.json"))));
+        var runtime = LegacyRuntimeCatalog.FromJson(Extensions.PatchCatalog(System.Text.Encoding.UTF8.GetString(read("data/catalog.json"))),
+            correctOriginalEquipment, Extensions.LegacySkills);
+        CorrectOriginalEquipment = correctOriginalEquipment && LegacyEquipmentCorrections.IsOriginal(runtime.SourceHashes["def_item.xml"]);
         Extensions.ConfigureRuntime(runtime);
         runtime.VerifySources(name => read("original/" + name));
         var buildings = LegacyBuildingCatalog.Read(Text("def_construction.xml"), Text("def_capital.xml"));
         var combat = LegacyCombatCatalog.Read(System.Text.Encoding.UTF8.GetString(read("data/runtime_rule_tables.json")),
-            Text("def_terraintype.xml"), Text("def_installation.xml"), buildings);
+            Text("def_terraintype.xml"), Text("def_installation.xml"), buildings, Extensions.LegacySkills);
         var accounts = LegacyCommanderAccounts.Read(runtime, combat,
             System.Text.Encoding.UTF8.GetString(read("data/metagame_rule_tables.json")));
         Catalogs = new(runtime, LegacyTerrainRules.FromXml(Text("def_mapterrain.xml"), Text("def_terraintype.xml")), buildings,
-            LegacyRecruitmentCatalog.Read(Text("def_card.xml")), combat, accounts, LegacyItemTradingCatalog.Read(Text("def_item.xml")),
+            LegacyRecruitmentCatalog.Read(Text("def_card.xml")), combat, accounts, LegacyItemTradingCatalog.Read(Text("def_item.xml"), correctOriginalEquipment),
             LegacyWarzoneTechnology.Read(Text("def_warzonetech.xml")), LegacyDialogueCatalog.Read(Text("def_dialogues.xml"), Text("stringtable_cn.ini")));
         var definitions = XDocument.Parse(Text("def_map.xml")).Root!.Elements("map").ToArray();
         Maps = definitions.ToDictionary(e => (int)e.Attribute("id")!, e => LegacyTerrainMap.Read(read("original/" + (string)e.Attribute("file")!)));
@@ -96,17 +99,20 @@ public sealed class ClientContent
                 : n.StartsWith("tutorial", StringComparison.Ordinal) ? 4 : n.StartsWith("multiplay", StringComparison.Ordinal) ? 3 : 1)).OrderBy(s => s.Mode).ThenBy(s => s.Id, StringComparer.Ordinal).ToArray();
         if (Extensions.Victories.Keys.Any(id => !Scenarios.Any(s => s.Id == id)))
             throw new RuleViolation("extension.victory_scenario", "Victory rules reference an unknown scenario");
+        if (Extensions.VictoryPresentations.Keys.Any(id => id != "*" && !Scenarios.Any(s => s.Id == id)))
+            throw new RuleViolation("extension.victory_presentation", "Victory screen references an unknown scenario");
         if (Extensions.ScenarioEvents.Keys.Any(id => !Scenarios.Any(s => s.Id == id)))
             throw new RuleViolation("scenario.reference", "Event rules reference an unknown scenario");
     }
 
     public string Label(string key) => Strings.TryGetValue(key, out string? label) ? label : Strings.TryGetValue("name_" + key, out label) ? label : key;
+    internal ClientContent WithoutEquipmentCorrections() => new(read, Scenarios.Select(s => s.Id + ".btl"), false);
     public LegacyBattle Battle(string id)
     {
         if (!Scenarios.Any(s => s.Id == id)) throw new RuleViolation("client.scenario", "Unknown scenario");
         return LegacyBattle.Read(read("original/" + id + ".btl"));
     }
-    public LegacyScenarioStart Start(string id, string? country, PlayerAccount? account = null)
+    public LegacyScenarioStart Start(string id, string? country, PlayerAccount? account = null, IReadOnlyList<string>? localPlayers = null)
     {
         var choice = Scenarios.Single(s => s.Id == id);
         if (choice.Mode == 3) throw new RuleViolation("client.mode", "Multiplayer requires a multiplayer session host");
@@ -116,7 +122,7 @@ public sealed class ClientContent
             throw new RuleViolation("client.jurisdiction_mode", "手工辖区仅支持战役与征服剧本");
         var started = LegacyScenarioHost.Start(battle, Maps, Catalogs, new LegacyScenarioRequest
         {
-            Id = id, Mode = choice.Mode, SelectedCountry = country,
+            Id = id, Mode = choice.Mode, SelectedCountry = country, LocalPlayers = localPlayers,
             CityNames = scenarioCityNames.TryGetValue(id, out var names) ? names : Cities,
             Warzone = Presentations.Values.FirstOrDefault(p => p.Id == id || p.Alternate == id)?.Chapter is int chapter && chapter > 0 ? chapter - 1 : 0,
             CountryNames = battle.Factions.Select(f => f.CountryId).Distinct().ToDictionary(c => c, Label),
@@ -156,22 +162,51 @@ public sealed class ClientContent
                 var world = started.Session.World;
                 string revision = Convert.ToHexStringLower(System.Security.Cryptography.SHA256.HashData(System.Text.Encoding.UTF8.GetBytes(world.ContentRevision + ":" + Extensions.Revision)));
                 world = world with { ContentRevision = revision, ScenarioPlayerFaction = started.Session.PlayerFaction, DiplomacyNeutralCamps = turns.NeutralCamps.ToArray(),
-                    ScenarioEvents = Extensions.ScenarioEvents.GetValueOrDefault(id) ?? [] };
+                    ScenarioEvents = (Extensions.ScenarioEvents.GetValueOrDefault(id) ?? [])
+                        .Select(e => ScenarioFactions.BindTemplates(e, started.Session.PlayerFaction)).ToArray() };
                 world = world with { Units = world.Units.Select(unit => {
                     int budget = Extensions.Bus.MovementBudget(unit.Combatant);
                     return unit with { ExtensionMovementLimit = budget, RemainingMovement = unit.RemainingMovement == unit.Combatant.Profile.Movement
                         ? budget : Math.Min(unit.RemainingMovement, budget) };
                 }).ToArray() };
                 ScenarioRules.Validate(world, initial: true);
+                var production = started.Rules.Production.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
+                var recruitment = started.Rules.Recruitment.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
+                var grants = new Dictionary<string, IReadOnlyDictionary<string, RecruitmentGrant>>();
+                foreach (var creation in ScenarioFactions.Creations(world.ScenarioEvents))
+                {
+                    string? template = ScenarioFactions.Template(world, creation);
+                    WorldProductionRules policy;
+                    if (creation.UnitVariant == null && template != null) policy = production[template];
+                    else
+                    {
+                        string variant = creation.UnitVariant ?? "others";
+                        if (!Catalogs.Runtime.Variants.ContainsKey(variant)) throw new RuleViolation("scenario.unit_variant", "Unknown unit variant: " + variant);
+                        policy = LegacyAiCatalog.Production(variant, Catalogs.Runtime, Catalogs.Cards, Catalogs.Buildings) with { Commanders = started.Rules.Commanders };
+                    }
+                    production.Add(creation.Faction, policy);
+                    var offers = policy.Offers.Concat(policy.Fortresses).ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal);
+                    recruitment.Add(creation.Faction, offers);
+                    var available = creation.Recruitment ?? (creation.UnitVariant == null && template != null
+                        ? world.Factions.Single(f => f.Id == template).Recruitment : offers.ToDictionary(p => p.Key, _ => new RecruitmentGrant()));
+                    if (available.Keys.Any(key => !offers.ContainsKey(key))) throw new RuleViolation("scenario.recruitment", "Unknown recruitment card for " + creation.Faction);
+                    grants.Add(creation.Faction, available);
+                }
+                ScenarioEffect Prepare(ScenarioEffect effect) => effect.Type == "faction_create" ? effect with { Recruitment = grants[effect.Faction] } : effect;
+                world = world with { ScenarioEvents = world.ScenarioEvents.Select(ev => ev with {
+                    Effects = ev.Effects.Select(Prepare).ToArray(), InsufficientResourcesEffects = ev.InsufficientResourcesEffects.Select(Prepare).ToArray(),
+                    Popup = ev.Popup == null ? null : ev.Popup with { Choices = ev.Popup.Choices.Select(c => c with { Effects = c.Effects.Select(Prepare).ToArray() }).ToArray() }
+                }).ToArray() };
+                started = started with { Rules = started.Rules with { Production = production, Recruitment = recruitment } };
                 foreach (string unit in world.Units.Select(u => u.Id).ToArray())
                     world = Extensions.Bus.Dispatch(world, "scenario.start", unit, new Ew4Random(world.RandomState));
                 world.Validate();
                 started = started with { Session = started.Session with { World = world } };
             }
             var scenarioChange = ScenarioRules.Evaluate(started.Session.World, Extensions.Bus.Scripts);
-            started = started with { Session = started.Session with { World = scenarioChange.State },
+            started = started with { Session = SessionActions.SyncPlayer(started.Session with { World = scenarioChange.State }),
                 Notices = started.Notices.Concat(scenarioChange.Notices).ToArray() };
-            if (customVictory != null && started.Session.World.PendingDialogue == null && started.Session.World.Outcome == BattleOutcome.Continue)
+            if ((customVictory != null || started.Session.World.ScenarioVictory != null) && started.Session.World.PendingDialogue == null && started.Session.World.Outcome == BattleOutcome.Continue)
             {
                 var world = started.Session.World;
                 var outcome = WorldVictory.Evaluate(world, turns.PlayerCamp!, victory, turns.NeutralCamps);
@@ -179,6 +214,9 @@ public sealed class ClientContent
                     started = started with { Session = started.Session with { World = world with { Outcome = outcome, Phase = TurnPhase.Finished } } };
             }
         }
+        if (localPlayers != null)
+            started = started with { Session = SessionActions.SyncPlayer(started.Session with {
+                World = LocalMultiplayerGame.Resolve(started.Session.World, started.Rules.Turns.Victory) }) };
         return started;
     }
     private static void ValidateVictoryTargets(ExtensionVictoryRules rules, WorldState world)

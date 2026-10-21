@@ -101,6 +101,20 @@ public sealed class MainActivity : Activity
         base.OnWindowFocusChanged(hasFocus);
         if (hasFocus) EnterFullscreen();
     }
+    protected override void OnPause()
+    {
+        web?.EvaluateJavascript("window.ew4SetAppVisible?.(false)", null);
+        web?.OnPause();
+        web?.PauseTimers();
+        base.OnPause();
+    }
+    protected override void OnResume()
+    {
+        base.OnResume();
+        web?.ResumeTimers();
+        web?.OnResume();
+        web?.EvaluateJavascript("window.ew4SetAppVisible?.(true)", null);
+    }
 #pragma warning disable CS0672
     public override void OnBackPressed() => NavigateBack();
 #pragma warning restore CS0672

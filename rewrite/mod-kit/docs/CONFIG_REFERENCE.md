@@ -1,6 +1,10 @@
 # 配置索引：从目标定位到文件
 
+结果 `player_control` 切换所扮演势力，`victory_rules.victoryRules` 替换本局胜负条件，`victory_default` 恢复原规则，`ending.key/outcome` 指定结局，见[字段与示例](porting/SCENARIO_CONTROL.md)。
+
 剧本条件/结果/选择按钮：`rewrite/extension.json` 的 `scenarioEvents` 指向事件 JSON；全字段及函数入口见[剧本事件接口](porting/SCENARIO_EVENTS.md)。
+
+结果 faction_create/faction_revive/faction_identity 用于创建、复国及修改名称/颜色/旗帜；独立兵种 unitVariant、可选 templateFaction 和 PNG flagImage 见[势力接口](porting/SCENARIO_FACTIONS.md)。
 
 事件顶层 `repeat` 配置周期，`insufficientResourcesEffects` 配置资源不足结果；条件/结果 `type:"relation"` 使用 `faction`、`otherFaction`、`relation` 控制独立双边外交。示例见[周期与外交](../examples/scenario-recurrence-diplomacy/README.md)。
 
@@ -11,9 +15,11 @@
 | 导入包标识/版本/文件哈希 | 根mod.json：schema/id/name/version/baseRevision/scenarios/files/warnings/logicRevision | ModStore.Seal/Validate |
 | 将领基础属性和四技能 | original/def_commander.xml：commander的id/name及能力/skill1～4 | LegacyCatalogConverter.Convert；LegacyRuntimeCatalog.FromJson |
 | 自定义技能/特性/Lua | rewrite/extension.json及其skills/traits/scripts引用 | ExtensionLoader.Load；RuleEventBus.Modify/Dispatch；[完整接口](porting/RULE_EXTENSIONS.md) |
+| 原版技能倍率/概率/折扣/成长 | extension.json的legacySkillParameters，apiVersion:2；JSON的schema:1/skills | LegacySkillParameters；[29技能参数模板](../examples/legacy-skill-parameters/README.md) |
 | 召唤/传送/范围/状态/移动力 | apiVersion:2；skills效果及statuses状态定义 | RuleEventBus.ApplyEffect/MovementBudget/ExpireStatuses；[制作步骤](porting/README.md)、[六技能示例](../examples/common-skills/README.md) |
 | 动态技能数量/顺序/坐标 | extension.json的unitBindings/commanderBindings/presentation | ExtensionLoader.PatchCatalog；Ew4SkillUI.layout；不限制将领四槽 |
 | 自定义征服/战役胜负 | extension.json的victoryRules或BTL的VICT v1 | ExtensionVictory.Evaluate；LegacyBattle.WithVictory；[规则及CLI](porting/RULE_EXTENSIONS.md) |
+| 多阶段目标与替换结算界面 | scenarioEvents的victory_rules；extension.json的victoryPresentation | ScenarioRules；VictoryPresentation.Validate；Results.open；[完整指南](porting/VICTORY_MODDING.md) |
 | 将领名字 | original/stringtable_cn.ini：name_Napoleon等 | ClientContent.Label；Menus.text |
 | 将领头像 | client/ui/commanders1_hd/Napoleon.png或commanders2_hd；manifest.atlases决定图集 | Menus.portrait |
 | 公主/素描 | client/ui/princesses_hd、princesses_sketch_hd | Menus.portrait及名册界面 |
@@ -47,7 +53,7 @@
 
 ## 不存在的资源开关
 
-完整控件/命令绑定、规则/表现包组合和新的完整剧本容器尚在规划，不能向当前mod.json添加想象的字段启用。手工辖区已通过BTL的JURI扩展实现。大改UI需一起处理布局、点击区、交互和配套资源，见[移植指南](porting/README.md)。
+胜利/失败结算已支持 `rewrite/extension.json.victoryPresentation` 指向布局与数据/命令绑定配置，并可通过事件多阶段替换胜负规则，见[结算扩展指南](porting/VICTORY_MODDING.md)。其他界面的通用控件/命令绑定、规则/表现包组合和新的完整剧本容器尚在规划，不能向当前mod.json添加想象的字段启用。手工辖区已通过BTL的JURI扩展实现。大改UI需一起处理布局、点击区、交互和配套资源，见[移植指南](porting/README.md)。
 
 技能/特性已支持`rewrite/extension.json`显式注册定义与Lua，可配置胜负条件；字段必须符合[API 1指南](porting/RULE_EXTENSIONS.md)，不是任意位置的skills.json都自动加载。当前没有`jurisdiction.json`公共地图分区文件或`combat.random.uniform`开关。辖区优先级、外交、解散返还和随机取样仍由后端代码控制；具体类见[函数索引](SOURCE_INDEX.md)。
 

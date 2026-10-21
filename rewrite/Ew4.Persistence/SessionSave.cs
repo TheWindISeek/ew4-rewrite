@@ -13,14 +13,15 @@ public static class SessionSave
     private const string Format = "ew4.rewrite.session";
     private sealed record Payload(string ContentRevision, long Revision, string PlayerFaction, JsonElement World,
         PlayerAccount Account, IReadOnlyList<SessionMarket> Markets, IReadOnlyList<TavernCandidate> TavernCandidates,
-        IReadOnlyList<RosterDeploymentState> RosterDeployments);
+        IReadOnlyList<RosterDeploymentState> RosterDeployments, string BattleId = "", BattleResult? BattleResult = null, long CollectedMedals = 0);
 
     public static byte[] Encode(GameSession state)
     {
         state.Validate();
         using var world = JsonDocument.Parse(WorldSave.Encode(state.World));
         byte[] payload = JsonSerializer.SerializeToUtf8Bytes(new Payload(state.ContentRevision, state.Revision, state.PlayerFaction,
-            world.RootElement, state.Account, state.Markets, state.TavernCandidates, state.RosterDeployments), WorldSave.Options);
+            world.RootElement, state.Account, state.Markets, state.TavernCandidates, state.RosterDeployments,
+            state.BattleId, state.BattleResult, state.CollectedMedals), WorldSave.Options);
         using var stream = new MemoryStream();
         using (var writer = new Utf8JsonWriter(stream))
         {
@@ -77,7 +78,8 @@ public static class SessionSave
                 throw new RuleViolation("save.content_revision", "Session/account data differs from installed content");
             var world = WorldSave.Decode(Encoding.UTF8.GetBytes(parsed.World.GetRawText()), expected.World, limits);
             var result = new GameSession { ContentRevision = parsed.ContentRevision, Revision = parsed.Revision, PlayerFaction = parsed.PlayerFaction,
-                World = world, Account = parsed.Account, Markets = parsed.Markets, TavernCandidates = parsed.TavernCandidates, RosterDeployments = parsed.RosterDeployments };
+                World = world, Account = parsed.Account, Markets = parsed.Markets, TavernCandidates = parsed.TavernCandidates, RosterDeployments = parsed.RosterDeployments,
+                BattleId = parsed.BattleId, BattleResult = parsed.BattleResult, CollectedMedals = parsed.CollectedMedals };
             result.Validate(); return result;
         }
         catch (Exception error) when (error is JsonException or InvalidOperationException or KeyNotFoundException

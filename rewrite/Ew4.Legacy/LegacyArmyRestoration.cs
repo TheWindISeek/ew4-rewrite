@@ -61,13 +61,13 @@ public static class LegacyUnitImporter
             titleHealing = ownedAssignment.Rules.Assignment.TitleHealing[commander.Title.Level];
         }
         if (definition != null && string.IsNullOrWhiteSpace(definition.Id)) throw new RuleViolation("legacy.commander_identity", "Missing assigned commander identity");
-        var effects = definition == null ? null : Ew4Commander.Resolve(definition, profile.Category);
+        var effects = definition == null ? null : Ew4Commander.Resolve(definition, profile.Category, catalog.SkillParameters);
         var restored = LegacyArmyRestoration.Calculate(healthSource, profile.MaxHealth, profile.Movement, commander?.RankHealthBonus ?? 0,
             effects?.MovementBonus ?? 0, shortage, definition != null, definition?.HasSkill(3) ?? false,
             effects?.FoodExempt ?? false, immobile: profile.Category == "fort");
         var basis = new Combatant { Profile = profile, Health = profile.MaxHealth, AtSea = cell.Terrain.Sea, BuildingKind = cell.BuildingKind };
         var support = new UnitSupport { FoodConsumption = unassigned.FoodConsumption };
-        var resolved = definition == null ? basis : Ew4Commander.Attach(basis, definition);
+        var resolved = definition == null ? basis : Ew4Commander.Attach(basis, definition, catalog.SkillParameters);
         var unit = new UnitState { Id = unitId, Owner = owner, Cell = source.Cell,
             Combatant = resolved with { Profile = resolved.Profile with { MaxHealth = restored.MaximumHealth, Movement = restored.MaximumMovement },
                 Health = restored.Health, Morale = restored.Morale, ConstructionTurns = source.ConstructionTurns },

@@ -9,6 +9,7 @@ public sealed record CommanderDeploymentOffer(string Id, string CommanderId, str
     Resources Cost, string TurnGroup = "commander.deployment", int? PerTurnLimit = null);
 public sealed record WorldCommanderRules
 {
+    public LegacySkillParameters? LegacySkills { get; init; }
     public RuleEventBus? Extensions { get; init; }
     public IReadOnlyDictionary<string, Commander> Definitions { get; init; } = new Dictionary<string, Commander>();
     public IReadOnlyDictionary<int, int> TitleHealing { get; init; } = new Dictionary<int, int>();
@@ -73,8 +74,8 @@ public static class WorldCommanders
         if (!rules.Definitions.TryGetValue(commanderId, out var definition)) throw new RuleViolation("commander.definition", "Missing commander definition");
         var original = Unassigned(unit);
         var support = unit.CommanderBase?.Support ?? unit.Support;
-        var effects = Ew4Commander.Resolve(definition, original.Profile.Category);
-        var attached = Ew4Commander.Attach(original, definition);
+        var effects = Ew4Commander.Resolve(definition, original.Profile.Category, rules.LegacySkills);
+        var attached = Ew4Commander.Attach(original, definition, rules.LegacySkills);
         int maximum = checked(original.Profile.MaxHealth + commander.RankHealthBonus);
         int movement = rules.ImmobileCategories.Contains(original.Profile.Category) ? 0 : attached.Profile.Movement;
         int health = CommanderAttachment.ResizeHealth(unit.Combatant.Health, unit.Combatant.Profile.MaxHealth, original.Profile.MaxHealth, maximum);

@@ -1,0 +1,123 @@
+{
+  "source": "https://www.bilibili.com/video/BV1QC8t6rEs2/",
+  "capturedDate": "2026-10-20",
+  "primaryFrames": 7,
+  "contextFrames": 3,
+  "originalDimensions": [
+    920,
+    956
+  ],
+  "crop": {
+    "x": 0,
+    "height": 518,
+    "y": 199,
+    "width": 920
+  },
+  "files": [
+    {
+      "name": "C24_1924-09_t36m07s-map.png",
+      "bytes": 743141,
+      "sha256": "206651637dd4a58e71739de27297b01e0d9b6f45f1cc8e21d25af1bcc91b85b9"
+    },
+    {
+      "name": "C24_1924-09_t36m07s.jpg",
+      "bytes": 89100,
+      "sha256": "f3d00081e8a79c378d725a5b6dc5d23ce180379ccd4218b6c989a204a62630e2"
+    },
+    {
+      "name": "C26_1926-07_t37m19s-map.png",
+      "bytes": 722581,
+      "sha256": "48bb890585951102ddf746d22bf99729a3627562ba8886bbce34fff6def4ad9a"
+    },
+    {
+      "name": "C26_1926-07_t37m19s.jpg",
+      "bytes": 87022,
+      "sha256": "c2165c274acca019142860db929015be4188e43001697de06ed6a9136c4f0600"
+    },
+    {
+      "name": "C27_1927-07_t38m07s-map.png",
+      "bytes": 725823,
+      "sha256": "746537beaf5bf8d5e06dae9de842af5aeed9b12b3feb1c072ee8e4353e17175a"
+    },
+    {
+      "name": "C27_1927-07_t38m07s.jpg",
+      "bytes": 87749,
+      "sha256": "7db3b821143987a2e5e4d0b21896c36a8c15802011d6eb3e097c9fbef374f6a6"
+    },
+    {
+      "name": "C30_1930-05_t39m55s-map.png",
+      "bytes": 734541,
+      "sha256": "69c750e87acba6fa93e2c2d2901a19e717838db1a874c63354dc43f041f2ac11"
+    },
+    {
+      "name": "C30_1930-05_t39m55s.jpg",
+      "bytes": 89324,
+      "sha256": "a308fd3c582a571d8ac29d1c50b7c3f92f3273d9d9e18ea22d7013fb97f6030b"
+    },
+    {
+      "name": "C30_before_1930-04_t39m53s-map.png",
+      "bytes": 732615,
+      "sha256": "d5a9ffa08073a785e8c6a7804e5be8a9071807ca2b29ca30ab9f16a8ba05b389"
+    },
+    {
+      "name": "C30_before_1930-04_t39m53s.jpg",
+      "bytes": 74054,
+      "sha256": "80ff15f7b1b2035846d41147887d9a9135a09272e67c0c9e2c9c17021e6d0e4f"
+    },
+    {
+      "name": "C37_1937-07_t44m36s-map.png",
+      "bytes": 779784,
+      "sha256": "8a9d486a10fc1f79acacf27b37b9d21c68ad055f2806fc6df1e887d85aa4c350"
+    },
+    {
+      "name": "C37_1937-07_t44m36s.jpg",
+      "bytes": 94220,
+      "sha256": "0eefceca1b6caf6a9645a7aeb057dc6cb6e2364c00822983cb184005d49b1109"
+    },
+    {
+      "name": "C37_before_1937-06_t44m31s-map.png",
+      "bytes": 757119,
+      "sha256": "15aa654680e8e39a5ab18bf1274868af962fdd4320ed44cfe0f234580d7fb51e"
+    },
+    {
+      "name": "C37_before_1937-06_t44m31s.jpg",
+      "bytes": 90399,
+      "sha256": "d8670a5d332418a1e6580c04e8930881559a0749f062a391b73f5d92055c4fe1"
+    },
+    {
+      "name": "C44_1944-04_t48m51s-map.png",
+      "bytes": 764360,
+      "sha256": "0712f8d11a49f67c22a5981581de48a53da851554bfe660ca49ce7cb2e308d51"
+    },
+    {
+      "name": "C44_1944-04_t48m51s.jpg",
+      "bytes": 92130,
+      "sha256": "6abd22dd6d6e42b6e5e0519d0e83f808c192419c3ffb95dcf5b73e0ab1372848"
+    },
+    {
+      "name": "C44_before_1944-03_t48m48s-map.png",
+      "bytes": 763248,
+      "sha256": "9df3f3efb3adf9f633067f6088abae837bea0e62b0a756c411423c27788ba7c6"
+    },
+    {
+      "name": "C44_before_1944-03_t48m48s.jpg",
+      "bytes": 91997,
+      "sha256": "19190373d16832f834e1e76f0a85bb0e035f637e89fecffc1150e3181a82da73"
+    },
+    {
+      "name": "C46_1946-06_t50m23s-map.png",
+      "bytes": 746556,
+      "sha256": "5889efe2d39fdf5a575e0d64b963ce00cf44bca6e26102f8a02054f4732b8baf"
+    },
+    {
+      "name": "C46_1946-06_t50m23s.jpg",
+      "bytes": 91473,
+      "sha256": "620facb25657889bd6bd1b00e7f8ee301bff1567759dfc50a0052fc6a7470e19"
+    },
+    {
+      "name": "overview.png",
+      "bytes": 5618939,
+      "sha256": "df313c1662c4a5fbbe6d345e59e0a2346516ba6d0bc6fa39eba2b8558f553e38"
+    }
+  ]
+}

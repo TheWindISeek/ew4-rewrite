@@ -1,8 +1,14 @@
 # Mod制作与排查导航
 
+多阶段更新胜负条件、替换胜利/失败结算界面与控件绑定见[结算扩展指南](porting/VICTORY_MODDING.md)及[三阶段示例](../examples/victory-stages/README.md)。
+
+切换所扮演势力、动态胜负条件及分支结局见[控制接口](porting/SCENARIO_CONTROL.md)与[可选示例](../examples/scenario-control/README.md)。
+
 [剧本事件接口](porting/SCENARIO_EVENTS.md)支持自定义条件→直接结果，或条件→多按钮弹窗→所选结果；含完整条件/结果表、存档语义与[中文示例](../examples/scenario-events/README.md)。
 
 周期事件、军团补给费用及独立双边外交已接入同一接口，见[周期与外交示例](../examples/scenario-recurrence-diplomacy/README.md)。
+
+创建/复活势力及修改名称、国土颜色和旗帜见[势力接口](porting/SCENARIO_FACTIONS.md)及[分支示例](../examples/scenario-factions/README.md)。
 
 这份手册对应当前rewrite实现，不是“所有原包改版均已兼容”的承诺。真实APK的兼容性应以逐包测试结果为准；只通过内置版或构造样本不足以证明某个改版能运行。
 

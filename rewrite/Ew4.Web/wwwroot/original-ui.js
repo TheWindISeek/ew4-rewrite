@@ -2,6 +2,8 @@
 (function(root){
   const families=['EW4 Kai','EW4 Serif','EW4 Han','EW4 Han Plane 2','EW4 Han Plane 3','EW4 Unicode','EW4 Unicode Supplement'];
   const fontFamily=families.map(name=>'"'+name+'"').join(',');
+  const numberFamilies=families.filter(name=>name!=='EW4 Kai');
+  const numberFamily=numberFamilies.map(name=>'"'+name+'"').join(',');
   let fontPreparation,glyphRanges,coverage,revision=0,loadQueue=Promise.resolve();
   const faceStates=new Map(),requestedPoints=new Set(),paintTargets=new Set(),candidateLists=new Map();
   const loadedFaces=[];
@@ -31,6 +33,7 @@
   function repaintFonts(){
     revision++;
     for(const reference of paintTargets){const target=reference.deref();if(target)target.ew4Repaint();else paintTargets.delete(reference);}
+    if(typeof WeakRef!=='function')for(const target of document.querySelectorAll('.original-text>canvas'))target.ew4Repaint?.();
     root.dispatchEvent(new Event('ew4fontsloaded'));
   }
   function loadFace(face){
@@ -114,7 +117,8 @@
       let height=options.size?options.size*2:heights[font]||24;
       const lines=[{glyphs:[],width:0}],limit=Number.isFinite(width)?Math.max(1,width*2-8):Infinity,extended=true;
       let value=availableText(text).replace(/\\n/g,'\n');
-      const setFont=()=>{this.measure.font=height+'px '+fontFamily;this.measure.fontKerning='none';};
+      const typeface=options.numeric?numberFamily:fontFamily;
+      const setFont=()=>{this.measure.font=height+'px '+typeface;this.measure.fontKerning='none';};
       setFont();
       if(options.singleLine){
         value=value.replace(/[\r\n]+/g,' ');
@@ -136,7 +140,8 @@
       const span=document.createElement('span');span.className='original-text';span.setAttribute('aria-label',String(text));
       const canvas=document.createElement('canvas');canvas.setAttribute('aria-hidden','true');span.append(canvas);
       const padding=4,outlined=font.startsWith('font_city');
-      span.dataset.font=font;span.dataset.typeface=fontFamily;
+      const typeface=options.numeric?numberFamily:fontFamily;
+      span.dataset.font=font;span.dataset.typeface=typeface;
       span.dataset.color=outlined?'#ffffff':color;
       const redraw=()=>{
         const layout=this.layout(text,font,width,options);span.dataset.size=String(layout.height/2);
@@ -147,14 +152,14 @@
           const offset=align==='center'?(layout.width-line.width)/2:align==='right'?layout.width-line.width:0;
           for(const {char,x} of line.glyphs){
             const y=row*(layout.height+2)+padding;
-            draw.font=layout.height+'px '+fontFamily;draw.fontKerning='none';draw.textBaseline='top';
+            draw.font=layout.height+'px '+typeface;draw.fontKerning='none';draw.textBaseline='top';
             if(outlined){draw.strokeStyle='#000000';draw.lineWidth=2;draw.lineJoin='round';draw.strokeText(char,padding+offset+x,y);}
             draw.fillStyle=outlined?'#ffffff':color||'#404040';draw.fillText(char,padding+offset+x,y);
           }
         }
       };
-      canvas.ew4Repaint=redraw;paintTargets.add(new WeakRef(canvas));
-      redraw();void prepareText(text);return span;
+      canvas.ew4Repaint=redraw;if(typeof WeakRef==='function')paintTargets.add(new WeakRef(canvas));
+      redraw();void prepareText(text,options.numeric?numberFamilies:families).then(()=>{if(typeof WeakRef!=='function')redraw();});return span;
     }
     replace(element,text,font,color,width,align){element.replaceChildren(this.element(text,font,color,width,align));}
     forElement(element,text){

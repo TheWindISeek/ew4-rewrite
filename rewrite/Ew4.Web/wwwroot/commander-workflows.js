@@ -128,6 +128,38 @@
       confirm.append(this.lettering(this.text('text_regroup'),'font_text_2_cn_hd','#404040'),this.card(this.definition(donor),donor,()=>{}),this.lettering(this.text('text_regroupnotice'),'font_text_1_cn_hd','#a02320',270));
     },!receiver.locked&&preview.price<=this.data.medals);
   };
+  proto.useItems=async function(unit){
+    const data=await this.api.rpc('items',{unit}),l=this.native('form_useitem',()=>this.api.refresh());
+    const confirm=document.getElementById('detail-confirm');
+    let chosen=null,pending=false;
+    confirm.hidden=false;confirm.disabled=true;confirm.setAttribute('aria-label','使用物品');confirm.title='使用物品';
+    l.text('group_desc/intitle','');l.text('text_desc','');
+    const choose=(item,b)=>{
+      if(pending)return;chosen=item;
+      for(const node of l.get('lbox_item').children)node.setAttribute('aria-pressed',String(node===b));
+      l.text('group_desc/intitle',item.name);
+      l.text('text_desc',item.description+(item.reason?'\n'+item.reason:''),{breakwords:'true'});
+      confirm.disabled=!item.available;confirm.setAttribute('aria-label','使用 '+item.name);confirm.title='使用 '+item.name;
+    };
+    for(const item of data.items){
+      const b=this.itemButton(item,item.quantity,()=>choose(item,b));
+      b.setAttribute('aria-label',item.name+' × '+item.quantity);b.title=item.name+' × '+item.quantity;
+      b.classList.toggle('unavailable-item',!item.available);
+      if(item.quantity<=1){const n=document.createElement('span');n.className='item-quantity';n.append(this.lettering(item.quantity,'font_char_2_hd','#ebe6e1'));b.append(n);}
+      l.get('lbox_item').append(b);
+    }
+    confirm.onclick=async()=>{
+      if(pending||!l.current()||!chosen?.available)return;
+      pending=true;confirm.disabled=true;
+      try{
+        await this.api.act('use_item',{unit,item:chosen.id,revision:data.revision});
+        if(l.current())this.api.closeDetail();
+      }catch(e){this.api.notice(e.message);if(l.current()){await this.api.refresh();if(l.current())await this.useItems(unit);}}
+      finally{pending=false;}
+    };
+    const first=data.items.find(i=>i.available)||data.items[0];
+    if(first)choose(first,l.get('lbox_item').children[data.items.indexOf(first)]);
+  };
   proto.commerceStars=function(layout,level){
     const list=layout.get('lbox_stars');list.replaceChildren();list.setAttribute('aria-label','经商 '+level+' / 5');
     for(let i=0;i<5;i++){const star=this.api.uiImage('star_middle.png',13.5,12.5);star.classList.toggle('commerce-star-empty',i>=level);list.append(star);}
@@ -141,6 +173,16 @@
   proto.shop=async function(cell=-1,snapshot){
     if(!this.data)this.data=await this.api.rpc('headquarters');
     const data=snapshot||await this.api.rpc('commerce',{cell}),l=this.native('form_shop',async()=>{this.data=await this.api.rpc('headquarters');this.drawRoster();await this.api.refresh();});
+    if(cell<0){
+      const refresh=this.api.button('',async()=>{
+        if(!l.current())return;
+        const next=await this.api.rpc('commerce',{cell,revision:data.revision,op:'refresh'});
+        this.data=await this.api.rpc('headquarters');this.drawRoster();
+        if(l.current())await this.shop(cell,next);
+      },l.body);
+      refresh.className='shop-refresh';refresh.setAttribute('aria-label','刷新商品');refresh.title='刷新商品';
+      refresh.append(this.api.uiImage('button_refresh.png',20,22));
+    }
     let chosen,buying;
     const choose=(item,buy,b,offer)=>{
       chosen={item,offer};buying=buy;for(const n of l.body.querySelectorAll('.native-item'))n.setAttribute('aria-pressed',String(n===b));

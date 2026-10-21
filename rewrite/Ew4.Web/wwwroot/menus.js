@@ -16,7 +16,7 @@
     lettering(text,font='font_text_2_cn_hd',color='#404040',width,align,options){return this.api.text(text,font,color,width,align,options);}
     slideInSidebar(list){
       const rows=[...list.children];
-      for(const node of [list,...rows])for(const animation of node.getAnimations())animation.cancel();
+      for(const node of [list,...rows])for(const animation of node.getAnimations?.()||[])animation.cancel();
       if(matchMedia('(prefers-reduced-motion: reduce)').matches)return;
       const easing='cubic-bezier(.2,.7,.25,1)';
       // Separate translate from the selected row's transform so both offsets compose.

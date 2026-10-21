@@ -5,6 +5,11 @@ using System.Text.Json.Nodes;
 using System.Xml.Linq;
 using Ew4.Mods;
 
+if (args.ElementAtOrDefault(1) == "--legacy-skills-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { legacySkillParameterModChecks = LegacySkillParameterModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
+}
+
 if (args.ElementAtOrDefault(1) == "--identity-only")
 {
     Console.WriteLine(JsonSerializer.Serialize(new { identityChecks = ModIdentityChecks.Run(Path.GetFullPath(args[0])), errors = 0 }));
@@ -20,7 +25,8 @@ if (args.ElementAtOrDefault(1) == "--deletion-only")
 if (args.ElementAtOrDefault(1) == "--extension-only")
 {
     Console.WriteLine(JsonSerializer.Serialize(new { extensionModChecks = ExtensionModChecks.Run(Path.GetFullPath(args[0])),
-        commonSkillModChecks = CommonSkillModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
+        commonSkillModChecks = CommonSkillModChecks.Run(Path.GetFullPath(args[0])),
+        legacySkillParameterModChecks = LegacySkillParameterModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
 }
 
 if (args.ElementAtOrDefault(1) == "--jurisdiction-only")
@@ -48,6 +54,7 @@ void Reject(Action action, string message) { try { action(); } catch (Exception 
 var baseline = new ModBase(p => File.ReadAllBytes(p.StartsWith("frontend/") ? Path.Combine(root, "rewrite/Ew4.Web/wwwroot", p[9..]) : Path.Combine(data, p)),
     Directory.EnumerateFiles(data, "*", SearchOption.AllDirectories).Select(p => Path.GetRelativePath(data, p).Replace('\\', '/')));
 checks += LegacyResourceChecks.Run(baseline, run);
+checks += LegacySkillParameterModChecks.Run(root);
 checks += JurisdictionModChecks.Run(root);
 var store = new ModStore(baseline, Path.Combine(run, "mods"), Path.Combine(run, "saves"));
 string Call(string route, object body)
@@ -123,13 +130,23 @@ string pvr = Directory.EnumerateFiles(Path.Combine(mapRaw, "map")).First(); byte
 var mapInfo = store.Import(mapRaw, "map-test", "地图测试");
 Check(Directory.EnumerateFiles(Path.Combine(run, "mods", mapInfo.Key, "client/maps/europe"), "*.png").Count() > 10, "PVR map rebuilt into chunks");
 string graphicRaw = Path.Combine(run, "raw-graphics"); Directory.CreateDirectory(graphicRaw);
-foreach (string file in new[] { "army_militia.bin", "army_militia.xml", "commanders1_hd.pkm", "commanders1_hd.xml", "font_text_2_cn_hd.fnt" }) File.Copy(Path.Combine(source, file), Path.Combine(graphicRaw, file));
+foreach (string file in new[] { "army_militia.bin", "army_militia.xml", "commanders1_hd.pkm", "commanders1_hd.xml", "font_text_2_cn_hd.fnt", "font_fight_num.fnt", "font_fight_num.png", "font_fight_num_hd.fnt", "font_fight_num_hd.png" }) File.Copy(Path.Combine(source, file), Path.Combine(graphicRaw, file));
 string animPath = Path.Combine(graphicRaw, "army_militia.bin"); byte[] animBytes = File.ReadAllBytes(animPath); float fps = BitConverter.ToSingle(animBytes, 16); BitConverter.GetBytes(fps + 1).CopyTo(animBytes, 16); File.WriteAllBytes(animPath, animBytes);
 string pkmPath = Path.Combine(graphicRaw, "commanders1_hd.pkm"); byte[] pkmBytes = File.ReadAllBytes(pkmPath); pkmBytes[16] ^= 1; File.WriteAllBytes(pkmPath, pkmBytes);
 var graphicInfo = store.Import(graphicRaw, "graphic-test", "图形测试"); string graphicFolder = Path.Combine(run, "mods", graphicInfo.Key, "client");
 Check((float)JsonNode.Parse(File.ReadAllBytes(Path.Combine(graphicFolder, "animations/army_militia.json")))!["fps"]! == fps + 1, "raw BILE conversion");
 Check(File.Exists(Path.Combine(graphicFolder, "images/commanders1_hd.png")), "ETC1 converted to PNG");
 Check(Directory.EnumerateFiles(Path.Combine(graphicFolder, "ui/commanders1_hd"), "*.png").Count() > 10, "changed portrait atlas recropped");
-store.Activate(null); Check(File.ReadAllBytes(builtinSave).SequenceEqual(saveBefore), "all imports leave original slot intact");
+var graphicManifest = JsonNode.Parse(File.ReadAllBytes(Path.Combine(graphicFolder, "manifest.json")))!;
+foreach (string font in new[] { "font_fight_num", "font_fight_num_hd" })
+{
+    Check(graphicManifest["fonts"]![font]!["glyphs"]!.AsObject().Count == 11, "combat font metrics imported: " + font);
+    Check(File.ReadAllBytes(Path.Combine(source, font + ".png")).SequenceEqual(File.ReadAllBytes(Path.Combine(graphicFolder, "images", font + ".png"))), "combat font bitmap preserved: " + font);
+}
+store.Activate(null);
+// Loading the builtin slot refreshes its save timestamp; its gameplay content must stay intact.
+var originalSlot = JsonNode.Parse(saveBefore)!.AsObject(); originalSlot.Remove("savedAt");
+var finalSlot = JsonNode.Parse(File.ReadAllBytes(builtinSave))!.AsObject(); finalSlot.Remove("savedAt");
+Check(JsonNode.DeepEquals(originalSlot, finalSlot), "all imports leave original slot content intact");
 File.WriteAllText(Path.Combine(report, "results.json"), JsonSerializer.Serialize(new { checks, errors = 0, run, scopes = new[] { "raw data/UI/map", "extra scenario", "hash validation", "rollback", "save isolation", "package roundtrip", "unsafe archives", "unsupported native skills" } }, new JsonSerializerOptions { WriteIndented = true }));
 Console.WriteLine($"Mod checks: {checks}, errors: 0; {run}");

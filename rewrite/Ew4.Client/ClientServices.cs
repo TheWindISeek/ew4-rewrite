@@ -74,6 +74,7 @@ public sealed partial class ClientGame
         if (target == null) return null;
         var projected = command is AiMoveCommand movement
             ? WorldActions.Move(world, world.Revision, command.UnitId, movement.Destination, Require().Rules.Movement).State : world;
+        if (projected.Phase == TurnPhase.Finished || projected.PendingDialogue != null) return null;
         var preview = WorldBattle.Preview(projected, projected.Revision, command.UnitId, target, Require().Rules.Battle);
         var movements = command is AiMoveCommand moved
             ? new[] { new { unit = moved.UnitId, path = WorldActions.Reachable(world, moved.UnitId, Require().Rules.Movement)[moved.Destination].Path } } : [];

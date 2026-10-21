@@ -186,11 +186,10 @@ public static class WorldActions
         next = scenarioEvents.State; notices.AddRange(scenarioEvents.Notices);
         if (rules.PlayerCamp != null && next.Outcome == BattleOutcome.Continue && (next.ScenarioEvents.Count == 0 || next.PendingDialogue == null))
         {
-            var outcome = WorldVictory.Evaluate(next, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
-            if (outcome != BattleOutcome.Continue)
+            next = WorldVictory.Resolve(next, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
+            if (next.Outcome != BattleOutcome.Continue)
             {
-                next = next with { Phase = TurnPhase.Finished, Outcome = outcome };
-                notices.Add(new("battle.finished", outcome.ToString()));
+                notices.Add(new("battle.finished", next.Outcome.ToString()));
             }
         }
         string? previous = state.Cells[destination].Owner, current = next.Cells[destination].Owner;

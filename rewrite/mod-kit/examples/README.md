@@ -1,6 +1,14 @@
 # 最小覆盖示例
 
+只修改原版将领技能的倍率、概率、折扣、移动/攻击加成与教学成长，见[原版技能参数模板](legacy-skill-parameters/README.md)。
+
+多阶段修改胜负条件、替换完整结算布局和按钮绑定见[三阶段胜利示例](victory-stages/README.md)。
+
+叛乱后选择扮演、动态胜负条件和分支结局见[角色切换示例](scenario-control/README.md)。
+
 自定义剧本条件、直接结果和多个选择按钮见[剧本事件示例](scenario-events/README.md)。
+
+创建独立势力、选择不创建、修改国号/国土颜色/旗帜见[势力事件示例](scenario-factions/README.md)。
 
 固定回合扣军费、AI 三资源支援、资源短缺结果和阶段性双边外交见[周期与外交示例](scenario-recurrence-diplomacy/README.md)。
 

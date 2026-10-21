@@ -191,12 +191,11 @@ public static class WorldBattle
             state = scenarioEvents.State; notices.AddRange(scenarioEvents.Notices);
             if (rules.PlayerCamp != null && state.Outcome == BattleOutcome.Continue && (state.ScenarioEvents.Count == 0 || state.PendingDialogue == null))
             {
-                var outcome = WorldVictory.Evaluate(state, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
-                if (outcome != BattleOutcome.Continue)
+                state = WorldVictory.Resolve(state, rules.PlayerCamp, rules.Victory, rules.NeutralCamps);
+                if (state.Outcome != BattleOutcome.Continue)
                 {
                     // Dialogues are acknowledged before the host presents the final outcome.
-                    state = state with { Outcome = outcome, Phase = TurnPhase.Finished };
-                    notices.Add(new("battle.finished", outcome.ToString()));
+                    notices.Add(new("battle.finished", state.Outcome.ToString()));
                 }
             }
             state = state with { Revision = checked(before.Revision + 1) };
@@ -291,7 +290,8 @@ public static class WorldBattle
             if (!commander.ProgressionEnabled) return;
             var track = title ? rules.TitleProgression : rules.RankProgression;
             var prior = title ? commander.Title : commander.Rank;
-            long adjusted = Ew4Experience.CommanderGain(amount, title, unit.Combatant.Skills, title ? commander.TitleExperiencePercent : commander.RankExperiencePercent);
+            long adjusted = Ew4Experience.CommanderGain(amount, title, unit.Combatant.Skills,
+                title ? commander.TitleExperiencePercent : commander.RankExperiencePercent, skillParameters: rules.Combat.LegacySkills);
             var progression = Progression.Award(prior, adjusted, track);
             commander = title ? commander with { Title = progression.State } : commander with { Rank = progression.State };
             if (progression.LevelsGained > 0)

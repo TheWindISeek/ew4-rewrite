@@ -15,6 +15,8 @@
 | `army_*.png` | 兵种动画贴图，配套animations库的atlas |
 | `font_*.png` | 位图字库，配套manifest.fonts度量 |
 
+战斗数字使用 `font_fight_num_hd.png`，基础度量在 `client/fight-font.json`；APK重新导入时可用配套FNT覆盖到 `manifest.fonts.font_fight_num_hd`。普通界面文字仍使用内置WOFF2字体。
+
 战场旗帜由`battlefield.js`的`flagFrame()`每100ms轮换1～4帧，`flagPosition()`使用当前位置偏移(-27,-45)。只替换选国国旗不会改这些战场帧。改旗帜图形请保持各帧锚点一致。
 
 PNG解码预算：最长边8192、最多16Mi像素。图集允许有未引用旧条目，但UI裁剪坐标必须合法；原改版里无效/重复条目可能需要导入兼容处理，见真实APK测试报告和[排错](../../../docs/TROUBLESHOOTING.md)。

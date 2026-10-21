@@ -1,0 +1,6 @@
+{
+  "schema": 1,
+  "apiVersion": 1,
+  "scenarioEvents": "rewrite/events.json",
+  "victoryPresentation": "rewrite/victory-screen.json"
+}

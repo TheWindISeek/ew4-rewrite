@@ -1,5 +1,15 @@
 # 现代核心重构
 
+2026-10-21：本次发行 **0.2.9** 汇总以下各阶段的规则、界面和 Android 修复，提供独立 Windows Web 包与同签名 ARM64 APK（code 11）。当前发布范围及已知限制以[0.2.9 发行说明](RELEASE_0.2.9_20261021.md)为准；下文“无新 APK”“旧 0.2.6 不含”等是各阶段当时的状态。真机启动、发热及顶部图标闪烁仍待验证。
+
+2026-10-21：原版将领技能新增 JSON 参数覆盖，开放 29 种技能的 36 个倍率、概率、移动/攻击加成、折扣、经济/经验及教学成长数值。通过 `extension.json` 的 `legacySkillParameters` 注册；[可打包模板与字段说明](mod-kit/examples/legacy-skill-parameters/README.md)。不配置时保留旧规则和存档指纹，本次能力未包含在旧 APK 中。
+
+功能方向与剩余缺口见 [Rewrite 版目标清单](GOALS.md)，包含用户目标图的 9 项目标（含原编号 3.5）及本轮收集的 10 类 bug/核查项；[手机证据与原版 Mod 参考](../reverse/references/frontend_user_20261021_mobile/README.md)已分别归档。
+
+2026-10-21：事件新增 `player_control` 切换同一玩家所扮演势力，`victory_rules` / `victory_default` 替换及恢复本局胜负条件，`ending` 指定分支结局，权限/回合/存档同步。[接口指南](mod-kit/docs/porting/SCENARIO_CONTROL.md)、[可封装示例](mod-kit/examples/scenario-control/README.md)及[验证记录](../reverse/SCENARIO_CONTROL_20261021.md)已补；独立预览 <http://127.0.0.1:5212>，无新APK，旧0.2.6不包含本增补。
+
+2026-10-21：新增普通事件结果 `faction_create`、`faction_revive`、`faction_identity`，可由条件直接执行或弹窗按钮执行，支持独立新增兵种/旗帜、改名/国土色与存档恢复。[字段指南](mod-kit/docs/porting/SCENARIO_FACTIONS.md)、[作者示例](mod-kit/examples/scenario-factions/README.md)和[验证记录](../reverse/SCENARIO_FACTIONS_20261021.md)已补；独立预览 <http://127.0.0.1:5207>，本增补尚未打入旧0.2.6或新APK。
+
 2026-10-21：本轮发行0.2.6包含通用技能API 2、剧本周期事件/独立外交及字体启动兼容修复。[发行说明](RELEASE_0.2.6_20261021.md)，[技能交付记录](../reverse/COMMON_SKILLS_20261021.md)。以下各阶段“未重打APK”等说明为当时状态；本轮产物与远端核验见 `../build/release-0.2.6-20261021/`。
 
 2026-10-21：修复战场上将名册被画布遮挡，增加后端候选校验与任命自动保存；公主整编后按当前名册重新领取。[剧本事件接口](mod-kit/docs/porting/SCENARIO_EVENTS.md)已支持组合条件→直接结果，或条件→自定义按钮弹窗→所选结果，含资源、城市、死亡、回合、阵营及 Lua；[中文示例](mod-kit/examples/scenario-events/README.md)。验证与预览见[交付记录](../reverse/SCENARIO_RULES_20261021.md)，未重打 APK。

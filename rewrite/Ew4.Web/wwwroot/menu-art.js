@@ -45,9 +45,9 @@
       target.style.setProperty('background-image','url("'+this.backgrounds[mode===1?'form_selcampaign':'form_selconquest']+'")','important');
       target.style.backgroundSize='100% 100%';
     }
-    drawStrategic(draw,definition,scale,centerX=205,centerY=128){
+    drawStrategic(draw,definition,scale,centerX=205,centerY=128,textureScale=1){
       const {image,ratio}=this.strategic,cx=Number(definition.centerx||410),cy=Number(definition.centery||288);
-      const width=image.naturalWidth/ratio,height=image.naturalHeight/ratio;
+      const width=image.naturalWidth/ratio*textureScale,height=image.naturalHeight/ratio*textureScale;
       draw.drawImage(image,centerX-cx*scale,centerY-cy*scale,width*scale,height*scale);
     }
   }

@@ -20,6 +20,7 @@ public sealed record FactionState
 {
     public string Id { get; init; } = "";
     public string Name { get; init; } = "";
+    public FactionAppearance? Appearance { get; init; }
     public string Camp { get; init; } = "";
     public bool Human { get; init; }
     public bool Defeated { get; init; }
@@ -168,6 +169,9 @@ public sealed record WorldState
     public IReadOnlyList<CommanderDeploymentOffer> CommanderOffers { get; init; } = Array.Empty<CommanderDeploymentOffer>();
     public IReadOnlyList<ScenarioEvent> Events { get; init; } = Array.Empty<ScenarioEvent>();
     public string? ScenarioPlayerFaction { get; init; }
+    public LocalMultiplayerState? LocalMultiplayer { get; init; }
+    public ExtensionVictoryRules? ScenarioVictory { get; init; }
+    public string? ScenarioEnding { get; init; }
     public IReadOnlyList<ScriptedScenarioEvent> ScenarioEvents { get; init; } = Array.Empty<ScriptedScenarioEvent>();
     public IReadOnlyList<string> TriggeredScenarioEvents { get; init; } = Array.Empty<string>();
     public IReadOnlyDictionary<string, string> ScenarioChoices { get; init; } = new Dictionary<string, string>();
@@ -199,6 +203,7 @@ public sealed record WorldState
             return ids;
         }
         var factionIds = Ids(Factions.Select(f => f.Id));
+        LocalMultiplayerGame.Validate(this);
         var factionIndex = Factions.ToDictionary(f => f.Id, StringComparer.Ordinal);
         if (DiplomaticRelations == null || DiplomacyNeutralCamps == null
             || DiplomacyNeutralCamps.Any(string.IsNullOrWhiteSpace) || DiplomacyNeutralCamps.Distinct().Count() != DiplomacyNeutralCamps.Count
@@ -230,6 +235,7 @@ public sealed record WorldState
             throw new RuleViolation("world.phase", "Invalid turn phase or outcome");
         foreach (var faction in Factions)
         {
+            ScenarioFactions.ValidateAppearance(faction.Appearance);
             if (faction.Resources.Money < int.MinValue || faction.Resources.Industry < int.MinValue || faction.Resources.Food < int.MinValue)
                 throw new RuleViolation("world.faction", "Opening debt exceeds the serialized signed balance range");
             faction.IncomeBonus.Validate();
@@ -354,6 +360,8 @@ public sealed record WorldState
             CommanderBase = u.CommanderBase == null ? null : u.CommanderBase with { Combatant = CopyCombatant(u.CommanderBase.Combatant) } }).ToArray(),
         Commanders = Commanders.ToArray(), CommanderOffers = CommanderOffers.ToArray(),
         Events = Events.Select(e => e with { Rules = e.Rules.ToArray() }).ToArray(),
+        LocalMultiplayer = LocalMultiplayer == null ? null : LocalMultiplayer with { HumanFactions = LocalMultiplayer.HumanFactions.ToArray() },
+        ScenarioVictory = ScenarioVictory == null ? null : ExtensionVictory.Copy(ScenarioVictory),
         ScenarioEvents = ScenarioEvents.Select(ScenarioRules.Copy).ToArray(), TriggeredScenarioEvents = TriggeredScenarioEvents.ToArray(),
         ScenarioChoices = ScenarioChoices.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal),
         ScenarioEventProgress = ScenarioEventProgress.ToDictionary(p => p.Key, p => p.Value with { }, StringComparer.Ordinal),

@@ -22,18 +22,29 @@ public sealed partial class ClientGame
         if (game != null) game = game with { Session = game.Session with { Account = account, Revision = checked(game.Session.Revision + 1) } };
     }
 
-    private ItemMarket HeadquartersMarket()
+    private ItemMarket HeadquartersMarket(bool refresh = false, long expectedRevision = -1)
     {
         var account = Account();
-        if (account.HeadquartersStock != null) return account.HeadquartersStock;
+        if (refresh && expectedRevision != account.Revision)
+            throw new RuleViolation("account.revision", "Stale account transaction");
+        if (!refresh && account.HeadquartersStock != null) return account.HeadquartersStock;
+        var previous = account.HeadquartersStock;
         // Native 5d434: five consumables, then two distinct unowned permanent items.
         var consumables = content.Catalogs.Items.Items.Values.Where(d => d.Equipment.Consumable).ToArray();
         var equipment = content.Catalogs.Items.Items.Values.Where(d => !d.Equipment.Consumable
             && !account.Inventory.ContainsKey(d.Equipment.Id)).ToArray();
         Random.Shared.Shuffle(equipment);
+        // Prefer equipment outside the last selection when the remaining pool allows it.
+        var oldEquipment = previous?.Offers.Select(o => o.ItemId).ToHashSet() ?? [];
+        equipment = equipment.OrderBy(d => oldEquipment.Contains(d.Equipment.Id)).ToArray();
         var offers = new List<ItemTradeOffer>();
         for (int i = 0; i < 5 && consumables.Length > 0; i++)
-            offers.Add(new("headquarters." + i, consumables[Random.Shared.Next(consumables.Length)].Equipment.Id, 1));
+        {
+            string slot = "headquarters." + i;
+            string? old = previous?.Offers.FirstOrDefault(o => o.Id == slot)?.ItemId;
+            var choices = consumables.Length > 1 ? consumables.Where(d => d.Equipment.Id != old).ToArray() : consumables;
+            offers.Add(new(slot, choices[Random.Shared.Next(choices.Length)].Equipment.Id, 1));
+        }
         offers.AddRange(equipment.Take(2).Select((d, i) => new ItemTradeOffer("headquarters." + (i + 7), d.Equipment.Id)));
         var market = new ItemMarket("headquarters", offers);
         InstallAccount(account.Copy() with { Revision = checked(account.Revision + 1), HeadquartersStock = market });
@@ -43,12 +54,14 @@ public sealed partial class ClientGame
     private object Commerce(ClientCommand command)
     {
         bool headquarters = command.Cell < 0;
+        if (command.Op == "refresh" && !headquarters)
+            throw new RuleViolation("trading.command", "Only the headquarters shop can refresh its stock");
         ItemMarket market;
         int commerce = 0;
         ItemTradingRules trading;
         if (headquarters)
         {
-            market = HeadquartersMarket();
+            market = HeadquartersMarket(command.Op == "refresh", command.Revision);
             trading = content.Catalogs.Items.Rules();
         }
         else
@@ -84,7 +97,7 @@ public sealed partial class ClientGame
                 market = change.State.Markets.Single(m => m.Market.Id == market.Id).Market;
             }
         }
-        else if (command.Op != "") throw new RuleViolation("trading.command", "Unknown shop operation");
+        else if (command.Op is not ("" or "refresh")) throw new RuleViolation("trading.command", "Unknown shop operation");
         var owned = Account();
         return new { revision = headquarters ? owned.Revision : Require().Session.Revision, owned.Medals, commerce,
             items = ItemViews(owned), offers = market.Offers.Select(o => new { o.Id, o.ItemId, o.Remaining,

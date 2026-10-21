@@ -79,7 +79,7 @@ async function publish(){
   const list=await request('/repos/'+repo+'/releases?per_page=100');
   let release=list.find(r=>r.tag_name===tag);
   if(!release)release=await request('/repos/'+repo+'/releases','POST',{tag_name:tag,target_commitish:head,
-    name:version+' - Common skill API 2 and runtime fixes',body:fs.readFileSync(notes,'utf8'),draft:true,prerelease:false});
+    name:version+' - '+(process.env.EW4_RELEASE_TITLE||'Runtime and gameplay updates'),body:fs.readFileSync(notes,'utf8'),draft:true,prerelease:false});
   const files=fs.readdirSync(path.join(build,'assets'));
   for(const name of files){
     const file=path.join(build,'assets',name),sha=crypto.createHash('sha256').update(fs.readFileSync(file)).digest('hex');

@@ -22,6 +22,9 @@ public sealed record SessionTradingRules
 // The session is the transaction boundary for battlefield resources and persistent account medals.
 public sealed record GameSession
 {
+    public string BattleId { get; init; } = "";
+    public BattleResult? BattleResult { get; init; }
+    public long CollectedMedals { get; init; }
     public string ContentRevision { get; init; } = "";
     public long Revision { get; init; }
     public string PlayerFaction { get; init; } = "";
@@ -33,7 +36,12 @@ public sealed record GameSession
     public void Validate()
     {
         World.Validate(); Account.Validate();
+        if (CollectedMedals < 0 || BattleResult != null && (BattleResult.Id != BattleId
+            || BattleResult.Scenario != World.ScenarioId || World.Phase != TurnPhase.Finished
+            || BattleResult.Outcome != World.Outcome.ToString() || BattleResult.Round != World.Round))
+            throw new RuleViolation("session.result", "Invalid battle result binding");
         if (string.IsNullOrWhiteSpace(ContentRevision) || Revision < 0 || !World.Factions.Any(f => f.Id == PlayerFaction)
+            || World.ScenarioPlayerFaction != null && World.ScenarioPlayerFaction != PlayerFaction
             || Markets.Select(m => m.Market.Id).Distinct(StringComparer.Ordinal).Count() != Markets.Count
             || TavernCandidates.Select(c => c.Id).Distinct(StringComparer.Ordinal).Count() != TavernCandidates.Count
             || TavernCandidates.Select(c => c.CommanderId).Distinct(StringComparer.Ordinal).Count() != TavernCandidates.Count)
@@ -70,6 +78,20 @@ public sealed record SessionChange(GameSession State, IReadOnlyList<WorldNotice>
 
 public static class SessionActions
 {
+    public static GameSession SyncPlayer(GameSession state)
+    {
+        if (state.World.LocalMultiplayer != null) return LocalMultiplayerGame.SyncPlayer(state);
+        string player = state.World.ScenarioPlayerFaction ?? state.PlayerFaction;
+        if (player == state.PlayerFaction) return state;
+        var quotas = state.RosterDeployments;
+        if (quotas.All(q => q.Faction != player))
+        {
+            int? limit = quotas.SingleOrDefault(q => q.Faction == state.PlayerFaction)?.Limit;
+            quotas = quotas.Append(new RosterDeploymentState(player, limit, Array.Empty<string>())).ToArray();
+        }
+        return state with { PlayerFaction = player, RosterDeployments = quotas };
+    }
+
     private static void Revision(GameSession state, long expected)
     {
         state.Validate();
@@ -178,7 +200,7 @@ public static class SessionActions
         if (change.State.Revision != checked(state.World.Revision + 1) || change.State.ScenarioId != state.World.ScenarioId
             || change.State.ContentRevision != state.World.ContentRevision)
             throw new RuleViolation("session.world_revision", "World transaction must advance this scenario once");
-        var next = (state with { Revision = checked(state.Revision + 1), World = change.State }).Copy(); next.Validate();
+        var next = SyncPlayer(state with { Revision = checked(state.Revision + 1), World = change.State }).Copy(); next.Validate();
         return new(next, change.Notices.ToArray());
     }
 }

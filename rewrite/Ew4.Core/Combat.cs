@@ -105,6 +105,7 @@ public sealed record CombatResult(int DefenderDamage, int AttackerDamage, bool C
 
 public sealed record CombatRules
 {
+    public LegacySkillParameters? LegacySkills { get; init; }
     public int StarRollCap { get; init; } = 5;
     public int MinimumDamage { get; init; } = 1;
     public bool LegacySiegeRetaliationBuildingType { get; init; }
@@ -151,13 +152,14 @@ public static class Ew4Combat
         int am = MoraleModifier(a.Morale, ac), dm = MoraleModifier(d.Morale, dc);
         int aa = am + a.AttackBonus + Math.Min(ac, rules.StarRollCap) * a.Stars;
         int da = dm + d.AttackBonus + Math.Min(dc, rules.StarRollCap) * d.Stars;
-        bool offensive = a.Has(Skill(31)) && random.Next(100) < 10;
-        bool defensive = d.Has(Skill(32)) && random.Next(100) < 10;
-        int attack = Rolls(a, ac, offensive, random);
+        var skills = rules.LegacySkills ?? LegacySkillParameters.Default;
+        bool offensive = a.Has(Skill(31)) && random.Next(100) < skills.Percent(31);
+        bool defensive = d.Has(Skill(32)) && random.Next(100) < skills.Percent(32);
+        int attack = Rolls(a, ac, offensive, random, skills);
         int dealt = Damage(a, d, aa + attack - Math.Min(0, dm) - d.DefenseBonus - d.Armor, false, rules, random);
         if (defensive) dealt = rules.MinimumDamage;
         if (rules.LethalStrikePreventsCounterattack && dealt >= d.Health) counter = false;
-        int retaliation = counter ? Rolls(d, dc, false, random) : 0;
+        int retaliation = counter ? Rolls(d, dc, false, random, skills) : 0;
         int taken = counter ? Damage(d, a, da + retaliation - Math.Min(0, am) - a.DefenseBonus - a.Armor, true, rules, random) : 0;
         var result = new CombatResult(dealt, taken, counter, offensive, defensive, random.State);
         callerRandom.Commit(random.State);
@@ -167,12 +169,12 @@ public static class Ew4Combat
     private static int MoraleModifier(int morale, int rolls) =>
         rolls * (morale == 1 ? 1 : morale == -1 ? -1 : morale < -1 ? -2 : 0);
 
-    private static int Rolls(Combatant unit, int count, bool maximumRoll, Ew4Random random)
+    private static int Rolls(Combatant unit, int count, bool maximumRoll, Ew4Random random, LegacySkillParameters skills)
     {
         int? lowerSkill = unit.Profile.Category switch { "infantry" => 13, "cavalry" => 11, "artillery" => 7, _ => null };
         int? upperSkill = unit.Profile.Category switch { "infantry" => 12, "cavalry" => 10, "artillery" => 8, _ => null };
-        int min = unit.Profile.MinimumAttack + (lowerSkill.HasValue && unit.Has(Skill(lowerSkill.Value)) ? 1 : 0);
-        int max = unit.Profile.MaximumAttack + (upperSkill.HasValue && unit.Has(Skill(upperSkill.Value)) ? 1 : 0);
+        int min = checked(unit.Profile.MinimumAttack + (lowerSkill.HasValue && unit.Has(Skill(lowerSkill.Value)) ? skills.Bonus(lowerSkill.Value) : 0));
+        int max = checked(unit.Profile.MaximumAttack + (upperSkill.HasValue && unit.Has(Skill(upperSkill.Value)) ? skills.Bonus(upperSkill.Value) : 0));
         int total = 0;
         for (int i = 0; i < count; i++)
             total = checked(total + (max <= min ? min : maximumRoll ? max : Math.Max(random.Next(checked(max + 1)), min)));
@@ -184,8 +186,9 @@ public static class Ew4Combat
         if (!source.Profile.DamageMultipliers.TryGetValue(target.Profile.Category, out float factor))
             throw new RuleViolation("combat.multiplier_missing", $"{source.Profile.Id} -> {target.Profile.Category}");
         if (source.AtSea && source.Profile.Category != "naval" && !source.Has(Skill(17)) && !source.SeaImmunity) factor *= .8f;
-        if (target.Profile.Category == "naval" && target.Has(Skill(16))) factor *= .9f;
-        if (target.Profile.Category == "fort" && source.Has(Skill(4))) factor *= 1.5f;
+        var skills = rules.LegacySkills ?? LegacySkillParameters.Default;
+        if (target.Profile.Category == "naval" && target.Has(Skill(16))) factor *= skills.Multiplier(16);
+        if (target.Profile.Category == "fort" && source.Has(Skill(4))) factor *= skills.Multiplier(4);
         if (source.Profile.HasTrait("siege_gun"))
         {
             if (target.Profile.Category == "fort") factor *= 1.8f;

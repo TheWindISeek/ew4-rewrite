@@ -1,5 +1,9 @@
 # 技能、特性与胜负规则扩展（API 1/2）
 
+原版技能的倍率、概率、移动/攻击加成、折扣、经验/经济及七种教学数值可通过 `apiVersion:2` 的 `legacySkillParameters` 引用参数 JSON，见[完整字段、范围和可打包模板](../../examples/legacy-skill-parameters/README.md)。这只调整原版机制的数值；同 ID 的完整扩展定义仍优先替换原机制。未配置时保留旧规则和存档指纹；旧引擎需要升级后才识别该字段。
+
+2026-10-21 增补：[多阶段胜负与结算界面](VICTORY_MODDING.md)，复用 `victory_rules` 动态更新，新增 `victoryPresentation` 布局及数据/命令绑定。
+
 2026-10-21 增补：[剧本条件、直接结果与多按钮弹窗](SCENARIO_EVENTS.md)，入口 `scenarioEvents`；包括资源、城市、死亡、回合、阵营、组合条件及 Lua。
 
 本指南对应 `rewrite/extension.json` 的 `schema:1 / apiVersion:1或2`。API 1继续兼容；使用下文通用技能新字段时须声明API 2，旧发行版会拒绝该版本。电脑与 Android 共用 C# 加载器和 MoonSharp Lua 解释器；制作好离线包后两端都能导入，不需要服务器。原 APK 的 SO、DEX、DLL 不能作为此接口的脚本执行，需要将行为移植到下列事件和操作。

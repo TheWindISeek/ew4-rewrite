@@ -6,8 +6,11 @@
   <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self'">
   <title>欧陆战争4</title>
   <link rel="stylesheet" href="style.css?v=20261021.6">
-  <link rel="stylesheet" href="original-ui.css?v=20261021.11">
+  <link rel="stylesheet" href="original-ui.css?v=20261021.14">
   <link rel="stylesheet" href="mods.css?v=20261020.4">
+  <link rel="stylesheet" href="victory-ui.css?v=20261021.3">
+  <link rel="stylesheet" href="local-multiplayer.css?v=20261021.1">
+  <link rel="stylesheet" href="single-action.css?v=20261021.2">
 </head>
 <body>
   <section id="menu">
@@ -53,7 +56,7 @@
     <button id="undo-move" class="corner-button" title="撤回移动" aria-label="撤回移动" disabled></button>
     <button id="skip-ai" class="corner-button" title="跳过AI行动演出" aria-label="跳过AI行动演出" hidden></button>
     <div id="ai-action" aria-label="电脑行动中" hidden><img id="ai-flag" alt=""><span>&gt;&gt;&gt;</span></div>
-    <aside id="selection" hidden><div id="terrain-info" aria-label="地块收入与防御"></div><div id="actions" aria-label="地块操作"></div></aside>
+    <aside id="selection" hidden><div id="terrain-info" aria-label="地块收入与防御"></div><div id="actions" aria-label="地块操作"></div><div id="single-action" hidden><div id="single-action-cost" role="group"></div><button id="single-action-confirm" type="button" data-tutorial-id="btn_done" title="确认" aria-label="确认"></button></div></aside>
     <footer id="status" role="status"></footer>
     <div id="pause" class="modal" hidden><div class="dialog pause-dialog"><header class="menu-bar"><button id="resume" class="close-icon" aria-label="返回战场" title="返回战场"></button><h2 data-label="pause_label">暂停</h2></header><p id="turn"></p><button id="save" data-label="save_label">保存</button><button id="pause-settings" data-label="settings_label">设定</button><button id="restart" data-label="restart_label">重新开始</button><button id="return-menu" data-label="main_label">退出</button></div></div>
     <div id="dialogue" hidden><button id="dialogue-ok" aria-label="继续对白"><img id="dialogue-portrait" alt=""><div class="talk-content"><div id="dialogue-speaker"></div><p id="dialogue-text"></p></div></button></div>
@@ -71,6 +74,7 @@
       <label class="setting-row speed"><span data-label="name_gamespeed">游戏速度</span><input id="game-speed" type="range" min="1" max="5" step="1" aria-label="游戏速度"></label>
       <label class="setting-row grid"><span data-label="name_showgrid">显示网格</span><input id="show-grid" type="checkbox"></label>
       <label class="setting-row hd"><span data-label="name_hdversion">高清模式</span><input id="hd-mode" type="checkbox"></label>
+      <label class="setting-row local-mode"><span>本地多人模式</span><input id="local-multiplayer-mode" type="checkbox" aria-label="本地多人模式"></label>
       <label class="setting-row screen"><span data-label="name_screen_extra">屏幕尺寸</span><input id="screen-size" type="range" min="80" max="100" value="100" aria-label="屏幕尺寸"></label>
       <label class="setting-row event-size"><span>事件弹窗大小</span><output id="event-size-value" for="event-size">100%</output><input id="event-size" type="range" min="60" max="180" step="1" value="100" aria-label="事件弹窗大小"></label>
     </div>
@@ -89,18 +93,21 @@
   </dialog>
   <div id="startup-status" role="status" aria-live="polite"><span id="startup-message">正在载入…</span><button id="startup-retry" type="button" title="重试载入" aria-label="重试载入" hidden>&#8635;</button></div>
   <div id="loading-screen" role="status" aria-label="载入" hidden><div class="loading-stage"><img src="content/ui/title.png" alt="欧陆战争4 拿破仑"><div id="loading-tip"></div><div id="loading-word"></div></div></div>
+  <script src="startup.js?v=20261021.1"></script>
   <script src="camera.js"></script>
   <script src="map-surface.js"></script>
-  <script src="battlefield.js?v=20261021.11"></script>
-  <script src="original-ui.js?v=20261021.11"></script>
-  <script src="menu-art.js?v=20261019.17"></script>
-  <script src="effects.js?v=20261019.12"></script>
+  <script src="battlefield.js?v=20261021.16"></script>
+  <script src="original-ui.js?v=20261021.16"></script>
+  <script src="menu-art.js?v=20261021.1"></script>
+  <script src="effects.js?v=20261021.1"></script>
   <script src="native-layout.js?v=20261021.2"></script>
-  <script src="menus.js?v=20261021.2"></script>
-  <script src="commander-workflows.js?v=20261021.4"></script>
+  <script src="menus.js?v=20261021.3"></script>
+  <script src="commander-workflows.js?v=20261021.6"></script>
   <script src="tutorial.js"></script>
   <script src="skill-ui.js?v=20261020.3"></script>
-  <script src="app.js?v=20261021.11"></script>
+  <script src="victory-ui.js?v=20261021.4"></script>
+  <script src="local-multiplayer.js?v=20261021.1"></script>
+  <script src="app.js?v=20261021.27"></script>
   <script src="mods.js?v=20261020.4"></script>
 </body>
 </html>

@@ -15,10 +15,22 @@ originalTextChanges.observe(document.body,{childList:true,characterData:true,att
 let view = {x: 0, y: 0, zoom: 1}, viewport = {w: 0, h: 0, dpr: 1};
 const images = new Map(), libraries = new Map();
 let errorTimer, aiRunning = false;
+let leavingSession = false;
 let skipAi = false, mapBounds, finishPresentation;
 const presentationWaiters = new Set();
 const motions = new Map(), facings = new Map(), arrivals = new Map(), combatMotions = new Map();
 const deaths = new Map();
+let renderRequest=0,renderDirty=true,lastRenderTime=-Infinity,appVisible=true;
+function requestRender(){
+  renderDirty=true;
+  if(document.hidden||!appVisible)return;
+  if(!renderRequest)renderRequest=requestAnimationFrame(render);
+}
+function suspendRendering(){cancelAnimationFrame(renderRequest);renderRequest=0;}
+window.ew4SetAppVisible=visible=>{appVisible=visible;if(visible)requestRender();else suspendRendering();};
+document.addEventListener('visibilitychange',()=>{if(document.hidden)suspendRendering();else requestRender();});
+new MutationObserver(requestRender).observe(document.body,{subtree:true,childList:true,attributes:true,attributeFilter:['hidden']});
+for(const event of ['pointerdown','pointermove','pointerup','wheel','input','change','click'])document.addEventListener(event,requestRender,{passive:true});
 const battlefield = new Ew4Battlefield.Renderer({image,sprite,animation,libraries,get imageRevision(){return imageRevision;},get effects(){return effects;},get manifest(){return manifest;},get geographicLanguage(){return settings.geographicLanguage;},cityLabel:(name,cell)=>{
   const translated=manifest.maps[state.map].cityNames?.[cell];
   const text=translated?.name===name?translated[settings.cityLanguage]:Ew4MenuArt.cityName(name,settings.cityLanguage,cityNames);
@@ -28,8 +40,19 @@ const menus = new Ew4Menus.Menus({rpc,button,uiImage,labels:labelImage,text:(val
   get manifest(){return manifest;},get catalog(){return catalog;},refreshCatalog:async()=>{catalog=await rpc('catalog');},tutorialUi,popup:popupOpen,load:(slot,mode)=>load(slot,mode),deploy:(unit,commander)=>act('deploy',{unit,commander}),act,
   refresh:async()=>{if(state&&!$('play').hidden){await installState(await rpc('action',{op:'state',revision:state.revision}));}},get menuArt(){return menuArt;},closeDetail});
 let chosenScenario, chosenCountry, countryChoices = [], showGrid = false, selectedAt = 0;
+const victoryUi = new Ew4VictoryUI.Results({
+  ready:next=>!busy&&!skipAi&&$('loading-screen').hidden&&state===next&&battlefield.state===next&&[...images.values()].every(img=>img.complete),
+  get manifest(){return manifest;},detail:detailWindow,button,uiImage,notice,
+  text:(...args)=>originalTextRenderer.element(...args),portrait:name=>menus.portrait(name),close:closeDetail,
+  title:key=>$('detail-title').replaceChildren(labelImage(key,manifest.strings[key]||key,$('detail-title'))),
+  restart:()=>start(state.scenario,catalog.scenarios.find(s=>s.id===state.scenario)?.mode===2?(state.startCountry??state.factions.find(f=>f.id===state.playerFaction).country):null,null),
+  continue:async result=>{if(result.nextScenario)await start(result.nextScenario,null,null);else await showMain();},exit:showMain
+});
+const localMultiplayerUi = new Ew4LocalMultiplayer.LocalMultiplayer({rpc,detail:detailWindow,button,close:closeDetail,main:showMain,
+  text:(...args)=>originalTextRenderer.element(...args),ready:()=>!busy&&!aiRunning&&!skipAi&&$('loading-screen').hidden,
+  restart:next=>start(next.scenario,next.startCountry,next.localMultiplayer.humanFactions)});
 let tutorial, tutorialRect;
-let settings={music:50,sound:50,speed:2,hd:true,screen:100,eventSize:100,cityLanguage:'en',geographicLanguage:'en'};
+let settings={music:50,sound:50,speed:2,hd:true,screen:100,eventSize:100,cityLanguage:'en',geographicLanguage:'en',localMultiplayer:false};
 try { settings={...settings,...JSON.parse(localStorage.getItem('ew4.settings')||'{}')}; } catch (_) {}
 settings.eventSize=Number.isFinite(settings.eventSize)?Math.max(60,Math.min(180,settings.eventSize)):100;
 try { showGrid = localStorage.getItem('ew4.showGrid') === 'true'; } catch (_) { /* Storage can be unavailable in restricted WebViews. */ }
@@ -62,11 +85,24 @@ function originalLabels() {
     element.replaceChildren(labelImage(element.dataset.label, text, element));
   }
 }
-function showMain() {
-  $('play').hidden = true; $('menu').hidden = false; $('main-menu').hidden = false;
-  $('scenario-menu').hidden = true; $('countries').hidden = true;
-  $('campaign-screen').hidden=true;$('hq-screen').hidden=true;
-  $('tutorial-talk').hidden=true;$('tutorial-focus').hidden=true;
+async function showMain() {
+  if(leavingSession)return;
+  leavingSession=true;
+  const wasBusy=busy;busy=true;
+  try {
+    if(state)await rpc('leave',{revision:state.revision});
+    state=undefined;selected=undefined;selection=undefined;tutorial=null;tutorialRect=null;
+    detailReturn=null;victoryUi.reset();localMultiplayerUi.sync(null);
+    closeSingleAction();menus.dismissSkillTip();menus.deployment=null;
+    motions.clear();arrivals.clear();deaths.clear();combatMotions.clear();
+    effects?.clear();damageNumbers?.clear();finishPresentation?.();
+    $('detail-modal').hidden=true;$('pause').hidden=true;$('selection').hidden=true;
+    $('play').hidden = true; $('menu').hidden = false; $('main-menu').hidden = false;
+    $('scenario-menu').hidden = true; $('countries').hidden = true;
+    $('campaign-screen').hidden=true;$('hq-screen').hidden=true;
+    $('tutorial-talk').hidden=true;$('tutorial-focus').hidden=true;
+  } catch(error) { notice(error.message); }
+  finally { busy=wasBusy;leavingSession=false; }
 }
 function notice(text) { $('notice').textContent = text; $('notice').hidden = false; clearTimeout(errorTimer); errorTimer = setTimeout(() => $('notice').hidden = true, 5500); }
 async function rpc(route, args = {}) {
@@ -80,11 +116,14 @@ function failure(code, message) {
   const labels = {'client.player_turn':'请等待己方回合','client.stale':'状态已更新，请重新选择','client.ai_turn':'当前并非电脑回合',
     'action.dialogue_pending':'请先确认当前对白','action.phase':'回合尚未就绪','turn.finished':'本局已经结束',
     'training.unit':'请先选择已任职将领的己方部队','client.no_session':'请先开始游戏',
+    'training.resources':'培训所需金币或粮食不足','training.unavailable':'该部队当前无法培训','training.limit':'已达到培训上限',
+    'upgrade.resources':'建筑升级所需资源不足','upgrade.used':'该建筑本回合已升级','upgrade.limit':'建筑已达到升级上限',
+    'purchase.resources':'改装所需资源不足','transport.unavailable':'该部队无法改装运输船',
     'client.undo_move':'该部队目前没有可以撤回的移动：已攻击、原位被占用或相关地块已发生变化'};
   return labels[code] || message;
 }
 function image(path) {
-  if (!images.has(path)) { const img = new Image(); img.addEventListener('load',()=>imageRevision++);img.src = '/content/' + path; images.set(path, img); }
+  if (!images.has(path)) { const img = new Image(); img.addEventListener('load',()=>{imageRevision++;requestRender();});img.src = '/content/' + path; images.set(path, img); }
   return images.get(path);
 }
 async function loadImage(path) {
@@ -127,7 +166,7 @@ function scenarioList() {
     if(!label.childElementCount)label.append(originalTextRenderer.element(scenario.name,'font_text_2_cn_hd','#ebe6e1'));
     const line = document.createElement('span'); line.className = 'conquest-line'; row.append(label,line);
   }
-  const animations=list.getAnimations({subtree:true});conquestEntering=animations.length>0;updateConquestPagination();
+  const animations=list.getAnimations?.({subtree:true})||[];conquestEntering=animations.length>0;updateConquestPagination();
   Promise.all(animations.map(a=>a.finished.catch(()=>{}))).then(()=>{
     if(render!==conquestRender)return;conquestEntering=false;updateConquestPagination();
   });
@@ -178,12 +217,14 @@ async function loadLibrary(name) {
   libraries.set(name, data); return data;
 }
 async function installState(next, center = false) {
-  center=center||!!(state&&(state.map!==next.map||state.scenario!==next.scenario||state.width!==next.width||state.height!==next.height));
+  closeSingleAction();
+  center=center||!!(state&&(state.map!==next.map||state.scenario!==next.scenario||state.width!==next.width||state.height!==next.height||state.playerFaction!==next.playerFaction));
   if(center){effects?.clear();damageNumbers?.clear();deaths.clear();}
   const keepUnit=center?null:selected?.id,keepCell=center?null:selection?.cell;
   const used = [...new Set(next.units.map(u => manifest.profiles[u.profile]?.library).filter(Boolean))];
   await Promise.all([...used, 'choose', 'maptext', 'anim_fire', 'anim_upgrade', 'anim_smoke'].map(loadLibrary));
   if(!center&&next.combat&&!(aiRunning&&skipAi)){
+    selection=undefined;$('selection').hidden=true;
     // A combined AI command must arrive at its firing position while both
     // combatants still exist in the presentation scene.
     const moves=next.combat.movements?.length?next.combat.movements:next.movements||[];
@@ -207,7 +248,7 @@ async function installState(next, center = false) {
   motions.clear(); arrivals.clear();
   const now=performance.now(), stepMs=movementStepMs();
   if (!center && !(aiRunning && skipAi)) {
-    if(!next.combat)for(const move of next.movements || [])if(move.path.length>1){motions.set(move.unit,{path:move.path,started:now,stepMs});const a=point(move.path.at(-2)),b=point(move.path.at(-1));facings.set(move.unit,b.x<a.x?-1:1);}
+    if(!next.combat)for(const move of next.movements || [])if(!move.instant&&move.path.length>1){motions.set(move.unit,{path:move.path,started:now,stepMs});const a=point(move.path.at(-2)),b=point(move.path.at(-1));facings.set(move.unit,b.x<a.x?-1:1);}
     for(const id of next.recruited || []){arrivals.set(id,now);const unit=state.units.find(u=>u.id===id),p=unit&&point(unit.cell);if(p)effects?.effect('effect_recruit.xml',p.x,p.y,{speed:Math.sqrt(settings.speed)});}
     const duration=Math.max(next.recruited?.length?Ew4Battlefield.recruitDuration(Math.sqrt(settings.speed)):0,...[...motions.values()].map(m=>(m.path.length-1)*stepMs),...([...arrivals.keys()].map(id=>{
       const unit=state.units.find(u=>u.id===id),p=manifest.profiles[unit?.profile],lib=libraries.get(p?.library),item=lib?.byName.get(p?.motions.ready);
@@ -216,17 +257,19 @@ async function installState(next, center = false) {
     if(duration)await presentationDelay(duration);
   }
   motions.clear();arrivals.clear();
+  requestRender();
   if(!center&&state.activeFaction===state.playerFaction&&!state.dialogue){const unit=state.units.find(u=>u.id===keepUnit);const cell=unit?.cell??(keepUnit?null:keepCell);if(cell!=null)await selectCell(cell,true);}
 }
 function movementStepMs(){return 255/Math.sqrt(settings.speed);}
-function presentationDelay(duration){return new Promise(resolve=>{const timer=setTimeout(done,duration);function done(){clearTimeout(timer);presentationWaiters.delete(done);if(!presentationWaiters.size)finishPresentation=null;resolve();}presentationWaiters.add(done);finishPresentation=()=>{for(const finish of [...presentationWaiters])finish();};});}
-function beginDeath(id){if(!deaths.has(id))deaths.set(id,{started:performance.now(),duration:560/Math.sqrt(settings.speed)});}
+function presentationDelay(duration){requestRender();return new Promise(resolve=>{const timer=setTimeout(done,duration);function done(){clearTimeout(timer);presentationWaiters.delete(done);if(!presentationWaiters.size)finishPresentation=null;requestRender();resolve();}presentationWaiters.add(done);finishPresentation=()=>{for(const finish of [...presentationWaiters])finish();};});}
+function beginDeath(id){if(!deaths.has(id))deaths.set(id,{started:performance.now(),duration:500/Math.sqrt(settings.speed)});}
 async function playMovements(moves){
   const started=performance.now(),stepMs=movementStepMs();
-  for(const move of moves)if(move.path.length>1)motions.set(move.unit,{path:move.path,started,stepMs});
-  await presentationDelay(Math.max(0,...moves.map(m=>(m.path.length-1)*stepMs)));motions.clear();
+  for(const move of moves)if(!move.instant&&move.path.length>1)motions.set(move.unit,{path:move.path,started,stepMs});
+  await presentationDelay(Math.max(0,...moves.filter(m=>!m.instant).map(m=>(m.path.length-1)*stepMs)));motions.clear();
 }
 async function playCombat(combat,destroyed=new Set()){
+  selection=undefined;$('selection').hidden=true;requestRender();
   // The backend has already resolved both hits. Animation timing cannot change the outcome.
   const pairs=[[combat.attacker,combat.defender,combat.damage,combat.critical]];
   if(combat.counterattack)pairs.push([combat.defender,combat.attacker,combat.counterDamage,combat.counterCritical]);
@@ -263,16 +306,32 @@ async function playCombat(combat,destroyed=new Set()){
     if(!(aiRunning&&skipAi)){
       damageNumbers?.add(damage,critical,q.x,q.y,speed);
       if(destroyed.has(targetId))beginDeath(targetId);
-      if(id===combat.attacker&&combat.splashTarget){const splash=state.units.find(u=>u.id===combat.splashTarget);if(splash){const hit=point(splash.cell);damageNumbers?.add(combat.splashDamage,false,hit.x,hit.y,speed);if(destroyed.has(splash.id))beginDeath(splash.id);}}
+      playImpact(profile,target,damage,facing,speed);
+      if(id===combat.attacker&&combat.splashTarget){const splash=state.units.find(u=>u.id===combat.splashTarget);if(splash){const hit=point(splash.cell);damageNumbers?.add(combat.splashDamage,false,hit.x,hit.y,speed);playImpact(profile,splash,combat.splashDamage,facing,speed);if(destroyed.has(splash.id))beginDeath(splash.id);}}
     }
-    if(!(aiRunning&&skipAi)&&damage>0){const weapon=profile.stats.weapon,rocket=profile.kind==='Rocket',name=rocket?'rocketstrike':Ew4Effects.impact(weapon,target.category,damage,state.cells[target.cell].sea,facing);effects?.timeline(name,q.x+(rocket?30*facing:0),q.y,{speed});}
     if(!(aiRunning&&skipAi))await presentationDelay(Math.max(0,started+duration-performance.now()));
     combatMotions.delete(id);
   }));
 }
-async function start(scenario, country) {
+function playImpact(profile,target,damage,facing,speed){
+  if(damage<=0)return;
+  const p=point(target.cell),rocket=profile.kind==='Rocket';
+  effects?.timeline(rocket?'rocketstrike':Ew4Effects.impact(profile.stats.weapon,target.category,damage,state.cells[target.cell].sea,facing),p.x+(rocket?30*facing:0),p.y,{speed});
+}
+async function start(scenario, country, localPlayers) {
+  if(busy)return;
   busy = true; $('countries').querySelectorAll('button').forEach(b => b.disabled = true);
-  try { await withLoading(async()=>{tutorial=null; await installState(await rpc('start', {scenario, country}), true); await beginTutorial();}); }
+  try {
+    const scenarioMode=catalog.scenarios.find(s=>s.id===scenario)?.mode;
+    if(localPlayers===undefined&&settings.localMultiplayer&&[1,2].includes(scenarioMode)){
+      localPlayers=await localMultiplayerUi.choose(scenario,country);
+      if(localPlayers===null)return;
+    }else if(Array.isArray(localPlayers)&&[1,2].includes(scenarioMode)){
+      const available=new Set((await rpc('local-players',{scenario,country})).map(f=>f.id));
+      localPlayers=localPlayers.filter(id=>available.has(id));
+    }
+    await withLoading(async()=>{tutorial=null; await installState(await rpc('start', {scenario, country,localPlayers}), true); await beginTutorial();});
+  }
   finally { busy = false; $('countries').querySelectorAll('button').forEach(b => b.disabled = false); if(state)refreshHud(); }
 }
 async function withLoading(action){
@@ -284,12 +343,33 @@ async function withLoading(action){
   try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));await action();await new Promise(resolve=>setTimeout(resolve,Math.max(0,700-(performance.now()-started))));}
   finally{$('loading-screen').hidden=true;}
 }
+function flagSource(faction){
+  return faction.flagImage?'/content/extensions/'+faction.flagImage.slice('rewrite/'.length).split('/').map(encodeURIComponent).join('/')
+    :'/content/ui/image_flag_hd/'+faction.flag+'1.png';
+}
+function refreshAiProgress(){
+  const active=state.factions.find(f=>f.id===state.activeFaction);
+  $('ai-action').hidden=active.human||state.phase==='Finished'||!!state.dialogue;
+  const flag=$('ai-flag'),source=flagSource(active);
+  if(flag.getAttribute('src')!==source)flag.src=source;
+  flag.alt=flag.title=active.name;
+}
+async function presentAiProgress(){
+  if(document.hidden||!appVisible)return;
+  // Give short AI turns a paint opportunity without waiting for battlefield animation.
+  await new Promise(resolve=>{
+    const timeout=setTimeout(resolve,100);
+    const paint=()=>requestAnimationFrame(()=>requestAnimationFrame(()=>{clearTimeout(timeout);resolve();}));
+    const flag=$('ai-flag');
+    if(flag.complete)paint();else flag.decode().catch(()=>{}).then(paint);
+  });
+}
 function refreshHud() {
   const active = state.factions.find(f => f.id === state.activeFaction);
   const player = state.factions.find(f => f.id === state.playerFaction);
   $('turn').replaceChildren(originalTextRenderer.element('回合  ' + state.round,'font_text_2_cn_hd','#404040'));
-  const country = player.flag;
-  $('player-flag').src = '/content/ui/image_flag_hd/' + country + '1.png';
+  $('player-flag').src = flagSource(player);
+  $('player-flag').alt = $('player-flag').title = player.name;
   $('resources').replaceChildren();
   for (const [label, icon, value] of [['金钱','money', player.resources.money], ['工业','industry',player.resources.industry], ['粮食','food',player.resources.food]]) {
     const span = document.createElement('span'); span.className='resource-item';span.setAttribute('aria-label', label + ' ' + value);
@@ -301,8 +381,7 @@ function refreshHud() {
   $('undo-move').disabled = busy || !(selected ? selection?.undo : state.undoUnit);
   $('skip-ai').hidden = active.human || state.phase === 'Finished' || !!state.dialogue;
   $('skip-ai').disabled = skipAi;
-  $('ai-action').hidden = active.human || state.phase === 'Finished' || !!state.dialogue;
-  $('ai-flag').src = '/content/ui/image_flag_hd/' + active.flag + '1.png';
+  refreshAiProgress();
   $('dialogue').hidden = !state.dialogue || !!state.scenarioPopup;
   $('scenario-event').hidden = !state.scenarioPopup;
   if(state.scenarioPopup){
@@ -340,9 +419,12 @@ function refreshHud() {
     $('dialogue-text').scrollTop=0;
   }
   $('status').textContent = state.phase === 'Finished' ? (state.outcome === 'Victory' ? '胜利' : '本局结束') : '';
+  victoryUi.sync(state.localMultiplayer?null:state);
+  localMultiplayerUi.sync(state);
 }
 async function act(op, extra = {}) {
   if (busy || !state) return;
+  closeSingleAction();
   busy = true; refreshHud();
   try {
     const next = await rpc('action', {op, revision:state.revision, unit:selected?.id, ...extra});
@@ -354,16 +436,34 @@ async function runAi() {
   if (aiRunning) return;
   aiRunning = true; skipAi = false;
   try {
-    while (state && !state.dialogue && state.phase !== 'Finished' && !state.factions.find(f => f.id === state.activeFaction).human) {
-      busy = true; refreshHud();
-      await installState(await rpc('action', {op:'ai', revision:state.revision}));
+    busy=true;refreshHud();
+    while (aiCanContinue(state)) {
+      if(skipAi){
+        const batch=await rpc('action',{op:'ai_batch',revision:state.revision});
+        if(batch.baseRevision!==state.revision)throw Error('回合状态不同步');
+        const next=batch.state;
+        if(!next.cells){next.cells=state.cells.slice();for(const update of next.cellUpdates)next.cells[update.cell]=update.value;}
+        delete next.cellUpdates;
+        if(batch.error||!aiCanContinue(next))await installState(next);
+        else {
+          const handoff=next.activeFaction!==state.activeFaction;
+          state=next;refreshAiProgress();
+          if(handoff)await presentAiProgress();
+        }
+        if(batch.error)throw Error(failure(batch.error.code,batch.error.message));
+      }else await installState(await rpc('action', {op:'ai', revision:state.revision}));
       if(!skipAi)await new Promise(resolve => setTimeout(resolve, 180/settings.speed));
     }
-  } catch (error) { notice(error.message); }
-  finally { busy = false; aiRunning = false; skipAi = false; refreshHud(); }
+  } catch (error) {
+    try{await installState(await rpc('action',{op:'state'}));}catch(_){}
+    notice(error.message);
+  }
+  finally { busy = false; aiRunning = false; skipAi = false; refreshHud();requestRender(); }
 }
+function aiCanContinue(next){return next&&!next.dialogue&&!next.scenarioPopup&&next.phase!=='Finished'&&!next.factions.find(f=>f.id===next.activeFaction).human;}
 async function selectCell(cell,restore=false) {
   if ((!restore&&busy) || !state || cell < 0 || cell >= state.cells.length || !state.cells[cell].active) return;
+  closeSingleAction();
   if(!restore&&tutorial?.wait?.name==='wait area'&&Number(tutorial.wait.id)!==cell)return;
   const target = state.units.find(u => u.cell === cell);
   if (!restore && selected && selection && state.activeFaction === state.playerFaction && !state.dialogue) {
@@ -390,16 +490,17 @@ async function selectCell(cell,restore=false) {
     $('terrain-info').append(column);
   }
   if(selection.deploy) toolButton('general','任命将领',()=>menus.deployGeneral(target.id,state.revision));
-  if(selection.upgrade) toolButton('buildupgrade','升级建筑',()=>confirmUnitAction('upgrade','升级建筑',{cell}));
+  if(selection.actionQuotes?.upgrade) singleActionButton('buildupgrade','升级建筑','upgrade',selection.actionQuotes.upgrade,{cell});
   if(selection.installations.length) toolButton('builddefense','防御',()=>openDefense(cell));
-  if(own&&target.commanderId) toolButton('training','培训',()=>confirmUnitAction('train','培训'));
+  if(selection.actionQuotes?.train) singleActionButton('training','培训','train',selection.actionQuotes.train);
+  if(selection.items) toolButton('items','使用物品',()=>menus.useItems(target.id));
   if(selection.offers.length) toolButton(({city:'city',industry:'factory',stable:'stable',port:'dock'})[site.buildingKind]||'buildfortress',site.buildingKind?'雇佣':'建造要塞',()=>openRecruitment(cell));
-  if(selection.transport) toolButton('buyship','购买运输',()=>confirmUnitAction('transport','购买运输'));
+  if(selection.actionQuotes?.transport) singleActionButton('buyship','改装运输船','transport',selection.actionQuotes.transport);
   if(selection.tavern)toolButton('bar','酒馆',()=>menus.tavern(cell));
   if(selection.shop)toolButton('shop','商店',()=>menus.shop(cell));
   if(selection.market)toolButton('trade','市场',()=>menus.exchange(cell));
   if(target)toolButton('info','部队信息',()=>openUnitInfo(target));
-  if(own&&selection.disband)toolButton('disband','解散部队',()=>confirmDisband(target,selection.disband));
+  if(own&&selection.disband){const b=toolButton('disband','解散部队',()=>confirmDisband(target,selection.disband,b));b.dataset.action='disband';}
   for(const entry of selection.skills||[]){
     const skill=entry.skill,b=toolButton('info',skill.name,()=>openSkillAction(target,entry));
     b.classList.add('active-skill-button');b.disabled=!entry.available;
@@ -418,25 +519,22 @@ function uiImage(name,width,height=width){
 function toolButton(icon,title,action){const b=button('',action,$('actions'));b.title=title;b.setAttribute('aria-label',title);
   if(icon==='disband'){const img=new Image(33,33);img.alt='';img.src='/disband.png';b.append(img);}
   else b.append(uiImage('button_'+(icon==='general'?'generals':icon)+'.png',33));
-  b.dataset.tutorialId=({general:'btn_general',city:'btn_city',factory:'btn_factory',stable:'btn_stable',dock:'btn_dock',buildfortress:'btn_fortress',builddefense:'btn_defense',buyship:'btn_ship',training:'btn_training',buildupgrade:'btn_upgrade'})[icon]||'';return b;}
+  b.dataset.tutorialId=({general:'btn_general',items:'btn_item',city:'btn_city',factory:'btn_factory',stable:'btn_stable',dock:'btn_dock',buildfortress:'btn_fortress',builddefense:'btn_defense',buyship:'btn_ship',training:'btn_training',buildupgrade:'btn_upgrade'})[icon]||'';return b;}
 let detailReturn,detailRevision=0;
-function confirmDisband(unit,refund){
-  const body=detailWindow('解散部队',260,146,()=>act('disband',{unit:unit.id}));body.className='disband-confirmation';
-  const prompt=document.createElement('p');prompt.append(originalTextRenderer.element('确认解散该部队？','font_text_2_cn_hd','#404040'));body.append(prompt);
-  const values=document.createElement('div');values.className='disband-refund';values.setAttribute('aria-label',`返还金钱 ${refund.money}，工业 ${refund.industry}，粮食 ${refund.food}`);
-  for(const [key,icon] of [['money','money'],['industry','industry'],['food','food']]){const value=document.createElement('span');value.append(uiImage('marker_'+icon+'.png',18),originalTextRenderer.element(refund[key],'font_char_2_hd','#404040'));values.append(value);}
-  body.append(values);const explanation=document.createElement('p');explanation.append(originalTextRenderer.element('返还招募价的50% × 剩余血量比例','font_text_1_cn_hd','#404040',240));body.append(explanation);
-}
+function confirmDisband(unit,refund,anchor){openSingleAction('disband','解散部队',{cost:refund,affordable:true,warning:selection.disbandWarning},anchor,{unit:unit.id},true);}
 function popupOpen(element){element.classList.remove('popup-opening');void element.offsetWidth;element.classList.add('popup-opening');}
 function closeDetail(){const back=detailReturn;detailReturn=null;menus.dismissSkillTip();$('detail-modal').hidden=true;if(back)back();}
 function detailWindow(title,width,height,confirm,onClose){
+  closeSingleAction();
   const generation=++detailRevision;
   menus.dismissSkillTip();detailReturn=onClose;
   const dialog=$('detail-modal').firstElementChild;dialog.style.width=width+'px';dialog.style.height=height+'px';
   dialog.classList.remove('native-dialog');
+  dialog.style.removeProperty('--ui-scale');
   const titleText=({headquarters_label:'指挥部',tutorial_label:'教程',country_label:'选择国家',recruit_label:'招募',info_label:'信息',defense_label:'防御'})[title]||manifest.strings[title]||title;
   $('detail-title').replaceChildren(labelImage(title,titleText,$('detail-title')));$('detail-content').replaceChildren();$('detail-content').nativeLayout=null;$('detail-content').className='';$('detail-modal').hidden=false;
   $('detail-confirm').dataset.tutorialId='winbtn_ok';$('detail-confirm').hidden=!confirm;$('detail-confirm').onclick=async()=>{try{await confirm();if(generation===detailRevision)$('detail-modal').hidden=true;await tutorialUi($('detail-confirm').dataset.tutorialId);}catch(e){notice(e.message);}};
+  $('detail-confirm').disabled=false;
   popupOpen(dialog);return $('detail-content');
 }
 const formationColors=['#646464','#326478','#40803b'];
@@ -494,11 +592,71 @@ function openSkillAction(unit,entry){
     b.setAttribute('aria-pressed',String(id===target));b.append(originalTextRenderer.element((isCell?'':manifest.profiles[t.profile].name+' ')+'('+(cell%state.width)+','+Math.floor(cell/state.width)+')','font_text_2_cn_hd','#404040'));}
   box.append(targets);body.append(box);
 }
-function confirmUnitAction(op,title,extra={}){
-  const body=detailWindow('info_label',250,150,()=>act(op,extra));body.className='action-confirmation';
-  const name=document.createElement('p');name.textContent=title;body.append(name);
-  if(selected)body.append(unitCard(selected.profile));$('detail-confirm').dataset.tutorialId='btn_done';
+let pendingAction=null;
+function closeSingleAction(){pendingAction=null;$('single-action').hidden=true;}
+function singleActionButton(icon,title,op,quote,extra={}){
+  const b=toolButton(icon,title,()=>confirmUnitAction(op,title,extra,b));
+  b.dataset.action=op;b.dataset.affordable=String(quote.affordable);
 }
+function confirmUnitAction(op,title,extra={},anchor){
+  const quote=selection?.actionQuotes?.[op];
+  if(quote)openSingleAction(op,title,quote,anchor,extra);
+}
+function openSingleAction(op,title,quote,anchor,extra={},refund=false){
+  if(busy||!anchor||!selection)return;
+  pendingAction={op,title,quote,anchor,extra,refund,revision:state.revision,unit:selected?.id,cell:selection.cell};
+  const host=$('single-action'),panel=$('single-action-cost'),confirm=$('single-action-confirm');
+  host.dataset.action=op;panel.replaceChildren();
+  const funds=state.factions.find(f=>f.id===state.playerFaction).resources;
+  const keys=op==='train'?['money','food']:['money','industry'];
+  for(const key of ['money','industry','food'])if(quote.cost[key]&&!keys.includes(key))keys.push(key);
+  const labels={money:'金币',industry:'工业',food:'粮食'};
+  panel.setAttribute('aria-label',(refund?'返还':'费用')+'：'+keys.map(k=>labels[k]+quote.cost[k]).join('，'));
+  panel.style.height=(56+Math.max(0,keys.length-2)*21)+'px';
+  for(const key of keys){
+    const row=document.createElement('div');row.className='action-cost-row';row.dataset.resource=key;row.dataset.value=quote.cost[key];
+    const color=refund?'#28733b':funds[key]<quote.cost[key]?'#ff3200':'#404040';
+    row.append(uiImage('marker_'+key+'.png',19.5),originalTextRenderer.element((refund?'+':'')+quote.cost[key],'font_text_4',color,50,'center',{singleLine:true}));
+    panel.append(row);
+  }
+  confirm.disabled=!quote.affordable;confirm.title='确认'+title;confirm.setAttribute('aria-label','确认'+title);
+  host.hidden=false;positionSingleAction();
+}
+function positionSingleAction(){
+  if(!pendingAction)return;
+  const {anchor,revision,cell}=pendingAction;
+  if(!anchor.isConnected||revision!==state?.revision||cell!==selection?.cell){closeSingleAction();return;}
+  const host=$('single-action'),panel=$('single-action-cost'),parent=$('selection').getBoundingClientRect(),rect=anchor.getBoundingClientRect();
+  if(!rect.width){closeSingleAction();return;}
+  const scale=rect.width/33,left=rect.left-parent.left;
+  host.style.left=left+'px';host.style.top=(rect.top-parent.top)+'px';
+  const panelLeft=Math.max(2,Math.min(parent.width-84*scale-2,left-25.5*scale));
+  panel.style.left=(panelLeft-left)/scale+'px';
+}
+async function submitSingleAction(pending){
+  if(!pending||busy||!pending.quote.affordable)return;
+  if(pending.revision!==state.revision||pending.cell!==selection?.cell||pending.unit!==selected?.id){closeSingleAction();notice('状态已更新，请重新选择');return;}
+  try{await act(pending.op,{...pending.extra,unit:pending.unit,revision:pending.revision});await tutorialUi('btn_done');}
+  catch(error){notice(error.message);}
+}
+$('single-action-confirm').onclick=async()=>{
+  const pending=pendingAction;
+  if(!pending||busy||!pending.quote.affordable)return;
+  $('single-action-confirm').disabled=true;
+  if(pending.quote.warning){
+    const body=detailWindow('解散要塞',300,160,async()=>{
+      if($('detail-confirm').disabled)return;
+      $('detail-confirm').disabled=true;
+      await submitSingleAction(pending);
+    });
+    body.className='fort-disband-warning';
+    body.append(originalTextRenderer.element(pending.quote.warning,'font_text_2_cn_hd','#404040',260,'center'));
+    return;
+  }
+  await submitSingleAction(pending);
+};
+document.addEventListener('pointerdown',event=>{if(pendingAction&&!$('single-action').contains(event.target))closeSingleAction();},{capture:true});
+document.addEventListener('keydown',event=>{if(event.key==='Escape'&&pendingAction){closeSingleAction();event.preventDefault();}});
 function openRecruitment(cell){
   const offers=selection.offers;let chosen=offers[0];
   if(!chosen)return;
@@ -584,23 +742,37 @@ function drawStrategicMap(time=performance.now()) {
   const surface=$('strategic-map'), draw=surface.getContext('2d'), lib=libraries.get('strategicmap');
   if(!lib || !chosenScenario)return;
   const definition=manifest.strategic[chosenScenario]||{}, scale=Number(definition.scale||1)*.92;
-  const cx=Number(definition.centerx||410),cy=Number(definition.centery||288);
+  const textureScale=manifest.uiOverrides?.strategic?1:.8;
+  const mapLeft=205-Number(definition.centerx||410)*scale;
+  const mapRight=mapLeft+menuArt.strategic.image.naturalWidth/menuArt.strategic.ratio*textureScale*scale;
+  const centerX=205+(manifest.uiOverrides?.strategic?0:mapLeft>0?-mapLeft:Math.max(0,410-mapRight));
   const rect=surface.getBoundingClientRect(),ratio=settings.hd?Math.min(devicePixelRatio||1,3):1;
   const width=Math.max(1,Math.round(rect.width*ratio)),height=Math.max(1,Math.round(rect.height*ratio));
   if(surface.width!==width||surface.height!==height){surface.width=width;surface.height=height;}
   draw.setTransform(surface.width/568,0,0,surface.height/320,0,0);draw.clearRect(0,0,568,320);draw.save();
-  menuArt.drawStrategic(draw,definition,scale,205,160);
-  draw.translate(205,160);draw.scale(scale,scale);
+  // Conquest overlays use an 80% backdrop; scenario centers remain in overlay coordinates.
+  menuArt.drawStrategic(draw,definition,scale,centerX,160,textureScale);
+  draw.translate(centerX,160);draw.scale(scale,scale);
   const strategic=lib.byName.get(definition.name||('conquest '+chosenScenario.slice(8)));if(strategic)animation(lib,strategic,time/180,0,draw);draw.restore();
 }
 function render(time) {
-  requestAnimationFrame(render);
+  renderRequest=0;
+  if(document.hidden||!appVisible)return;
+  if(!renderDirty&&time-lastRenderTime<1000/30-.5){renderRequest=requestAnimationFrame(render);return;}
+  renderDirty=false;lastRenderTime=time;
+  const playVisible=state&&!$('play').hidden;
+  const covered=['pause','settings','detail-modal','mod-manager','loading-screen'].some(id=>!$(id).hidden);
+  const animated=(!$('campaign-screen').hidden||!$('countries').hidden)||playVisible&&!covered&&!skipAi&&
+    (battlefield.animated||motions.size||arrivals.size||deaths.size||combatMotions.size||effects?.instances.length||damageNumbers?.instances.length||selection);
+  if(animated)renderRequest=requestAnimationFrame(render);
   if(manifest)menus.draw(time);
+  positionSingleAction();
   if(tutorial&&!$('play').hidden)positionTutorial();
   if(tutorial?.wait?.name==='wait action'&&!busy&&!aiRunning)tutorial.notify({type:'action'}).catch(e=>notice(e.message));
   if(!$('countries').hidden&&!$('menu').hidden)drawStrategicMap(time);
-  if(!state || $('play').hidden)return;
-  const dpr=settings.hd?Math.min(window.devicePixelRatio||1,3):1, w=canvas.clientWidth,h=canvas.clientHeight;
+  if(!playVisible||covered||skipAi)return;
+  const w=canvas.clientWidth,h=canvas.clientHeight;
+  const dpr=settings.hd?Math.max(1,Math.min(window.devicePixelRatio||1,2,Math.sqrt(3*1024*1024/Math.max(1,w*h)))):1;
   if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
   viewport={w,h,dpr};clampView();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#688e91';ctx.fillRect(0,0,w,h);
   ctx.translate(w/2,h/2);ctx.scale(view.zoom,view.zoom);ctx.translate(-view.x,-view.y);
@@ -609,6 +781,7 @@ function render(time) {
     zoom:view.zoom,showGrid,selection,selected,selectedAt,motions,facings,arrivals,arrivalSpeed:Math.sqrt(settings.speed),deaths,combatMotions},time);
   effects?.frame(ctx,time,'foreground',battlefield.visibleRect);
   damageNumbers?.frame(ctx,time,battlefield.visibleRect);
+  if(!animated&&battlefield.animated)requestRender();
 }
 async function tutorialUi(id,row=-1){if(id)await tutorial?.notify({type:'ui',id,row});}
 async function beginTutorial(checkpoint){
@@ -625,7 +798,7 @@ async function beginTutorial(checkpoint){
       case 'unsel area':selected=undefined;selection=undefined;$('selection').hidden=true;break;
       case 'draw rect':case 'draw ui rect':tutorialRect=command;positionTutorial();break;
       case 'clear rect':tutorialRect=null;$('tutorial-focus').hidden=true;break;
-      case 'exit':tutorialRect=null;$('tutorial-talk').hidden=true;$('tutorial-focus').hidden=true;showMain();break;
+      case 'exit':await showMain();break;
       default:throw Error('Unknown tutorial command '+command.name);
     }
   });
@@ -637,7 +810,7 @@ function positionTutorial(){
   if(command.name==='draw rect'){
     const p=point(Number(command.id));rect={left:(p.x-view.x+Number(command.x||0))*view.zoom+viewport.w/2,top:(p.y-view.y+Number(command.y||0))*view.zoom+viewport.h/2,width:Number(command.w)*view.zoom,height:Number(command.h)*view.zoom};
   }else{
-    const controls={group_res:'#resources',group_incom:'#terrain-info',btn_next:'#end-turn',btn_undo:'#undo-move',winbtn_close:'#close-detail',winbtn_ok:'#detail-confirm',btn_done:'#detail-confirm',winbtn_back:'#hq-back',grid_general:'#hq-roster',lbox_unit:'.recruit-cards>button',lbox_defense:'.defense-cards>button'};
+    const controls={group_res:'#resources',group_incom:'#terrain-info',btn_next:'#end-turn',btn_undo:'#undo-move',winbtn_close:'#close-detail',winbtn_ok:'#detail-confirm',btn_done:pendingAction?'#single-action-confirm':'#detail-confirm',winbtn_back:'#hq-back',grid_general:'#hq-roster',lbox_unit:'.recruit-cards>button',lbox_defense:'.defense-cards>button'};
     const selector=controls[command.string]||'[data-tutorial-id="'+command.string+'"]';const candidates=[...document.querySelectorAll(selector)].filter(e=>e.getClientRects().length);
     const target=candidates[command.string==='grid_general'?0:command.row===undefined?0:Number(command.row)];
     if(target){rect=target.getBoundingClientRect();
@@ -686,12 +859,16 @@ function syncLanguages(){for(const [id,key,title] of languageControls){const cho
   if(originalTextRenderer)choice.replaceChildren(originalTextRenderer.element(text,'font_text_2_cn_hd','#404040'));
   else choice.textContent=text;
 }}
-function openSettings(){for(const [id,key] of [['music-volume','music'],['sound-volume','sound'],['game-speed','speed'],['screen-size','screen']])$(id).value=settings[key];syncLanguages();$('hd-mode').checked=settings.hd;$('show-grid').checked=showGrid;$('settings').hidden=false;}
+function openSettings(){for(const [id,key] of [['music-volume','music'],['sound-volume','sound'],['game-speed','speed'],['screen-size','screen']])$(id).value=settings[key];syncLanguages();$('hd-mode').checked=settings.hd;$('show-grid').checked=showGrid;
+  const local=$('local-multiplayer-mode'),inGame=!$('play').hidden;
+  local.disabled=inGame;local.checked=inGame?!!state?.localMultiplayer:!!settings.localMultiplayer;
+  $('settings').hidden=false;}
 $('main-settings').onclick=()=>{if(startupReady)openSettings();};$('pause-settings').onclick=openSettings;
 $('close-settings').onclick=()=>$('settings').hidden=true;
 $('confirm-settings').onclick=()=>$('settings').hidden=true;
 for(const [id,key] of [['music-volume','music'],['sound-volume','sound'],['game-speed','speed'],['screen-size','screen'],['event-size','eventSize']])$(id).oninput=e=>{settings[key]=Number(e.target.value);persistSettings();sizeUi();};
 $('hd-mode').onchange=e=>{settings.hd=e.target.checked;persistSettings();};
+$('local-multiplayer-mode').onchange=e=>{if(!$('play').hidden){e.target.checked=!!state?.localMultiplayer;return;}settings.localMultiplayer=e.target.checked;persistSettings();};
 function persistSettings(){try{localStorage.setItem('ew4.settings',JSON.stringify(settings));}catch(_){} }
 $('close-detail').onclick=async()=>{closeDetail();await tutorialUi('winbtn_close');};
 $('show-grid').onchange=e=>{showGrid=e.target.checked;try{localStorage.setItem('ew4.showGrid',String(showGrid));}catch(_){notice('无法保存设定');}};
@@ -699,13 +876,17 @@ $('menu-button').onclick=()=>$('pause').hidden=false;$('resume').onclick=()=>$('
 $('end-turn').onclick=()=>act('end').catch(e=>notice(e.message));
 $('undo-move').onclick=()=>act('undo',{unit:selected?.id||state.undoUnit}).then(()=>tutorialUi('btn_undo')).catch(e=>notice(e.message));
 $('skip-ai').onclick=()=>{skipAi=true;motions.clear();arrivals.clear();deaths.clear();effects?.clear();damageNumbers?.clear();finishPresentation?.();refreshHud();};
-$('dialogue-ok').onclick=()=>act('dialogue').catch(e=>notice(e.message));
+$('dialogue').onclick=()=>{
+  if($('dialogue').hidden||!$('pause').hidden||!$('settings').hidden||state?.scenarioPopup)return;
+  act('dialogue').catch(e=>notice(e.message));
+};
 $('save').onclick=()=>menus.saveMenu(true,catalog.scenarios.find(s=>s.id===state.scenario).mode,tutorial?.checkpoint()).catch(e=>notice(e.message));
 async function load(slot=0,saveMode=mode){if(busy)return;busy=true;try{await withLoading(async()=>{tutorial=null;await installState(await rpc('load',{slot,mode:saveMode}),true);$('detail-modal').hidden=true;await beginTutorial(state.tutorialCheckpoint);});}catch(e){notice(e.message);}finally{busy=false;if(state){refreshHud();await runAi();}}}
 $('continue').onclick=()=>menus.saveMenu(false,mode).catch(e=>notice(e.message));
-$('restart').onclick=()=>{if(state&&!busy)start(state.scenario,state.factions.find(f=>f.id===state.playerFaction).country).catch(e=>notice(e.message));};
+$('restart').onclick=()=>{if(state&&!busy)start(state.scenario,catalog.scenarios.find(s=>s.id===state.scenario)?.mode===2?(state.startCountry??state.factions.find(f=>f.id===state.playerFaction).country):null,state.localMultiplayer?.humanFactions??null).catch(e=>notice(e.message));};
 $('return-menu').onclick=()=>{if(busy){notice('请等待当前行动完成');return;}showMain();};
 window.ew4Back=()=>{
+  if(pendingAction){closeSingleAction();return 'handled';}
   const visible=id=>!$(id).hidden;
   const modal=document.querySelector('dialog[open]');
   if(modal){modal.close();return 'handled';}
@@ -722,7 +903,7 @@ window.ew4Back=()=>{
   if(visible('scenario-menu')){$('menu-back').click();return 'handled';}
   return visible('main-menu')?'exit':'handled';
 };
-window.addEventListener('resize',sizeUi);sizeUi();
+window.addEventListener('resize',()=>{sizeUi();requestRender();});sizeUi();
 function startupStatus(){
   const failures=Ew4OriginalUI.fontStatus.failures;
   $('startup-status').hidden=startupReady&&!failures.length&&!startupRunning;
@@ -741,16 +922,26 @@ async function initializeClient(){
   startupRunning=true;startupError='';startupStatus();
   document.querySelectorAll('.main-entry').forEach(button=>button.disabled=true);$('continue').disabled=true;
   try{
+    Ew4Startup.pending('游戏目录与资源索引');
     const [c,m,names,fx,pages]=await Promise.all([rpc('catalog'),startupJson('/content/manifest.json'),startupJson('city-names.json'),startupJson('/content/effects.json'),startupJson('conquest-pages.json')]);
+    Ew4Startup.pending('内置字库');
     const text=new Ew4OriginalUI.TextRenderer(m);await text.prepare();
+    Ew4Startup.pending('菜单图像');
     const art=new Ew4MenuArt.MenuArt({manifest:m,image});await art.prepare();
     catalog=c;manifest=m;cityNames=names;conquestPages=pages;menuArt=art;
     effects=new Ew4Effects.Effects({image,sprite,animation,libraries,get manifest(){return manifest;},volume:()=>settings.sound},fx);
-    originalTextRenderer=text;damageNumbers=new Ew4Effects.DamageNumbers(text);originalLabels();showMain();
+    originalTextRenderer=text;
+    Ew4Startup.pending('战斗图像与界面');
+    const fightFonts=await startupJson('/content/fight-font.json');
+    const fightFont='font_fight_num_hd';
+    const [fightSheet]=await Promise.all([loadImage('images/'+fightFont+'.png'),loadImage('images/eff.png')]);
+    const fightMetrics=manifest.fonts[fightFont]||fightFonts[fightFont];
+    damageNumbers=new Ew4Effects.DamageNumbers(fightMetrics,fightSheet);originalLabels();showMain();
     startupReady=true;
+    Ew4Startup.ready();
     document.querySelectorAll('.main-entry').forEach(button=>button.disabled=false);$('continue').disabled=false;
   }catch(error){startupError=error.message||String(error);}
-  finally{startupRunning=false;startupStatus();}
+  finally{Ew4Startup.stop();startupRunning=false;startupStatus();}
 }
 $('startup-retry').onclick=async()=>{
   if(startupRunning)return;
@@ -761,6 +952,6 @@ $('startup-retry').onclick=async()=>{
   if(!startupReady&&!startupError){for(const [key,img] of images)if(img.complete&&!img.naturalWidth)images.delete(key);await initializeClient();}
 };
 window.addEventListener('ew4fontstatus',startupStatus);
-window.addEventListener('ew4fontsloaded',()=>{battlefield.mapLabels.clear();});
+window.addEventListener('ew4fontsloaded',()=>{battlefield.mapLabels.clear();battlefield.cityLabels.clear();requestRender();});
 void initializeClient();
-requestAnimationFrame(render);
+requestRender();

@@ -114,6 +114,11 @@ internal sealed class LegacyModImporter
             if (stem == "tex_mainmenu_back_ip5@2x") Write("ui/main.png", image.Crop(0, 0, image.Width, 776).Png());
         }
         ConvertMenuAssets();
+        foreach (string font in new[] { "font_fight_num", "font_fight_num_hd" })
+        {
+            if (names.Contains(font + ".fnt")) manifest["fonts"]![font] = LegacyBinary.Font(Read(font + ".fnt"));
+            if (names.Contains(font + ".png")) Write("images/" + font + ".png", Read(font + ".png"));
+        }
         if (Changed("zh_CN.lproj/title_hd.png")) Write("ui/title.png", Raster.Decode(Read("zh_CN.lproj/title_hd.png")).Crop(0, 0, 759, 192).Png());
         manifest["textRendering"] = new JsonObject { ["typeface"] = "EW4 Extended", ["cityFill"] = "#ffffff", ["cityOutline"] = "#000000" };
         manifest["ui"]!["labels"] = new JsonObject();

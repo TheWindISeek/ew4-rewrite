@@ -36,6 +36,8 @@ public sealed record PlayerAccount
     public IReadOnlyList<OwnedCommander> Roster { get; init; } = Array.Empty<OwnedCommander>();
     public IReadOnlyList<string> ClaimedRewards { get; init; } = Array.Empty<string>();
     public IReadOnlyList<string> UnlockedCampaigns { get; init; } = Array.Empty<string>();
+    public IReadOnlyDictionary<string, int> CampaignStars { get; init; } = new Dictionary<string, int>();
+    public IReadOnlyDictionary<string, BattleResult> BattleResults { get; init; } = new Dictionary<string, BattleResult>();
     public ItemMarket? HeadquartersStock { get; init; }
     public void Validate()
     {
@@ -49,6 +51,10 @@ public sealed record PlayerAccount
             throw new RuleViolation("account.rewards", "Invalid reward claims");
         if (UnlockedCampaigns.Any(string.IsNullOrWhiteSpace) || UnlockedCampaigns.Distinct(StringComparer.Ordinal).Count() != UnlockedCampaigns.Count)
             throw new RuleViolation("account.campaigns", "Invalid campaign unlocks");
+        if (CampaignStars.Any(p => string.IsNullOrWhiteSpace(p.Key) || p.Value < 1 || p.Value > 5)
+            || BattleResults.Any(p => p.Key != p.Value.Id || string.IsNullOrWhiteSpace(p.Key)
+                || p.Value.Round < 1 || p.Value.Stars < 0 || p.Value.Stars > 5 || p.Value.AwardMedals < 0 || p.Value.CollectedMedals < 0))
+            throw new RuleViolation("account.results", "Invalid battle result history");
         if (HeadquartersStock != null && (string.IsNullOrWhiteSpace(HeadquartersStock.Id)
             || HeadquartersStock.Offers.Any(o => string.IsNullOrWhiteSpace(o.Id) || string.IsNullOrWhiteSpace(o.ItemId) || o.Remaining < 0)
             || HeadquartersStock.Offers.Select(o => o.Id).Distinct(StringComparer.Ordinal).Count() != HeadquartersStock.Offers.Count))
@@ -62,6 +68,7 @@ public sealed record PlayerAccount
     }
     public PlayerAccount Copy() => this with { Inventory = Inventory.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal), Roster = Roster.Select(c => c.Copy()).ToArray(),
         CommanderOffers = CommanderOffers.ToDictionary(p => p.Key, p => (IReadOnlyList<string>)p.Value.ToArray()), ClaimedRewards = ClaimedRewards.ToArray(), UnlockedCampaigns = UnlockedCampaigns.ToArray(),
+        CampaignStars = CampaignStars.ToDictionary(p => p.Key, p => p.Value), BattleResults = BattleResults.ToDictionary(p => p.Key, p => p.Value),
         HeadquartersStock = HeadquartersStock == null ? null : HeadquartersStock with { Offers = HeadquartersStock.Offers.ToArray() } };
 }
 

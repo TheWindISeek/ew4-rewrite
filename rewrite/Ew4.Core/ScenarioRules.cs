@@ -31,6 +31,15 @@ public sealed record ScenarioEffect
     public string? OtherFaction { get; init; }
     public string? Relation { get; init; }
     public string? Camp { get; init; }
+    public string? Name { get; init; }
+    public string? TemplateFaction { get; init; }
+    public string? UnitVariant { get; init; }
+    public IReadOnlyDictionary<string, RecruitmentGrant>? Recruitment { get; init; }
+    public string? Flag { get; init; }
+    public string? FlagImage { get; init; }
+    public string? Color { get; init; }
+    public ExtensionVictoryRules? VictoryRules { get; init; }
+    public string? Outcome { get; init; }
     public string? Unit { get; init; }
     public IReadOnlyList<int> Cells { get; init; } = Array.Empty<int>();
     public string? Key { get; init; }
@@ -100,6 +109,12 @@ public static class ScenarioRules
 
     public static bool Match(WorldState world, ScenarioCondition c, IRuleScriptRuntime? scripts = null)
     {
+        // Declared reinforcements need not exist until their creation event fires.
+        if (c.Type is "money" or "industry" or "food" or "city_count" or "objective_count" or "territory_count"
+            or "unit_count" or "kill_count" or "cells_owned" or "faction_defeated" or "faction_camp" or "active_faction"
+            or "relation" or "faction_active"
+            && (!world.Factions.Any(f => f.Id == Faction(world, c.Faction))
+                || c.Type == "relation" && !world.Factions.Any(f => f.Id == Faction(world, c.OtherFaction!)))) return false;
         long Number()
         {
             var faction = world.Factions.Single(f => f.Id == Faction(world, c.Faction));
@@ -124,6 +139,8 @@ public static class ScenarioRules
         switch (c.Type)
         {
             case "always": return true;
+            case "faction_exists": return world.Factions.Any(f => f.Id == Faction(world, c.Faction));
+            case "faction_active": return world.Factions.Any(f => f.Id == Faction(world, c.Faction) && !f.Defeated);
             case "all": return c.Conditions.All(v => Match(world, v, scripts));
             case "any": return c.Conditions.Any(v => Match(world, v, scripts));
             case "not": return !Match(world, c.Conditions[0], scripts);
@@ -136,6 +153,7 @@ public static class ScenarioRules
             case "faction_defeated": return world.Factions.Single(f => f.Id == Faction(world, c.Faction)).Defeated;
             case "faction_camp": return world.Factions.Single(f => f.Id == Faction(world, c.Faction)).Camp == c.Camp;
             case "active_faction": return world.ActiveFaction == Faction(world, c.Faction);
+            case "player_faction": return world.ScenarioPlayerFaction == Faction(world, c.Faction);
             case "relation": return WorldDiplomacy.Relation(world, Faction(world, c.Faction), Faction(world, c.OtherFaction!)) == c.Relation;
             case "event_count": return Compare(world.ScenarioEventProgress.TryGetValue(c.Key!, out var progress) ? progress.Occurrences
                 : world.TriggeredScenarioEvents.Contains(c.Key!) ? 1 : 0, c.Compare, c.Value);
@@ -234,6 +252,8 @@ public static class ScenarioRules
         foreach (var e in effects)
         {
             string owner = Faction(next, e.Faction);
+            if (e.Type != "faction_create" && !next.Factions.Any(f => f.Id == owner))
+                throw new RuleViolation("scenario.faction_missing", "Create the faction before applying effects: " + owner);
             long value = e.Value;
             if (e.Script != null)
             {
@@ -244,6 +264,25 @@ public static class ScenarioRules
             }
             switch (e.Type)
             {
+                case "faction_create": next = ScenarioFactions.Create(next, e); notices.Add(new("faction.created", owner)); break;
+                case "faction_revive": next = ScenarioFactions.Revive(next, owner); notices.Add(new("faction.revived", owner)); break;
+                case "faction_identity": next = ScenarioFactions.Identity(next, owner, e); notices.Add(new("faction.identity", owner)); break;
+                case "player_control":
+                    next = ScenarioFactions.Control(next, owner); notices.Add(new("scenario.player_changed", owner)); break;
+                case "victory_rules": next = next with { ScenarioVictory = ExtensionVictory.Copy(e.VictoryRules!) }; break;
+                case "victory_default": next = next with { ScenarioVictory = null }; break;
+                case "ending":
+                    if (next.LocalMultiplayer != null)
+                    {
+                        if (e.Outcome == "victory")
+                        {
+                            next = LocalMultiplayerGame.Finish(next, owner);
+                            if (next.LocalMultiplayer!.WinnerFaction == owner) next = next with { ScenarioEnding = e.Key };
+                        }
+                        break;
+                    }
+                    next = next with { ScenarioEnding = e.Key, Outcome = e.Outcome == "victory" ? BattleOutcome.Victory : BattleOutcome.Defeat,
+                        Phase = TurnPhase.Finished }; break;
                 case "relation": next = WorldDiplomacy.Set(next, owner, Faction(next, e.OtherFaction!), e.Relation!); break;
                 case "money": case "industry": case "food": case "set_money": case "set_industry": case "set_food":
                     next = next with { Factions = next.Factions.Select(f =>
@@ -286,6 +325,11 @@ public static class ScenarioRules
                     counters[e.Key!] = e.Type == "state" ? value : checked((counters.TryGetValue(e.Key!, out long old) ? old : 0) + value);
                     next = next with { ExtensionState = counters }; break;
                 case "victory": case "defeat":
+                    if (next.LocalMultiplayer != null)
+                    {
+                        if (e.Type == "victory") next = LocalMultiplayerGame.Finish(next, owner);
+                        break;
+                    }
                     next = next with { Outcome = e.Type == "victory" ? BattleOutcome.Victory : BattleOutcome.Defeat, Phase = TurnPhase.Finished }; break;
                 default: throw new RuleViolation("scenario.effect", "Unknown effect: " + e.Type);
             }
@@ -329,7 +373,7 @@ public static class ScenarioRules
             {
                 if (c.Type is not ("always" or "all" or "any" or "not" or "round" or "money" or "industry" or "food" or "city_count" or "objective_count"
                     or "territory_count" or "unit_count" or "kill_count" or "unit_health" or "building_level" or "state" or "cells_owned" or "unit_at"
-                    or "unit_alive" or "unit_destroyed" or "commander_alive" or "commander_dead" or "faction_defeated" or "faction_camp" or "active_faction" or "event_completed" or "event_count" or "relation" or "script")
+                    or "unit_alive" or "unit_destroyed" or "commander_alive" or "commander_dead" or "faction_defeated" or "faction_exists" or "faction_active" or "faction_camp" or "active_faction" or "player_faction" or "event_completed" or "event_count" or "relation" or "script")
                     || c.Cells == null || c.Compare is not ("eq" or "ne" or "gt" or "ge" or "lt" or "le") || string.IsNullOrWhiteSpace(c.Faction)
                     || c.Type is "all" or "any" && c.Conditions.Count == 0 || c.Type == "not" && c.Conditions.Count != 1
                     || c.Type is "cells_owned" or "unit_at" or "building_level" && c.Cells.Count == 0
@@ -347,7 +391,24 @@ public static class ScenarioRules
             {
                 if (e == null || e.Cells == null || string.IsNullOrWhiteSpace(e.Faction)
                     || e.Type is not ("money" or "industry" or "food" or "set_money" or "set_industry" or "set_food" or "camp" or "cells_owner"
-                        or "unit_owner" or "morale" or "environment" or "environment_spread" or "heal" or "destroy_unit" or "state" or "add_state" or "victory" or "defeat" or "relation")
+                        or "unit_owner" or "morale" or "environment" or "environment_spread" or "heal" or "destroy_unit" or "state" or "add_state" or "victory" or "defeat" or "relation" or "faction_create" or "faction_revive" or "faction_identity"
+                        or "player_control" or "victory_rules" or "victory_default" or "ending")
+                    || (e.Type == "victory_rules") != (e.VictoryRules != null)
+                    || e.Type is "player_control" or "victory_rules" or "victory_default" or "ending" && e.Script != null
+                    || e.Type == "ending" && (string.IsNullOrWhiteSpace(e.Key) || e.Key.Length > 128 || e.Key.Any(char.IsControl)
+                        || e.Outcome is not ("victory" or "defeat"))
+                    || e.Type != "ending" && e.Outcome != null
+                    || e.Type == "faction_create" && (e.Faction.StartsWith("@", StringComparison.Ordinal) || e.Faction.Length > 128
+                        || !ScenarioFactions.Code(e.Faction)
+                        || string.IsNullOrWhiteSpace(e.Name) || e.Name.Length > 128 || string.IsNullOrWhiteSpace(e.Camp) || e.Camp.Length > 128
+                        || e.TemplateFaction != null && (string.IsNullOrWhiteSpace(e.TemplateFaction) || e.TemplateFaction == "@active")
+                        || e.TemplateFaction == null && (e.Flag == null && e.FlagImage == null || e.Color == null) || e.Script != null)
+                    || e.Type == "faction_identity" && (e.Name == null && e.Flag == null && e.FlagImage == null && e.Color == null || e.Script != null)
+                    || e.Type is not ("faction_create" or "faction_identity") && (e.Name != null || e.Flag != null || e.FlagImage != null || e.Color != null)
+                    || e.Name != null && (string.IsNullOrWhiteSpace(e.Name) || e.Name.Length > 128 || e.Name.Any(char.IsControl))
+                    || e.Type != "faction_create" && (e.TemplateFaction != null || e.UnitVariant != null || e.Recruitment != null)
+                    || e.UnitVariant != null && !ScenarioFactions.Code(e.UnitVariant)
+                    || e.Recruitment != null && e.Recruitment.Any(p => string.IsNullOrWhiteSpace(p.Key) || p.Value == null || string.IsNullOrWhiteSpace(p.Value.Veterancy))
                     || e.Type == "relation" && (string.IsNullOrWhiteSpace(e.OtherFaction) || e.Relation is not ("allied" or "neutral" or "hostile" or "default"))
                     || e.Type == "camp" && string.IsNullOrWhiteSpace(e.Camp)
                     || e.Type is "cells_owner" or "environment" or "environment_spread" && e.Cells.Count == 0
@@ -356,6 +417,8 @@ public static class ScenarioRules
                     || e.Type == "morale" && e.Script == null && (e.Value < -3 || e.Value > 1)
                     || e.Type is "environment" or "heal" && e.Script == null && e.Value < 0)
                     throw new RuleViolation("scenario.effect", "Invalid effect in " + ev.Id);
+                ScenarioFactions.ValidateAppearance(new(e.Flag, e.FlagImage, e.Color));
+                if (e.VictoryRules != null) ExtensionVictory.Validate(e.VictoryRules);
                 Handler(e.Script, e.Function, false);
             }
         }
@@ -373,6 +436,15 @@ public static class ScenarioRules
         if (world.ScenarioEvents == null || world.TriggeredScenarioEvents == null || world.ScenarioChoices == null || world.ScenarioEventProgress == null
             || world.DestroyedScenarioUnits == null || world.DeadScenarioCommanders == null)
             throw new RuleViolation("scenario.state", "Null scenario state collection");
+        if (world.ScenarioVictory != null)
+        {
+            ExtensionVictory.Validate(world.ScenarioVictory);
+            ExtensionVictory.ValidateTargets(world.ScenarioVictory, world, false,
+                id => world.Factions.Any(f => f.Id == id) || ScenarioFactions.Creations(world.ScenarioEvents).Any(e => e.Faction == id));
+        }
+        if (world.ScenarioEnding != null && (string.IsNullOrWhiteSpace(world.ScenarioEnding) || world.ScenarioEnding.Length > 128
+            || world.ScenarioEnding.Any(char.IsControl) || world.Phase != TurnPhase.Finished || world.Outcome == BattleOutcome.Continue))
+            throw new RuleViolation("scenario.ending", "An ending requires a finished battle and a valid branch identifier");
         if (world.DestroyedScenarioUnits.Any(string.IsNullOrWhiteSpace) || world.DestroyedScenarioUnits.Distinct().Count() != world.DestroyedScenarioUnits.Count
             || world.DeadScenarioCommanders.Any(string.IsNullOrWhiteSpace) || world.DeadScenarioCommanders.Distinct().Count() != world.DeadScenarioCommanders.Count)
             throw new RuleViolation("scenario.state", "Invalid death history");
@@ -383,6 +455,12 @@ public static class ScenarioRules
             return;
         }
         ValidateDefinitions(world.ScenarioEvents);
+        var creations = ScenarioFactions.Creations(world.ScenarioEvents).ToArray();
+        if (creations.Select(e => e.Faction).Distinct(StringComparer.Ordinal).Count() != creations.Length
+            || creations.Any(e => initial && world.Factions.Any(f => f.Id == e.Faction)
+                || creations.Any(other => other.Faction == e.TemplateFaction)
+                || e.TemplateFaction != null && !world.Factions.Any(f => f.Id == Faction(world, e.TemplateFaction))))
+            throw new RuleViolation("scenario.faction_definition", "New factions need unique IDs and an existing initial template");
         foreach (var p in world.ScenarioEventProgress)
         {
             var repeat = world.ScenarioEvents.SingleOrDefault(e => e.Id == p.Key)?.Repeat;
@@ -392,7 +470,8 @@ public static class ScenarioRules
                 || p.Value.Occurrences > (p.Value.LastRound - repeat.StartRound) / repeat.EveryRounds + 1)
                 throw new RuleViolation("scenario.state", "Invalid recurring event progress");
         }
-        bool KnownFaction(string selector) => selector is "@player" or "@active" || world.Factions.Any(f => f.Id == selector);
+        bool KnownFaction(string selector) => selector is "@player" or "@active" || world.Factions.Any(f => f.Id == selector)
+            || creations.Any(e => e.Faction == selector);
         if (!world.Factions.Any(f => f.Id == world.ScenarioPlayerFaction) || world.TriggeredScenarioEvents.Distinct().Count() != world.TriggeredScenarioEvents.Count
             || world.TriggeredScenarioEvents.Any(id => world.ScenarioEvents.All(e => e.Id != id))
             || world.ScenarioChoices.Any(p => !world.TriggeredScenarioEvents.Contains(p.Key)
@@ -408,11 +487,14 @@ public static class ScenarioRules
                     || initial && (c.Unit != null && world.Units.All(u => u.Id != c.Unit) || c.Commander != null && world.Commanders.All(k => k.Id != c.Commander)))
                     throw new RuleViolation("scenario.reference", "Unknown condition target in " + ev.Id);
             foreach (var e in Effects(ev))
+            {
                 if (!KnownFaction(e.Faction) || e.OtherFaction != null && (!KnownFaction(e.OtherFaction) || e.Faction == e.OtherFaction
-                        || e.Faction != "@active" && e.OtherFaction != "@active" && Faction(world, e.Faction) == Faction(world, e.OtherFaction))
+                        || initial && e.Faction != "@active" && e.OtherFaction != "@active" && Faction(world, e.Faction) == Faction(world, e.OtherFaction))
                     || e.Cells.Any(i => i < 0 || i >= world.Cells.Count || !world.Cells[i].Terrain.Active)
                     || initial && e.Unit != null && world.Units.All(u => u.Id != e.Unit))
                     throw new RuleViolation("scenario.reference", "Unknown effect target in " + ev.Id);
+                if (e.VictoryRules != null) ExtensionVictory.ValidateTargets(e.VictoryRules, world, initial, id => !id.StartsWith("@", StringComparison.Ordinal) && KnownFaction(id));
+            }
             if (ev.Popup != null && world.TriggeredScenarioEvents.Contains(ev.Id) && !world.ScenarioChoices.ContainsKey(ev.Id)
                 && world.PendingDialogue != DialogueId(ev.Id) && !world.QueuedDialogues.Contains(DialogueId(ev.Id)))
                 throw new RuleViolation("scenario.state", "Unresolved event popup is missing");
@@ -424,5 +506,7 @@ public static class ScenarioRules
         Popup = e.Popup == null ? null : e.Popup with { Choices = e.Popup.Choices.Select(c => c with {
             Condition = c.Condition == null ? null : Copy(c.Condition), Effects = c.Effects.Select(Copy).ToArray() }).ToArray() } };
     private static ScenarioCondition Copy(ScenarioCondition c) => c with { Cells = c.Cells.ToArray(), Conditions = c.Conditions.Select(Copy).ToArray() };
-    private static ScenarioEffect Copy(ScenarioEffect e) => e with { Cells = e.Cells.ToArray() };
+    private static ScenarioEffect Copy(ScenarioEffect e) => e with { Cells = e.Cells.ToArray(),
+        VictoryRules = e.VictoryRules == null ? null : ExtensionVictory.Copy(e.VictoryRules),
+        Recruitment = e.Recruitment?.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal) };
 }

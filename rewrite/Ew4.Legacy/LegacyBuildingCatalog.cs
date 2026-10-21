@@ -114,10 +114,11 @@ public sealed class LegacyBuildingCatalog
             .Concat(d.Levels.Select(l => l.Turn))).ToArray(), SiteIncomeOverrides = new ReadOnlyDictionary<int, BuildingIncomeOverride>(sites) };
     }
 
-    public BuildingUpgradeRules UpgradeRules()
+    public BuildingUpgradeRules UpgradeRules(LegacySkillParameters? skillParameters = null)
     {
         long[] money = [65, 60, 80, 75, 40], industry = [0, 20, 5, 10, 0];
-        return new() { Steps = Definitions.Values.SelectMany(d => Enumerable.Range(0, d.MaximumUpgradeLevel)
+        return new() { DiscountPercent = (skillParameters ?? LegacySkillParameters.Default).Percent(30),
+            Steps = Definitions.Values.SelectMany(d => Enumerable.Range(0, d.MaximumUpgradeLevel)
             .Select(level => new BuildingUpgradeStep(d.Kind, level, level + 1, new(money[d.LegacyId], industry[d.LegacyId], 0)))).ToArray() };
     }
 

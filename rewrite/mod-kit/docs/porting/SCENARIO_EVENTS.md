@@ -73,7 +73,7 @@
 
 通用字段：`type`、`faction`（默认 `@player`）、`otherFaction`、`relation`、`camp`、`unit`、`commander`、`cells`、`key`、`profile`、`category`、`compare`、`value`、`conditions`、`script`、`function`。未用字段通常省略。
 
-`faction` 接受当前剧本的国家运行 ID、`@player`（本局所选国家）或 `@active`（当前行动国家）。国家 ID 不是阵营 ID，也不一定是 `fra` 等选国代码。用开局/状态 API 的 `factions[].id`。`camp` 是阵营字符串；不要把国家和阵营混用。
+`faction` 接受当前剧本的国家运行 ID、事件中声明的待创建势力 ID、`@player`（玩家当前控制国）或 `@active`（当前行动国家）。国家 ID 不是阵营 ID，也不一定是 `fra` 等选国代码。用开局/状态 API 的 `factions[].id`。`camp` 是阵营字符串；不要把国家和阵营混用。
 
 数值条件默认 `compare:"ge", value:1`，比较支持 `eq/ne/gt/ge/lt/le`（等于、不等于、大于、大于等于、小于、小于等于）。资源可比较不足、等于、区间，不局限于“至少”。区间用 `all` 组合上下界。
 
@@ -98,8 +98,11 @@
 | `commander_alive` | 指定 commander 实例目前任职于现存部队 |
 | `commander_dead` | 指定 commander 实例曾随部队死亡；卸任/投降退场不算死亡 |
 | `faction_defeated` | 指定国家已出局 |
+| `faction_exists` | 指定国家已经创建；已灭亡仍算存在 |
+| `faction_active` | 指定国家已经创建且未灭亡，不表示正在行动 |
 | `faction_camp` | 指定国家的当前阵营等于 camp |
 | `active_faction` | 指定国家正在行动 |
+| `player_faction` | 玩家当前扮演指定国家，与该国是否正在行动无关 |
 | `relation` | faction 与 otherFaction 的当前关系等于 relation：allied / neutral / hostile |
 | `event_completed` | key 指定事件已执行完；弹窗事件必须已经完成选择 |
 | `event_count` | key 指定事件累计触发次数；支持 compare/value；弹窗打开时计数 |
@@ -117,6 +120,9 @@
 | `set_money` / `set_industry` / `set_food` | 设置指定国家对应资源总额 |
 | `camp` | 把指定国家的阵营设置为 camp；该国部队自动按新阵营判定敌友 |
 | `relation` | 只设置 faction 与 otherFaction 之间的关系；allied / neutral / hostile / default，详见下文 |
+| `faction_create` | 创建新的 AI 势力，可独立配置兵种、名称、国土颜色和旗帜；继承原势力可选 |
+| `faction_revive` | 恢复已灭亡势力的行动资格；不恢复已消失的部队和将领 |
+| `faction_identity` | 修改指定势力名称、国土颜色及旗帜，可只改其中一项 |
 | `cells_owner` | 把 cells 所列地块转交指定国家；存在敌对占军时应先明确转交部队 |
 | `unit_owner` | unit 转交指定国家，其任职将领随部队转交；原名册派遣历史仍占原国名额 |
 | `morale` | 指定国家部队士气设为 value（-3 至 1），保留领导力负士气豁免 |
@@ -125,9 +131,16 @@
 | `heal` | unit 恢复 value 血量，不超过最大血量，value 非负 |
 | `destroy_unit` | unit 经共享死亡/将领退场/国家存续/原死亡对白处理；已不存在时略过 |
 | `state` / `add_state` | key 变量设置/增加 value；写入键必须以 `scenario/` 开头，以免覆盖技能冷却 |
-| `victory` / `defeat` | 结束本局，所选玩家胜利/失败 |
+| `victory` / `defeat` | 结束本局，当前玩家控制国胜利/失败 |
+| `player_control` | 切换同一玩家所扮演的势力，原国交给AI；不跳转回合 |
+| `victory_rules` / `victory_default` | 用 victoryRules 替换本局胜负条件，或恢复安装规则 |
+| `ending` | key为结局分支ID，outcome为victory/defeat，结束本局并保存标识 |
 
-可给以上任一结果附加 `script:"rewrite/xxx.lua", function:"xxx"`，用 Lua 返回值代替 value；可根据局势计算奖励、惩罚、环境或变量值。返回有限且精确的整数，绝对值不超过 2^53-1。所有权和阵营由声明字段决定。此接口没有任意托管代码执行、任意世界对象写入、生成新单位或新建建筑命令。
+角色切换及动态胜负见[角色与结局接口](SCENARIO_CONTROL.md)，含本国分离和转投敌国叛军示例。`player_faction` 条件判断当前控制国，普通结果中的 `@player` 随控制权变化。
+
+数值结果可附加 `script:"rewrite/xxx.lua", function:"xxx"`，用 Lua 返回值代替 value；可根据局势计算奖励、惩罚、环境或变量值。返回有限且精确的整数，绝对值不超过 2^53-1。创建/身份、角色切换、胜负规则及结局结果不接受该数值脚本字段；胜负规则自身可嵌套 Lua 条件。所有权和阵营由声明字段决定。此接口没有任意托管代码执行、任意世界对象写入、生成新单位或新建建筑命令。
+
+势力操作的字符串参数直接声明；`faction_create/faction_identity` 不接受 script/function。具体字段、两种触发流程、独立兵种/PNG 旗帜及复国行为见[势力事件接口](SCENARIO_FACTIONS.md)。新势力创建前，针对它的资源/数量/所有权/关系等条件为假；可用 `not(faction_exists)` 判断尚未出现。给它执行其他结果前，必须先创建；接收部队前若它已灭亡，必须先复活。
 
 ## 周期事件与军团补给
 

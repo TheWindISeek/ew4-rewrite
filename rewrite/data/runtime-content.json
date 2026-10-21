@@ -10821,6 +10821,16 @@
       "path": "legacy/metagame_rule_tables.json",
       "bytes": 505,
       "sha256": "ce466cbe16e3633986730efe44cf58ab9591d0e65f449b75873cba12fdd5f42d"
+    },
+    {
+      "path": "client/fight-font.json",
+      "bytes": 681,
+      "sha256": "cb5d470f233a0a1206db65964544827342386bb50d4fdb5017801e6e95fd6036"
+    },
+    {
+      "path": "client/images/font_fight_num_hd.png",
+      "bytes": 11845,
+      "sha256": "b287af59b5b330fbe101bf3d45a51da8a15f1d640026b3ae5c9080d8841faab0"
     }
   ]
 }
