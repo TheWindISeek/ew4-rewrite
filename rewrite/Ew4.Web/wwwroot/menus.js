@@ -139,6 +139,7 @@
     }
     async deployGeneral(unit,revision){
       const available=await this.api.rpc('deployment',{unit,revision});
+      this.deploymentQuota=available;
       await this.headquarters(unit);
       this.data.roster=this.data.roster.map(c=>({...c,locked:!available.commanders.includes(c.id)}));
       this.drawRoster();
@@ -156,20 +157,21 @@
       if(held?.locked){card.dataset.locked='true';card.title=(card.title?card.title+' · ':'')+'已派遣';}return card;
     }
     drawRoster(){
-      const data=this.data,screen=document.getElementById('hq-screen');screen.classList.toggle('recruiting',this.recruiting);screen.classList.toggle('tag-editing',!!this.tagDraft);
+      const data=this.data,screen=document.getElementById('hq-screen');screen.classList.toggle('recruiting',this.recruiting);screen.classList.toggle('tag-editing',!!this.tagDraft);screen.classList.toggle('deploying',!!this.deployment);
+      const heading=screen.querySelector('h1'),headingKey=this.deployment?'title_deploygeneral':'title_headquarters';heading.dataset.label=headingKey;heading.setAttribute('aria-label',this.text(headingKey));heading.replaceChildren(this.api.labels(headingKey,this.text(headingKey),heading));
       document.getElementById('hq-medals').replaceChildren(this.api.uiImage('medals.png',13,17),this.lettering(data.medals,'font_char_2_hd','#ebe6e1'),this.api.uiImage('badges.png',13,17),this.lettering(data.badges,'font_char_2_hd','#ebe6e1'));
       const recruit=document.getElementById('hq-recruit');recruit.replaceChildren(this.lettering(this.text('btn_college'),'font_text_3_cn_hd','#ebe6e1'));recruit.setAttribute('aria-label',this.text('btn_college'));recruit.hidden=!!this.deployment;
       recruit.disabled=!!this.tagDraft;
       document.getElementById('hq-back').disabled=this.tagSaving;
       const definitions=data.definitions,byId=new Map(definitions.map(d=>[d.id,d])),owned=new Map(data.roster.map(c=>[c.definitionId,c]));
       const section=d=>Math.max(0,Math.min(2,Math.floor((d.rating-1)/3)));
-      const entries=this.recruiting?(data.offers[this.rating]||[]).map(id=>byId.get(id)).filter(Boolean):data.roster.map(c=>byId.get(c.definitionId)).filter(d=>d&&(this.rosterRating===null||section(d)===this.rosterRating))
+      const entries=this.recruiting?(data.offers[this.rating]||[]).map(id=>byId.get(id)).filter(Boolean):data.roster.map(c=>byId.get(c.definitionId)).filter(d=>d&&(this.deployment||this.rosterRating===null||section(d)===this.rosterRating))
         .sort((a,b)=>Number(!!owned.get(b.id)?.tag)-Number(!!owned.get(a.id)?.tag)||section(b)-section(a));
       const filters=document.getElementById('hq-filters');filters.replaceChildren();
       if(this.recruiting)for(const [rating,count] of [6,4,2].entries()){
         const b=this.api.button('',()=>{this.rating=rating;this.offer=null;this.drawRoster();},filters);b.setAttribute('role','tab');b.setAttribute('aria-label',['一星招募区','二星招募区','三星招募区'][rating]);b.setAttribute('aria-selected',String(rating===this.rating));b.append(this.api.uiImage('button_general_'+count+'.png',152,55));
       }
-      else for(const rating of [null,0,1,2]){
+      else if(!this.deployment)for(const rating of [null,0,1,2]){
         const label=rating===null?'全选':['一星区','二星区','三星区'][rating];
         const b=this.api.button('',()=>{this.rosterRating=rating;document.getElementById('hq-roster').scrollLeft=0;this.drawRoster();},filters);
         b.setAttribute('role','tab');b.setAttribute('aria-label',label);b.title=label;b.setAttribute('aria-selected',String(rating===this.rosterRating));
@@ -182,21 +184,27 @@
         const held=owned.get(definition.id),shown=this.tagDraft&&held?{...held,tag:this.tagDraft.has(held.id)?'置顶':''}:held,b=this.card(definition,shown,()=>{
           if(this.tagDraft){if(!this.tagSaving){if(this.tagDraft.has(held.id))this.tagDraft.delete(held.id);else this.tagDraft.add(held.id);this.drawRoster();}return;}
           if(this.recruiting){this.offer=definition;this.drawPurchases();for(const c of roster.children)c.setAttribute('aria-pressed',String(c===b));}
-          else {this.rosterSelected=definition.id;for(const c of roster.children)c.setAttribute('aria-pressed',String(c===b));this.commanderInfo(definition,held);}
+          else {this.rosterSelected=definition.id;for(const c of roster.children)c.setAttribute('aria-pressed',String(c===b));if(!this.deployment)this.commanderInfo(definition,held);}
         });roster.append(b);if(held)b.dataset.commander=held.id;
+        if(this.deployment){
+          b.querySelector('.commander-info').onclick=e=>{e.stopPropagation();this.commanderInfo(definition,held,()=>this.drawRoster());};
+          const deploy=this.api.button('',async()=>{await this.api.deploy(this.deployment,held.id);this.closeRoster();},b);deploy.className='deploy-card-confirm';deploy.setAttribute('aria-label','任命 '+definition.name);deploy.disabled=held.locked;deploy.append(this.lettering(this.text('btn_deploy'),'font_text_3_cn_hd','#ebe6e1'));
+        }
         if(this.tagDraft)b.querySelector('.commander-open').setAttribute('aria-pressed',String(this.tagDraft.has(held.id)));
         if(!this.recruiting&&!this.deployment)this.promotionShortcut(b,held,()=>this.drawRoster());
         b.setAttribute('aria-pressed',String(definition.id===(this.recruiting?this.offer?.id:this.rosterSelected)));
       }
-      const capacity=data.sectionCapacity??20,slots=this.recruiting?[6,4,2][this.rating]:Math.max(this.rosterRating===null?capacity*3:capacity,entries.length);
+      const capacity=data.sectionCapacity??20,slots=this.recruiting?[6,4,2][this.rating]:this.deployment?Math.max(12,entries.length):Math.max(this.rosterRating===null?capacity*3:capacity,entries.length);
       for(let i=entries.length;i<slots;i++){const b=this.api.button('',()=>{if(!this.deployment){this.recruiting=true;this.rating=this.rosterRating??0;this.drawRoster();}},roster);b.className='commander-card empty-commander';b.setAttribute('aria-label','空将领位');b.append(this.api.uiImage('button_add_generals.png',78,78));const name=document.createElement('span');name.className='commander-name';b.append(name);b.disabled=this.recruiting||!!this.deployment||!!this.tagDraft;}
-      if(!this.recruiting)for(const [i,card] of [...roster.children].entries()){card.style.gridRow=i%2+1;card.style.gridColumn=Math.floor(i/2)+1;}
+      if(!this.recruiting)for(const [i,card] of [...roster.children].entries()){card.style.gridRow=this.deployment?Math.floor(i/6)%2+1:i%2+1;card.style.gridColumn=this.deployment?Math.floor(i/12)*6+i%6+1:Math.floor(i/2)+1;}
       for(const id of ['hq-recruit-band','hq-refresh','hq-buy-buttons'])document.getElementById(id)?.remove();
       if(this.recruiting){const band=document.createElement('div');band.id='hq-recruit-band';screen.insertBefore(band,roster);
         const refresh=this.api.button('',async()=>{this.offer=null;await this.transact({op:'refresh',group:this.rating});},screen);refresh.id='hq-refresh';refresh.className='native-command blue';refresh.setAttribute('aria-label','刷新将领');for(let i=0;i<3;i++)refresh.append(this.api.uiImage('button_refresh.png',13,16));this.drawPurchases();}
       roster.scrollLeft=scroll;this.headquartersControls();
       const count=document.getElementById('hq-count');
       count.hidden=this.recruiting;count.replaceChildren(this.lettering(entries.length+' / '+slots,'font_char_2_hd','#404040'));
+      document.getElementById('hq-deployment-quota')?.remove();
+      if(this.deployment){const quota=document.createElement('div');quota.id='hq-deployment-quota';quota.append(this.api.uiImage('generalnumber.png',26,19),this.lettering((this.deploymentQuota?.used??0)+' / '+(this.deploymentQuota?.limit??'∞'),'font_char_4_hd','#404040'));screen.append(quota);}
     }
     drawPurchases(){
       document.getElementById('hq-buy-buttons')?.remove();if(!this.offer)return;
@@ -232,9 +240,8 @@
     }
     commanderInfo(definition,held,onClose){
       this.commanderReturn=onClose;
-      const body=this.api.detail('headquarters_label',440,217,null,onClose||(()=>{this.drawRoster();}));body.className='commander-detail';
-      const card=document.createElement('div');card.className='commander-detail-card';const portrait=this.card(definition,held,()=>{});card.append(portrait);body.append(card);
-      if(!this.deployment)this.promotionShortcut(portrait,held);
+      const body=this.api.detail('title_unitinfo',440,217,null,onClose||(()=>{this.drawRoster();}));body.className='commander-detail';
+      const card=document.createElement('div');card.className='commander-detail-card';const portrait=this.card(definition,held,()=>{});portrait.querySelector('.commander-info').remove();portrait.querySelector('.commander-tag')?.remove();delete portrait.dataset.locked;card.append(portrait);body.append(card);
       const equipment=document.createElement('div');equipment.className='commander-equipment';const title=document.createElement('div');title.className='commander-equipment-title';title.append(this.lettering(this.text('text_equipitem')));equipment.append(title);
       const items=document.createElement('div');items.className='commander-equipment-slots';for(let i=0;i<(this.data.equipmentCapacity??2);i++){const marker=this.data.items.find(m=>m.id===held?.items[i]);items.append(this.api.uiImage(marker?.image||'item_blank.png',45));}equipment.append(items);body.append(equipment);
       const skills=document.createElement('div');skills.className='commander-skills';
@@ -253,8 +260,8 @@
       for(const [key,icon] of [['infantry','upgrade_tag_infantry'],['cavalry','upgrade_tag_cavalry'],['artillery','upgrade_tag_artillery'],['naval','upgrade_tag_ship'],['fort','upgrade_tag_fortress'],['commerce','generalsinfo_trade'],['movement','generalsinfo_move'],['training','generalsinfo_training']]){
         const row=document.createElement('div');row.className='commander-ability';row.setAttribute('aria-label',key+' '+(key==='training'?(held?.training??definition.training):values[key]));row.append(this.api.uiImage(icon+'.png',22,21.5));const stars=document.createElement('div');stars.className='ability-stars';for(let i=0;i<(key==='training'?(held?.training??definition.training):values[key]);i++)stars.append(this.api.uiImage('star_middle.png',13.5,12.5));row.append(stars);abilities.append(row);
       }body.append(abilities);
-      if(held&&!this.deployment){for(const [kind,text,action] of [['regroup','btn_regroup',()=>this.regroup(held.id)],['equip','btn_equip',()=>this.equipment(held.id)]]){const b=this.api.button('',action,equipment);b.className='native-command '+(kind==='equip'?'blue ':'')+kind;b.disabled=held.locked;b.setAttribute('aria-label',this.text(text));b.append(this.lettering(this.text(text),'font_text_3_cn_hd','#ebe6e1'));}}
-      if(this.deployment&&held){const b=this.api.button('',async()=>{await this.api.deploy(this.deployment,held.id);document.getElementById('detail-modal').hidden=true;this.closeRoster();},equipment);b.className='native-command blue equip';b.disabled=held.locked;b.setAttribute('aria-label',this.text('btn_deploy'));b.append(this.lettering(this.text('btn_deploy'),'font_text_3_cn_hd','#ebe6e1'));}
+      if(held&&!this.deployment&&!held.battle){const regroup=this.api.button('',()=>this.regroup(held.id),equipment);regroup.className='native-command orange regroup';regroup.disabled=held.locked;regroup.setAttribute('aria-label',this.text('btn_regroup'));regroup.append(this.lettering(this.text('btn_regroup'),'font_text_3_cn_hd','#ebe6e1'));}
+      const item=this.api.button('',()=>held?.battle?this.battleEquipment(held,()=>this.commanderInfo(definition,held,onClose)):this.equipment(held.id),equipment);item.className='native-command blue equip';item.disabled=!held||!!this.deployment||!!held.locked&&!held.battle;item.setAttribute('aria-label',this.text('btn_item'));item.append(this.lettering(this.text('btn_item'),'font_text_3_cn_hd','#ebe6e1'));
     }
   }
   root.Ew4Menus={Menus};

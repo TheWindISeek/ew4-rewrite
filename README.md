@@ -53,7 +53,9 @@ dotnet run --project rewrite/Ew4.Verify -- . --client-only
 
 `.gitignore` 排除原始 APK/压缩包、历史安装包、工具包构建副本、编译缓存、
 本地 Mod/账户/存档、测试截图和解包产物。它们不作为重复资源上传。
-未自动删除这些本地文件；Git 中保留一份实际运行资源和独立地图内容。
+Git 中保留一份实际运行资源和独立地图内容。2026-10-22 已将一批旧构建、
+安装包和测试资源移入本地 `duplicates/local-resources-20261022/` 去重归档，
+按原路径恢复的方法见 [清理记录](reverse/LOCAL_RESOURCE_CLEANUP_20261022.md)。
 不包含签名密钥或登录凭据。
 
 现有原游戏和第三方 Mod 资源的权利归各自权利人所有；本文件不授予这些资源的新授权。

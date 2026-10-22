@@ -10,6 +10,7 @@
 *.ew4mod.previous
 /apk_work/
 /build/
+/duplicates/
 
 # Reproducible compiler, package, editor and interpreter caches.
 **/bin/

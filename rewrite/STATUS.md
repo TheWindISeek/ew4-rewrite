@@ -1,5 +1,11 @@
 # 重构短锚点
 
+- **0.2.11发行续接：见[说明](RELEASE_0.2.11_20261022.md)。** 原版部队详情/任命、战局将领及装备返回、齐平三框与内部裁切修复；合并最终方形定位/Android安全区。核心310898/客户端2473、源码及独立Web浏览器52+94+153、分发2614+4366/启动10922通过；Web和ARM64 APK 0.2.11/code13已重建，当前资源/程序集、旧证书签名及16KiB对齐通过，无真机验收。授权同步/发布的精确状态见 `../build/release-0.2.11-20261022/assets/release-manifest.json`、`release-remote.json`、`remote-audit.json`；以下未打包为阶段历史。发行预览5337/隔离档案。
+
+- **本地资源清理完成：见[记录](../reverse/LOCAL_RESOURCE_CLEANUP_20261022.md)。** 269 个旧资源目标、145459 文件去重归档至 `../duplicates/local-resources-20261022/`，原24.20 GiB、归档约6.86 GiB，净减少约17.34 GiB；支持按原路径恢复。当前发行、活动预览、所有local账户/存档/Mod及并发改动保留；2168资源/2发行文件/4预览和恢复验证通过。
+
+- **定位部队与 APK 边缘适配：见[记录](../reverse/UNIT_NAVIGATION_SAFE_AREA_20261022.md)。** 撤回右侧方形灰底白色准星，先未移动未攻击、再剩一项行动，分层循环/镜头选择不耗行动；原生统一避让系统栏、刘海、手势、瀑布屏和圆角，另加12dp，修复小屏设置确认键越界。浏览器153项/6图、客户端2440、Web及Android Compile通过；5280独立预览。用户要求先不打包，最终方形图标未打APK；build目录旧中间包不可交付，真机待验。
+
 - **0.2.10发行续接：见[说明](RELEASE_0.2.10_20261022.md)。** 指挥部标签优先、三星→二星→一星、逐列先上后下，独立标签确认和整区滑动；核心310898/客户端2259/指挥部75，源码及独立Web浏览器各94/15图、分发2612+4364/独立启动10918通过。Web及Android 0.2.10/code12已重建，当前包字节/同证书签名/16KiB对齐已验，未真机运行。授权同步与Release的精确状态见 `../build/release-0.2.10-20261021/assets/release-manifest.json`、`remote-audit.json`；以下无新APK等为历史。
 
 - **全局国家与兵模接口已接：见[记录](../reverse/GLOBAL_COUNTRIES_UNIT_VISUALS_20261021.md)和[指南](mod-kit/docs/porting/GLOBAL_COUNTRIES.md)。** `data/client/countries.json` 独立定义43国；唯一长文本/中文ID、别名、旗帜/战斗/兵模分离；CNTR v1嵌入BTL完整ID及事件引用，ModTool新增country-export/apply/strip，保持主体字节和行动顺序。HRE等兵模映射按原视觉变体修复。国家196/兵模25845/浏览器581+24/Mod102/客户端2266、Web及Android Compile通过；独立5251 PID33936，无新APK。

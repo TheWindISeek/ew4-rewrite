@@ -41,6 +41,7 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
                     "/api/local-players" => LocalPlayers(Command(body)),
                     "/api/headquarters" => Headquarters(),
                     "/api/deployment" => Deployment(Command(body)),
+                    "/api/unit-info" => UnitInfo(Command(body)),
                     "/api/commander" => CommanderAction(Command(body)),
                     "/api/commerce" => Commerce(Command(body)),
                     "/api/items" => Consumables(Command(body)),

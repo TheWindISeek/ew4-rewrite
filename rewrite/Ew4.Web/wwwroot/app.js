@@ -15,6 +15,8 @@ originalTextChanges.observe(document.body,{childList:true,characterData:true,att
 let view = {x: 0, y: 0, zoom: 1}, viewport = {w: 0, h: 0, dpr: 1};
 const images = new Map(), libraries = new Map();
 let errorTimer, aiRunning = false;
+const unitNavigation=new Ew4UnitNavigation.Cycle();
+let findingUnit=false;
 let leavingSession = false;
 let skipAi = false, aiFocus = null, mapBounds, finishPresentation;
 const battleDialogues = [];
@@ -227,7 +229,7 @@ function visualProfile(unit,world=state){return unit&&(effects?.profile(unit.pro
 async function installState(next, center = false) {
   closeSingleAction();
   center=center||!!(state&&(state.map!==next.map||state.scenario!==next.scenario||state.width!==next.width||state.height!==next.height||state.playerFaction!==next.playerFaction));
-  if(center){effects?.clear();damageNumbers?.clear();deaths.clear();battleDialogues.length=0;}
+  if(center){effects?.clear();damageNumbers?.clear();deaths.clear();battleDialogues.length=0;unitNavigation.reset();}
   const keepUnit=center?null:selected?.id,keepCell=center?null:selection?.cell;
   const used = [...new Set([...next.units,...(state?.units||[])].map(u => visualProfile(u,next)?.library).filter(Boolean))];
   await Promise.all([...used, 'choose', 'maptext', 'anim_fire', 'anim_upgrade', 'anim_smoke'].map(loadLibrary));
@@ -453,6 +455,8 @@ function refreshHud() {
   $('end-turn').disabled = busy || !active.human || state.phase !== 'Active' || !!state.dialogue;
   $('undo-move').hidden = !active.human;
   $('undo-move').disabled = busy || !(selected ? selection?.undo : state.undoUnit);
+  $('next-unit').hidden = !active.human;
+  $('next-unit').disabled = busy || findingUnit || !Ew4UnitNavigation.groups(state).some(units=>units.length);
   $('skip-ai').hidden = active.human || state.phase === 'Finished' || !!state.dialogue;
   $('skip-ai').disabled = skipAi;
   refreshAiProgress();
@@ -542,12 +546,12 @@ async function runAi() {
   finally { busy = false; aiRunning = false; skipAi = false; aiFocus=null; refreshHud();requestRender(); }
 }
 function aiCanContinue(next){return next&&!next.dialogue&&!next.scenarioPopup&&next.phase!=='Finished'&&!next.factions.find(f=>f.id===next.activeFaction).human;}
-async function selectCell(cell,restore=false) {
+async function selectCell(cell,restore=false,selectOnly=false) {
   if ((!restore&&busy) || !state || cell < 0 || cell >= state.cells.length || !state.cells[cell].active) return;
   closeSingleAction();
   if(!restore&&tutorial?.wait?.name==='wait area'&&Number(tutorial.wait.id)!==cell)return;
   const target = state.units.find(u => u.cell === cell);
-  if (!restore && selected && selection && state.activeFaction === state.playerFaction && !state.dialogue) {
+  if (!restore && !selectOnly && selected && selection && state.activeFaction === state.playerFaction && !state.dialogue) {
     if (target && selection.targets?.includes(cell))
       return act('attack', {target:target.id}).then(()=>tutorial?.notify({type:'area',cell}));
     if (!target && selection.range.includes(cell)) return act('move', {cell}).then(()=>tutorial?.notify({type:'area',cell}));
@@ -591,6 +595,19 @@ async function selectCell(cell,restore=false) {
   $('actions').hidden=!$('actions').childElementCount;
   refreshHud();
   if(!restore)await tutorial?.notify({type:'area',cell});
+}
+async function findNextUnit(){
+  if(busy||findingUnit||!state||$('play').hidden||['pause','settings','detail-modal','loading-screen'].some(id=>!$(id).hidden))return;
+  const unit=unitNavigation.next(state);
+  if(!unit)return;
+  findingUnit=true;busy=true;refreshHud();
+  try{
+    // Selecting a different friendly cell must never execute the previous unit's move/attack.
+    await selectCell(unit.cell,true,true);
+    selectedAt=performance.now();
+    const p=point(unit.cell);view.x=p.x;view.y=p.y;clampView();requestRender();
+  }catch(error){unitNavigation.reset();throw error;}
+  finally{findingUnit=false;busy=false;refreshHud();}
 }
 function uiImage(name,width,height=width){
   const atlas=['image_recruit_hd','image_recruit_hd2','image_recruit_hd3','image_ui_hd','image_menu_hd','image_item_hd','image_newgame_hd','princesses_hd','princesses_sketch_hd','commanders1_hd','commanders2_hd','image_ui'].find(a=>manifest.atlases[a]?.[name]);
@@ -638,27 +655,46 @@ function abilityGrid(profile,unit){
   const health=Number(s.strength)===-999?'一次性':unit?.health??s.strength;
   for(const [icon,value] of [['attack',s.minatk+'-'+s.maxatk],['soldiernumber',p.grade+1],['hp',health],['food',s.consumption],['range',s.maxatkrange],['move',unit?.remainingMovement??s.movement]]){
     const marker=document.createElement('span');marker.className='ability-icon';marker.append(uiImage('infomarker_'+icon+'.png',21));const number=document.createElement('span');number.textContent=value;grid.append(marker,number);
-    if(icon==='soldiernumber'){number.replaceChildren();number.className='formation-count';for(let i=0;i<3;i++)number.append(uiImage('infomarker_soldiernumber'+(i<value?'':'_empty')+'.png',14,18));}
+    if(icon==='soldiernumber'){number.replaceChildren();number.className='formation-count';for(let i=0;i<3;i++)number.append(tintedUi('infomarker_soldiernumber'+(i<value?'':'_empty')+'.png','#404040',14,18));}
   }return grid;
 }
 function descriptionBox(parent,name,text){const desc=document.createElement('section');desc.className='unit-description';const h=document.createElement('h3');h.textContent=name;const p=document.createElement('p');p.textContent=text;desc.append(h,p);parent.append(desc);}
-function openUnitInfo(unit){
-  const p=manifest.profiles[unit.profile],entries=[...(unit.traits||[]),...(unit.skills||[]),...(unit.statuses||[])],body=detailWindow('info_label',330,entries.length?300:187);
-  const card=unitCard(unit.profile);card.classList.add('info-unit-card');body.append(card);
-  const grid=abilityGrid(unit.profile,unit);grid.classList.add('info-abilities');body.append(grid);
-  descriptionBox(body,p.name,p.description);
+async function openUnitInfo(unit){
+  const p=manifest.profiles[unit.profile],entries=[...(unit.traits||[]),...(unit.skills||[]),...(unit.statuses||[])];
+  const l=menus.native('form_unitinfo');l.body.classList.add('unit-detail');
+  // Keep the original 330 x 187 contents intact; reserve a separate band below.
+  l.body.parentElement.style.height='255px';
+  const card=unitCard(unit.profile);card.classList.add('info-unit-card');l.fill('group_unit',card);
+  card.querySelector('.card-marker').remove();
+  for(let i=0;i<=p.grade;i++){const marker=document.createElement('span');marker.className='info-formation-marker';marker.style.left=(i*4)+'px';marker.append(tintedUi('buildmaker.png',formationColors[p.grade]||formationColors[0],19,20),uiImage(p.cardMarker,19,19));card.append(marker);}
+  const grid=abilityGrid(unit.profile,unit);grid.classList.add('info-abilities');l.fill('grid_ability',grid);
+  l.text('intitle',p.name);l.text('text_desc',p.description);l.hide('group_info');
+  const tags=document.createElement('section');tags.className='unit-effect-region';tags.setAttribute('aria-label','技能与效果');
+  const title=document.createElement('div');title.className='unit-effect-title';title.append(originalTextRenderer.element('技能 / 效果','font_text_1_cn_hd','#646464'));tags.append(title);l.body.append(tags);
+  const list=document.createElement('div');list.className='unit-skill-list';tags.append(list);
   if(entries.length){
-    body.classList.add('has-extension-skills');const list=document.createElement('div');list.className='unit-skill-list';
-    for(const skill of entries){const row=button('',()=>openSkillDescription(skill),list);row.className='unit-skill-row';row.title=skill.description;
+    for(const skill of entries){const row=button('',()=>openSkillDescription(skill,()=>openUnitInfo(state.units.find(u=>u.id===unit.id)||unit)),list);row.className='unit-skill-row';row.title=skill.description;
       row.append(Ew4SkillUI.icon(skill,19,uiImage),originalTextRenderer.element(skill.name,'font_text_2_cn_hd','#404040'));}
-    Ew4SkillUI.layout(list,catalog.extensionLayouts?.unit,entries);body.append(list);
+    Ew4SkillUI.layout(list,catalog.extensionLayouts?.unit,entries);
   }
+  const revision=state.revision;
+  const info=await rpc('unit-info',{unit:unit.id,revision});
+  if(!l.current()||revision!==state.revision)return;
+  card.querySelector('.cost-strip').replaceChildren(...['money','industry'].flatMap(key=>info.cost?[uiImage('marker_'+key+'.png',10),originalTextRenderer.element(info.cost[key],'font_char_2_hd','#ebe6e1')]:[]));
+  if(!info.commander)return;
+  menus.data=await rpc('headquarters');
+  if(!l.current()||revision!==state.revision)return;
+  const definition=menus.data.definitions.find(d=>d.id===info.commander.definitionId);
+  if(!definition)return;
+  const portrait=menus.card(definition,info.commander,()=>{});portrait.querySelector('.commander-info').remove();delete portrait.dataset.locked;
+  l.fill('tcmder',portrait);l.hide('group_info',false);
+  l.action('btn_info','查看'+definition.name+'将领信息',()=>menus.commanderInfo(definition,info.commander,()=>openUnitInfo(state.units.find(u=>u.id===unit.id)||unit)));
 }
-function openSkillDescription(skill){
+function openSkillDescription(skill,onClose){
   const body=detailWindow('info_label',300,180);
   const box=document.createElement('div');box.className='skill-action-description';
   box.append(originalTextRenderer.element(skill.name,'font_text_2_cn_hd','#404040'),originalTextRenderer.element(skill.description,'font_text_2_cn_hd','#404040',270));body.append(box);
-  detailReturn=()=>{if(selected)openUnitInfo(selected);};
+  detailReturn=onClose||(()=>{if(selected)openUnitInfo(selected);});
 }
 function openSkillAction(unit,entry){
   const skill=entry.skill,isCell=skill.target==='cell',choices=isCell?(entry.cells||[]):entry.targets;let target=choices[0];
@@ -964,6 +1000,7 @@ $('show-grid').onchange=e=>{showGrid=e.target.checked;try{localStorage.setItem('
 $('menu-button').onclick=()=>$('pause').hidden=false;$('resume').onclick=()=>$('pause').hidden=true;
 $('end-turn').onclick=()=>act('end').catch(e=>notice(e.message));
 $('undo-move').onclick=()=>act('undo',{unit:selected?.id||state.undoUnit}).then(()=>tutorialUi('btn_undo')).catch(e=>notice(e.message));
+$('next-unit').onclick=()=>findNextUnit().catch(e=>notice(e.message));
 $('skip-ai').onclick=()=>{skipAi=true;clearAiPresentation();if(fastSkipping())aiFocus=null;refreshHud();requestRender();};
 $('dialogue').onclick=()=>{
   if($('dialogue').hidden||!$('pause').hidden||!$('settings').hidden||state?.scenarioPopup)return;

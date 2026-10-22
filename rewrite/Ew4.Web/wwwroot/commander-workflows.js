@@ -110,6 +110,17 @@
     }
     l.action('btn_equip',this.text('btn_equip'),()=>{},false);l.text('intitle_desc','');
   };
+  proto.battleEquipment=function(held,onClose){
+    const l=this.native('form_deployitem',onClose),definition=this.definition(held);
+    const portrait=this.card(definition,held,()=>{});delete portrait.dataset.locked;portrait.querySelector('.commander-info').remove();l.fill('tcmder',portrait);
+    for(const [key,track] of [['rank_military','rank'],['rank_nobility','title']])l.fill(key,this.progressionBadge(track,held.learning[track]));
+    l.text('text_life',held.healthBonus);l.text('text_apply',held.healing);
+    for(const key of ['btn_prev','btn_next','btn_equip'])l.hide(key);
+    l.hide('grid_items');l.text('intitle_desc','');
+    for(let i=0;i<Math.max(this.data.equipmentCapacity??2,held.items.length);i++){
+      const item=this.data.items.find(d=>d.id===held.items[i]);let b=this.itemButton(item,0,()=>{l.text('intitle_desc',item.name);l.text('text_desc',item.description);});b.disabled=!item;l.get('lbox_equipitem').append(b);
+    }
+  };
   proto.promotion=function(id,onClose){
     const held=this.held(id),definition=this.definition(held),l=this.native('form_generalupgrade',onClose||(()=>this.reopenCommander(id)));
     l.fill('tcmder',this.card(definition,held,()=>{}));

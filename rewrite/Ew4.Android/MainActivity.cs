@@ -101,6 +101,11 @@ public sealed class MainActivity : Activity
         base.OnWindowFocusChanged(hasFocus);
         if (hasFocus) EnterFullscreen();
     }
+    public override void OnConfigurationChanged(global::Android.Content.Res.Configuration newConfig)
+    {
+        base.OnConfigurationChanged(newConfig);
+        EnterFullscreen();
+    }
     protected override void OnPause()
     {
         web?.EvaluateJavascript("window.ew4SetAppVisible?.(false)", null);
@@ -155,12 +160,54 @@ public sealed class MainActivity : Activity
     {
         public WindowInsets OnApplyWindowInsets(View? view, WindowInsets? insets)
         {
-            // The WebView occupies the safe rectangle, so every canvas and DOM control agrees on its size.
-            if (view != null && insets != null && OperatingSystem.IsAndroidVersionAtLeast(28))
+            // Size the entire WebView, keeping canvas coordinates and all menu/HUD controls aligned.
+            if (view != null && insets != null)
             {
-                var cutout = insets.DisplayCutout;
-                view.SetPadding(cutout?.SafeInsetLeft ?? 0, cutout?.SafeInsetTop ?? 0,
-                    cutout?.SafeInsetRight ?? 0, cutout?.SafeInsetBottom ?? 0);
+                int gap = (int)Math.Ceiling(12 * (view.Resources?.DisplayMetrics?.Density ?? 1));
+                int left = 0, top = 0, right = 0, bottom = 0;
+                void Include(int l, int t, int r, int b)
+                {
+                    left = Math.Max(left, l); top = Math.Max(top, t);
+                    right = Math.Max(right, r); bottom = Math.Max(bottom, b);
+                }
+                if (OperatingSystem.IsAndroidVersionAtLeast(30))
+                {
+                    // Keep the safe rectangle stable when immersive bars appear or disappear.
+                    var bars = insets.GetInsetsIgnoringVisibility(WindowInsets.Type.SystemBars() | WindowInsets.Type.DisplayCutout());
+                    var gestures = insets.GetInsets(WindowInsets.Type.SystemGestures() | WindowInsets.Type.MandatorySystemGestures());
+                    Include(bars.Left, bars.Top, bars.Right, bars.Bottom);
+                    Include(gestures.Left, gestures.Top, gestures.Right, gestures.Bottom);
+                    var waterfall = insets.DisplayCutout?.WaterfallInsets;
+                    if (waterfall != null) Include(waterfall.Left, waterfall.Top, waterfall.Right, waterfall.Bottom);
+                }
+                else
+                {
+#pragma warning disable CS0618
+                    Include(insets.StableInsetLeft, insets.StableInsetTop, insets.StableInsetRight, insets.StableInsetBottom);
+#pragma warning restore CS0618
+                    if (OperatingSystem.IsAndroidVersionAtLeast(29))
+                    {
+                        var gestures = insets.SystemGestureInsets;
+                        Include(gestures.Left, gestures.Top, gestures.Right, gestures.Bottom);
+                    }
+                }
+                if (OperatingSystem.IsAndroidVersionAtLeast(28))
+                {
+                    var cutout = insets.DisplayCutout;
+                    Include(cutout?.SafeInsetLeft ?? 0, cutout?.SafeInsetTop ?? 0,
+                        cutout?.SafeInsetRight ?? 0, cutout?.SafeInsetBottom ?? 0);
+                }
+                if (OperatingSystem.IsAndroidVersionAtLeast(31))
+                {
+                    int Corner(RoundedCornerPosition position) => (int)Math.Ceiling((insets.GetRoundedCorner((int)position)?.Radius ?? 0) * (1 - 1 / Math.Sqrt(2)));
+                    int tl = Corner(RoundedCornerPosition.TopLeft), tr = Corner(RoundedCornerPosition.TopRight);
+                    int bl = Corner(RoundedCornerPosition.BottomLeft), br = Corner(RoundedCornerPosition.BottomRight);
+                    Include(Math.Max(tl, bl), Math.Max(tl, tr), Math.Max(tr, br), Math.Max(bl, br));
+                }
+                // Also protect rounded/curved displays whose vendor does not report their geometry.
+                left += gap; top += gap; right += gap; bottom += gap;
+                if (view.PaddingLeft != left || view.PaddingTop != top || view.PaddingRight != right || view.PaddingBottom != bottom)
+                    view.SetPadding(left, top, right, bottom);
             }
             return insets!;
         }

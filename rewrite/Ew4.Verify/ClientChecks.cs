@@ -35,6 +35,21 @@ internal static class ClientChecks
         Check(view.GetProperty("factions").EnumerateArray().Select(f => f.GetProperty("color").GetInt32()).SequenceEqual(sourceColors), "original packed faction colors retained");
         Check(view.GetProperty("units").GetArrayLength() == content.Battle("conquest1").Armies.Count, "render view retains original armies");
         Check(view.GetProperty("map").GetString() == "europe", "map binding");
+        var detailRevision = view.GetProperty("revision").GetInt64();
+        foreach (var displayed in view.GetProperty("units").EnumerateArray().Where(u => u.GetProperty("commanderId").ValueKind != JsonValueKind.Null))
+        {
+            string unitId = displayed.GetProperty("id").GetString()!;
+            var detail = Call("unit-info", new { unit = unitId, revision = detailRevision }).GetProperty("commander");
+            var source = content.Catalogs.Runtime.Commanders[content.Battle("conquest1").Armies[int.Parse(unitId.Split('.')[^1])].Commander];
+            Check(detail.GetProperty("definitionId").GetString() == source.Definition.Id, "battle detail retains exact scenario commander identity");
+            Check(detail.GetProperty("learning").GetProperty("rank").GetProperty("level").GetInt32() == source.Rank, "battle commander rank comes from instance");
+            Check(detail.GetProperty("training").GetInt32() == source.Training && detail.GetProperty("battle").GetBoolean(), "scenario commander has training and read-only context");
+        }
+        var noCommanderId = view.GetProperty("units").EnumerateArray().First(u => u.GetProperty("commanderId").ValueKind == JsonValueKind.Null).GetProperty("id").GetString();
+        Check(Call("unit-info", new { unit = noCommanderId, revision = detailRevision }).GetProperty("commander").ValueKind == JsonValueKind.Null, "plain units have no fake commander");
+        Check(Call("unit-info", new { unit = noCommanderId, revision = detailRevision + 1 }, false).GetString() == "client.stale", "stale detail rejected");
+        Check(Call("unit-info", new { unit = "missing", revision = detailRevision }, false).GetString() == "client.unit", "missing detail rejected");
+        Check(Call("action", new { op = "state", revision = detailRevision }).GetRawText() == view.GetRawText(), "all detail reads preserve battle state");
         var availability=content.Start("conquest1","fra");
         var availabilityWorld=availability.Session.World;
         var attackMap=new HexMap(availabilityWorld.Width,availabilityWorld.Height);
@@ -177,6 +192,9 @@ internal static class ClientChecks
         Check(deploymentView.GetProperty("units").EnumerateArray().Single(u => u.GetProperty("commanderId").GetString() == ownedId)
             .GetProperty("commanderDefinitionId").GetString() == commanderDefinition, "owned commander exposes stable definition ID for dialogue configuration");
         Check(RosterCall("headquarters").GetProperty("roster")[0].GetProperty("locked").GetBoolean(), "deployed commander locked in headquarters");
+        var deployedDetail = RosterCall("unit-info", new { unit = deploymentUnit.GetProperty("id").GetString(), revision = deploymentView.GetProperty("revision").GetInt64() }).GetProperty("commander");
+        Check(deployedDetail.GetProperty("id").GetString() == ownedId && deployedDetail.GetProperty("definitionId").GetString() == commanderDefinition, "owned battle detail uses exact deployed instance");
+        Check(deployedDetail.GetProperty("learning").GetRawText() == headquarters.GetProperty("roster")[0].GetProperty("learning").GetRawText(), "owned battle detail retains promoted learning values");
         Check(RosterCall("commander", new { op = "rank", revision = 2, commander = ownedId }, false).GetString() == "account.deployed", "cannot mutate deployed commander stats behind combat state");
         RosterCall("save", new { slot = 1, mode = 2 });
         var savedFiles = Directory.GetFiles(profileDirectory, "*", SearchOption.AllDirectories)
