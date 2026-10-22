@@ -1,0 +1,268 @@
+{
+  "schema": 1,
+  "countries": {
+    "alg": {
+      "name": "阿尔及利亚",
+      "flag": "alg",
+      "unitVariant": "alg",
+      "visualVariant": "alg"
+    },
+    "aus": {
+      "name": "奥地利",
+      "flag": "aus",
+      "unitVariant": "aus",
+      "visualVariant": "aus"
+    },
+    "bad": {
+      "name": "巴登",
+      "flag": "bad",
+      "unitVariant": "bad",
+      "visualVariant": "bad"
+    },
+    "bav": {
+      "name": "巴伐利亚",
+      "flag": "bav",
+      "unitVariant": "bav",
+      "visualVariant": "bav"
+    },
+    "bru": {
+      "name": "不伦瑞克",
+      "flag": "bru",
+      "unitVariant": "bru",
+      "visualVariant": "bru"
+    },
+    "che": {
+      "name": "瑞士",
+      "flag": "che",
+      "unitVariant": "che",
+      "visualVariant": "che"
+    },
+    "de": {
+      "name": "de",
+      "flag": "pru",
+      "unitVariant": "pru",
+      "visualVariant": "pru"
+    },
+    "den": {
+      "name": "丹麦",
+      "flag": "den",
+      "unitVariant": "den",
+      "visualVariant": "den"
+    },
+    "egy": {
+      "name": "埃及",
+      "flag": "egy",
+      "unitVariant": "egy",
+      "visualVariant": "egy"
+    },
+    "fr": {
+      "name": "fr",
+      "flag": "fra",
+      "unitVariant": "fra",
+      "visualVariant": "fra"
+    },
+    "fra": {
+      "name": "法国",
+      "flag": "fra",
+      "unitVariant": "fra",
+      "visualVariant": "fra"
+    },
+    "gb": {
+      "name": "gb",
+      "flag": "gbr",
+      "unitVariant": "gbr",
+      "visualVariant": "gbr"
+    },
+    "gbr": {
+      "name": "大不列颠",
+      "flag": "gbr",
+      "unitVariant": "gbr",
+      "visualVariant": "gbr"
+    },
+    "hes": {
+      "name": "黑森州",
+      "flag": "hes",
+      "unitVariant": "hes",
+      "visualVariant": "hes"
+    },
+    "hre": {
+      "name": "神圣罗马帝国",
+      "flag": "hre",
+      "unitVariant": "others",
+      "visualVariant": "hre"
+    },
+    "ind": {
+      "name": "印第安人",
+      "flag": "ind",
+      "unitVariant": "ind",
+      "visualVariant": "ind"
+    },
+    "koi": {
+      "name": "意大利",
+      "flag": "koi",
+      "unitVariant": "others",
+      "visualVariant": "koi"
+    },
+    "mar": {
+      "name": "摩洛哥",
+      "flag": "mar",
+      "unitVariant": "mar",
+      "visualVariant": "mar"
+    },
+    "mek": {
+      "name": "梅克伦堡",
+      "flag": "mek",
+      "unitVariant": "mek",
+      "visualVariant": "mek"
+    },
+    "mol": {
+      "name": "摩尔达维亚",
+      "flag": "mol",
+      "unitVariant": "mol",
+      "visualVariant": "mol"
+    },
+    "nap": {
+      "name": "那不勒斯王国",
+      "flag": "nap",
+      "unitVariant": "nap",
+      "visualVariant": "nap"
+    },
+    "nas": {
+      "name": "拿索",
+      "flag": "nas",
+      "unitVariant": "nas",
+      "visualVariant": "nas"
+    },
+    "nds": {
+      "name": "两西西里王国",
+      "flag": "nds",
+      "unitVariant": "others",
+      "visualVariant": "nds"
+    },
+    "ned": {
+      "name": "荷兰",
+      "flag": "ned",
+      "unitVariant": "others",
+      "visualVariant": "ned"
+    },
+    "old": {
+      "name": "奥尔登堡",
+      "flag": "old",
+      "unitVariant": "old",
+      "visualVariant": "old"
+    },
+    "pap": {
+      "name": "教皇国",
+      "flag": "pap",
+      "unitVariant": "others",
+      "visualVariant": "pap"
+    },
+    "per": {
+      "name": "波斯",
+      "flag": "per",
+      "unitVariant": "per",
+      "visualVariant": "per"
+    },
+    "pie": {
+      "name": "皮尔蒙特",
+      "flag": "pie",
+      "unitVariant": "others",
+      "visualVariant": "pie"
+    },
+    "pol": {
+      "name": "波兰",
+      "flag": "pol",
+      "unitVariant": "pol",
+      "visualVariant": "pol"
+    },
+    "por": {
+      "name": "葡萄牙",
+      "flag": "por",
+      "unitVariant": "por",
+      "visualVariant": "por"
+    },
+    "pru": {
+      "name": "普鲁士",
+      "flag": "pru",
+      "unitVariant": "pru",
+      "visualVariant": "pru"
+    },
+    "rhc": {
+      "name": "莱茵联邦",
+      "flag": "rhc",
+      "unitVariant": "rhc",
+      "visualVariant": "rhc"
+    },
+    "rus": {
+      "name": "俄国",
+      "flag": "rus",
+      "unitVariant": "rus",
+      "visualVariant": "rus"
+    },
+    "sax": {
+      "name": "萨克森",
+      "flag": "sax",
+      "unitVariant": "others",
+      "visualVariant": "sax"
+    },
+    "spa": {
+      "name": "西班牙",
+      "flag": "spa",
+      "unitVariant": "spa",
+      "visualVariant": "spa"
+    },
+    "srb": {
+      "name": "塞尔维亚",
+      "flag": "srb",
+      "unitVariant": "others",
+      "visualVariant": "srb"
+    },
+    "swe": {
+      "name": "瑞典",
+      "flag": "swe",
+      "unitVariant": "swe",
+      "visualVariant": "swe"
+    },
+    "tri": {
+      "name": "的黎波里塔尼亚",
+      "flag": "tri",
+      "unitVariant": "tri",
+      "visualVariant": "tri"
+    },
+    "tun": {
+      "name": "突尼斯",
+      "flag": "tun",
+      "unitVariant": "tun",
+      "visualVariant": "tun"
+    },
+    "tur": {
+      "name": "奥斯曼土耳其",
+      "flag": "tur",
+      "unitVariant": "tur",
+      "visualVariant": "tur"
+    },
+    "usa": {
+      "name": "美国",
+      "flag": "usa",
+      "unitVariant": "usa",
+      "visualVariant": "usa"
+    },
+    "wal": {
+      "name": "瓦拉吉亚",
+      "flag": "wal",
+      "unitVariant": "wal",
+      "visualVariant": "wal"
+    },
+    "wur": {
+      "name": "符腾堡",
+      "flag": "wur",
+      "unitVariant": "wur",
+      "visualVariant": "wur"
+    }
+  },
+  "aliases": {},
+  "sourceSha256": {
+    "def_army.xml": "2ba0fe999054c461d3812e2dbdbc10e866c71ad2145fbe06c0839dec48489da4",
+    "stringtable_cn.ini": "af90a6b87035cbfe28404514293efe55dd98fc623df46d6251854a6a6bea48a4"
+  }
+}

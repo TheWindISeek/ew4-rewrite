@@ -246,8 +246,10 @@ public static class WorldBattle
             }
             var death = WorldDeaths.Remove(state, id, killer.Owner, rules.CheckFactionSurvival);
             state = death.State; notices.AddRange(death.Notices);
+            if (killer.CommanderId != null)
+                notices.Add(new("battle.kill_context", killer.Id) { Target = unit.Id });
             if (!death.FactionDefeated && unit.CommanderId == null && killer.CommanderId != null && rules.KillDialogueProbability > 0 && Roll() < rules.KillDialogueProbability)
-                notices.Add(new("battle.kill_dialogue", killer.CommanderId));
+                notices.Add(new("battle.kill_dialogue", killer.CommanderId) { Target = unit.Id });
             RefreshLocalMorale();
             return true;
         }

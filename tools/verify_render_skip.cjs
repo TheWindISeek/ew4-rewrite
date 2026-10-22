@@ -31,6 +31,7 @@ const folder='E:/Workplace/game/o4mod/rewrite/reports/render-skip-20261021';
     let requests=0,bytes=0;const bodies=[];const collect=r=>{if(r.url().includes('/api/action')){requests++;bodies.push(r.body().then(b=>{bytes+=b.length;}));}};
     page.on('response',collect);
     report.turn=await page.evaluate(async()=>{
+      settings.skipTurnFast=true;
       const now=performance.now(),original=battlefield.frame;let skippedFrames=0;
       battlefield.frame=function(...args){if(skipAi)skippedFrames++;return original.apply(this,args);};
       try{window.perfTurn=act('end');

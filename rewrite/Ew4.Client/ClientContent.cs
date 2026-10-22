@@ -14,6 +14,7 @@ public sealed class ClientContent
     private readonly Func<string, byte[]> read;
     public LegacyScenarioCatalogs Catalogs { get; }
     public ExtensionLoader Extensions { get; }
+    public CountryCatalog Countries { get; }
     public IReadOnlyDictionary<int, LegacyTerrainMap> Maps { get; }
     public IReadOnlyDictionary<int, string> MapNames { get; }
     public IReadOnlyDictionary<int, string> Cities { get; }
@@ -34,19 +35,21 @@ public sealed class ClientContent
             using var reader = new StreamReader(new MemoryStream(read("original/" + name)), System.Text.Encoding.UTF8, true);
             return reader.ReadToEnd();
         }
-        Extensions = ExtensionLoader.Load(read);
+        Countries = CountryCatalog.Load(read);
+        Extensions = ExtensionLoader.Load(read, Countries);
         var runtime = LegacyRuntimeCatalog.FromJson(Extensions.PatchCatalog(System.Text.Encoding.UTF8.GetString(read("data/catalog.json"))),
-            correctOriginalEquipment, Extensions.LegacySkills);
+            correctOriginalEquipment, Extensions.LegacySkills, Extensions.ConfigureItem);
         CorrectOriginalEquipment = correctOriginalEquipment && LegacyEquipmentCorrections.IsOriginal(runtime.SourceHashes["def_item.xml"]);
         Extensions.ConfigureRuntime(runtime);
         runtime.VerifySources(name => read("original/" + name));
+        Countries.ValidateRuntime(runtime);
         var buildings = LegacyBuildingCatalog.Read(Text("def_construction.xml"), Text("def_capital.xml"));
         var combat = LegacyCombatCatalog.Read(System.Text.Encoding.UTF8.GetString(read("data/runtime_rule_tables.json")),
             Text("def_terraintype.xml"), Text("def_installation.xml"), buildings, Extensions.LegacySkills);
         var accounts = LegacyCommanderAccounts.Read(runtime, combat,
             System.Text.Encoding.UTF8.GetString(read("data/metagame_rule_tables.json")));
         Catalogs = new(runtime, LegacyTerrainRules.FromXml(Text("def_mapterrain.xml"), Text("def_terraintype.xml")), buildings,
-            LegacyRecruitmentCatalog.Read(Text("def_card.xml")), combat, accounts, LegacyItemTradingCatalog.Read(Text("def_item.xml"), correctOriginalEquipment),
+            LegacyRecruitmentCatalog.Read(Text("def_card.xml")), combat, accounts, LegacyItemTradingCatalog.Read(Text("def_item.xml"), correctOriginalEquipment, runtime.Items),
             LegacyWarzoneTechnology.Read(Text("def_warzonetech.xml")), LegacyDialogueCatalog.Read(Text("def_dialogues.xml"), Text("stringtable_cn.ini")));
         var definitions = XDocument.Parse(Text("def_map.xml")).Root!.Elements("map").ToArray();
         Maps = definitions.ToDictionary(e => (int)e.Attribute("id")!, e => LegacyTerrainMap.Read(read("original/" + (string)e.Attribute("file")!)));
@@ -106,11 +109,16 @@ public sealed class ClientContent
     }
 
     public string Label(string key) => Strings.TryGetValue(key, out string? label) ? label : Strings.TryGetValue("name_" + key, out label) ? label : key;
+    public string CountryName(string id) => Countries.Get(id)?.Name ?? Label(id);
+    public CountryDefinition? Country(string id) => Countries.Get(id);
     internal ClientContent WithoutEquipmentCorrections() => new(read, Scenarios.Select(s => s.Id + ".btl"), false);
     public LegacyBattle Battle(string id)
     {
         if (!Scenarios.Any(s => s.Id == id)) throw new RuleViolation("client.scenario", "Unknown scenario");
-        return LegacyBattle.Read(read("original/" + id + ".btl"));
+        var battle = LegacyBattle.Read(read("original/" + id + ".btl"));
+        if (battle.CountryIds != null && battle.Factions.Any(f => Country(f.CountryId) == null))
+            throw new RuleViolation("country.reference", "CNTR references an unregistered global country in " + id);
+        return battle;
     }
     public LegacyScenarioStart Start(string id, string? country, PlayerAccount? account = null, IReadOnlyList<string>? localPlayers = null)
     {
@@ -118,14 +126,21 @@ public sealed class ClientContent
         if (choice.Mode == 3) throw new RuleViolation("client.mode", "Multiplayer requires a multiplayer session host");
         account ??= new PlayerAccount { Id = "local", ContentRevision = Catalogs.Accounts.SourceRevision, Medals = 20_000_000 };
         var battle = Battle(id);
+        // The UI uses canonical registry IDs while legacy conquest records still
+        // carry their fixed-width source IDs.
+        string? selectedCountry = country == null ? null
+            : battle.Factions.FirstOrDefault(f => Countries.Canonical(f.CountryId) == country)?.CountryId ?? country;
         if (battle.Jurisdictions != null && choice.Mode is not (1 or 2))
             throw new RuleViolation("client.jurisdiction_mode", "手工辖区仅支持战役与征服剧本");
         var started = LegacyScenarioHost.Start(battle, Maps, Catalogs, new LegacyScenarioRequest
         {
-            Id = id, Mode = choice.Mode, SelectedCountry = country, LocalPlayers = localPlayers,
+            Id = id, Mode = choice.Mode, SelectedCountry = selectedCountry, LocalPlayers = localPlayers,
             CityNames = scenarioCityNames.TryGetValue(id, out var names) ? names : Cities,
             Warzone = Presentations.Values.FirstOrDefault(p => p.Id == id || p.Alternate == id)?.Chapter is int chapter && chapter > 0 ? chapter - 1 : 0,
-            CountryNames = battle.Factions.Select(f => f.CountryId).Distinct().ToDictionary(c => c, Label),
+            CountryNames = battle.Factions.Select(f => f.CountryId).Distinct().ToDictionary(c => c, CountryName),
+            CountryUnitVariants = battle.Factions.Where(f => Country(f.CountryId)?.UnitVariant is string variant && variant != f.Variant
+                && !(variant == "others" && !Catalogs.Runtime.Variants.ContainsKey(f.Variant)))
+                .GroupBy(f => f.CountryId).ToDictionary(g => g.Key, g => Country(g.Key)!.UnitVariant!),
             CombatSeed = choice.Mode == 4 ? 100 : (ulong)Random.Shared.NextInt64(1, long.MaxValue), AiSeed = (ulong)Random.Shared.NextInt64(1, long.MaxValue)
         }, account);
         // Apply playable rules after import so existing scenario/save fingerprints stay compatible.

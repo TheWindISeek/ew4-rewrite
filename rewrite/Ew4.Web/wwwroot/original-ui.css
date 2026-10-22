@@ -14,7 +14,20 @@ input,select,textarea{font-family:inherit;font-synthesis:none}
 .native-command.blue{border-image-source:url("/content/ui/image_ui_hd/btn_common_blue.png")}
 .native-command.orange{border-image-source:url("/content/ui/image_ui_hd/btn_common_org.png")}
 .native-command.red{border-image-source:url("/content/ui/image_ui_hd/btn_common_red.png")}
-#hq-filters{display:none}
+#hq-filters{display:flex;left:30px;right:auto;top:28px;width:426px;height:40px;gap:5px;overflow:visible}
+#hq-filters button{position:relative;flex:none;width:110px;height:40px;padding:0;background:none;border:0;outline:0}
+#hq-screen:not(.recruiting) #hq-filters button:first-child{width:70px;border:8px solid transparent;border-image:url("/content/ui/image_ui_hd/btn_common_blue.png") 16 fill stretch}
+#hq-filters button>img{display:block;width:110px;height:40px}
+#hq-filters [aria-selected=true]{outline:2px solid #bf7028;outline-offset:-2px}
+#hq-screen:not(.recruiting) #hq-roster{top:77px;height:204px;border:0;touch-action:pan-y;cursor:grab;user-select:none}
+#hq-screen:not(.recruiting) #hq-roster.dragging{cursor:grabbing}
+#hq-count{position:absolute;right:30px;top:292px;height:21px;display:flex;align-items:center}
+#hq-screen:not(.recruiting) #hq-princess,#hq-screen:not(.recruiting) #hq-shop{top:285px!important;height:32px!important}
+#hq-screen:not(.recruiting) #hq-princess{left:20px!important}
+#hq-screen:not(.recruiting) #hq-shop{left:100px!important}
+#hq-tags{position:absolute;left:180px;top:285px;width:70px;height:32px}
+#hq-screen.tag-editing #hq-roster .commander-info,#hq-screen.tag-editing #hq-roster .promote-commander{visibility:hidden;pointer-events:none}
+#hq-screen.tag-editing #hq-roster .commander-open[aria-pressed=true]{outline:2px solid #bf7028;outline-offset:-2px}
 #hq-screen.recruiting #hq-filters{display:flex;left:51px;top:36px;width:464px;height:58px;right:auto;gap:4px;overflow:visible}
 #hq-screen.recruiting #hq-filters button{position:relative;width:152px;height:55px;padding:0;background:none;outline:0;flex:none}
 #hq-screen.recruiting #hq-filters button>img{display:block;width:152px;height:55px}
@@ -44,6 +57,7 @@ input,select,textarea{font-family:inherit;font-synthesis:none}
 .commander-info>img{display:block;width:20px;height:20px}
 .commander-card .promote-commander{position:absolute;left:1px;top:1px;width:24px;height:27px;padding:1px;border:0;background:none;z-index:4;pointer-events:auto}
 .promote-commander>img{display:block;width:22px;height:25px;object-fit:fill}
+.commander-tag{position:absolute;left:0;bottom:0;width:0;height:0;border-right:15px solid transparent;border-bottom:15px solid #e89425;pointer-events:none;z-index:5;filter:drop-shadow(1px -1px 1px #3338)}
 #hq-recruit-band{position:absolute;left:0;right:0;top:93px;height:152px;background:#c6c3bc64;border-top:1px solid #888;border-bottom:1px solid #888;pointer-events:none}
 #hq-refresh{position:absolute;left:234px;top:257px;width:100px;height:40px;gap:10px}
 #hq-refresh img{width:13px;height:16px}

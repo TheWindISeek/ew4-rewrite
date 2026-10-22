@@ -5,7 +5,11 @@ using System.Linq;
 namespace Ew4.Core;
 
 public sealed record Equipment(string Id, string Effect, int Value, string? TargetCategory = null,
-    bool RequiresFlagSkill = false, bool Consumable = false);
+    bool RequiresFlagSkill = false, bool Consumable = false)
+{
+    public IReadOnlyList<SkillSlot>? SkillSlots { get; init; }
+    public SkillSlot? UseSkill { get; init; }
+}
 
 public sealed record Commander
 {
@@ -33,8 +37,10 @@ public static class Ew4Commander
         {
             Skills = commander.Skills.Where(s => !commander.LegacySkillOverrides.Contains(s)
                 && !unit.Profile.LegacySkillOverrides.Contains(s)).ToArray(),
-            SkillSlots = commander.SkillSlots.Count > 0 ? commander.SkillSlots.ToArray()
-                : commander.Skills.Select((id, i) => new SkillSlot(id, "legacy." + i)).ToArray(),
+            SkillSlots = (commander.SkillSlots.Count > 0 ? commander.SkillSlots
+                : commander.Skills.Select((id, i) => new SkillSlot(id, "legacy." + i)))
+                .Concat(commander.Items.Where(i => i.TargetCategory == null || i.TargetCategory == unit.Profile.Category)
+                    .SelectMany(i => i.SkillSlots ?? Array.Empty<SkillSlot>())).ToArray(),
             Stars = commander.Stars.TryGetValue(unit.Profile.Category, out int stars) ? stars : 0,
             AttackBonus = checked(unit.AttackBonus + effects.AttackEquipment),
             DefenseBonus = checked(unit.DefenseBonus + effects.DefenseEquipment),

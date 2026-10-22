@@ -1,5 +1,7 @@
 # Mod制作与排查导航
 
+[物品/装备效果接口](porting/ITEM_EFFECTS.md)复用技能 JSON 与外置 Lua，支持装备授予技能、替换消耗品效果和原效果数值覆盖，另有[可打包示例](../examples/item-effects/README.md)。
+
 多阶段更新胜负条件、替换胜利/失败结算界面与控件绑定见[结算扩展指南](porting/VICTORY_MODDING.md)及[三阶段示例](../examples/victory-stages/README.md)。
 
 切换所扮演势力、动态胜负条件及分支结局见[控制接口](porting/SCENARIO_CONTROL.md)与[可选示例](../examples/scenario-control/README.md)。

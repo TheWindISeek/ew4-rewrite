@@ -6,6 +6,8 @@
 
 ## 规则扩展API 1/2
 
+物品/装备：`Ew4.Legacy/ExtensionItems.cs` 的 ValidateItems/ConfigureItem、`ExtensionLoader.Load/ConfigureRuntime` 加载并校验 itemBindings；`Ew4Commander.Attach` 合并装备授予技能，`ConsumableItems.Use` 通过 RuleEventBus.Dispatch 的 grantedSlot 执行一次消耗效果。Lua 身份字段由 RuleScriptContext/ExtensionScriptRuntime 传递。验证入口 ItemExtensionChecks、ItemExtensionModChecks 和 tools/verify_item_extensions.cjs，作者入口见[物品接口](porting/ITEM_EFFECTS.md)。
+
 原版技能数值：`Ew4.Core/LegacySkillParameters.cs` 的 FromOverrides/Multiplier/Bonus/Percent/Gain/Maximum；`ExtensionLoader.Load` 读取 legacySkillParameters，`ClientContent` 向战斗、将领任命、原军队恢复、经验、折扣与教学传递同一组参数。验证入口 LegacySkillParameterChecks、LegacySkillParameterModChecks 和 tools/verify_legacy_skill_parameters_web.cjs，作者入口见[参数模板](../examples/legacy-skill-parameters/README.md)。
 
 势力事件：Ew4.Core/ScenarioFactions.cs 的 Create/Revive/Identity/Control，以及 ScenarioRules 的 Match/Apply/Validate；客户端 ClientContent.Start 配置新势力兵种与招募，ClientGame.View 投影名称、国土颜色和旗帜。格式见[势力接口](porting/SCENARIO_FACTIONS.md)，验证入口 ScenarioFactionChecks 和 tools/verify_scenario_factions_web.cjs。

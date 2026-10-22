@@ -11,13 +11,17 @@ public sealed record LegacyInitializedFactions(IReadOnlyList<LegacyFaction> Reco
 public static class LegacyScenarioInitialization
 {
     public static LegacyInitializedFactions Prepare(LegacyBattle battle, int mode, string? selectedCountry,
-        LegacyWarzoneTechnology technology, int warzone = 0, IReadOnlyList<int>? technologySnapshot = null)
+        LegacyWarzoneTechnology technology, int warzone = 0, IReadOnlyList<int>? technologySnapshot = null,
+        IReadOnlyDictionary<string, string>? countryUnitVariants = null)
     {
         if (mode is not (1 or 2 or 4)) throw new RuleViolation("legacy.start_mode", "This single-player importer supports campaign, conquest and tutorial modes");
         if (battle.Factions.Count == 0
             || battle.Header[12] < 1 || battle.Header[13] < 0)
             throw new RuleViolation("legacy.start_header", "Invalid or ambiguous scenario startup metadata");
         var records = battle.Factions.Select(f => f with { Values68 = Array.AsReadOnly(f.Values68.ToArray()) }).ToArray();
+        if (countryUnitVariants != null)
+            for (int i = 0; i < records.Length; i++)
+                if (countryUnitVariants.TryGetValue(records[i].CountryId, out string? variant)) records[i] = records[i] with { Variant = variant };
         if (mode == 2)
         {
             int chosen = Array.FindIndex(records, f => f.CountryId == selectedCountry);

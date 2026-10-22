@@ -17,6 +17,30 @@
     return (sea?'seastrike':'strike')+(band+1);
   }
   function inView(rect,x,y,radius){return !rect||x+radius>=rect.left&&x-radius<=rect.left+rect.width&&y+radius>=rect.top&&y-radius<=rect.top+rect.height;}
+  function own(object,key){return object&&Object.prototype.hasOwnProperty.call(object,key)?object[key]:undefined;}
+  class UnitVisuals {
+    constructor(manifest,data,config){
+      if(config&&config.schema!==1)throw new Error('Unsupported unit-visuals schema');
+      this.manifest=manifest;this.data=data;this.config=config||{};this.cache=new Map();
+    }
+    definition(key){return own(this.config.definitions,key)||own(this.data.motions,key);}
+    resolve(id,faction){
+      const base=this.manifest.profiles[id];if(!base)return base;
+      const variant=own(this.config.factions,faction?.id)??faction?.visualVariant??faction?.unitVariant;
+      const cacheKey=JSON.stringify([id,variant]);if(this.cache.has(cacheKey))return this.cache.get(cacheKey);
+      const slot=base.kind.toLowerCase().replace(/ /g,'_')+'.'+base.grade;
+      let key=own(this.config.profiles,id)??own(own(this.config.variants,variant),slot);
+      if(key==null&&variant!=null){
+        key=[`${base.kind} ${variant} ${base.grade+1}`,this.config.defaults?.[slot],`${base.kind} ${base.grade+1}`,base.kind].find(k=>k&&this.definition(k));
+      }
+      if(key==null)key=this.data.bindings[id];
+      if(!key)return base;
+      const source=this.definition(key);if(!source)throw new Error('Unknown unit visual: '+key);
+      const motions={};for(const m of source.motions)if(!m.dir||['all','1','right'].includes(m.dir))motions[m.type]=m.name;
+      const profile={...base,library:source.res,x:Number(source.x||0),y:Number(source.y||0),scale:Number(source.scale??1),motions,visualMotion:key};
+      this.cache.set(cacheKey,profile);return profile;
+    }
+  }
   class DamageNumbers {
     constructor(font,sheet){this.font=font;this.sheet=sheet;this.instances=[];this.cache=new Map();}
     clear(){this.instances=[];}
@@ -49,8 +73,9 @@
     }
   }
   class Effects {
-    constructor(api,data){this.api=api;this.data=data;this.instances=[];this.tints=new Map();this.voices=new Set();this.trails=new Map();this.serial=1;}
-    motion(profile,action,facing){const source=this.data.motions[this.data.bindings[profile]],side=facing<0?'left':'right';
+    constructor(api,data,visuals){this.api=api;this.data=data;this.visuals=new UnitVisuals(api.manifest||{profiles:{}},data,visuals);this.instances=[];this.tints=new Map();this.voices=new Set();this.trails=new Map();this.serial=1;}
+    profile(id,faction){return this.visuals.resolve(id,faction);}
+    motion(profile,action,facing){const source=this.visuals.definition(typeof profile==='string'?this.data.bindings[profile]:profile?.visualMotion),side=facing<0?'left':'right';
       return source?.motions.find(m=>m.type===action&&Number(m.index||0)===0&&(m.dir===side||(!m.dir||m.dir==='all')));}
     firstEvent(name){const events=this.data.timelines[name];return events?.length?Math.min(...events.map(e=>Number(e.at)||0)):null;}
     lastEvent(name){const events=this.data.timelines[name];return events?.length?Math.max(...events.map(e=>Number(e.at)||0)):null;}
@@ -142,5 +167,5 @@
       });
     }
   }
-  root.Ew4Effects={Effects,DamageNumbers,impact,track};
+  root.Ew4Effects={Effects,UnitVisuals,DamageNumbers,impact,track};
 })(globalThis);

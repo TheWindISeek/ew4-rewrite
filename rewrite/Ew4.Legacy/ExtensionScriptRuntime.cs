@@ -60,6 +60,9 @@ public sealed class ExtensionScriptRuntime : IRuleScriptRuntime
         ctx.Set("playerCamp", context.PlayerCamp == null ? DynValue.Nil : DynValue.NewString(context.PlayerCamp));
         ctx.Set("sourceId", context.SourceId == null ? DynValue.Nil : DynValue.NewString(context.SourceId));
         ctx.Set("targetId", context.TargetId == null ? DynValue.Nil : DynValue.NewString(context.TargetId));
+        ctx.Set("skillId", context.SkillId == null ? DynValue.Nil : DynValue.NewString(context.SkillId));
+        ctx.Set("instanceId", context.InstanceId == null ? DynValue.Nil : DynValue.NewString(context.InstanceId));
+        ctx.Set("itemId", context.ItemId == null ? DynValue.Nil : DynValue.NewString(context.ItemId));
         if (context.World is WorldState world)
         {
             ctx.Set("width", DynValue.NewNumber(world.Width)); ctx.Set("height", DynValue.NewNumber(world.Height));

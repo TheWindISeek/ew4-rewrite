@@ -6,12 +6,14 @@ namespace Ew4.Core;
 
 public sealed record OwnedCommander(string Id, string DefinitionId, CommanderLearningState Learning, int Training, IReadOnlyList<string> Items)
 {
+    public string Tag { get; init; } = "";
     public void Validate()
     {
         if (string.IsNullOrWhiteSpace(Id) || string.IsNullOrWhiteSpace(DefinitionId) || Training < 0
             || Learning.Rank.Level < 0 || Learning.Title.Level < 0 || Learning.Rank.Experience < 0 || Learning.Title.Experience < 0
             || Learning.Abilities.Any(p => string.IsNullOrWhiteSpace(p.Key) || p.Value < 0)
-            || Items.Any(string.IsNullOrWhiteSpace) || Items.Distinct(StringComparer.Ordinal).Count() != Items.Count)
+            || Items.Any(string.IsNullOrWhiteSpace) || Items.Distinct(StringComparer.Ordinal).Count() != Items.Count
+            || Tag == null || Tag.Length > 12 || Tag.Any(char.IsControl))
             throw new RuleViolation("account.commander", "Invalid owned commander");
     }
     public OwnedCommander Copy() => this with { Learning = Learning with { Abilities = Learning.Abilities.ToDictionary(p => p.Key, p => p.Value, StringComparer.Ordinal) }, Items = Items.ToArray() };

@@ -10831,6 +10831,16 @@
       "path": "client/images/font_fight_num_hd.png",
       "bytes": 11845,
       "sha256": "b287af59b5b330fbe101bf3d45a51da8a15f1d640026b3ae5c9080d8841faab0"
+    },
+    {
+      "path": "client/unit-visuals.json",
+      "bytes": 40926,
+      "sha256": "108261f84b2c70ce8da9bc22d785ff98c7f223da692bb6916d45793de56b8c09"
+    },
+    {
+      "path": "client/countries.json",
+      "bytes": 5959,
+      "sha256": "cb0a5095bfcd2f2e074b4e88a385babb97339be3bae95b3c4c1c969db4f1d744"
     }
   ]
 }

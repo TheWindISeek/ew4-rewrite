@@ -14,7 +14,7 @@ public sealed partial class ClientGame
         {
             var item = content.Catalogs.Items.Items[(int)e.Attribute("id")!].Equipment;
             string name = (string)e.Attribute("name")!;
-            string? reason = ConsumableItems.UnavailableReason(session, unit.Id, item, current.Rules.Training);
+            string? reason = ConsumableItems.UnavailableReason(session, unit.Id, item, current.Rules.Training, content.Extensions.Bus);
             return new { id = item.Id, name = content.Label("name_" + name), image = name + ".png",
                 description = content.Label("desc_" + name), item.Consumable,
                 quantity = session.Account.Inventory.GetValueOrDefault(item.Id), available = reason == null, reason };

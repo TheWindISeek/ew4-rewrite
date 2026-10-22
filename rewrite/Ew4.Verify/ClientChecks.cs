@@ -174,6 +174,8 @@ internal static class ClientChecks
             && u.GetProperty("commanderId").ValueKind == JsonValueKind.Null);
         deploymentView = RosterCall("action", new { op = "deploy", revision = deploymentView.GetProperty("revision").GetInt64(), unit = deploymentUnit.GetProperty("id").GetString(), commander = ownedId });
         Check(deploymentView.GetProperty("units").EnumerateArray().Any(u => u.GetProperty("commanderId").GetString() == ownedId), "owned commander deploys through real session rules");
+        Check(deploymentView.GetProperty("units").EnumerateArray().Single(u => u.GetProperty("commanderId").GetString() == ownedId)
+            .GetProperty("commanderDefinitionId").GetString() == commanderDefinition, "owned commander exposes stable definition ID for dialogue configuration");
         Check(RosterCall("headquarters").GetProperty("roster")[0].GetProperty("locked").GetBoolean(), "deployed commander locked in headquarters");
         Check(RosterCall("commander", new { op = "rank", revision = 2, commander = ownedId }, false).GetString() == "account.deployed", "cannot mutate deployed commander stats behind combat state");
         RosterCall("save", new { slot = 1, mode = 2 });

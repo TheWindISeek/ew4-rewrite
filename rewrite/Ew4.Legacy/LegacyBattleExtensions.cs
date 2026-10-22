@@ -44,7 +44,7 @@ internal static class LegacyBattleExtensions
             uint blockVersion = BinaryPrimitives.ReadUInt32LittleEndian(header[4..]), flags = BinaryPrimitives.ReadUInt32LittleEndian(header[8..]), length = BinaryPrimitives.ReadUInt32LittleEndian(header[12..]);
             cursor += 16;
             if (flags > 1 || length > trailer.Length - cursor || blocks.Any(b => b.Tag == tag)) Fail("BTL扩展块重复、长度或标记无效: " + tag);
-            if (tag is "JURI" or "VICT" ? blockVersion != 1 || flags != 1 : flags == 1) Fail("不支持的必需BTL扩展: " + tag);
+            if (tag is "JURI" or "VICT" or "CNTR" ? blockVersion != 1 || flags != 1 : flags == 1) Fail("不支持的必需BTL扩展: " + tag);
             blocks.Add(new(tag, blockVersion, flags, trailer.Slice(cursor, (int)length).ToArray()));
             cursor += (int)length;
         }
@@ -124,6 +124,28 @@ internal static class LegacyBattleExtensions
             ExtensionLoader.ValidateVictory(rules);
             blocks.Add(new("VICT", 1, 1, System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(new VictoryEnvelope(1,
                 Convert.ToHexStringLower(SHA256.HashData(body)), rules), ExtensionLoader.Json)));
+        }
+        return Container(body, blocks);
+    }
+    internal static LegacyCountryIds? CountryIds(IReadOnlyList<LegacyBattleExtension> blocks, ReadOnlySpan<byte> body,
+        IReadOnlyList<LegacyFaction> factions, IReadOnlyList<LegacyEvent> events)
+    {
+        var block = blocks.SingleOrDefault(b => b.Tag == "CNTR");
+        if (block == null) return null;
+        var data = ExtensionLoader.ParseJson<LegacyCountryIds>(block.Payload);
+        data.Validate(body, factions.Count, events.Count);
+        return data;
+    }
+    internal static byte[] WriteCountryIds(ReadOnlySpan<byte> body, IReadOnlyList<LegacyBattleExtension> existing,
+        LegacyCountryIds? data, int factions, int events)
+    {
+        var blocks = existing.Where(b => b.Tag != "CNTR").ToList();
+        if (data != null)
+        {
+            data.Validate(body, factions, events);
+            var payload = System.Text.Json.JsonSerializer.SerializeToUtf8Bytes(data, ExtensionLoader.Json);
+            if (payload.Length > 2 * 1024 * 1024) throw new RuleViolation("legacy.country_ids", "CNTR JSON exceeds 2 MiB");
+            blocks.Add(new("CNTR", 1, 1, payload));
         }
         return Container(body, blocks);
     }

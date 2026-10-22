@@ -7,9 +7,9 @@ Mod 制作资料见 [rewrite/mod-kit/README.md](rewrite/mod-kit/README.md)。
 
 ## 当前快照
 
-2026-10-21：当前 0.2.9 汇总本地多人、胜利结算、剧本势力/控制/胜负接口、技能 JSON 参数、物品效果与使用、战斗显示、AI 批次及 Android 启动兼容等更新。
+2026-10-22：当前 0.2.10 在 0.2.9 基础上新增指挥部三档筛选、60槽及标签模式，按三星到一星逐列上下排列，加入条件击杀台词、物品效果扩展、全局国家/兵模配置和过回合显示开关。
 [开放规则 API 1/2](rewrite/mod-kit/docs/porting/RULE_EXTENSIONS.md)提供动态技能、离线 Lua 和可配置胜负条件；完整作者指南和示例随 Web 包提供。
-[0.2.9 发布说明](rewrite/RELEASE_0.2.9_20261021.md)记录验证范围和已知限制；APK 未进行本轮真机运行验收。下载见[GitHub Releases](https://github.com/aztksilence111/ew4-rewrite/releases/latest)。Web 包完整解压后双击 `Start-Web.cmd`，无需安装 .NET。
+[0.2.10 发布说明](rewrite/RELEASE_0.2.10_20261022.md)记录验证范围和已知限制；APK 未进行本轮真机运行验收。下载见[GitHub Releases](https://github.com/aztksilence111/ew4-rewrite/releases/latest)。Web 包完整解压后双击 `Start-Web.cmd`，无需安装 .NET。
 
 ## 目录
 

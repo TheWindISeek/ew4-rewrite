@@ -166,7 +166,15 @@ public sealed partial class ModStore
             ModFiles.WriteJson(stage, "validation-report.json", new { diagnostics });
             string key = ModFiles.Hash(File.ReadAllBytes(Path.Combine(stage, "mod.json")));
             string target = Folder(key);
-            if (Directory.Exists(target)) Directory.Delete(stage, true); else Directory.Move(stage, target);
+            if (Directory.Exists(target)) Directory.Delete(stage, true);
+            else for (int attempt = 0; ; attempt++)
+            {
+                try { Directory.Move(stage, target); break; }
+                // Windows readers can briefly hold freshly validated files during the rename.
+                catch (IOException e) when (OperatingSystem.IsWindows() && attempt < 5
+                    && (e.HResult & 0xffff) is 5 or 32 or 33 && Directory.Exists(stage) && !Directory.Exists(target))
+                { Thread.Sleep(50 << attempt); }
+            }
             return new ModInfo(key, manifest.Id, manifest.Name, manifest.Version, key, manifest.LogicRevision,
                 manifest.Files.Keys.Sum(f => new FileInfo(ModFiles.Under(target, f)).Length), manifest.Files.Count, manifest.Warnings);
         }
@@ -185,7 +193,8 @@ public sealed partial class ModStore
     private string LogicRevision(ModManifest m, Func<string, byte[]> read)
     {
         var names = baseline.Files.Union(m.Files.Keys).Where(p => p.StartsWith("original/", StringComparison.Ordinal) || p.StartsWith("legacy/", StringComparison.Ordinal)
-                || p.StartsWith("rewrite/", StringComparison.Ordinal) && !p.EndsWith(".png", StringComparison.Ordinal))
+                || p.StartsWith("rewrite/", StringComparison.Ordinal) && !p.EndsWith(".png", StringComparison.Ordinal)
+                || p == "client/countries.json" && m.Files.ContainsKey(p))
             .Where(p => !p.EndsWith(".btl", StringComparison.Ordinal) || m.Scenarios.Contains(Path.GetFileNameWithoutExtension(p))).Order(StringComparer.Ordinal);
         return ModFiles.Hash(System.Text.Encoding.UTF8.GetBytes(string.Join('\n', names.Select(p => p + ":" + ModFiles.Hash(read(p))))));
     }

@@ -4,7 +4,10 @@ using System.Linq;
 
 namespace Ew4.Core;
 
-public sealed record WorldNotice(string Kind, string Subject, long Value = 0);
+public sealed record WorldNotice(string Kind, string Subject, long Value = 0)
+{
+    public string? Target { get; init; }
+}
 public sealed record WorldChange(WorldState State, IReadOnlyList<WorldNotice> Notices);
 public sealed record EventContext(TriggerKind Trigger, string? UnitId = null, int? Cell = null,
     string? PreviousOwner = null, string? NewOwner = null, bool HasCommander = false);

@@ -51,6 +51,17 @@ internal static class ResourceValidation
             foreach (var (_, motion) in profile["motions"]!.AsObject()) if (!names.Contains((string)motion!)) throw new InvalidDataException("兵种动作缺失: " + (string)motion!);
         }
         foreach (var (_, label) in manifest["ui"]!["labels"]!.AsObject()) Need("client/" + (string)label!["file"]!);
+        if (files.Contains("client/unit-visuals.json"))
+            UnitVisualConfiguration.Validate(ModFiles.Object(read("client/unit-visuals.json")), manifest, ModFiles.Object(read("client/effects.json")), read);
+        foreach (var (id, country) in content.Countries.Countries)
+        {
+            if (country.FlagImage != null) { Need(country.FlagImage); continue; }
+            if (country.Flag == null) continue;
+            Need("client/ui/image_flag_hd/" + country.Flag + "1.png");
+            for (int frame = 1; frame <= 4; frame++)
+                if (manifest["atlases"]!["buildings"]?[country.Flag + frame + ".png"] == null)
+                    throw new InvalidDataException("Country flag atlas entry missing: " + id);
+        }
         if (manifest["menuTextures"] is JsonObject backgrounds)
             foreach (var (_, texture) in backgrounds) Need("client/" + (string)texture!["file"]!);
     }

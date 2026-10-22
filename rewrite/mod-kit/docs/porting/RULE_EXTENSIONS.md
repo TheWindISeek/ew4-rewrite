@@ -1,5 +1,9 @@
 # 技能、特性与胜负规则扩展（API 1/2）
 
+物品与装备现在可通过 API 2 的 `itemBindings` 复用本指南的技能、事件和 Lua，支持保留/替换原效果、装备主动/被动技能及消耗品使用效果，见[物品接口](ITEM_EFFECTS.md)及[模板](../../examples/item-effects/README.md)。
+
+将领专属台词可用 `apiVersion:2` 的 `commanderDialogues` 引用 JSON，见[字段、条件规则及可打包模板](../../examples/commander-dialogues/README.md)。killRules支持目标将领、兵种、剧本、回合、血量条件、概率和固定/随机选句；未配置时保持原喊话行为。占领、退场数组仅预留。
+
 原版技能的倍率、概率、移动/攻击加成、折扣、经验/经济及七种教学数值可通过 `apiVersion:2` 的 `legacySkillParameters` 引用参数 JSON，见[完整字段、范围和可打包模板](../../examples/legacy-skill-parameters/README.md)。这只调整原版机制的数值；同 ID 的完整扩展定义仍优先替换原机制。未配置时保留旧规则和存档指纹；旧引擎需要升级后才识别该字段。
 
 2026-10-21 增补：[多阶段胜负与结算界面](VICTORY_MODDING.md)，复用 `victory_rules` 动态更新，新增 `victoryPresentation` 布局及数据/命令绑定。

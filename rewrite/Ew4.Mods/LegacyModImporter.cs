@@ -132,6 +132,7 @@ internal sealed class LegacyModImporter
         string[] scenarios = names.Where(n => !n.Contains('/') && n.EndsWith(".btl", StringComparison.Ordinal)).Select(Path.GetFileNameWithoutExtension).Select(n => n!).Order(StringComparer.Ordinal).ToArray();
         bool full = resources.FullPackage;
         if (!full) scenarios = baseline.Scenarios.Union(scenarios).Order(StringComparer.Ordinal).ToArray();
+        ConvertCountries(strings, scenarios);
         JsonObject pages;
         try { pages = ModFiles.Object(baseline.Read("frontend/conquest-pages.json")); }
         catch (IOException) { pages = new JsonObject { ["pages"] = new JsonArray(new JsonObject { ["id"] = "original", ["slots"] = new JsonArray(Enumerable.Range(1, 6).Select(i => (JsonNode)new JsonObject { ["scenario"] = "conquest" + i }).ToArray()) }) }; }
@@ -218,7 +219,8 @@ internal sealed class LegacyModImporter
     }
     private void ConvertAnimations()
     {
-        var libraries = manifest["profiles"]!.AsObject().Select(p => (string)p.Value!["library"]!).Concat(["choose", "strategicmap", "maptext", "anim_fire", "anim_upgrade", "anim_smoke"]).Distinct();
+        var visualLibraries = names.Contains("def_motion.xml") ? Xml("def_motion.xml").Elements().Select(e => (string)e.Attribute("res")!) : [];
+        var libraries = manifest["profiles"]!.AsObject().Select(p => (string)p.Value!["library"]!).Concat(visualLibraries).Concat(["choose", "strategicmap", "maptext", "anim_fire", "anim_upgrade", "anim_smoke"]).Distinct();
         foreach (string lib in libraries)
         {
             string preferred = names.Contains(lib + "_hd.bin") ? lib + "_hd" : lib;
@@ -302,6 +304,28 @@ internal sealed class LegacyModImporter
             manifest["maps"]![name] = result;
         }
     }
+    private void ConvertCountries(Dictionary<string, string> strings, string[] scenarios)
+    {
+        var variants = Xml("def_army.xml").Elements().Select(e => (string)e.Attribute("name")!).Where(n => n != "others")
+            .ToDictionary(n => n, n => new HashSet<string> { n });
+        foreach (string scenario in scenarios)
+            foreach (var faction in Ew4.Legacy.LegacyBattle.Read(Read(scenario + ".btl")).Factions)
+            {
+                if (!variants.TryGetValue(faction.CountryId, out var choices)) variants[faction.CountryId] = choices = [];
+                choices.Add(faction.Variant);
+            }
+        string catalogPath = Path.Combine(stage, "legacy/catalog.json");
+        var catalog = ModFiles.Object(File.Exists(catalogPath) ? File.ReadAllBytes(catalogPath) : baseline.Read("legacy/catalog.json"));
+        var countries = new JsonObject();
+        foreach (var (id, choices) in variants.OrderBy(p => p.Key, StringComparer.Ordinal))
+        {
+            string? variant = choices.Count == 1 ? choices.Single() : null;
+            countries[id] = new JsonObject { ["name"] = strings.GetValueOrDefault(id, strings.GetValueOrDefault("name_" + id, id)),
+                ["flag"] = variant, ["unitVariant"] = variant == null ? null : catalog["variants"]!.AsObject().ContainsKey(variant) ? variant : "others", ["visualVariant"] = variant };
+        }
+        Json("countries.json", new JsonObject { ["schema"] = 1, ["countries"] = countries,
+            ["sourceSha256"] = new JsonObject(new[] { "def_army.xml", "stringtable_cn.ini" }.Select(name => KeyValuePair.Create<string, JsonNode?>(name, JsonValue.Create(ModFiles.Hash(Read(name)))))) });
+    }
     private void ConvertEffects()
     {
         if (!names.Contains("def_motion.xml")) return;
@@ -313,6 +337,7 @@ internal sealed class LegacyModImporter
             bindings[id] = new[] { $"{kind} {variant} {grade}", $"{kind} {grade}", kind }.First(motions.ContainsKey);
         }
         fx["motions"] = motions; fx["bindings"] = bindings;
+        Json("unit-visuals.json", UnitVisualConfiguration.FromLegacy(Xml("def_motion.xml"), manifest["profiles"]!.AsObject()));
         if (names.Contains("def_effectsanim.xml"))
             fx["timelines"] = new JsonObject(Xml("def_effectsanim.xml").Elements().GroupBy(e => (string)e.Attribute("name")!).Select(g => g.Last()).Select(e => KeyValuePair.Create<string, JsonNode?>((string)e.Attribute("name")!,
                 new JsonArray(e.Elements().SelectMany(g => g.Elements().Select(x => { var a = LegacyCatalogConverter.Attr(x); a["type"] = (string)g.Attribute("type")!; return (JsonNode)a; })).ToArray()))));

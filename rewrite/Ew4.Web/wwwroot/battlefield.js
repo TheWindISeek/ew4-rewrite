@@ -45,6 +45,21 @@
   }
   function recruitDuration(speed=1){return 480/speed;}
   function flagFrame(time){return Math.floor(time/100)%4+1;}
+  function flagAnimated(unit,state){
+    // Original 50900 -> 4fb38: movement first, then the unspent attack/target flag.
+    return unit.owner===state.playerFaction&&((unit.remainingMovement>0&&unit.morale!==-3)||
+      !(unit.constructionTurns>0)&&!unit.acted&&!!unit.canAttack);
+  }
+  function healthColor(health,maximum){
+    const hp=Math.max(0,Math.min(maximum,health));
+    if(!(maximum>0))return '#ff0000';
+    // Original 60958/60b68 use packed ABGR and truncate each integer division.
+    const upper=hp*2>maximum;
+    const red=upper?255-Math.trunc((hp*2-maximum)*255/maximum):255;
+    const green=upper?255:255-Math.trunc((maximum-hp*2)*255/maximum);
+    const blue=upper?128-(red>>1):0;
+    return '#'+[red,green,blue].map(v=>v.toString(16).padStart(2,'0')).join('');
+  }
   function flagPosition(p){return {x:p.x-27,y:p.y-45};}
   function objectiveMarker(site,unit){return site?.objectiveMarker||(site?.objective?1:0)||unit?.objectiveMarker||(unit?.objective?1:0);}
   function recruitOffset(elapsed,speed=1){const t=Math.max(0,Math.min(1,elapsed/recruitDuration(speed)));return t===1?0:-72*(1-t)*(1-t);}
@@ -97,7 +112,7 @@
         }
         this.visibleUnits=this.orderedUnits.filter(unit=>this.visible(point(unit.cell,width)));
       }
-      this.animated=!!this.selection||this.visibleUnits.some(u=>u.burning>0||badgeAlpha(u,this.state,300)!==1||this.factions.get(u.owner)?.flag&&!this.factions.get(u.owner)?.flagImage)||
+      this.animated=!!this.selection||this.visibleUnits.some(u=>u.burning>0||badgeAlpha(u,this.state,300)!==1||flagAnimated(u,this.state)&&this.factions.get(u.owner)?.flag&&!this.factions.get(u.owner)?.flagImage)||
         this.visibleCells.some(({site,cell})=>site.active&&(objectiveMarker(site,this.stationed.get(cell))||site.buildingKind==='port'&&site.owner&&!this.stationed.has(cell)));
       // Original 84e30: neutral/terrain, ownership, map mask/text/borders, grid, objects, selection.
       this.staticGround();this.objectives();this.flags();this.units();this.labels();this.highlights();
@@ -248,7 +263,7 @@
       for(const unit of units){
         const motion=this.motions.get(unit.id),p=motion?pose(motion,state.width,time):point(unit.cell,state.width);
         if(!this.visible(p))continue;
-        const profile=this.api.manifest.profiles[unit.profile],lib=this.api.libraries.get(profile?.library);if(!profile)continue;
+        const profile=this.api.effects?.profile(unit.profile,this.factions.get(unit.owner))||this.api.manifest.profiles[unit.profile],lib=this.api.libraries.get(profile?.library);if(!profile)continue;
         draw.save();
         const death=this.deaths?.get(unit.id),deathProgress=death?Math.max(0,Math.min(1,(time-death.started)/death.duration)):0;
         if(deathProgress>=1){draw.restore();continue;}
@@ -259,7 +274,7 @@
         else if(lib){
           const combat=this.combatMotions?.get(unit.id),elapsed=combat?time-combat.started-(combat.delay||0):0;
           const segment=elapsed>=0?(combat?.segments.find(s=>elapsed<s.end)||combat?.segments.at(-1)):null;
-          const action=unit.constructionTurns>0?'build':motion&&p.moving?'move':'ready',native=this.api.effects?.motion(unit.profile,action,facing),item=lib.byName.get(segment?.name||native?.name||profile.motions[action]||profile.motions.ready);
+          const action=unit.constructionTurns>0?'build':motion&&p.moving?'move':'ready',native=this.api.effects?.motion(profile,action,facing),item=lib.byName.get(segment?.name||native?.name||profile.motions[action]||profile.motions.ready);
           const started=this.arrivals.get(unit.id)??(this.selected?.id===unit.id?this.selectedAt:null);
           const tick=segment?Math.min((elapsed-segment.start)*segment.speed/1000*lib.fps,Math.max(0,(item?.duration||1)-1)):action==='move'?(time-motion.started)/1000*lib.fps*Number(native?.speed||1)*(300/motion.stepMs):started!=null?Math.min((time-started)/1000*lib.fps*Number(native?.speed||1),Math.max(0,(item?.duration||1)-1)):0;
           const directional=segment?segment.directional:native?.dir==='left'||native?.dir==='right';
@@ -270,14 +285,14 @@
         const color=badgeColor(state,unit.owner);
         draw.save();draw.globalAlpha*=death?1:badgeAlpha(unit,state,time);
         this.api.sprite('buildings','hpbar_'+color+'.png',p.x-13,p.y+15);
-        draw.beginPath();draw.arc(p.x-13,p.y+15,9,Math.PI,Math.PI+Math.PI*Math.max(0,death?0:unit.health/unit.maxHealth));draw.strokeStyle='#00d96d';draw.lineWidth=2.5;draw.stroke();
+        draw.beginPath();draw.arc(p.x-13,p.y+15,9,Math.PI,Math.PI+Math.PI*Math.max(0,death?0:unit.maxHealth>0?Math.min(1,unit.health/unit.maxHealth):0));draw.strokeStyle=healthColor(death?0:unit.health,unit.maxHealth);draw.lineWidth=2.5;draw.stroke();
         this.api.sprite('buildings','mark_unit_'+profile.unitIndex+'.png',p.x-13,p.y+15);
         draw.restore();
         if(unit.transport&&unit.category!=='naval'&&unit.category!=='fort')this.api.sprite('buildings','ship_mark.png',p.x+19,p.y+17);
         if(unit.burning>0){const fire=this.api.libraries.get('anim_fire'),item=fire?.byName.get(['1','3','2'][unit.burning-1]);if(item){draw.save();draw.globalAlpha=.5;draw.translate(p.x,p.y);this.api.animation(fire,item,time/1000*fire.fps);draw.restore();}}
         const rank=Number(unit.veterancy);if(rank>0)this.api.sprite('buildings','rank_'+rank+'.png',p.x+8,p.y-8);
         if(death){draw.restore();continue;}
-        const faction=this.factions.get(unit.owner);this.flag(faction?.flag,p,true,faction?.flagImage);
+        const faction=this.factions.get(unit.owner);this.flag(faction?.flag,p,flagAnimated(unit,state),faction?.flagImage);
         if(unit.commanderImage){
           // Portrait and pointer use different atlas anchors; the portrait sits inside
           // the white board, with the pointer tip on the unit (native board refy=74).
@@ -334,5 +349,5 @@
     }
     visible(p,padding=120) {const r=this.visibleRect;return p.x>=r.left-padding&&p.x<=r.left+r.width+padding&&p.y>=r.top-padding&&p.y<=r.top+r.height+padding;}
   }
-  root.Ew4Battlefield=Object.freeze({point,neighbor,cameraBounds,hex,pose,badgeAlpha,badgeColor,selectionHostile,recruitDuration,recruitOffset,flagFrame,flagPosition,objectiveMarker,terrainRows,animationBounds,Renderer});
+  root.Ew4Battlefield=Object.freeze({point,neighbor,cameraBounds,hex,pose,badgeAlpha,badgeColor,selectionHostile,recruitDuration,recruitOffset,flagFrame,flagAnimated,healthColor,flagPosition,objectiveMarker,terrainRows,animationBounds,Renderer});
 })(globalThis);

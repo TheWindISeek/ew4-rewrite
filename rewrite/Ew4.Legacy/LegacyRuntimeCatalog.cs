@@ -77,7 +77,8 @@ public sealed class LegacyRuntimeCatalog
         return index >= 0 ? index : throw new RuleViolation("legacy.unit_definition", "Unknown legacy unit name");
     }
 
-    public static LegacyRuntimeCatalog FromJson(string json, bool correctOriginalEquipment = false, LegacySkillParameters? skillParameters = null)
+    public static LegacyRuntimeCatalog FromJson(string json, bool correctOriginalEquipment = false, LegacySkillParameters? skillParameters = null,
+        Func<Equipment, Equipment>? configureItem = null)
     {
         using var document = JsonDocument.Parse(json);
         var root = document.RootElement;
@@ -121,7 +122,8 @@ public sealed class LegacyRuntimeCatalog
             int id = Integer("id"); string target = attrs.GetProperty("target").GetString()!;
             var equipment = new Equipment("ew4.item." + id, Ew4Commander.Effect(Integer("function")), Integer("value"),
                 target == "all" ? null : target == "navy" ? "naval" : target, Integer("flag") != 0, Integer("consumable") != 0);
-            items.Add(id, correctItems ? LegacyEquipmentCorrections.Apply(equipment, attrs.GetProperty("name").GetString()!) : equipment);
+            if (correctItems) equipment = LegacyEquipmentCorrections.Apply(equipment, attrs.GetProperty("name").GetString()!);
+            items.Add(id, configureItem?.Invoke(equipment) ?? equipment);
         }
         int[] health = tables.GetProperty("commander_rank_health_bonus").EnumerateArray().Select(v => v.GetInt32()).ToArray();
         int[] healing = tables.GetProperty("commander_nobility_healing").EnumerateArray().Select(v => v.GetInt32()).ToArray();

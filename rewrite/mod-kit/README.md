@@ -1,6 +1,12 @@
 # EW4 rewrite 离线 Mod 工具包
 
+全局国家表为 `client/countries.json`，独立于剧本；支持自由命名 ID、国旗/战斗/兵模分别配置，以及 BTL 内嵌 CNTR 长 ID 扩展，见[指南](docs/porting/GLOBAL_COUNTRIES.md)及[示例](examples/global-countries/README.md)。
+
+物品/装备可复用技能 JSON 与外置 Lua：通过 `itemBindings` 授予装备主动/被动技能或定义消耗品使用效果，见[接口说明](docs/porting/ITEM_EFFECTS.md)和[可打包示例](examples/item-effects/README.md)。
+
 原版将领技能已有[JSON 数值模板](examples/legacy-skill-parameters/README.md)：配置倍率、概率、移动/攻击加成、折扣、经验/经济和教学成长，无需逐次编译引擎。
+
+将领专属喊话使用 [commanderDialogues JSON 模板](examples/commander-dialogues/README.md)，按定义 ID 配置击杀台词；killRules支持目标将领/兵种/剧本/回合/血量条件、概率及固定或随机选句，未配置时保留通用喊话；占领、退场字段已预留。
 
 事件可切换同一玩家所扮演的势力、替换或恢复胜负条件、指定结局分支，见[角色与结局接口](docs/porting/SCENARIO_CONTROL.md)及[可封装示例](examples/scenario-control/README.md)。
 

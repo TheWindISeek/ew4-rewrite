@@ -24,6 +24,7 @@ public sealed record LegacyScenarioRequest
     public WorldLimits Limits { get; init; } = new();
     public IReadOnlyDictionary<int, string> CityNames { get; init; } = new Dictionary<int, string>();
     public IReadOnlyDictionary<string, string> CountryNames { get; init; } = new Dictionary<string, string>();
+    public IReadOnlyDictionary<string, string> CountryUnitVariants { get; init; } = new Dictionary<string, string>();
     public RoundEventTiming RoundEvents { get; init; } = RoundEventTiming.AfterFaction;
     public IReadOnlyCollection<int> NeutralCamps { get; init; } = new[] { 4 };
 }
@@ -73,7 +74,7 @@ public static class LegacyScenarioHost
         if (battle.Armies.Any(a => a.Flag58 == 1 && a.Commander >= 0))
             throw new RuleViolation("legacy.start_saved_roster", "Use a saved-world importer for pre-existing owned assignments");
         var initialized = LegacyScenarioInitialization.Prepare(battle, request.Mode, request.SelectedCountry,
-            catalogs.Technology, request.Warzone, request.TechnologySnapshot);
+            catalogs.Technology, request.Warzone, request.TechnologySnapshot, request.CountryUnitVariants);
         if (request.NeutralCamps.Contains(initialized.Records[initialized.PlayerIndex].Camp))
             throw new RuleViolation("legacy.start_neutral_player", "Selected player camp is configured as noncombatant; choose a combatant or change the explicit camp policy");
         string Camp(int value) => "ew4.camp." + value.ToString(CultureInfo.InvariantCulture);
@@ -193,6 +194,7 @@ public static class LegacyScenarioHost
                     if (property.Name == nameof(WorldState.NeutralHostilities) && property.Value.ValueKind == JsonValueKind.Array && property.Value.GetArrayLength() == 0) continue;
                     if (property.Name == nameof(CombatRules.LethalStrikePreventsCounterattack) && property.Value.ValueKind == JsonValueKind.False) continue;
                     if (property.Name == nameof(CombatRules.LegacySkills) && property.Value.ValueKind == JsonValueKind.Null) continue;
+                    if (property.Name is nameof(Equipment.SkillSlots) or nameof(Equipment.UseSkill) && property.Value.ValueKind == JsonValueKind.Null) continue;
                     writer.WritePropertyName(property.Name); Write(property.Value, writer);
                 }
                 writer.WriteEndObject();

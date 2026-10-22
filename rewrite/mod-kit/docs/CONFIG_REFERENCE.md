@@ -14,7 +14,9 @@
 | --- | --- | --- |
 | 导入包标识/版本/文件哈希 | 根mod.json：schema/id/name/version/baseRevision/scenarios/files/warnings/logicRevision | ModStore.Seal/Validate |
 | 将领基础属性和四技能 | original/def_commander.xml：commander的id/name及能力/skill1～4 | LegacyCatalogConverter.Convert；LegacyRuntimeCatalog.FromJson |
+| 将领专属喊话 | extension.json的commanderDialogues，apiVersion:2；JSON的schema:1/commanders/ew4.commander.N/kill及killRules | ExtensionLoader.Load；ClientGame；app.js；[条件、固定/随机选句及回退规则](../examples/commander-dialogues/README.md)，occupy/retreat仅预留 |
 | 自定义技能/特性/Lua | rewrite/extension.json及其skills/traits/scripts引用 | ExtensionLoader.Load；RuleEventBus.Modify/Dispatch；[完整接口](porting/RULE_EXTENSIONS.md) |
+| 物品/装备外置效果 | extension.json的itemBindings，apiVersion:2；target/skills/useSkill/replaceLegacyEffect/value | ExtensionLoader.ConfigureItem；Ew4Commander.Attach；ConsumableItems.Use；[字段与模板](porting/ITEM_EFFECTS.md) |
 | 原版技能倍率/概率/折扣/成长 | extension.json的legacySkillParameters，apiVersion:2；JSON的schema:1/skills | LegacySkillParameters；[29技能参数模板](../examples/legacy-skill-parameters/README.md) |
 | 召唤/传送/范围/状态/移动力 | apiVersion:2；skills效果及statuses状态定义 | RuleEventBus.ApplyEffect/MovementBudget/ExpireStatuses；[制作步骤](porting/README.md)、[六技能示例](../examples/common-skills/README.md) |
 | 动态技能数量/顺序/坐标 | extension.json的unitBindings/commanderBindings/presentation | ExtensionLoader.PatchCatalog；Ew4SkillUI.layout；不限制将领四槽 |
@@ -25,7 +27,8 @@
 | 公主/素描 | client/ui/princesses_hd、princesses_sketch_hd | Menus.portrait及名册界面 |
 | 兵种生命/移动/基础攻击 | original/def_army.xml：strength/movement/minatk/maxatk | LegacyCatalogConverter.Convert；Ew4Combat.Calculate |
 | 招募与建造价 | original/def_card.xml：price/industry/army/grade/type | LegacyRecruitmentCatalog.Read/Offers |
-| 动作图像及锚点 | client/manifest.json：profiles[id].library/motions/x/y/scale | app.loadLibrary/animation；battlefield.Renderer |
+| 国家兵模、动作及锚点 | client/unit-visuals.json：factions/variants/profiles/defaults/definitions；[独立接口](porting/UNIT_VISUALS.md) | Effects.profile/motion；app.visualProfile；battlefield.Renderer |
+| 全局国家身份与默认资源 | client/countries.json：countries/aliases；[国家表与长ID](porting/GLOBAL_COUNTRIES.md) | CountryCatalog；ClientContent；CNTR v1 / country-export/apply/strip |
 | 兵种卡片 | manifest.profiles[id].card/cardMarker，对应client/ui/image_recruit_hd等 | app.unitCard/openRecruitment |
 | 地形及移动 | original/def_mapterrain.xml、def_terraintype.xml和地形BIN | LegacyTerrainRules.FromXml/Resolve |
 | 建筑定义 | original/def_construction.xml/def_capital.xml | LegacyBuildingCatalog.Read |

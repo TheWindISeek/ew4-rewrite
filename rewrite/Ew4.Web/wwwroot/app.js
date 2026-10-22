@@ -16,7 +16,8 @@ let view = {x: 0, y: 0, zoom: 1}, viewport = {w: 0, h: 0, dpr: 1};
 const images = new Map(), libraries = new Map();
 let errorTimer, aiRunning = false;
 let leavingSession = false;
-let skipAi = false, mapBounds, finishPresentation;
+let skipAi = false, aiFocus = null, mapBounds, finishPresentation;
+const battleDialogues = [];
 const presentationWaiters = new Set();
 const motions = new Map(), facings = new Map(), arrivals = new Map(), combatMotions = new Map();
 const deaths = new Map();
@@ -36,7 +37,7 @@ const battlefield = new Ew4Battlefield.Renderer({image,sprite,animation,librarie
   const text=translated?.name===name?translated[settings.cityLanguage]:Ew4MenuArt.cityName(name,settings.cityLanguage,cityNames);
   return originalTextRenderer.element(text,'font_city_labels_hd','#ffffff');
 }});
-const menus = new Ew4Menus.Menus({rpc,button,uiImage,labels:labelImage,text:(value,font,color,width,align,options)=>originalTextRenderer?.element(value,font,color,width,align,options)||document.createTextNode(value),detail:detailWindow,start,loadLibrary,image,animation,libraries,notice,main:showMain,
+const menus = new Ew4Menus.Menus({rpc,button,uiImage,countryImage,labels:labelImage,text:(value,font,color,width,align,options)=>originalTextRenderer?.element(value,font,color,width,align,options)||document.createTextNode(value),detail:detailWindow,start,loadLibrary,image,animation,libraries,notice,main:showMain,
   get manifest(){return manifest;},get catalog(){return catalog;},refreshCatalog:async()=>{catalog=await rpc('catalog');},tutorialUi,popup:popupOpen,load:(slot,mode)=>load(slot,mode),deploy:(unit,commander)=>act('deploy',{unit,commander}),act,
   refresh:async()=>{if(state&&!$('play').hidden){await installState(await rpc('action',{op:'state',revision:state.revision}));}},get menuArt(){return menuArt;},closeDetail});
 let chosenScenario, chosenCountry, countryChoices = [], showGrid = false, selectedAt = 0;
@@ -52,9 +53,10 @@ const localMultiplayerUi = new Ew4LocalMultiplayer.LocalMultiplayer({rpc,detail:
   text:(...args)=>originalTextRenderer.element(...args),ready:()=>!busy&&!aiRunning&&!skipAi&&$('loading-screen').hidden,
   restart:next=>start(next.scenario,next.startCountry,next.localMultiplayer.humanFactions)});
 let tutorial, tutorialRect;
-let settings={music:50,sound:50,speed:2,hd:true,screen:100,eventSize:100,cityLanguage:'en',geographicLanguage:'en',localMultiplayer:false};
+let settings={music:50,sound:50,speed:2,hd:true,screen:100,eventSize:100,cityLanguage:'en',geographicLanguage:'en',localMultiplayer:false,skipTurnFast:false,followAi:false};
 try { settings={...settings,...JSON.parse(localStorage.getItem('ew4.settings')||'{}')}; } catch (_) {}
 settings.eventSize=Number.isFinite(settings.eventSize)?Math.max(60,Math.min(180,settings.eventSize)):100;
+for(const key of ['skipTurnFast','followAi'])settings[key]=settings[key]===true;
 try { showGrid = localStorage.getItem('ew4.showGrid') === 'true'; } catch (_) { /* Storage can be unavailable in restricted WebViews. */ }
 function sizeUi() {
   const reserve=startupReady&&!$('startup-status').hidden?Math.ceil($('startup-status').getBoundingClientRect().height)+24:0;
@@ -92,6 +94,7 @@ async function showMain() {
   try {
     if(state)await rpc('leave',{revision:state.revision});
     state=undefined;selected=undefined;selection=undefined;tutorial=null;tutorialRect=null;
+    battleDialogues.length=0;
     detailReturn=null;victoryUi.reset();localMultiplayerUi.sync(null);
     closeSingleAction();menus.dismissSkillTip();menus.deployment=null;
     motions.clear();arrivals.clear();deaths.clear();combatMotions.clear();
@@ -135,6 +138,10 @@ function button(text, action, parent) {
   const result = document.createElement('button'); result.textContent = text;
   result.onclick = async () => {if(result.disabled)return;result.disabled=true;try{await action();await tutorialUi(result.dataset.tutorialId,Number(result.dataset.tutorialRow??-1));}catch(error){notice(error.message);}finally{result.disabled=false;}};
   parent.append(result); return result;
+}
+function countryImage(id,width,height,definition){
+  const country=definition||(catalog?.countries&&Object.prototype.hasOwnProperty.call(catalog.countries,id)?catalog.countries[id]:null),flag=document.createElement('img');flag.alt='';flag.width=width;flag.height=height;
+  flag.src=country?.flagImage?'/content/extensions/'+country.flagImage.slice('rewrite/'.length).split('/').map(encodeURIComponent).join('/'):'/content/ui/image_flag_hd/'+encodeURIComponent(country?.flag||id)+'1.png';return flag;
 }
 function scenarioList() {
   const list=$('scenarios'),render=++conquestRender;list.replaceChildren();list.className='scenario-list';
@@ -201,7 +208,7 @@ async function chooseScenario(scenario) {
         drawStrategicMap();
       }, $('country-list'));
       row.className = 'country-entry'; row.setAttribute('aria-label', country.name); row.setAttribute('aria-pressed', 'false');
-      const flag = document.createElement('img'); flag.alt = ''; flag.className = 'country-flag'; flag.src = '/content/ui/image_flag_hd/' + country.id + '1.png';
+      const flag = countryImage(country.id,51,30,country); flag.className = 'country-flag';
       row.append(flag, labelImage('country_' + country.id, country.name));
     }
     $('country-list').firstElementChild?.click();
@@ -216,13 +223,15 @@ async function loadLibrary(name) {
   data.texture = await loadImage('images/' + data.atlas.textures[0].name.replace(/\.(?:pkm|pvr)$/i, '.png'));
   libraries.set(name, data); return data;
 }
+function visualProfile(unit,world=state){return unit&&(effects?.profile(unit.profile,world?.factions.find(f=>f.id===unit.owner))||manifest.profiles[unit.profile]);}
 async function installState(next, center = false) {
   closeSingleAction();
   center=center||!!(state&&(state.map!==next.map||state.scenario!==next.scenario||state.width!==next.width||state.height!==next.height||state.playerFaction!==next.playerFaction));
-  if(center){effects?.clear();damageNumbers?.clear();deaths.clear();}
+  if(center){effects?.clear();damageNumbers?.clear();deaths.clear();battleDialogues.length=0;}
   const keepUnit=center?null:selected?.id,keepCell=center?null:selection?.cell;
-  const used = [...new Set(next.units.map(u => manifest.profiles[u.profile]?.library).filter(Boolean))];
+  const used = [...new Set([...next.units,...(state?.units||[])].map(u => visualProfile(u,next)?.library).filter(Boolean))];
   await Promise.all([...used, 'choose', 'maptext', 'anim_fire', 'anim_upgrade', 'anim_smoke'].map(loadLibrary));
+  if(!center)focusAiAction(next);
   if(!center&&next.combat&&!(aiRunning&&skipAi)){
     selection=undefined;$('selection').hidden=true;
     // A combined AI command must arrive at its firing position while both
@@ -240,27 +249,92 @@ async function installState(next, center = false) {
     if(victims.length){for(const unit of victims)beginDeath(unit.id);await presentationDelay(Math.max(0,...victims.map(u=>{const d=deaths.get(u.id);return d.started+d.duration-performance.now();})));}
   }
   deaths.clear();
+  if(!center&&!(aiRunning&&skipAi)&&state&&next.revision>state.revision){
+    const units=[...next.units,...state.units],handled=new Set();
+    for(const notice of next.notices||[]){
+      if(notice.kind==='battle.kill_context'){
+        const source=units.find(u=>u.id===notice.subject),victim=state.units.find(u=>u.id===notice.target);
+        const speaker=source&&!next.units.some(u=>u.id===source.id)?{...source,health:0}:source;
+        if(!speaker?.commanderImage||!victim)continue;
+        const rule=catalog.commanderDialogues?.[speaker.commanderDefinitionId]?.killRules?.find(rule=>killDialogueMatches(rule,next,speaker,victim)
+          && rule.chance>0&&(rule.chance===100||Math.random()*100<rule.chance));
+        if(rule){
+          queueBattleDialogue(speaker,rule.lines[rule.selection==='first'?0:Math.floor(Math.random()*rule.lines.length)]);
+          handled.add(notice.target);
+        }
+        continue;
+      }
+      if(notice.kind!=='battle.kill_dialogue'||handled.has(notice.target))continue;
+      const speaker=units.find(u=>u.commanderId===notice.subject&&u.commanderImage);
+      if(!speaker)continue;
+      const dedicated=catalog.commanderDialogues?.[speaker.commanderDefinitionId]?.kill;
+      const choices=dedicated?.length?dedicated:Object.entries(manifest.strings).filter(([key,text])=>/^desc_destroy enemy [1-6]$/.test(key)&&text).map(([,text])=>text);
+      if(!choices.length)continue;
+      queueBattleDialogue(speaker,choices[Math.floor(Math.random()*choices.length)]);
+    }
+  }
   state = next; selected = undefined; selection = undefined; $('selection').hidden = true;
+  presentBattleDialogue();
   if (center || !mapBounds) mapBounds = Ew4Battlefield.cameraBounds(state, manifest.maps[state.map]);
   $('menu').hidden = true; $('play').hidden = false; $('pause').hidden = true;
   if (center) centerPlayer(); else clampView();
   refreshHud();
   motions.clear(); arrivals.clear();
   const now=performance.now(), stepMs=movementStepMs();
-  if (!center && !(aiRunning && skipAi)) {
-    if(!next.combat)for(const move of next.movements || [])if(!move.instant&&move.path.length>1){motions.set(move.unit,{path:move.path,started:now,stepMs});const a=point(move.path.at(-2)),b=point(move.path.at(-1));facings.set(move.unit,b.x<a.x?-1:1);}
-    for(const id of next.recruited || []){arrivals.set(id,now);const unit=state.units.find(u=>u.id===id),p=unit&&point(unit.cell);if(p)effects?.effect('effect_recruit.xml',p.x,p.y,{speed:Math.sqrt(settings.speed)});}
-    const duration=Math.max(next.recruited?.length?Ew4Battlefield.recruitDuration(Math.sqrt(settings.speed)):0,...[...motions.values()].map(m=>(m.path.length-1)*stepMs),...([...arrivals.keys()].map(id=>{
-      const unit=state.units.find(u=>u.id===id),p=manifest.profiles[unit?.profile],lib=libraries.get(p?.library),item=lib?.byName.get(p?.motions.ready);
-      return (item?.duration||1)/(lib?.fps||24)*1000;
-    })));
+  if (!center && !fastSkipping()) {
+    const moves=skipAi&&next.combat?.movements?.length?next.combat.movements:next.movements||[];
+    if(!next.combat||skipAi)for(const move of moves)if(!move.instant&&move.path.length>1){motions.set(move.unit,{path:move.path,started:now,stepMs});const a=point(move.path.at(-2)),b=point(move.path.at(-1));facings.set(move.unit,b.x<a.x?-1:1);}
+    if(!skipAi)for(const id of next.recruited || []){arrivals.set(id,now);const unit=state.units.find(u=>u.id===id),p=unit&&point(unit.cell);if(p)effects?.effect('effect_recruit.xml',p.x,p.y,{speed:Math.sqrt(settings.speed)});}
+    const duration=Math.max(...[...motions.values()].map(m=>(m.path.length-1)*stepMs),...([...arrivals.keys()].map(id=>{
+      const unit=state.units.find(u=>u.id===id),p=visualProfile(unit),lib=libraries.get(p?.library),item=lib?.byName.get(p?.motions.ready);
+      return Math.max(Ew4Battlefield.recruitDuration(Math.sqrt(settings.speed)),(item?.duration||1)/(lib?.fps||24)*1000);
+    })),0);
+    updateAiCamera(now);
     if(duration)await presentationDelay(duration);
   }
   motions.clear();arrivals.clear();
   requestRender();
   if(!center&&state.activeFaction===state.playerFaction&&!state.dialogue){const unit=state.units.find(u=>u.id===keepUnit);const cell=unit?.cell??(keepUnit?null:keepCell);if(cell!=null)await selectCell(cell,true);}
 }
-function movementStepMs(){return 255/Math.sqrt(settings.speed);}
+function killDialogueMatches(rule,next,speaker,victim){
+  const when=rule.when;
+  return (!when.victimCommanders.length||when.victimCommanders.includes(victim.commanderDefinitionId))
+    &&(!when.victimCategories.length||when.victimCategories.includes(victim.category))
+    &&(when.victimHasCommander==null||when.victimHasCommander===!!victim.commanderId)
+    &&(!when.scenarios.length||when.scenarios.includes(next.scenario))
+    &&next.round>=when.minRound&&next.round<=when.maxRound
+    &&speaker.health*100<=speaker.maxHealth*when.killerHealthPercentAtMost;
+}
+function queueBattleDialogue(speaker,text){
+  const name=speaker.commanderImage;
+  battleDialogues.push({text,left:true,portrait:name+'.png',name:manifest.strings[name]||manifest.strings['name_'+name]||name});
+}
+function presentBattleDialogue(){
+  // Shouts reuse the panel but have no pending dialogue in the backend.
+  if(!state.dialogue&&battleDialogues.length){
+    const talk=battleDialogues[0];
+    state={...state,dialogue:talk.text,dialoguePresentation:talk,localBattleDialogue:true};
+  }
+}
+function fastSkipping(){return aiRunning&&skipAi&&settings.skipTurnFast;}
+function movementStepMs(){return aiRunning&&skipAi?65:255/Math.sqrt(settings.speed);}
+function clearAiPresentation(){
+  motions.clear();arrivals.clear();deaths.clear();combatMotions.clear();effects?.clear();damageNumbers?.clear();finishPresentation?.();
+}
+function followingAi(){return aiRunning&&settings.followAi&&!fastSkipping()&&aiFocus&&!state?.factions.find(f=>f.id===state.activeFaction)?.human;}
+function focusAiAction(next){
+  if(!aiRunning||!settings.followAi||fastSkipping()||next.factions.find(f=>f.id===next.activeFaction)?.human){aiFocus=null;return;}
+  const moves=next.combat?.movements?.length?next.combat.movements:next.movements||[];
+  const move=moves.find(m=>!m.instant&&m.path.length>1),id=move?.unit||next.combat?.attacker||next.recruited?.[0];
+  const unit=state.units.find(u=>u.id===id)||next.units.find(u=>u.id===id);
+  if(unit){aiFocus={unit:id,cell:move?.path[0]??unit.cell};updateAiCamera(performance.now());}
+}
+function updateAiCamera(time){
+  if(!followingAi())return;
+  const motion=motions.get(aiFocus.unit),unit=state.units.find(u=>u.id===aiFocus.unit);
+  const p=motion?Ew4Battlefield.pose(motion,state.width,time):point(unit?.cell??aiFocus.cell);
+  view.x=p.x;view.y=p.y;clampView();
+}
 function presentationDelay(duration){requestRender();return new Promise(resolve=>{const timer=setTimeout(done,duration);function done(){clearTimeout(timer);presentationWaiters.delete(done);if(!presentationWaiters.size)finishPresentation=null;requestRender();resolve();}presentationWaiters.add(done);finishPresentation=()=>{for(const finish of [...presentationWaiters])finish();};});}
 function beginDeath(id){if(!deaths.has(id))deaths.set(id,{started:performance.now(),duration:500/Math.sqrt(settings.speed)});}
 async function playMovements(moves){
@@ -278,10 +352,10 @@ async function playCombat(combat,destroyed=new Set()){
   for(const [id,targetId,damage,critical] of pairs){
     const unit=state.units.find(u=>u.id===id),target=state.units.find(u=>u.id===targetId);
     if(!unit||!target)continue;
-    const profile=manifest.profiles[unit.profile],lib=libraries.get(profile?.library);if(!lib)continue;
+    const profile=visualProfile(unit),lib=libraries.get(profile?.library);if(!lib)continue;
     const facing=point(target.cell).x<point(unit.cell).x?-1:1;
-    const segments=[],firing=effects?.motion(unit.profile,'attack',facing),timeline=(firing?.effect||'')+(facing<0?' left':' right'),firstShot=effects?.firstEvent(timeline)??0,lastShot=effects?.lastEvent(timeline);let duration=0;
-    for(const action of ['attack','reload','finish']){const motion=effects?.motion(unit.profile,action,facing),name=motion?.name||profile.motions[action],item=lib.byName.get(name);if(!item)continue;const rate=speed*Number(motion?.speed||1);let length=item.duration/lib.fps*1000/rate;if(action==='attack'&&lastShot!=null)length=Math.min(length,(lastShot+.2+(unit.category==='artillery'?.2:0))*1000/speed);segments.push({name,start:duration,end:duration+length,speed:rate,directional:motion?.dir==='left'||motion?.dir==='right'});duration+=length;}
+    const segments=[],firing=effects?.motion(profile,'attack',facing),timeline=(firing?.effect||'')+(facing<0?' left':' right'),firstShot=effects?.firstEvent(timeline)??0,lastShot=effects?.lastEvent(timeline);let duration=0;
+    for(const action of ['attack','reload','finish']){const motion=effects?.motion(profile,action,facing),name=motion?.name||profile.motions[action],item=lib.byName.get(name);if(!item)continue;const rate=speed*Number(motion?.speed||1);let length=item.duration/lib.fps*1000/rate;if(action==='attack'&&lastShot!=null)length=Math.min(length,(lastShot+.2+(unit.category==='artillery'?.2:0))*1000/speed);segments.push({name,start:duration,end:duration+length,speed:rate,directional:motion?.dir==='left'||motion?.dir==='right'});duration+=length;}
     if(!duration)continue;
     const hitAt=lastShot==null?segments[0].end:Math.max(segments[0].end,(lastShot+.2)*1000/speed);
     plans.push({id,targetId,damage,critical,unit,target,profile,facing,timeline,segments,duration,hitAt,firstShot:firstShot*1000/speed});
@@ -424,6 +498,13 @@ function refreshHud() {
 }
 async function act(op, extra = {}) {
   if (busy || !state) return;
+  if(state.localBattleDialogue){
+    if(op!=='dialogue')return;
+    battleDialogues.shift();
+    state={...state,dialogue:null,dialoguePresentation:null,localBattleDialogue:false};
+    presentBattleDialogue();refreshHud();requestRender();
+    await runAi();return;
+  }
   closeSingleAction();
   busy = true; refreshHud();
   try {
@@ -438,7 +519,7 @@ async function runAi() {
   try {
     busy=true;refreshHud();
     while (aiCanContinue(state)) {
-      if(skipAi){
+      if(fastSkipping()){
         const batch=await rpc('action',{op:'ai_batch',revision:state.revision});
         if(batch.baseRevision!==state.revision)throw Error('回合状态不同步');
         const next=batch.state;
@@ -458,7 +539,7 @@ async function runAi() {
     try{await installState(await rpc('action',{op:'state'}));}catch(_){}
     notice(error.message);
   }
-  finally { busy = false; aiRunning = false; skipAi = false; refreshHud();requestRender(); }
+  finally { busy = false; aiRunning = false; skipAi = false; aiFocus=null; refreshHud();requestRender(); }
 }
 function aiCanContinue(next){return next&&!next.dialogue&&!next.scenarioPopup&&next.phase!=='Finished'&&!next.factions.find(f=>f.id===next.activeFaction).human;}
 async function selectCell(cell,restore=false) {
@@ -762,7 +843,7 @@ function render(time) {
   renderDirty=false;lastRenderTime=time;
   const playVisible=state&&!$('play').hidden;
   const covered=['pause','settings','detail-modal','mod-manager','loading-screen'].some(id=>!$(id).hidden);
-  const animated=(!$('campaign-screen').hidden||!$('countries').hidden)||playVisible&&!covered&&!skipAi&&
+  const animated=(!$('campaign-screen').hidden||!$('countries').hidden)||playVisible&&!covered&&!fastSkipping()&&
     (battlefield.animated||motions.size||arrivals.size||deaths.size||combatMotions.size||effects?.instances.length||damageNumbers?.instances.length||selection);
   if(animated)renderRequest=requestAnimationFrame(render);
   if(manifest)menus.draw(time);
@@ -770,11 +851,11 @@ function render(time) {
   if(tutorial&&!$('play').hidden)positionTutorial();
   if(tutorial?.wait?.name==='wait action'&&!busy&&!aiRunning)tutorial.notify({type:'action'}).catch(e=>notice(e.message));
   if(!$('countries').hidden&&!$('menu').hidden)drawStrategicMap(time);
-  if(!playVisible||covered||skipAi)return;
+  if(!playVisible||covered||fastSkipping())return;
   const w=canvas.clientWidth,h=canvas.clientHeight;
   const dpr=settings.hd?Math.max(1,Math.min(window.devicePixelRatio||1,2,Math.sqrt(3*1024*1024/Math.max(1,w*h)))):1;
   if(canvas.width!==Math.round(w*dpr)||canvas.height!==Math.round(h*dpr)){canvas.width=Math.round(w*dpr);canvas.height=Math.round(h*dpr);}
-  viewport={w,h,dpr};clampView();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#688e91';ctx.fillRect(0,0,w,h);
+  viewport={w,h,dpr};updateAiCamera(time);clampView();ctx.setTransform(dpr,0,0,dpr,0,0);ctx.fillStyle='#688e91';ctx.fillRect(0,0,w,h);
   ctx.translate(w/2,h/2);ctx.scale(view.zoom,view.zoom);ctx.translate(-view.x,-view.y);
   const min=screenToWorld(0,0),max=screenToWorld(w,h);
   battlefield.frame({draw:ctx,state,map:manifest.maps[state.map],visibleRect:{left:min.x,top:min.y,width:max.x-min.x,height:max.y-min.y},
@@ -828,8 +909,9 @@ document.addEventListener('pointerup',event=>{
 },true);
 document.addEventListener('click',event=>{if(performance.now()-tutorialTouchTime<350){event.preventDefault();event.stopPropagation();}},true);
 let pointers=new Map(),dragged=false,lastDistance=0;
-canvas.addEventListener('pointerdown',e=>{canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY});if(pointers.size===1)dragged=false;else{dragged=true;lastDistance=0;}});
+canvas.addEventListener('pointerdown',e=>{if(followingAi())return;canvas.setPointerCapture(e.pointerId);pointers.set(e.pointerId,{x:e.clientX,y:e.clientY,startX:e.clientX,startY:e.clientY});if(pointers.size===1)dragged=false;else{dragged=true;lastDistance=0;}});
 canvas.addEventListener('pointermove',e=>{
+  if(followingAi()){pointers.clear();return;}
   const last=pointers.get(e.pointerId);if(!last)return;
   const dx=e.clientX-last.x,dy=e.clientY-last.y;pointers.set(e.pointerId,{...last,x:e.clientX,y:e.clientY});
   if(pointers.size===1){view.x-=dx/view.zoom;view.y-=dy/view.zoom;clampView();if(Math.hypot(e.clientX-last.startX,e.clientY-last.startY)>4)dragged=true;}
@@ -838,7 +920,7 @@ canvas.addEventListener('pointermove',e=>{
 canvas.addEventListener('pointerup',e=>{pointers.delete(e.pointerId);if(!dragged&&pointers.size===0)selectCell(cellAt(e.clientX,e.clientY)).catch(error=>notice(error.message));});
 canvas.addEventListener('pointercancel',e=>{pointers.delete(e.pointerId);dragged=true;});
 function zoom(factor,x=viewport.w/2,y=viewport.h/2){const before=screenToWorld(x,y);view.zoom*=factor;clampView();const after=screenToWorld(x,y);view.x+=before.x-after.x;view.y+=before.y-after.y;clampView();}
-canvas.addEventListener('wheel',e=>{e.preventDefault();zoom(Math.exp(-e.deltaY*.001),e.clientX,e.clientY);},{passive:false});
+canvas.addEventListener('wheel',e=>{e.preventDefault();if(!followingAi())zoom(Math.exp(-e.deltaY*.001),e.clientX,e.clientY);},{passive:false});
 document.querySelectorAll('[data-mode]').forEach(b=>b.onclick=async()=>{if(!startupReady)return;mode=Number(b.dataset.mode);if(mode===4){menus.tutorialMenu();return;}$('main-menu').hidden=true;$('scenario-menu').hidden=false;$('countries').hidden=true;$('conquest-pagination').hidden=mode!==2;$('scenario-menu').classList.toggle('campaign-mode',mode===1);menuArt.apply(mode);$('mode-title').replaceChildren(labelImage(b.dataset.label,b.getAttribute('aria-label')));if(!await menus.open(mode))scenarioList();});
 $('conquest-prev').onclick=()=>turnConquestPage(-1);
 $('conquest-next').onclick=()=>turnConquestPage(1);
@@ -860,6 +942,7 @@ function syncLanguages(){for(const [id,key,title] of languageControls){const cho
   else choice.textContent=text;
 }}
 function openSettings(){for(const [id,key] of [['music-volume','music'],['sound-volume','sound'],['game-speed','speed'],['screen-size','screen']])$(id).value=settings[key];syncLanguages();$('hd-mode').checked=settings.hd;$('show-grid').checked=showGrid;
+  $('skip-turn-fast').checked=settings.skipTurnFast;$('follow-ai').checked=settings.followAi;
   const local=$('local-multiplayer-mode'),inGame=!$('play').hidden;
   local.disabled=inGame;local.checked=inGame?!!state?.localMultiplayer:!!settings.localMultiplayer;
   $('settings').hidden=false;}
@@ -868,6 +951,12 @@ $('close-settings').onclick=()=>$('settings').hidden=true;
 $('confirm-settings').onclick=()=>$('settings').hidden=true;
 for(const [id,key] of [['music-volume','music'],['sound-volume','sound'],['game-speed','speed'],['screen-size','screen'],['event-size','eventSize']])$(id).oninput=e=>{settings[key]=Number(e.target.value);persistSettings();sizeUi();};
 $('hd-mode').onchange=e=>{settings.hd=e.target.checked;persistSettings();};
+for(const [id,key] of [['skip-turn-fast','skipTurnFast'],['follow-ai','followAi']])$(id).onchange=e=>{
+  settings[key]=e.target.checked;persistSettings();
+  if(fastSkipping()){clearAiPresentation();aiFocus=null;}
+  if(key==='followAi'){aiFocus=null;pointers.clear();}
+  requestRender();
+};
 $('local-multiplayer-mode').onchange=e=>{if(!$('play').hidden){e.target.checked=!!state?.localMultiplayer;return;}settings.localMultiplayer=e.target.checked;persistSettings();};
 function persistSettings(){try{localStorage.setItem('ew4.settings',JSON.stringify(settings));}catch(_){} }
 $('close-detail').onclick=async()=>{closeDetail();await tutorialUi('winbtn_close');};
@@ -875,7 +964,7 @@ $('show-grid').onchange=e=>{showGrid=e.target.checked;try{localStorage.setItem('
 $('menu-button').onclick=()=>$('pause').hidden=false;$('resume').onclick=()=>$('pause').hidden=true;
 $('end-turn').onclick=()=>act('end').catch(e=>notice(e.message));
 $('undo-move').onclick=()=>act('undo',{unit:selected?.id||state.undoUnit}).then(()=>tutorialUi('btn_undo')).catch(e=>notice(e.message));
-$('skip-ai').onclick=()=>{skipAi=true;motions.clear();arrivals.clear();deaths.clear();effects?.clear();damageNumbers?.clear();finishPresentation?.();refreshHud();};
+$('skip-ai').onclick=()=>{skipAi=true;clearAiPresentation();if(fastSkipping())aiFocus=null;refreshHud();requestRender();};
 $('dialogue').onclick=()=>{
   if($('dialogue').hidden||!$('pause').hidden||!$('settings').hidden||state?.scenarioPopup)return;
   act('dialogue').catch(e=>notice(e.message));
@@ -923,13 +1012,13 @@ async function initializeClient(){
   document.querySelectorAll('.main-entry').forEach(button=>button.disabled=true);$('continue').disabled=true;
   try{
     Ew4Startup.pending('游戏目录与资源索引');
-    const [c,m,names,fx,pages]=await Promise.all([rpc('catalog'),startupJson('/content/manifest.json'),startupJson('city-names.json'),startupJson('/content/effects.json'),startupJson('conquest-pages.json')]);
+    const [c,m,names,fx,pages,visuals]=await Promise.all([rpc('catalog'),startupJson('/content/manifest.json'),startupJson('city-names.json'),startupJson('/content/effects.json'),startupJson('conquest-pages.json'),startupJson('/content/unit-visuals.json')]);
     Ew4Startup.pending('内置字库');
     const text=new Ew4OriginalUI.TextRenderer(m);await text.prepare();
     Ew4Startup.pending('菜单图像');
     const art=new Ew4MenuArt.MenuArt({manifest:m,image});await art.prepare();
     catalog=c;manifest=m;cityNames=names;conquestPages=pages;menuArt=art;
-    effects=new Ew4Effects.Effects({image,sprite,animation,libraries,get manifest(){return manifest;},volume:()=>settings.sound},fx);
+    effects=new Ew4Effects.Effects({image,sprite,animation,libraries,get manifest(){return manifest;},volume:()=>settings.sound},fx,visuals);
     originalTextRenderer=text;
     Ew4Startup.pending('战斗图像与界面');
     const fightFonts=await startupJson('/content/fight-font.json');

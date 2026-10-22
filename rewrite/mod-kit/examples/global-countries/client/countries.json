@@ -1,0 +1,13 @@
+{
+  "schema": 1,
+  "countries": {
+    "mod.republic.1792": {
+      "name": "Republic",
+      "flag": "fra",
+      "color": "#237A4D",
+      "unitVariant": "fra",
+      "visualVariant": "hre"
+    }
+  },
+  "aliases": {"fra": "mod.republic.1792"}
+}

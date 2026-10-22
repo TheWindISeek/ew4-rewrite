@@ -190,7 +190,8 @@ public sealed partial class RuleEventBus
                 var status = unit.Statuses.SingleOrDefault(s => "status." + s.Id == slot.InstanceId);
                 double amount = effect.Script == null ? StackedValue(effect, status) : Scripts!.Run(effect.Script, effect.Function!,
                     new("movement.modify", unit, unit, slot.Level, 0, budget, new Dictionary<string, long>(),
-                        Stacks: status?.Stacks ?? 1, RemainingTurns: status?.RemainingTurns ?? 0), new Ew4Random(1)).Value;
+                        Stacks: status?.Stacks ?? 1, RemainingTurns: status?.RemainingTurns ?? 0,
+                        SkillId: skill.Id, InstanceId: slot.InstanceId, ItemId: ItemId(slot)), new Ew4Random(1)).Value;
                 budget += amount;
                 if (double.IsNaN(budget) || double.IsInfinity(budget) || budget > int.MaxValue || budget < int.MinValue)
                     throw new RuleViolation("extension.value", "Invalid movement modifier");

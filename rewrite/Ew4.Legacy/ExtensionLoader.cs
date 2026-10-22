@@ -10,7 +10,7 @@ namespace Ew4.Legacy;
 public sealed record ExtensionLayout(string Mode = "list", int Columns = 1, int Gap = 4, int IconSize = 19, int MaxHeight = 74,
     int? Left = null, int? Top = null, int? Width = null, int? Height = null);
 public sealed record ExtensionBinding(string Target, string Mode, SkillSlot[]? Skills = null, string[]? Traits = null);
-public sealed class ExtensionLoader
+public sealed partial class ExtensionLoader
 {
     public static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web)
     { UnmappedMemberHandling = JsonUnmappedMemberHandling.Disallow };
@@ -25,27 +25,31 @@ public sealed class ExtensionLoader
     public bool Enabled => Revision.Length > 0;
     public int ApiVersion { get; private set; } = 1;
     public LegacySkillParameters? LegacySkills { get; private init; }
+    public IReadOnlyDictionary<string, CommanderDialogueLines> CommanderDialogues { get; private init; } = new Dictionary<string, CommanderDialogueLines>();
     private ExtensionLoader(RuleEventBus bus, string revision, ExtensionBinding[] units, ExtensionBinding[] commanders,
         Dictionary<string, ExtensionVictoryRules> victories, Dictionary<string, ExtensionLayout> layouts,
         Dictionary<string, ScriptedScenarioEvent[]> scenarioEvents)
     { Bus = bus; Revision = revision; UnitBindings = units; CommanderBindings = commanders; Victories = victories; Layouts = layouts; ScenarioEvents = scenarioEvents; }
     private sealed record Manifest(int Schema, int ApiVersion, string[]? Skills = null, string[]? Traits = null,
         string? UnitBindings = null, string? CommanderBindings = null, string? VictoryRules = null, string? Presentation = null, string[]? Scripts = null,
-        string? ScenarioEvents = null, string[]? Statuses = null, string? VictoryPresentation = null, string? LegacySkillParameters = null);
+        string? ScenarioEvents = null, string[]? Statuses = null, string? VictoryPresentation = null, string? LegacySkillParameters = null,
+        string? CommanderDialogues = null, string? ItemBindings = null);
     private sealed record LegacySkillFile(int Schema, Dictionary<string, Dictionary<string, double>> Skills);
 
     public static bool PathValid(string? p) => p != null && p.StartsWith("rewrite/", StringComparison.Ordinal) && p.Length < 240
         && !p.Contains('\\') && !p.Contains(':') && p.Split('/').All(s => s.Length > 0 && s != "." && s != "..")
         && p.All(c => c >= 32);
-    public static T ParseJson<T>(byte[] data)
+    public static T ParseJson<T>(byte[] data, bool caseSensitiveKeys = false)
     {
         if (data.Length > 2 * 1024 * 1024) throw new RuleViolation("extension.size", "JSON exceeds 2 MiB");
         using var document = JsonDocument.Parse(data, new JsonDocumentOptions { MaxDepth = 32 });
-        Unique(document.RootElement);
-        return JsonSerializer.Deserialize<T>(data, Json) ?? throw new RuleViolation("extension.json", "Missing JSON value");
+        Unique(document.RootElement, caseSensitiveKeys);
+        return JsonSerializer.Deserialize<T>(data, caseSensitiveKeys ? new JsonSerializerOptions(Json) { PropertyNameCaseInsensitive = false } : Json)
+            ?? throw new RuleViolation("extension.json", "Missing JSON value");
     }
-    public static ExtensionLoader Load(Func<string, byte[]> read)
+    public static ExtensionLoader Load(Func<string, byte[]> read, CountryCatalog? countries = null)
     {
+        countries ??= CountryCatalog.Load(read);
         byte[] bytes;
         try { bytes = read("rewrite/extension.json"); }
         catch (Exception e) when (e is FileNotFoundException or DirectoryNotFoundException or KeyNotFoundException)
@@ -62,6 +66,14 @@ public sealed class ExtensionLoader
         var m = Read<Manifest>("rewrite/extension.json");
         if (m.Schema != 1 || m.ApiVersion is not (1 or 2)) throw new RuleViolation("extension.version", "Unsupported extension schema/API version");
         if (m.ApiVersion == 1 && m.Statuses != null) throw new RuleViolation("extension.version", "Statuses require API 2");
+        var commanderDialogues = new Dictionary<string, CommanderDialogueLines>();
+        if (m.CommanderDialogues != null)
+        {
+            if (m.ApiVersion < 2) throw new RuleViolation("extension.version", "Commander dialogues require API 2");
+            var dialogues = Read<CommanderDialogueFile>(m.CommanderDialogues);
+            dialogues.Validate();
+            commanderDialogues = dialogues.Commanders;
+        }
         LegacySkillParameters? legacySkills = null;
         if (m.LegacySkillParameters != null)
         {
@@ -114,6 +126,9 @@ public sealed class ExtensionLoader
                 throw new RuleViolation("extension.status_reference", effect.Status ?? "Missing status");
         var units = m.UnitBindings == null ? [] : Read<ExtensionBinding[]>(m.UnitBindings);
         var commanders = m.CommanderBindings == null ? [] : Read<ExtensionBinding[]>(m.CommanderBindings);
+        var items = m.ItemBindings == null ? [] : Read<ExtensionItemBinding[]>(m.ItemBindings);
+        if (m.ItemBindings != null && m.ApiVersion < 2) throw new RuleViolation("extension.version", "Item bindings require API 2");
+        ValidateItems(items, skills);
         foreach (var binding in units.Concat(commanders))
         {
             if (binding == null || string.IsNullOrWhiteSpace(binding.Target) || binding.Mode is not ("append" or "replace" or "remove"))
@@ -128,6 +143,7 @@ public sealed class ExtensionLoader
         var victories = m.VictoryRules == null ? new Dictionary<string, ExtensionVictoryRules>() : Read<Dictionary<string, ExtensionVictoryRules>>(m.VictoryRules);
         foreach (var v in victories.Values) ValidateVictory(v);
         var scenarioEvents = m.ScenarioEvents == null ? new Dictionary<string, ScriptedScenarioEvent[]>() : Read<Dictionary<string, ScriptedScenarioEvent[]>>(m.ScenarioEvents);
+        scenarioEvents = scenarioEvents.ToDictionary(p => p.Key, p => p.Value.Select(countries.Resolve).ToArray());
         foreach (var events in scenarioEvents.Values) Core.ScenarioRules.ValidateDefinitions(events);
         var eventVictories = scenarioEvents.Values.SelectMany(v => v).SelectMany(Core.ScenarioRules.Effects)
             .Select(e => e.VictoryRules).OfType<ExtensionVictoryRules>().ToArray();
@@ -172,21 +188,22 @@ public sealed class ExtensionLoader
         }
         string revision = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join('\n', loaded.Select(p => p.Key + ":" + Convert.ToHexStringLower(SHA256.HashData(p.Value)))))));
         return new(new(skills, runtime, statuses), revision, units, commanders, victories, layouts, scenarioEvents)
-            { ApiVersion = m.ApiVersion, VictoryPresentations = victoryScreens, LegacySkills = legacySkills };
+            { ApiVersion = m.ApiVersion, VictoryPresentations = victoryScreens, LegacySkills = legacySkills, CommanderDialogues = commanderDialogues,
+                ItemBindings = items };
         bool Known(string id) => skills.ContainsKey(id) || id.StartsWith("ew4.skill.", StringComparison.Ordinal)
             && int.TryParse(id[10..], out int value) && value is >= 0 and < 40 || BuiltinTraits.Contains(id);
     }
     public static readonly string[] BuiltinTraits = ["no_retaliation", "line_splash", "siege_gun", "coastal_gun", "consumed_on_attack",
         "ai.rocket", "ai.direct_artillery", "ai.counter_mounted"];
     private static bool Id(string id) => id.Length is > 0 and <= 128 && id.Contains('.') && id.All(c => char.IsAsciiLetterOrDigit(c) || c is '.' or '_' or '-');
-    private static void Unique(JsonElement node)
+    private static void Unique(JsonElement node, bool caseSensitiveKeys = false)
     {
         if (node.ValueKind == JsonValueKind.Object)
         {
-            var names = new HashSet<string>(StringComparer.OrdinalIgnoreCase);
-            foreach (var p in node.EnumerateObject()) { if (!names.Add(p.Name)) throw new RuleViolation("extension.json", "Duplicate JSON key: " + p.Name); Unique(p.Value); }
+            var names = new HashSet<string>(caseSensitiveKeys ? StringComparer.Ordinal : StringComparer.OrdinalIgnoreCase);
+            foreach (var p in node.EnumerateObject()) { if (!names.Add(p.Name)) throw new RuleViolation("extension.json", "Duplicate JSON key: " + p.Name); Unique(p.Value, caseSensitiveKeys); }
         }
-        else if (node.ValueKind == JsonValueKind.Array) foreach (var v in node.EnumerateArray()) Unique(v);
+        else if (node.ValueKind == JsonValueKind.Array) foreach (var v in node.EnumerateArray()) Unique(v, caseSensitiveKeys);
     }
     private static void ValidateEffect(ExtensionEffect e, int apiVersion)
     {
@@ -216,8 +233,24 @@ public sealed class ExtensionLoader
             throw new RuleViolation("extension.effect", "Invalid event/operation/handler: " + e.Event + "/" + e.Operation);
     }
 
-    public void ConfigureRuntime(LegacyRuntimeCatalog runtime) => Bus.RegisterUnitTemplates(runtime.Profiles.Values
-        .Select(u => new SkillSummonTemplate(u.Profile, new UnitSupport { FoodConsumption = u.FoodConsumption })));
+    public void ConfigureRuntime(LegacyRuntimeCatalog runtime)
+    {
+        foreach (var binding in ItemBindings)
+        {
+            var item = runtime.Items.Values.SingleOrDefault(i => i.Id == binding.Target)
+                ?? throw new RuleViolation("extension.item_target", "Unknown item: " + binding.Target);
+            if (item.Consumable ? item.SkillSlots?.Count > 0 : item.UseSkill != null)
+                throw new RuleViolation("extension.item_binding", "Consumables use useSkill; equipment uses skills: " + item.Id);
+            if (item.TargetCategory != null && !runtime.Profiles.Values.Any(p => p.Profile.Category == item.TargetCategory))
+                throw new RuleViolation("extension.item_binding", "Unknown item target category: " + item.TargetCategory);
+        }
+        var commanders = runtime.Commanders.Values.Select(c => c.Definition.Id).ToHashSet(StringComparer.Ordinal);
+        foreach (string id in CommanderDialogues.Keys.Concat(CommanderDialogues.Values.SelectMany(d => d.KillRules)
+            .SelectMany(r => r.When.VictimCommanders)).Distinct(StringComparer.Ordinal))
+            if (!commanders.Contains(id)) throw new RuleViolation("extension.commander_dialogues", "Unknown commander definition: " + id);
+        Bus.RegisterUnitTemplates(runtime.Profiles.Values
+            .Select(u => new SkillSummonTemplate(u.Profile, new UnitSupport { FoodConsumption = u.FoodConsumption })));
+    }
     private static IEnumerable<VictoryCondition> Conditions(VictoryCondition c)
         => ExtensionVictory.Conditions(c);
     public void ValidateVictoryScripts(ExtensionVictoryRules rules)

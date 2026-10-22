@@ -123,7 +123,8 @@ internal static class BattleCommitChecks
             Events = [new() { Id = "a", DialogueId = "a.dialogue", Rules = [new() { Trigger = TriggerKind.UnitDestroyed, UnitId = attacker.Id }] },
                 new() { Id = "d", DialogueId = "d.dialogue", Rules = [new() { Trigger = TriggerKind.UnitDestroyed, UnitId = defender.Id, Effect = EventEffectKind.EnvironmentSpread, Cell = 0 }] },
                 new() { Id = "s", DialogueId = "s.dialogue", Rules = [new() { Trigger = TriggerKind.UnitDestroyed, UnitId = "splash" }] }] };
-        var dead = WorldBattle.CommitResolved(simultaneous, new(attacker.Id, defender.Id, 2, 2, true, 1946, "splash", 2), isolated).State;
+        var deadChange = WorldBattle.CommitResolved(simultaneous, new(attacker.Id, defender.Id, 2, 2, true, 1946, "splash", 2), isolated);
+        var dead = deadChange.State;
         Check(dead.Units.Count == 0 && dead.Commanders.All(c => c.Withdrawn) && dead.TriggeredEvents.Count == 3, "simultaneous and splash deaths process all events and withdrawals");
         Check(dead.PendingDialogue == "a.dialogue" && dead.QueuedDialogues.SequenceEqual(["d.dialogue", "s.dialogue"]) && dead.Cells[0].Environment == 3,
             "death effects commit in order and queue every dialogue");
@@ -148,6 +149,15 @@ internal static class BattleCommitChecks
         Check(WorldBattle.CommitResolved(immune, new(attacker.Id, defender.Id, 0, 1, false, 1946), alwaysBurn).State.Cells[0].Environment == 0,
             "fire immunity blocks ignition before RNG");
         var bark = WorldBattle.CommitResolved(experienced, new(attacker.Id, defender.Id, 0, 50, false, 1946), isolated with { KillDialogueProbability = 100 });
+        Check(bark.Notices.Single(n => n.Kind == "battle.kill_context").Subject == attacker.Id
+            && bark.Notices.Single(n => n.Kind == "battle.kill_context").Target == defender.Id
+            && bark.Notices.Single(n => n.Kind == "battle.kill_dialogue").Target == defender.Id, "kill context links actual killer and victim");
+        var commanderKill = WorldBattle.CommitResolved(simultaneous, new(attacker.Id, defender.Id, 0, 2, false, 1946), isolated);
+        Check(commanderKill.Notices.Any(n => n.Kind == "battle.kill_context" && n.Target == defender.Id)
+            && !commanderKill.Notices.Any(n => n.Kind == "battle.kill_dialogue"), "commander kills expose context without enabling generic eight percent dialogue");
+        Check(deadChange.Notices.Count(n => n.Kind == "battle.kill_context") == 3
+            && deadChange.Notices.Any(n => n.Kind == "battle.kill_context" && n.Subject == defender.Id && n.Target == attacker.Id)
+            && deadChange.Notices.Any(n => n.Kind == "battle.kill_context" && n.Subject == attacker.Id && n.Target == "splash"), "counterattack mutual death and splash retain actual kill identities");
         Check(bark.Notices.Any(n => n.Kind == "battle.kill_dialogue") && bark.State.Factions.All(f => f.Resources == new Resources(100, 200, 300)),
             "kill dialogue never awards fictitious loot");
         var missile = attacker with { Combatant = attacker.Combatant with { Profile = attacker.Combatant.Profile with

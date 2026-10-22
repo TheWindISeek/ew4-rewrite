@@ -4,6 +4,7 @@
 
 | 路径 | 用途 |
 | --- | --- |
+| `../build/item-extensions-20261021/` | 5261物品接口独立预览、测试Mod/档案、示例ew4mod及Web/Android编译输出；验收记录在reports/item-extensions-20261021，未操作玩家档案 |
 | `local/mod-management/` | 从地图工作目录迁来的通用Mod管理构建、兼容构建、测试档案与历史日志；不是用户发行包 |
 | `local/eastasia-preview/server/` | 5190预览使用的旧兼容引擎，保留原存档指纹 |
 | `local/eastasia-preview/data/` | 5190的基础资源快照，保留其已有Mod的资源指纹 |

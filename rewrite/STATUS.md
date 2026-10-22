@@ -1,5 +1,21 @@
 # 重构短锚点
 
+- **0.2.10发行续接：见[说明](RELEASE_0.2.10_20261022.md)。** 指挥部标签优先、三星→二星→一星、逐列先上后下，独立标签确认和整区滑动；核心310898/客户端2259/指挥部75，源码及独立Web浏览器各94/15图、分发2612+4364/独立启动10918通过。Web及Android 0.2.10/code12已重建，当前包字节/同证书签名/16KiB对齐已验，未真机运行。授权同步与Release的精确状态见 `../build/release-0.2.10-20261021/assets/release-manifest.json`、`remote-audit.json`；以下无新APK等为历史。
+
+- **全局国家与兵模接口已接：见[记录](../reverse/GLOBAL_COUNTRIES_UNIT_VISUALS_20261021.md)和[指南](mod-kit/docs/porting/GLOBAL_COUNTRIES.md)。** `data/client/countries.json` 独立定义43国；唯一长文本/中文ID、别名、旗帜/战斗/兵模分离；CNTR v1嵌入BTL完整ID及事件引用，ModTool新增country-export/apply/strip，保持主体字节和行动顺序。HRE等兵模映射按原视觉变体修复。国家196/兵模25845/浏览器581+24/Mod102/客户端2266、Web及Android Compile通过；独立5251 PID33936，无新APK。
+
+- **指挥部独立标签模式：见[记录](../reverse/HEADQUARTERS_FILTERS_20261021.md)。** 全选＋三档原图、各20位共60槽、两排横向滑动，标签优先并按三星→二星→一星逐列上下排列；公主/商店右侧“标签”进入，点将领切换左下三角，按钮变“确认”再点一次保存置顶，详情无标签编辑。支持选择不跳位/跨筛选、无滑动误选、返回放弃及失败重试。专项75/浏览器94项15图/客户端2259及Web构建通过；5262预览PID10172，统一发布0.2.10见上。
+
+- **旗帜/血量及过回合开关已接：见[记录](../reverse/UNIT_DISPLAY_TURN_OPTIONS_20261021.md)。** 1303组原生旗帜判断/血量配色通过；“跳过回合快进”“过回合跟随行动部队”独立保存、默认关闭。基础跳过保留移动/地块，完全快进零战场重绘/18国进度旗；跟随锁定/返回人类回合释放及同档两模式存档/RNG一致通过。浏览器41/客户端2346项及Web构建通过；独立5248 PID53384，无新APK。
+
+- **物品/装备JSON与Lua接口已接：见[记录](../reverse/ITEM_EXTENSIONS_20261021.md)、[字段](mod-kit/docs/porting/ITEM_EFFECTS.md)和[模板](mod-kit/examples/item-effects/README.md)。** API2 itemBindings支持装备授予技能、消耗品效果、原效果替换/数值覆盖，沿用状态/冷却/存档及事务。专项53/核心310893/客户端2364/Mod14/浏览器32与Web、Android Compile通过；独立5261 PID52060，示例包在build/item-extensions-20261021，无新APK。
+
+- **条件击杀专属台词已接：见[记录](../reverse/CONDITIONAL_COMMANDER_DIALOGUES_20261021.md)及[模板](mod-kit/examples/commander-dialogues/README.md)。** killRules匹配目标将领/兵种/剧本/回合/血量，支持概率和固定/随机选句；无配置保留旧行为。扩展198/战斗5250/客户端2281/浏览器42+85项及Web构建、pack/import通过；独立5247 PID50560，无新APK。
+
+- **将领专属台词 JSON 已接：见[记录](../reverse/COMMANDER_DIALOGUES_20261021.md)及[模板](mod-kit/examples/commander-dialogues/README.md)。** API2 commanderDialogues按定义ID匹配，kill专属数组优先/空缺回退，occupy/retreat仅预留。扩展184/客户端2285/浏览器29+原85项及Web构建、pack/import通过；独立5246 PID13808，无新APK。
+
+- **现有击杀随机喊话前端已接：见[记录](../reverse/KILL_DIALOGUE_FRONTEND_20261021.md)。** 原面板/6句原文及将领头像，本地队列确认，不发送后端剧情确认；剧情优先、AI恢复及三视口85项通过，Web构建零警告错误。后端8%概率及占领规则未改；独立5245 PID39040，无新APK。
+
 - **0.2.9 发行汇总：见[说明](RELEASE_0.2.9_20261021.md)。** 当前规则、多人、结算、物品、显示和Android启动修复统一打包，0.2.9/code11 ARM64沿用原签名。核心310755/客户端1972/Mod57/Web包6954/启动18/多人35/单项83通过，APK包内资源程序集、签名与对齐通过。附件、提交号及实际远端核验见 `../build/release-0.2.9-20261021/`；独立预览5244，不使用其他服务的玩家档案。真机与图标闪烁未验收，下方未打包说明属于各阶段历史。
 
 - **原版技能 JSON 参数已接：见[记录](../reverse/LEGACY_SKILL_PARAMETERS_20261021.md)。** legacySkillParameters 开放29技能/36个倍率、概率、移动/攻击、折扣、经济/经验和教学参数；[模板与指南](mod-kit/examples/legacy-skill-parameters/README.md)。缺省保持原规则/旧指纹，完整技能替换不叠加，配置变更沿用 Mod 隔离。核心310748、专项198、客户端2318、Mod57、浏览器16及 Web/Android Compile通过，原版前后存档哈希一致。独立5228 PID49580留参数测试包，无新APK或玩家档案操作。

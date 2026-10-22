@@ -7,6 +7,7 @@ namespace Ew4.Client;
 
 public sealed partial class ClientGame
 {
+    private const int CommanderSectionCapacity = 20;
     private PlayerAccount? localAccount;
     private string Profile => Path.Combine(saveDirectory, "account.json");
     private PlayerAccount Account()
@@ -44,7 +45,7 @@ public sealed partial class ClientGame
     {
         var account = Account(); var locked = LockedCommanders();
         var sources = content.Catalogs.Runtime.SourceTrees.GetProperty("def_commander.xml").GetProperty("children");
-        return new { account.Revision, account.Medals, account.Badges, skillLayout = content.Extensions.Layouts.GetValueOrDefault("commander"), offers = account.CommanderOffers, roster = account.Roster.Select(c => new { c.Id, c.DefinitionId, c.Learning, c.Training, c.Items,
+        return new { account.Revision, account.Medals, account.Badges, sectionCapacity = CommanderSectionCapacity, skillLayout = content.Extensions.Layouts.GetValueOrDefault("commander"), offers = account.CommanderOffers, roster = account.Roster.Select(c => new { c.Id, c.DefinitionId, c.Learning, c.Training, c.Items, c.Tag,
             locked = locked.Contains(c.Id), rankPrice = PromotionPrice(c, false), titlePrice = PromotionPrice(c, true), fullPrice = FullPromotionPrice(c),
             healthBonus = content.Catalogs.Combat.RankHealth[c.Learning.Rank.Level.ToString(CultureInfo.InvariantCulture)],
             healing = content.Catalogs.Combat.TitleHealing[c.Learning.Title.Level.ToString(CultureInfo.InvariantCulture)] }),
@@ -74,6 +75,18 @@ public sealed partial class ClientGame
     // Original 60030/195150: three offer pools, distinct from individual ability stars.
     private static readonly int[] BadgePrices = [0, 0, 0, 3, 3, 4, 6, 8];
     private static int BadgePrice(int rating) => rating > 0 && rating <= BadgePrices.Length ? BadgePrices[rating - 1] : 0;
+    private int CommanderSection(string definitionId)
+    {
+        var source = content.Catalogs.Runtime.SourceTrees.GetProperty("def_commander.xml").GetProperty("children").EnumerateArray()
+            .Select(e => e.GetProperty("attributes")).Single(a => "ew4.commander." + a.GetProperty("id").GetString() == definitionId);
+        return Math.Clamp((int.Parse(source.GetProperty("star").GetString()!, CultureInfo.InvariantCulture) - 1) / 3, 0, 2);
+    }
+    private void RequireCommanderSlot(PlayerAccount account, string definitionId)
+    {
+        int section = CommanderSection(definitionId);
+        if (account.Roster.Count(c => CommanderSection(c.DefinitionId) == section) >= CommanderSectionCapacity)
+            throw new RuleViolation("account.capacity", "该星区已满（20位将领）");
+    }
     private PlayerAccount DrawCommanders(PlayerAccount account, int group)
     {
         if (group is < 0 or > 2) throw new RuleViolation("account.offer_group", "Unknown original recruitment section");
@@ -119,6 +132,7 @@ public sealed partial class ClientGame
                 throw new RuleViolation("account.reward_claimed", "Princess already claimed");
             if (account.Roster.Count >= rules.MaximumRoster) throw new RuleViolation("account.capacity", "Roster is full");
             var owned = content.Catalogs.Accounts.FromDefinition(id, "local.commander." + id + "." + Guid.NewGuid().ToString("N"));
+            RequireCommanderSlot(account, owned.DefinitionId);
             var inventory = account.Inventory.ToDictionary(p => p.Key, p => p.Value);
             foreach (string item in owned.Items) inventory[item] = checked(inventory.GetValueOrDefault(item) + 1);
             next = account.Copy() with { Revision = checked(account.Revision + 1), Roster = account.Roster.Append(owned).ToArray(), Inventory = inventory,
@@ -147,11 +161,31 @@ public sealed partial class ClientGame
             if ((badge ? account.Badges : account.Medals) < price) throw new RuleViolation("account.medals", "Insufficient recruitment currency");
             int legacyId = int.Parse(source.GetProperty("id").GetString()!, CultureInfo.InvariantCulture);
             var owned = content.Catalogs.Accounts.FromDefinition(legacyId, "local.commander." + legacyId);
+            RequireCommanderSlot(account, owned.DefinitionId);
             var inventory = account.Inventory.ToDictionary(p => p.Key, p => p.Value);
             foreach (string item in owned.Items) inventory[item] = checked(inventory.GetValueOrDefault(item) + 1);
             next = account with { Revision = checked(account.Revision + 1), Medals = account.Medals - (badge ? 0 : price), Badges = account.Badges - (badge ? price : 0),
                 Roster = account.Roster.Append(owned).ToArray(), Inventory = inventory,
                 CommanderOffers = account.CommanderOffers.ToDictionary(p => p.Key, p => p.Key == command.Group ? (IReadOnlyList<string>)p.Value.Where(id => id != command.Commander).ToArray() : p.Value) };
+        }
+        else if (command.Op == "tags")
+        {
+            var ids = command.TaggedCommanders ?? throw new RuleViolation("account.tag", "Missing commander tag selection");
+            var tagged = ids.ToHashSet(StringComparer.Ordinal);
+            if (tagged.Count != ids.Count || tagged.Any(id => !account.Roster.Any(c => c.Id == id)))
+                throw new RuleViolation("account.tag", "Tag selection must contain distinct owned commanders");
+            next = account.Copy() with { Revision = checked(account.Revision + 1),
+                Roster = account.Roster.Select(c => c with { Tag = tagged.Contains(c.Id) ? string.IsNullOrEmpty(c.Tag) ? "置顶" : c.Tag : "" }).ToArray() };
+        }
+        else if (command.Op == "tag")
+        {
+            var owned = account.Roster.SingleOrDefault(c => c.Id == command.Commander)
+                ?? throw new RuleViolation("account.commander", "Commander is not owned");
+            string tag = (command.Tag ?? "").Trim();
+            if (tag.Length > 12 || tag.Any(char.IsControl))
+                throw new RuleViolation("account.tag", "标签最多12个字，不能含换行或控制字符");
+            next = account.Copy() with { Revision = checked(account.Revision + 1),
+                Roster = account.Roster.Select(c => c.Id == owned.Id ? c with { Tag = tag } : c).ToArray() };
         }
         else
         {

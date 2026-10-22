@@ -17,7 +17,7 @@ public sealed class LegacyItemTradingCatalog
         Items = new ReadOnlyDictionary<int, ItemTradeDefinition>(items); SourceXml = xml;
         SourceRevision = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(xml)));
     }
-    public static LegacyItemTradingCatalog Read(string xml, bool correctOriginalEquipment = false)
+    public static LegacyItemTradingCatalog Read(string xml, bool correctOriginalEquipment = false, IReadOnlyDictionary<int, Equipment>? configuredItems = null)
     {
         var root = XDocument.Parse(xml).Root;
         if (root?.Name != "items") throw new RuleViolation("legacy.item_definition", "Unexpected item catalog root");
@@ -32,6 +32,7 @@ public sealed class LegacyItemTradingCatalog
             var equipment = new Equipment("ew4.item." + id.ToString(CultureInfo.InvariantCulture), Ew4Commander.Effect(Integer("function")),
                 Integer("value"), target == "all" ? null : target == "navy" ? "naval" : target, flag != 0, consumable != 0);
             if (correctItems) equipment = LegacyEquipmentCorrections.Apply(equipment, (string)element.Attribute("name")!);
+            if (configuredItems != null) equipment = configuredItems[id];
             if (id < 0 || price < 0 || consumable is not (0 or 1) || flag is not (0 or 1) || string.IsNullOrWhiteSpace(target)
                 || !items.TryAdd(id, new(equipment, price, consumable == 0)))
                 throw new RuleViolation("legacy.item_definition", "Invalid or duplicate item definition");

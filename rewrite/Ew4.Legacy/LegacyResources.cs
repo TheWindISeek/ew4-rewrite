@@ -133,6 +133,7 @@ public sealed class LegacyBattle
     public IReadOnlyList<LegacyTavern> Taverns { get; }
     public int MapId => Header[1];
     public Ew4.Core.ExtensionVictoryRules? Victory { get; }
+    public LegacyCountryIds? CountryIds { get; }
     public int Left => Header[2];
     public int Top => Header[3];
     public int Width => Header[4];
@@ -141,6 +142,8 @@ public sealed class LegacyBattle
         LegacyEvent[] events, LegacyMarket[] markets, LegacyTavern[] taverns, int legacyLength, LegacyBattleExtension[] extensions)
     {
         source = raw; Header = Array.AsReadOnly(header); Sections = Array.AsReadOnly(sections);
+        CountryIds = LegacyBattleExtensions.CountryIds(extensions, raw.AsSpan(0, legacyLength), factions, events);
+        CountryIds?.Apply(factions, events);
         Factions = Array.AsReadOnly(factions); Sites = Array.AsReadOnly(sites); Armies = Array.AsReadOnly(armies); Events = Array.AsReadOnly(events);
         EffectiveSites = Array.AsReadOnly(sites.GroupBy(s => s.Cell).Select(g => g.Last()).ToArray());
         Markets = Array.AsReadOnly(markets); Taverns = Array.AsReadOnly(taverns);
@@ -152,6 +155,7 @@ public sealed class LegacyBattle
     public byte[] ToLegacyBytes() => source.AsSpan(0, LegacyLength).ToArray();
     public byte[] WithJurisdictions(LegacyJurisdictionData? data) => LegacyBattleExtensions.Write(source.AsSpan(0, LegacyLength), Header, extensions, data);
     public byte[] WithVictory(Ew4.Core.ExtensionVictoryRules? rules) => LegacyBattleExtensions.WriteVictory(source.AsSpan(0, LegacyLength), extensions, rules);
+    public byte[] WithCountryIds(LegacyCountryIds? data) => LegacyBattleExtensions.WriteCountryIds(source.AsSpan(0, LegacyLength), extensions, data, Factions.Count, Events.Count);
     public byte[] SectionBytes(string name)
     {
         var section = Sections.Single(s => s.Name == name);

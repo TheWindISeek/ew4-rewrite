@@ -7,7 +7,7 @@ namespace Ew4.Client;
 
 public sealed record ClientCommand(string Op = "", long Revision = -1, string? Scenario = null, string? Country = null,
     string? Unit = null, string? Target = null, int Cell = -1, string? Offer = null, string? Commander = null, string? Item = null, JsonElement? Tutorial = null, int Group = 0, int Slot = 0, int Mode = 0,
-    IReadOnlyList<string>? LocalPlayers = null);
+    IReadOnlyList<string>? LocalPlayers = null, string? Tag = null, IReadOnlyList<string>? TaggedCommanders = null);
 public sealed record ClientSlot(string Scenario, string? Country, byte[] Session, MovementHistoryState? MovementHistory = null, JsonElement? Tutorial = null,
     int Round = 0, DateTimeOffset? SavedAt = null, IReadOnlyList<string>? LocalPlayers = null);
 
@@ -29,8 +29,14 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
             {
                 object result = path switch
                 {
-                    "/api/catalog" => new { scenarios = content.Scenarios, chapters = content.Chapters, presentations = content.Presentations,
-                        unlockedCampaigns = Account().UnlockedCampaigns, hasSave = File.Exists(Slot), extensionLayouts = content.Extensions.Layouts },
+                    "/api/catalog" => new { scenarios = content.Scenarios,
+                        chapters = content.Chapters.Select(c => c with { Countries = c.Countries.Select(content.Countries.Canonical).ToArray() }),
+                        presentations = content.Presentations.ToDictionary(p => p.Key, p => p.Value with {
+                            Countries = p.Value.Countries.Select(content.Countries.Canonical).ToArray() }),
+                        unlockedCampaigns = Account().UnlockedCampaigns, hasSave = File.Exists(Slot), extensionLayouts = content.Extensions.Layouts,
+                        commanderDialogues = content.Extensions.CommanderDialogues, countries = content.Countries.Countries,
+                        countryAliases = content.Countries.Aliases },
+                    "/api/country-registry" => new { schema = 1, countries = content.Countries.Countries, aliases = content.Countries.Aliases },
                     "/api/countries" => Countries(Command(body)),
                     "/api/local-players" => LocalPlayers(Command(body)),
                     "/api/headquarters" => Headquarters(),
@@ -58,7 +64,8 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
     private static ClientCommand Command(string body) => JsonSerializer.Deserialize<ClientCommand>(body, Json)
         ?? throw new RuleViolation("client.command", "Missing command payload");
     private object Countries(ClientCommand command) => content.Battle(command.Scenario!).Factions
-        .Where(f => f.Camp != 4).Select(f => new { id = f.CountryId, name = content.Label(f.CountryId), camp = f.Camp }).ToArray();
+        .Where(f => f.Camp != 4).Select(f => new { id = content.Countries.Canonical(f.CountryId), name = content.CountryName(f.CountryId), camp = f.Camp,
+            flag = content.Country(f.CountryId)?.Flag ?? f.Variant, flagImage = content.Country(f.CountryId)?.FlagImage }).ToArray();
     private object Leave(ClientCommand command)
     {
         if (game != null && command.Revision != game.Session.Revision)
@@ -175,7 +182,7 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
         if (active.Id != session.PlayerFaction || !active.Human) throw new RuleViolation("client.player_turn", "Player does not own the active turn");
         if (command.Op == "use_item")
         {
-            var change = ConsumableItems.Use(session, session.Revision, command.Unit!, command.Item!, content.Catalogs.Items.Rules(), rules.Training);
+            var change = ConsumableItems.Use(session, session.Revision, command.Unit!, command.Item!, content.Catalogs.Items.Rules(), rules.Training, content.Extensions.Bus);
             CommitSession(change);
             movementHistory.Reset(game!.Session.World);
             AutoSave();
@@ -340,8 +347,19 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
             .ToDictionary(p => LegacyScenarioInitialization.FactionId(world.ScenarioId, p.index, p.source), p => p.source.Color);
         var factionSources = battle.Factions.Select((source, index) => (source, index))
             .ToDictionary(p => LegacyScenarioInitialization.FactionId(world.ScenarioId, p.index, p.source), p => p.source);
+        var unitVariants = factionSources.ToDictionary(p => p.Key, p => p.Value.Variant);
+        var countryIds = factionSources.ToDictionary(p => p.Key, p => content.Countries.Canonical(p.Value.CountryId));
+        var visualVariants = factionSources.ToDictionary(p => p.Key, p => content.Country(p.Value.CountryId)?.VisualVariant
+            ?? content.Country(p.Value.CountryId)?.UnitVariant ?? p.Value.Variant);
+        foreach (var (id, source) in factionSources)
+            unitVariants[id] = content.Country(source.CountryId)?.UnitVariant ?? source.Variant;
         foreach (var creation in ScenarioFactions.Creations(world.ScenarioEvents))
         {
+            string? templateId = ScenarioFactions.Template(world, creation);
+            countryIds[creation.Faction] = creation.Country ?? (templateId == null ? creation.Faction : countryIds[templateId]);
+            unitVariants[creation.Faction] = creation.UnitVariant ?? (templateId == null ? "others" : unitVariants[templateId]);
+            visualVariants[creation.Faction] = content.Country(countryIds[creation.Faction])?.VisualVariant
+                ?? (creation.UnitVariant == null && templateId != null ? visualVariants[templateId] : unitVariants[creation.Faction]);
             if (ScenarioFactions.Template(world, creation) is not string template) continue;
             factionSources.Add(creation.Faction, factionSources[template]);
             factionColors.Add(creation.Faction, factionColors[template]);
@@ -349,6 +367,9 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
         var sites = battle.EffectiveSites.ToDictionary(s => (int)s.Cell);
         var originalUnits = battle.Armies.Select((army, index) => (army, id: world.ScenarioId + ".unit." + index))
             .ToDictionary(p => p.id, p => p.army);
+        string? CommanderDefinitionId(UnitState unit) => session.Account.Roster.FirstOrDefault(c => c.Id == unit.CommanderId)?.DefinitionId
+            ?? (unit.CommanderId == unit.Id + ".commander" && originalUnits.TryGetValue(unit.Id, out var army)
+                && content.Catalogs.Runtime.Commanders.TryGetValue(army.Commander, out var definition) ? definition.Definition.Id : null);
         var movements = new List<object>();
         if (previous != null)
         {
@@ -414,10 +435,12 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
             factions = world.Factions.Select(f => new { f.Id, f.Name, f.Camp, f.Human, f.Defeated, f.Resources,
                 relation = WorldDiplomacy.Relation(world, session.PlayerFaction, f.Id, current.Rules.Turns.NeutralCamps),
                 neutral = WorldDiplomacy.NeutralTo(world, f.Id, session.PlayerFaction, current.Rules.Turns.NeutralCamps),
-                country = factionSources.GetValueOrDefault(f.Id)?.CountryId ?? f.Id,
-                flag = f.Appearance?.Flag ?? factionSources.GetValueOrDefault(f.Id)?.Variant,
-                flagImage = f.Appearance?.FlagImage,
-                color = f.Appearance?.Color is string color ? ScenarioFactions.PackedColor(color) : factionColors.GetValueOrDefault(f.Id) }),
+                country = countryIds.GetValueOrDefault(f.Id) ?? f.Id,
+                unitVariant = unitVariants.GetValueOrDefault(f.Id),
+                visualVariant = visualVariants.GetValueOrDefault(f.Id),
+                flag = f.Appearance?.Flag ?? (f.Appearance?.FlagImage == null ? content.Country(countryIds[f.Id])?.Flag ?? factionSources.GetValueOrDefault(f.Id)?.Variant : null),
+                flagImage = f.Appearance?.FlagImage ?? (f.Appearance?.Flag == null ? content.Country(countryIds[f.Id])?.FlagImage : null),
+                color = (f.Appearance?.Color ?? content.Country(countryIds[f.Id])?.Color) is string color ? ScenarioFactions.PackedColor(color) : factionColors.GetValueOrDefault(f.Id) }),
             cells = cellDeltaFrom == null ? world.Cells.Select(CellView).ToArray() : null,
             cellUpdates = cellDeltaFrom == null ? null : world.Cells.Select((c, i) => (c, i))
                 .Where(p => p.c != cellDeltaFrom.Cells[p.i] || world.Jurisdictions?.CellCenters[p.i] != cellDeltaFrom.Jurisdictions?.CellCenters[p.i])
@@ -431,6 +454,7 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
                 canAttack = CanAttack(u),
                 veterancy = u.Veterancy, morale = u.Morale.Effective,
                 facing = originalUnits.TryGetValue(u.Id, out var source) ? source.Facing : 1,
+                commanderDefinitionId = CommanderDefinitionId(u),
                 commanderImage = session.Account.Roster.FirstOrDefault(c => c.Id == u.CommanderId) is OwnedCommander owned
                     ? content.Catalogs.Accounts.Rules().Definitions[owned.DefinitionId].DisplayName
                     : u.CommanderId == u.Id + ".commander" && originalUnits.TryGetValue(u.Id, out var commanded)

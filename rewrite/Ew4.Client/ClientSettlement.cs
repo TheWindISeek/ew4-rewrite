@@ -34,7 +34,7 @@ public sealed partial class ClientGame
         var next = session.World.LocalMultiplayer != null || entry == null || entry.Chapter == 0 ? null : content.Presentations.Values
             .Where(p => p.Chapter == entry.Chapter && string.CompareOrdinal(p.Id, entry.Id) > 0
                 && CampaignProgress.Accessible(content, session.Account, p.Id)
-                && (p.Countries.Length == 0 || p.Countries.Contains(content.Battle(scenario).Factions.Single(f => !f.Ai).CountryId)))
+                && (p.Countries.Length == 0 || p.Countries.Select(content.Countries.Canonical).Contains(content.Countries.Canonical(content.Battle(scenario).Factions.Single(f => !f.Ai).CountryId))))
             .OrderBy(p => p.Id, StringComparer.Ordinal).FirstOrDefault();
         var ids = session.RosterDeployments.Where(q => q.Faction == session.PlayerFaction).SelectMany(q => q.CommanderIds).ToHashSet();
         var generals = session.Account.Roster.Where(c => ids.Contains(c.Id)).Select(c => {

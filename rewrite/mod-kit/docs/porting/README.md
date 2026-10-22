@@ -4,6 +4,10 @@
 
 按文件和函数找入口请读[原包入库与rewrite入口对照表](ENTRYPOINTS.md)：列出原资源、转换产物、转换函数、运行函数，以及已核实原SO函数地址和反编译证据；原版函数与rewrite不强求一对一。
 
+国家兵模可独立编辑 `client/unit-visuals.json`，支持新增势力复用、逐兵种覆盖和自定义动作定义；国旗、战斗属性及回合顺序的独立入口见[国家兵模接口](UNIT_VISUALS.md)。
+
+独立于所有剧本的国家表为 `client/countries.json`，长 ID、中文 ID、原版短引用兼容及 BTL 内嵌 CNTR 扩展的导出/写入/移除见[全局国家表](GLOBAL_COUNTRIES.md)。
+
 ## 已实现与规划必须分开
 
 | 能力 | 当前实现 | 后续规划，当前不可依赖 |
@@ -22,6 +26,8 @@
 当前技能入口是包根`rewrite/extension.json`及其定义/绑定/脚本引用，不是向mod.json添加skills字段。尚无`uiPackage`、任意UI功能bindings或新完整剧本容器入口。实际入口见[配置索引](../CONFIG_REFERENCE.md)与[可打包示例](../../examples/rule-extension/README.md)。
 
 只调原版技能平衡时，使用入口的 `legacySkillParameters` 引用[JSON 参数模板](../../examples/legacy-skill-parameters/README.md)，可以调整 29 种技能的 36 个数值，无须重写技能或 Lua。此字段需包含本次增补的引擎版本；省略字段继续使用旧规则。
+
+物品/装备扩展见[物品效果接口](ITEM_EFFECTS.md)及[可打包示例](../../examples/item-effects/README.md)：复用技能 JSON 和外置 Lua，可授予装备技能或替换消耗品使用效果。
 
 ## 使用外置代码制作新技能（API 2）
 

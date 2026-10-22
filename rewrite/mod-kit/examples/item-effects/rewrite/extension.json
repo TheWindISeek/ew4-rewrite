@@ -1,0 +1,8 @@
+{
+  "schema": 1,
+  "apiVersion": 2,
+  "skills": ["rewrite/definitions/item-skills.json"],
+  "statuses": ["rewrite/definitions/item-statuses.json"],
+  "itemBindings": "rewrite/definitions/item-bindings.json",
+  "scripts": ["rewrite/scripts/items.lua"]
+}

@@ -33,6 +33,7 @@ public sealed record ScenarioEffect
     public string? Camp { get; init; }
     public string? Name { get; init; }
     public string? TemplateFaction { get; init; }
+    public string? Country { get; init; }
     public string? UnitVariant { get; init; }
     public IReadOnlyDictionary<string, RecruitmentGrant>? Recruitment { get; init; }
     public string? Flag { get; init; }
@@ -406,7 +407,8 @@ public static class ScenarioRules
                     || e.Type == "faction_identity" && (e.Name == null && e.Flag == null && e.FlagImage == null && e.Color == null || e.Script != null)
                     || e.Type is not ("faction_create" or "faction_identity") && (e.Name != null || e.Flag != null || e.FlagImage != null || e.Color != null)
                     || e.Name != null && (string.IsNullOrWhiteSpace(e.Name) || e.Name.Length > 128 || e.Name.Any(char.IsControl))
-                    || e.Type != "faction_create" && (e.TemplateFaction != null || e.UnitVariant != null || e.Recruitment != null)
+                    || e.Type != "faction_create" && (e.TemplateFaction != null || e.Country != null || e.UnitVariant != null || e.Recruitment != null)
+                    || e.Country != null && !ScenarioFactions.CountryId(e.Country)
                     || e.UnitVariant != null && !ScenarioFactions.Code(e.UnitVariant)
                     || e.Recruitment != null && e.Recruitment.Any(p => string.IsNullOrWhiteSpace(p.Key) || p.Value == null || string.IsNullOrWhiteSpace(p.Value.Veterancy))
                     || e.Type == "relation" && (string.IsNullOrWhiteSpace(e.OtherFaction) || e.Relation is not ("allied" or "neutral" or "hostile" or "default"))

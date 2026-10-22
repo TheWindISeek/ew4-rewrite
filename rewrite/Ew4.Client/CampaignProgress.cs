@@ -29,10 +29,10 @@ public static class CampaignProgress
         var current = content.Presentations.Values.FirstOrDefault(p => p.Chapter > 0 && (p.Id == world.ScenarioId || p.Alternate == world.ScenarioId));
         if (current == null || RemainingYellow(content, world) != 0) return session.Account;
         int stage = int.Parse(current.Id[(current.Id.IndexOf('_') + 1)..]);
-        string playerCountry = content.Battle(world.ScenarioId).Factions.Single(f => !f.Ai).CountryId;
+        string playerCountry = content.Countries.Canonical(content.Battle(world.ScenarioId).Factions.Single(f => !f.Ai).CountryId);
         var candidates = Enumerable.Range(stage + 1, current.Countries.Length == 0 ? 1 : 2)
             .Select(n => content.Presentations.GetValueOrDefault($"campaign{current.Chapter}_{n:00}"));
-        var next = candidates.FirstOrDefault(p => p != null && (current.Countries.Length == 0 || p.Countries.SequenceEqual(new[] { playerCountry })));
+        var next = candidates.FirstOrDefault(p => p != null && (current.Countries.Length == 0 || p.Countries.Select(content.Countries.Canonical).SequenceEqual(new[] { playerCountry })));
         if (next == null || !next.Hidden || session.Account.UnlockedCampaigns.Contains(next.Id)) return session.Account;
         return session.Account.Copy() with { Revision = checked(session.Account.Revision + 1),
             UnlockedCampaigns = session.Account.UnlockedCampaigns.Append(next.Id).ToArray() };

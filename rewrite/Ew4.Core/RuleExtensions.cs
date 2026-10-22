@@ -10,7 +10,7 @@ public sealed record SkillSlot(string Id, string InstanceId = "", int Level = 1,
     {
         var ids = new HashSet<string>(StringComparer.Ordinal);
         foreach (var slot in slots)
-            if (string.IsNullOrWhiteSpace(slot.Id) || string.IsNullOrWhiteSpace(slot.InstanceId) || slot.InstanceId.Length > 64
+            if (slot == null || string.IsNullOrWhiteSpace(slot.Id) || string.IsNullOrWhiteSpace(slot.InstanceId) || slot.InstanceId.Length > 64
                 || slot.InstanceId.Contains('/') || slot.Level < 1 || !ids.Add(slot.InstanceId) || slot.X.HasValue != slot.Y.HasValue
                 || float.IsNaN(slot.X ?? 0) || float.IsInfinity(slot.X ?? 0) || float.IsNaN(slot.Y ?? 0) || float.IsInfinity(slot.Y ?? 0))
                 throw new RuleViolation("extension.slot", "Invalid or duplicate skill instance");
@@ -47,7 +47,8 @@ public sealed record ExtensionSkill
 }
 public sealed record RuleScriptContext(string Event, Combatant? Source, Combatant? Target, int Level,
     int Round, double Value, IReadOnlyDictionary<string, long> State, WorldState? World = null, string? PlayerCamp = null,
-    string? SourceId = null, string? TargetId = null, int? TargetCell = null, int Stacks = 1, int RemainingTurns = 0);
+    string? SourceId = null, string? TargetId = null, int? TargetCell = null, int Stacks = 1, int RemainingTurns = 0,
+    string? SkillId = null, string? InstanceId = null, string? ItemId = null);
 public sealed record RuleScriptResult(double Value, IReadOnlyDictionary<string, long>? State = null);
 public interface IRuleScriptRuntime
 {
@@ -70,6 +71,13 @@ public sealed partial class RuleEventBus
         .Concat(unit.Profile.Traits.Select(id => new SkillSlot(id, "trait." + id)))
         .Where(s => Skills.ContainsKey(s.Id)).Select(s => (Skills[s.Id], s)).Concat(StatusBindings(unit));
 
+    private static string? ItemId(SkillSlot slot)
+    {
+        if (!slot.InstanceId.StartsWith("item.", StringComparison.Ordinal)) return null;
+        int end = slot.InstanceId.IndexOf('.', 5);
+        return end > 5 ? "ew4.item." + slot.InstanceId.Substring(5, end - 5) : null;
+    }
+
     public double Modify(string ev, string operation, double value, Combatant source, Combatant target, Ew4Random random)
     {
         foreach (var (skill, slot) in Bound(source).Where(p => p.Skill.Kind == "passive"))
@@ -79,7 +87,8 @@ public sealed partial class RuleEventBus
                 var status = source.Statuses.SingleOrDefault(s => "status." + s.Id == slot.InstanceId);
                 double amount = effect.Script == null ? StackedValue(effect, status) : Scripts!.Run(effect.Script, effect.Function!,
                     new(ev, source, target, slot.Level, 0, value, new Dictionary<string, long>(),
-                        Stacks: status?.Stacks ?? 1, RemainingTurns: status?.RemainingTurns ?? 0), random).Value;
+                        Stacks: status?.Stacks ?? 1, RemainingTurns: status?.RemainingTurns ?? 0,
+                        SkillId: skill.Id, InstanceId: slot.InstanceId, ItemId: ItemId(slot)), random).Value;
                 value = operation.EndsWith("multiplier", StringComparison.Ordinal) ? value * amount
                     : operation == "counterattack" ? Math.Min(value, amount) : value + amount;
                 if (double.IsNaN(value) || double.IsInfinity(value) || value < 0 || value > int.MaxValue)
@@ -89,13 +98,15 @@ public sealed partial class RuleEventBus
     }
 
     public WorldState Dispatch(WorldState world, string ev, string unitId, Ew4Random random, string? onlyInstance = null, string? targetId = null,
-        UnitState? eventSource = null, int? targetCell = null, WorldMoveRules? movement = null)
+        UnitState? eventSource = null, int? targetCell = null, WorldMoveRules? movement = null, SkillSlot? grantedSlot = null)
     {
         var source = world.Units.SingleOrDefault(u => u.Id == unitId) ?? eventSource;
         if (source == null) return world;
         var target = targetId == null ? source : world.Units.Single(u => u.Id == targetId);
-        foreach (var (skill, slot) in Bound(source.Combatant).Where(p => onlyInstance != null
-            ? p.Slot.InstanceId == onlyInstance : p.Skill.Kind == "passive"))
+        var bindings = grantedSlot == null ? Bound(source.Combatant).Where(p => onlyInstance != null
+            ? p.Slot.InstanceId == onlyInstance : p.Skill.Kind == "passive")
+            : new[] { (Skill: Skills[grantedSlot.Id], Slot: grantedSlot) };
+        foreach (var (skill, slot) in bindings)
             foreach (var effect in skill.Effects.Where(e => e.Event == ev))
             {
                 if (ev == "skill.activate" && !world.Units.Any(u => u.Id == unitId)) return world with { RandomState = random.State };
@@ -110,7 +121,8 @@ public sealed partial class RuleEventBus
                     var result = effect.Script == null ? new RuleScriptResult(StackedValue(effect, status)) : Scripts!.Run(effect.Script, effect.Function!,
                         new(ev, currentSource.Combatant, affected?.Combatant, slot.Level, world.Round, effect.Value, local, world,
                             SourceId: source.Id, TargetId: affected?.Id, TargetCell: targetCell ?? target.Cell,
-                            Stacks: status?.Stacks ?? 1, RemainingTurns: status?.RemainingTurns ?? 0), random);
+                            Stacks: status?.Stacks ?? 1, RemainingTurns: status?.RemainingTurns ?? 0,
+                            SkillId: skill.Id, InstanceId: slot.InstanceId, ItemId: ItemId(slot)), random);
                     if (result.State != null) foreach (var pair in result.State)
                     {
                         if (string.IsNullOrWhiteSpace(pair.Key) || pair.Key.Length > 64 || pair.Key.Contains('/'))

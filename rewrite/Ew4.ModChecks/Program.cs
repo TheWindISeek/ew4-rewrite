@@ -5,6 +5,20 @@ using System.Text.Json.Nodes;
 using System.Xml.Linq;
 using Ew4.Mods;
 
+if (args.ElementAtOrDefault(1) == "--item-extensions-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { itemExtensionModChecks = ItemExtensionModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
+}
+if (args.ElementAtOrDefault(1) == "--countries-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { countryChecks = CountryChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
+}
+
+if (args.ElementAtOrDefault(1) == "--unit-visuals-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { unitVisualChecks = UnitVisualChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
+}
+
 if (args.ElementAtOrDefault(1) == "--legacy-skills-only")
 {
     Console.WriteLine(JsonSerializer.Serialize(new { legacySkillParameterModChecks = LegacySkillParameterModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;

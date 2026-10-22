@@ -19,6 +19,7 @@ const base = process.argv[2] || 'http://127.0.0.1:5221';
     await page.goto(base); await page.waitForFunction(() => startupReady);
     await page.evaluate(() => start('conquest1', 'fra'));
     await page.evaluate(() => {
+      settings.skipTurnFast = true;
       window.flagProbe = { batches: [], painted: [], frames: 0, done: false };
       const originalRpc = rpc, originalFrame = battlefield.frame;
       rpc = async function (route, args) {

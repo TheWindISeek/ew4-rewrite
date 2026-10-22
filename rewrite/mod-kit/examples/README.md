@@ -1,6 +1,12 @@
 # 最小覆盖示例
 
+给装备授予技能、替换消耗品效果及引入外置 Lua，见[物品/装备示例](item-effects/README.md)。
+
+独立国家表、任意形式国家 ID、兵模/旗帜/战斗属性分别配置与事件复用见[全局国家示例](global-countries/README.md)。完整 ID 可通过 CNTR 扩展写入 BTL。
+
 只修改原版将领技能的倍率、概率、折扣、移动/攻击加成与教学成长，见[原版技能参数模板](legacy-skill-parameters/README.md)。
+
+给已有或新增将领配置专属喊话，见[将领台词 JSON 模板](commander-dialogues/README.md)。当前消费击杀通知，占领和退场字段仅作预留。
 
 多阶段修改胜负条件、替换完整结算布局和按钮绑定见[三阶段胜利示例](victory-stages/README.md)。
 

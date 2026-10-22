@@ -25,6 +25,10 @@ public static class ScenarioFactions
     public static bool Code(string value) => value.Length is > 0 and <= 128
         && value.All(c => c is >= 'a' and <= 'z' or >= 'A' and <= 'Z' or >= '0' and <= '9' or '.' or '_' or '-');
 
+    // Country IDs are data keys, not native three-letter codes. Legacy BTL fields
+    // remain fixed-width; CountryCatalog aliases those values to this unrestricted ID.
+    public static bool CountryId(string value) => !string.IsNullOrWhiteSpace(value) && value.All(c => !char.IsControl(c));
+
     public static void ValidateAppearance(FactionAppearance? appearance)
     {
         if (appearance == null) return;

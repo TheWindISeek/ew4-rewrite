@@ -32,16 +32,30 @@
   };
   proto.reopenCommander=function(id){const held=this.held(id);if(held)this.commanderInfo(this.definition(held),held,this.commanderReturn);};
   proto.updateAccount=async function(args){this.data=await this.api.rpc('commander',{revision:this.data.revision,...args});this.drawRoster();};
+  proto.editCommanderTags=async function(){
+    if(this.tagSaving)return;
+    if(!this.tagDraft){this.tagDraft=new Set(this.data.roster.filter(c=>c.tag).map(c=>c.id));this.drawRoster();return;}
+    this.tagSaving=true;this.drawRoster();
+    try{
+      this.data=await this.api.rpc('commander',{op:'tags',revision:this.data.revision,taggedCommanders:[...this.tagDraft]});
+      this.tagDraft=null;
+    }catch(error){this.api.notice(error.message);}
+    finally{this.tagSaving=false;this.drawRoster();}
+  };
   proto.headquartersControls=function(){
-    for(const id of ['hq-princess','hq-shop'])document.getElementById(id)?.remove();
+    for(const id of ['hq-princess','hq-shop','hq-tags'])document.getElementById(id)?.remove();
     if(this.recruiting||this.deployment)return;
     const layout=this.manifest.layouts.form_deploygeneral;
     for(const [native,id,title,action] of [['btn_princess','hq-princess',this.text('btn_princess'),()=>this.princesses()],['btn_shop','hq-shop',this.text('title_shop'),()=>this.shop()]]){
       const a=layout.children.find(e=>e.attributes.id===native).attributes,b=this.api.button('',action,document.getElementById('hq-screen'));
       b.id=id;b.className='native-command'+(native==='btn_shop'?' blue':'');b.setAttribute('aria-label',title);
+      b.disabled=!!this.tagDraft;
       Object.assign(b.style,{position:'absolute',left:a.x+'px',top:a.y+'px',width:a.w+'px',height:a.h+'px'});
       b.append(native==='btn_shop'?this.api.uiImage('image_shop.png',20,16):this.lettering(title,'font_text_3_cn_hd','#ebe6e1'));
     }
+    const title=this.tagDraft?'确认':'标签',tags=this.api.button('',()=>this.editCommanderTags(),document.getElementById('hq-screen'));
+    tags.id='hq-tags';tags.className='native-command'+(this.tagDraft?' orange':' blue');tags.setAttribute('aria-label',this.tagDraft?'确认标签':'标签');tags.title=this.tagDraft?'确认标签':'赋予标签';tags.setAttribute('aria-pressed',String(!!this.tagDraft));tags.disabled=this.tagSaving;
+    tags.append(this.lettering(title,'font_text_3_cn_hd','#ebe6e1'));
   };
   proto.dismissSkillTip=function(){this.skillPopup?.remove();this.skillEvents?.abort();this.skillPopup=null;this.skillAnchor=null;this.skillPinned=false;};
   proto.skillTip=function(anchor,skill,pin=false){

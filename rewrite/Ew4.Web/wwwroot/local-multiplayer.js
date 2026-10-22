@@ -32,7 +32,7 @@
           const input=document.createElement('input');input.type='checkbox';input.checked=faction.locked;input.disabled=faction.locked;
           input.setAttribute('aria-label',faction.name);input.onchange=()=>{if(input.checked)selected.add(faction.id);else selected.delete(faction.id);};
           inputs.push({input,faction});
-          const flag=document.createElement('img');flag.src='/content/ui/image_flag_hd/'+encodeURIComponent(faction.flag)+'1.png';flag.alt='';
+          const flag=document.createElement('img');flag.src=faction.flagImage?'/content/extensions/'+faction.flagImage.slice('rewrite/'.length).split('/').map(encodeURIComponent).join('/'):'/content/ui/image_flag_hd/'+encodeURIComponent(faction.flag)+'1.png';flag.alt='';
           const name=document.createElement('span');name.className='local-faction-name';name.append(this.text(faction.name));
           label.append(input,flag,name);list.append(label);
         }

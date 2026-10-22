@@ -11,15 +11,16 @@ public sealed partial class ClientGame
         if (scenario.Mode is not (1 or 2)) throw new RuleViolation("local.mode", "Local multiplayer requires a campaign or conquest");
         if (!CampaignProgress.Accessible(content, Account(), scenario.Id)) throw new RuleViolation("campaign.locked", "Campaign is locked");
         var battle = content.Battle(scenario.Id);
-        int primary = scenario.Mode == 2 ? battle.Factions.ToList().FindIndex(f => f.CountryId == command.Country)
+        int primary = scenario.Mode == 2 ? battle.Factions.ToList().FindIndex(f => content.Countries.Canonical(f.CountryId) == (command.Country == null ? null : content.Countries.Canonical(command.Country)))
             : battle.Factions.ToList().FindIndex(f => !f.Ai);
         if (primary < 0 || scenario.Mode == 2 && battle.Factions[primary].Camp == 4)
             throw new RuleViolation("local.selection", "Choose a playable initial country first");
         var order = new[] { primary }.Concat(Enumerable.Range(0, battle.Factions.Count).Where(i => i != primary));
         return order.Where(i => scenario.Mode != 2 || battle.Factions[i].Camp != 4)
             .Select(i => new { id = LegacyScenarioInitialization.FactionId(scenario.Id, i, battle.Factions[i]),
-            name = content.Label(battle.Factions[i].CountryId), country = battle.Factions[i].CountryId,
-            flag = battle.Factions[i].Variant, locked = i == primary }).ToArray();
+            name = content.CountryName(battle.Factions[i].CountryId), country = content.Countries.Canonical(battle.Factions[i].CountryId),
+            flag = content.Country(battle.Factions[i].CountryId)?.Flag ?? battle.Factions[i].Variant,
+            flagImage = content.Country(battle.Factions[i].CountryId)?.FlagImage, locked = i == primary }).ToArray();
     }
 
     private void ValidateLocalSelection(ClientCommand command)
