@@ -4,7 +4,6 @@
 
 | 路径 | 用途 |
 | --- | --- |
-| `../duplicates/local-resources-20261022/` | 旧构建与重复测试资源的本地去重归档；`restore.py --prefix <项目相对路径>` 可恢复，详见[清理记录](../reverse/LOCAL_RESOURCE_CLEANUP_20261022.md) |
 | `../build/item-extensions-20261021/` | 5261物品接口独立预览、测试Mod/档案、示例ew4mod及Web/Android编译输出；验收记录在reports/item-extensions-20261021，未操作玩家档案 |
 | `local/mod-management/` | 从地图工作目录迁来的通用Mod管理构建、兼容构建、测试档案与历史日志；不是用户发行包 |
 | `local/eastasia-preview/server/` | 5190预览使用的旧兼容引擎，保留原存档指纹 |
@@ -19,5 +18,7 @@
 | `../build/release-*/web/` | 含EXE、基础资源、网页与启动器的独立Windows发行目录；默认存档位于该包`saves/` |
 
 `local/`和`reports/`是本机工作文件，不随源码Git或发行包打包。地图的作者配置仍在`../maps/eastasia_rewrite/`，通用功能构建与账户不再放在地图目录内。历史报告中的旧路径和PID代表当时验证环境，不应作为当前启动参数。
+
+2026-10-22 已直接删除部分旧构建副本和自动生成的测试档案，不保留恢复归档；历史路径可能不再存在。需要旧验证环境时从源码重建，详见[清理记录](../reverse/LOCAL_RESOURCE_CLEANUP_20261022.md)。
 
 当前可导入的东亚测试征服为`content/eastasia-test-conquest.ew4mod`，使用0.2.0内置东亚资源，增加征服第二页的“东亚 / 地图检查”。278城市无归属、两支原版测试部队，不是正式历史剧本。完整说明见`content/README.md`。

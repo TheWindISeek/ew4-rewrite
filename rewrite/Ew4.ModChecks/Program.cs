@@ -5,6 +5,11 @@ using System.Text.Json.Nodes;
 using System.Xml.Linq;
 using Ew4.Mods;
 
+if (args.ElementAtOrDefault(1) == "--deployment-limits-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { deploymentLimitModChecks = DeploymentLimitModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
+}
+
 if (args.ElementAtOrDefault(1) == "--item-extensions-only")
 {
     Console.WriteLine(JsonSerializer.Serialize(new { itemExtensionModChecks = ItemExtensionModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
@@ -40,7 +45,8 @@ if (args.ElementAtOrDefault(1) == "--extension-only")
 {
     Console.WriteLine(JsonSerializer.Serialize(new { extensionModChecks = ExtensionModChecks.Run(Path.GetFullPath(args[0])),
         commonSkillModChecks = CommonSkillModChecks.Run(Path.GetFullPath(args[0])),
-        legacySkillParameterModChecks = LegacySkillParameterModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
+        legacySkillParameterModChecks = LegacySkillParameterModChecks.Run(Path.GetFullPath(args[0])),
+        deploymentLimitModChecks = DeploymentLimitModChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
 }
 
 if (args.ElementAtOrDefault(1) == "--jurisdiction-only")

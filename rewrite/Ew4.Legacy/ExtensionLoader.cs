@@ -25,6 +25,7 @@ public sealed partial class ExtensionLoader
     public bool Enabled => Revision.Length > 0;
     public int ApiVersion { get; private set; } = 1;
     public LegacySkillParameters? LegacySkills { get; private init; }
+    public IReadOnlyDictionary<string, int?> DeploymentLimits { get; private init; } = new Dictionary<string, int?>();
     public IReadOnlyDictionary<string, CommanderDialogueLines> CommanderDialogues { get; private init; } = new Dictionary<string, CommanderDialogueLines>();
     private ExtensionLoader(RuleEventBus bus, string revision, ExtensionBinding[] units, ExtensionBinding[] commanders,
         Dictionary<string, ExtensionVictoryRules> victories, Dictionary<string, ExtensionLayout> layouts,
@@ -33,8 +34,10 @@ public sealed partial class ExtensionLoader
     private sealed record Manifest(int Schema, int ApiVersion, string[]? Skills = null, string[]? Traits = null,
         string? UnitBindings = null, string? CommanderBindings = null, string? VictoryRules = null, string? Presentation = null, string[]? Scripts = null,
         string? ScenarioEvents = null, string[]? Statuses = null, string? VictoryPresentation = null, string? LegacySkillParameters = null,
-        string? CommanderDialogues = null, string? ItemBindings = null);
+        string? CommanderDialogues = null, string? ItemBindings = null, string? DeploymentLimits = null);
     private sealed record LegacySkillFile(int Schema, Dictionary<string, Dictionary<string, double>> Skills);
+    private sealed record DeploymentLimitFile([property: JsonNumberHandling(JsonNumberHandling.Strict)] int Schema,
+        [property: JsonNumberHandling(JsonNumberHandling.Strict)] Dictionary<string, int?>? Limits);
 
     public static bool PathValid(string? p) => p != null && p.StartsWith("rewrite/", StringComparison.Ordinal) && p.Length < 240
         && !p.Contains('\\') && !p.Contains(':') && p.Split('/').All(s => s.Length > 0 && s != "." && s != "..")
@@ -66,6 +69,15 @@ public sealed partial class ExtensionLoader
         var m = Read<Manifest>("rewrite/extension.json");
         if (m.Schema != 1 || m.ApiVersion is not (1 or 2)) throw new RuleViolation("extension.version", "Unsupported extension schema/API version");
         if (m.ApiVersion == 1 && m.Statuses != null) throw new RuleViolation("extension.version", "Statuses require API 2");
+        var deploymentLimits = new Dictionary<string, int?>();
+        if (m.DeploymentLimits != null)
+        {
+            if (m.ApiVersion < 2) throw new RuleViolation("extension.version", "Deployment limits require API 2");
+            var quotas = Read<DeploymentLimitFile>(m.DeploymentLimits);
+            if (quotas.Schema != 1 || quotas.Limits == null || quotas.Limits.Any(p => string.IsNullOrWhiteSpace(p.Key) || p.Value < 0))
+                throw new RuleViolation("extension.deployment_limit", "Invalid deployment limit schema, scenario or nonnegative integer/null limit");
+            deploymentLimits = quotas.Limits;
+        }
         var commanderDialogues = new Dictionary<string, CommanderDialogueLines>();
         if (m.CommanderDialogues != null)
         {
@@ -189,7 +201,7 @@ public sealed partial class ExtensionLoader
         string revision = Convert.ToHexStringLower(SHA256.HashData(Encoding.UTF8.GetBytes(string.Join('\n', loaded.Select(p => p.Key + ":" + Convert.ToHexStringLower(SHA256.HashData(p.Value)))))));
         return new(new(skills, runtime, statuses), revision, units, commanders, victories, layouts, scenarioEvents)
             { ApiVersion = m.ApiVersion, VictoryPresentations = victoryScreens, LegacySkills = legacySkills, CommanderDialogues = commanderDialogues,
-                ItemBindings = items };
+                ItemBindings = items, DeploymentLimits = deploymentLimits };
         bool Known(string id) => skills.ContainsKey(id) || id.StartsWith("ew4.skill.", StringComparison.Ordinal)
             && int.TryParse(id[10..], out int value) && value is >= 0 and < 40 || BuiltinTraits.Contains(id);
     }

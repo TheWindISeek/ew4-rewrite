@@ -101,7 +101,7 @@ input,select,textarea{font-family:inherit;font-synthesis:none}
 #hq-screen.deploying::after{top:298px}
 #hq-screen.deploying .empty-commander:disabled{opacity:1}
 #hq-deployment-quota{position:absolute;left:255px;top:43px;height:21px;display:flex;align-items:center;gap:9px}
-.deploy-card-confirm{display:none;position:absolute;right:0;bottom:0;width:59px;height:26px;padding:0;background:url('/content/ui/image_ui_hd/button_confirm_blue.png') center/100% 100%;z-index:5;align-items:center;justify-content:center}
+.deploy-card-confirm{display:none;position:absolute;left:50%;bottom:0;transform:translateX(-50%);width:59px;height:26px;padding:0;background:url('/content/ui/image_ui_hd/button_confirm_blue.png') center/100% 100%;z-index:5;align-items:center;justify-content:center}
 .commander-card[aria-pressed=true]>.deploy-card-confirm{display:flex}
 .unit-detail [data-native-id=group_unit],.unit-detail [data-native-id=group_info]{top:3px!important;width:78px!important;height:78px!important}
 .unit-detail .info-unit-card{left:0;top:0;width:78px;height:78px}

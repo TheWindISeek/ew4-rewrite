@@ -106,6 +106,8 @@ public sealed class ClientContent
             throw new RuleViolation("extension.victory_presentation", "Victory screen references an unknown scenario");
         if (Extensions.ScenarioEvents.Keys.Any(id => !Scenarios.Any(s => s.Id == id)))
             throw new RuleViolation("scenario.reference", "Event rules reference an unknown scenario");
+        if (Extensions.DeploymentLimits.Keys.Any(id => id != "*" && !Scenarios.Any(s => s.Id == id)))
+            throw new RuleViolation("extension.deployment_limit", "Deployment limits reference an unknown scenario");
     }
 
     public string Label(string key) => Strings.TryGetValue(key, out string? label) ? label : Strings.TryGetValue("name_" + key, out label) ? label : key;
@@ -143,6 +145,9 @@ public sealed class ClientContent
                 .GroupBy(f => f.CountryId).ToDictionary(g => g.Key, g => Country(g.Key)!.UnitVariant!),
             CombatSeed = choice.Mode == 4 ? 100 : (ulong)Random.Shared.NextInt64(1, long.MaxValue), AiSeed = (ulong)Random.Shared.NextInt64(1, long.MaxValue)
         }, account);
+        if (Extensions.DeploymentLimits.TryGetValue(id, out int? limit) || Extensions.DeploymentLimits.TryGetValue("*", out limit))
+            started = started with { Session = started.Session with {
+                RosterDeployments = started.Session.RosterDeployments.Select(q => q with { Limit = limit }).ToArray() } };
         // Apply playable rules after import so existing scenario/save fingerprints stay compatible.
         started = started with { Rules = started.Rules with { Battle = started.Rules.Battle with {
             Combat = started.Rules.Battle.Combat with { LethalStrikePreventsCounterattack = true } } } };

@@ -18,6 +18,7 @@
 | 自定义技能/特性/Lua | rewrite/extension.json及其skills/traits/scripts引用 | ExtensionLoader.Load；RuleEventBus.Modify/Dispatch；[完整接口](porting/RULE_EXTENSIONS.md) |
 | 物品/装备外置效果 | extension.json的itemBindings，apiVersion:2；target/skills/useSkill/replaceLegacyEffect/value | ExtensionLoader.ConfigureItem；Ew4Commander.Attach；ConsumableItems.Use；[字段与模板](porting/ITEM_EFFECTS.md) |
 | 原版技能倍率/概率/折扣/成长 | extension.json的legacySkillParameters，apiVersion:2；JSON的schema:1/skills | LegacySkillParameters；[29技能参数模板](../examples/legacy-skill-parameters/README.md) |
+| 上将派遣名额 | extension.json的deploymentLimits，apiVersion:2；JSON的schema:1/limits，支持剧本ID及`*` | ClientContent.Start；RosterDeployment；[字段、模板及存档规则](../examples/deployment-limits/README.md) |
 | 召唤/传送/范围/状态/移动力 | apiVersion:2；skills效果及statuses状态定义 | RuleEventBus.ApplyEffect/MovementBudget/ExpireStatuses；[制作步骤](porting/README.md)、[六技能示例](../examples/common-skills/README.md) |
 | 动态技能数量/顺序/坐标 | extension.json的unitBindings/commanderBindings/presentation | ExtensionLoader.PatchCatalog；Ew4SkillUI.layout；不限制将领四槽 |
 | 自定义征服/战役胜负 | extension.json的victoryRules或BTL的VICT v1 | ExtensionVictory.Evaluate；LegacyBattle.WithVictory；[规则及CLI](porting/RULE_EXTENSIONS.md) |

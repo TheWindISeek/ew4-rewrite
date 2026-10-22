@@ -135,6 +135,7 @@
       if(deployment)document.getElementById('play').hidden=true;
       for(const id of ['main-menu','scenario-menu','countries','campaign-screen'])document.getElementById(id).hidden=true;
       document.getElementById('hq-screen').hidden=false;document.getElementById('menu').hidden=false;
+      if(deployment)document.getElementById('hq-roster').scrollLeft=0;
       this.drawRoster();
     }
     async deployGeneral(unit,revision){
@@ -196,7 +197,7 @@
       }
       const capacity=data.sectionCapacity??20,slots=this.recruiting?[6,4,2][this.rating]:this.deployment?Math.max(12,entries.length):Math.max(this.rosterRating===null?capacity*3:capacity,entries.length);
       for(let i=entries.length;i<slots;i++){const b=this.api.button('',()=>{if(!this.deployment){this.recruiting=true;this.rating=this.rosterRating??0;this.drawRoster();}},roster);b.className='commander-card empty-commander';b.setAttribute('aria-label','空将领位');b.append(this.api.uiImage('button_add_generals.png',78,78));const name=document.createElement('span');name.className='commander-name';b.append(name);b.disabled=this.recruiting||!!this.deployment||!!this.tagDraft;}
-      if(!this.recruiting)for(const [i,card] of [...roster.children].entries()){card.style.gridRow=this.deployment?Math.floor(i/6)%2+1:i%2+1;card.style.gridColumn=this.deployment?Math.floor(i/12)*6+i%6+1:Math.floor(i/2)+1;}
+      if(!this.recruiting)for(const [i,card] of [...roster.children].entries()){card.style.gridRow=i%2+1;card.style.gridColumn=Math.floor(i/2)+1;}
       for(const id of ['hq-recruit-band','hq-refresh','hq-buy-buttons'])document.getElementById(id)?.remove();
       if(this.recruiting){const band=document.createElement('div');band.id='hq-recruit-band';screen.insertBefore(band,roster);
         const refresh=this.api.button('',async()=>{this.offer=null;await this.transact({op:'refresh',group:this.rating});},screen);refresh.id='hq-refresh';refresh.className='native-command blue';refresh.setAttribute('aria-label','刷新将领');for(let i=0;i<3;i++)refresh.append(this.api.uiImage('button_refresh.png',13,16));this.drawPurchases();}

@@ -1,6 +1,11 @@
 using System.Text.Json;
 using Ew4.Core;
 
+if (args.ElementAtOrDefault(1) == "--deployment-limits-only")
+{
+    Console.WriteLine(JsonSerializer.Serialize(new { deploymentLimitChecks = DeploymentLimitChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
+}
+
 if (args.ElementAtOrDefault(1) == "--item-extensions-only")
 {
     Console.WriteLine(JsonSerializer.Serialize(new { itemExtensionChecks = ItemExtensionChecks.Run(Path.GetFullPath(args[0])), errors = 0 })); return;
@@ -48,7 +53,7 @@ if (args.Length == 2 && args[1] == "--scenario-only")
 }
 if (args.Length == 2 && args[1] == "--extension-only")
 {
-    Console.WriteLine(JsonSerializer.Serialize(new { extensionChecks = ExtensionChecks.Run(root), commonSkillChecks = CommonSkillChecks.Run(root), commanderDialogueChecks = CommanderDialogueChecks.Run(root), errors = 0 })); return;
+    Console.WriteLine(JsonSerializer.Serialize(new { extensionChecks = ExtensionChecks.Run(root), commonSkillChecks = CommonSkillChecks.Run(root), commanderDialogueChecks = CommanderDialogueChecks.Run(root), deploymentLimitChecks = DeploymentLimitChecks.Run(root), errors = 0 })); return;
 }
 if (args.Length == 2 && args[1] == "--jurisdiction-only")
 {
@@ -172,6 +177,7 @@ int legacyHostChecks = LegacyHostChecks.Run(root);
 int jurisdictionChecks = JurisdictionExtensionChecks.Run(root);
 int extensionChecks = ExtensionChecks.Run(root);
 extensionChecks += ItemExtensionChecks.Run(root);
+extensionChecks += DeploymentLimitChecks.Run(root);
 int commanderDialogueChecks = CommanderDialogueChecks.Run(root);
 int commonSkillChecks = CommonSkillChecks.Run(root);
 int legacySkillParameterChecks = LegacySkillParameterChecks.Run(root);

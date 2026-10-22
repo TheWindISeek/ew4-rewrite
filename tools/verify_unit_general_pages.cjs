@@ -11,7 +11,7 @@ const base=process.argv[2]||'http://127.0.0.1:5278',folder=path.resolve('rewrite
   const shot=async name=>{await page.waitForFunction(()=>[...document.querySelectorAll('#detail-modal:not([hidden]) img,#hq-screen:not([hidden]) img')].every(i=>i.complete&&i.naturalWidth));await page.evaluate(async()=>{await Promise.all(document.getAnimations().map(a=>a.finished.catch(()=>{})));});await page.screenshot({path:path.join(folder,name+'.png')});report.screenshots.push(name);};
   try{
     await page.goto(base);await page.waitForFunction(()=>startupReady);
-    const held=await page.evaluate(async()=>{await menus.headquarters();if(!menus.data.roster.length)await menus.updateAccount({op:'recruit',commander:menus.data.offers[0][0]});return menus.data.roster[0];});
+    const held=await page.evaluate(async()=>{await menus.headquarters();if(!menus.data.roster.length)await menus.updateAccount({op:'recruit',commander:menus.data.offers[0][0]});const held=menus.data.roster[0];await menus.updateAccount({op:'tags',taggedCommanders:[held.id]});return menus.data.roster[0];});
     await page.evaluate(()=>start('conquest1','fra'));
     const units=await page.evaluate(()=>({plain:state.units.find(u=>!u.commanderId).id,friendly:state.units.find(u=>u.commanderId&&u.owner===state.playerFaction).id,enemy:state.units.find(u=>u.commanderId&&u.owner!==state.playerFaction).id}));
     for(const [kind,id] of Object.entries(units)){
@@ -43,17 +43,62 @@ const base=process.argv[2]||'http://127.0.0.1:5278',folder=path.resolve('rewrite
       return {equal:JSON.stringify(before)===JSON.stringify(await rpc('action',{op:'state',revision:state.revision})),cost:result.cost,stale:stale.code,absent:absent.code};
     },units.enemy);
     check(readOnly.equal,'detail queries never mutate battle');check(readOnly.stale==='client.stale','stale query rejected');check(readOnly.absent==='client.unit','absent unit rejected');check(readOnly.cost?.money>0,'real recruitment cost supplied');
-    // Recruit, inspect a filtered HQ, then enter the independent original deployment view.
-    await page.evaluate(async()=>{await menus.headquarters();menus.rosterRating=2;menus.drawRoster();});
+    // Leave HQ scrolled before entering the deployment roster with the saved tag.
+    await page.evaluate(async()=>{await menus.headquarters();menus.rosterRating=2;menus.drawRoster();document.getElementById('hq-roster').scrollLeft=500;});
     const target=await page.evaluate(()=>state.units.find(u=>u.owner===state.playerFaction&&!u.commanderId&&state.cells[u.cell].owner===state.playerFaction).id);
     await page.evaluate(async id=>menus.deployGeneral(id,state.revision),target);
     check(await page.locator('#hq-filters').isHidden(),'deployment has no HQ filters');
     check(await page.locator('#hq-tags,#hq-princess,#hq-shop').count()===0,'deployment has no HQ extra controls');
     check(await page.locator('#hq-roster [data-commander]').count()>=1,'HQ filter cannot hide deployment candidates');
+    check(await page.locator('#hq-roster').evaluate(e=>e.scrollLeft===0),'deployment opens at the pinned first column');
+    check(await page.locator('#hq-roster [data-commander="'+held.id+'"] .commander-tag').count()===1,'deployment displays persisted HQ tags');
     await page.locator('#hq-roster .commander-info').first().click();check(await page.locator('.commander-detail').isVisible(),'deployment information button works');await page.locator('#close-detail').click();
+    const actualRoster=await page.evaluate(()=>menus.data.roster);
+    // Use distinct definitions so the visual fixture covers all three star groups.
+    await page.evaluate(()=>{
+      const base=menus.data.roster[0],section=d=>Math.max(0,Math.min(2,Math.floor((d.rating-1)/3)));
+      const definitions=[0,1,2].flatMap(group=>menus.data.definitions.filter(d=>section(d)===group).slice(0,6));
+      menus.data.roster=definitions.map((d,i)=>({...base,id:'fixture.'+i,definitionId:d.id,locked:i===4,tag:i===3||i===16?'置顶':''}));
+      menus.rosterSelected=null;menus.drawRoster();
+    });
+    const fixtureRoster=await page.evaluate(()=>menus.data.roster);
+    check(await page.locator('#hq-roster [data-commander]').count()===18,'deployment keeps more than twelve commanders');
+    check(await page.locator('#hq-roster [data-commander]').evaluateAll(cards=>cards.slice(0,2).every(c=>c.querySelector('.commander-tag'))&&cards.slice(2).every(c=>!c.querySelector('.commander-tag'))),'tagged commanders precede every untagged star group');
+    check(await page.locator('#hq-roster [data-commander="fixture.4"] .deploy-card-confirm').isDisabled(),'unavailable commanders retain disabled deployment');
     for(const [name,width,height] of [['desktop',1280,720],['landscape',844,390],['portrait',390,844]]){
-      await page.setViewportSize({width,height});await shot(name+'-deployment');
+      await page.setViewportSize({width,height});
+      await page.evaluate(roster=>{menus.data.roster=roster;menus.rosterSelected=null;document.getElementById('hq-roster').scrollLeft=0;menus.drawRoster();},fixtureRoster);
+      await shot(name+'-deployment');
       check(await page.locator('#hq-roster').evaluate(e=>{const r=e.getBoundingClientRect();return r.left>=0&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1;}),name+' roster fits');
+      const geometry=await page.locator('#hq-roster').evaluate(e=>{
+        const r=e.getBoundingClientRect(),cards=[...e.children].map(c=>c.getBoundingClientRect());
+        return {left:r.left,top:r.top,scale:r.width/e.offsetWidth,twoRows:new Set(cards.map(c=>Math.round(c.top))).size===2,
+          contained:cards.every(c=>c.top>=r.top-1&&c.bottom<=r.bottom+1),
+          alternating:cards.every((c,i)=>Math.abs(c.left-cards[i-i%2].left)<1&&(i%2?c.top>cards[i-1].top:!i||c.left>cards[i-2].left))};
+      });
+      check(geometry.twoRows&&geometry.contained&&geometry.alternating,name+' two full rows fill each column top then bottom');
+      const x=geometry.left+250*geometry.scale,y=geometry.top+45*geometry.scale;
+      await page.mouse.move(x,y);await page.mouse.down();await page.mouse.move(x-180*geometry.scale,y,{steps:12});await page.mouse.up();
+      check(await page.locator('#hq-roster').evaluate(e=>e.scrollLeft>150),name+' mouse drag scrolls left');
+      check(await page.evaluate(()=>menus.rosterSelected===null&&!document.getElementById('hq-screen').hidden&&document.getElementById('detail-modal').hidden),name+' drag does not select, inspect or deploy');
+      await page.mouse.move(x-180*geometry.scale,y);await page.mouse.down();await page.mouse.move(x,y,{steps:12});await page.mouse.up();
+      check(await page.locator('#hq-roster').evaluate(e=>e.scrollLeft<2),name+' mouse drag scrolls right');
+      const cdp=await page.context().newCDPSession(page);
+      for(const direction of [-1,1]){
+        const start=direction<0?x:x-140*geometry.scale;
+        await cdp.send('Input.dispatchTouchEvent',{type:'touchStart',touchPoints:[{x:start,y}]});
+        for(let step=1;step<=10;step++)await cdp.send('Input.dispatchTouchEvent',{type:'touchMove',touchPoints:[{x:start+direction*step*14*geometry.scale,y}]});
+        await cdp.send('Input.dispatchTouchEvent',{type:'touchEnd',touchPoints:[]});
+        check(await page.locator('#hq-roster').evaluate((e,d)=>d<0?e.scrollLeft>100:e.scrollLeft<2,direction),name+' touch swipe '+(direction<0?'left':'right'));
+      }
+      await cdp.detach();
+      check(await page.evaluate(()=>menus.rosterSelected===null&&document.getElementById('detail-modal').hidden),name+' touch swipe does not select or inspect');
+      await page.locator('#hq-roster').evaluate(e=>{e.scrollLeft=e.scrollWidth;});
+      check(await page.locator('#hq-roster').evaluate(e=>{const r=e.getBoundingClientRect(),last=e.lastElementChild.getBoundingClientRect();return last.left>=r.left-1&&last.right<=r.right+1;}),name+' last commander is fully reachable');
+      await shot(name+'-deployment-last');await page.locator('#hq-roster').evaluate(e=>{e.scrollLeft=0;});
+      const selected=page.locator('#hq-roster [data-commander]').first();await selected.locator('.commander-open').click();
+      check(await selected.evaluate(e=>{const card=e.getBoundingClientRect(),button=e.querySelector('.deploy-card-confirm').getBoundingClientRect();return Math.abs((card.left+card.right-button.left-button.right)/2)<.5&&button.left>=card.left&&button.right<=card.right&&button.bottom<=card.bottom+.5;}),name+' deploy button is centered within commander slot');
+      await shot(name+'-deployment-selected');await page.evaluate(()=>{menus.rosterSelected=null;menus.drawRoster();});
       await page.evaluate(id=>openUnitInfo(state.units.find(u=>u.id===id)),units.enemy);await shot(name+'-detail');
       check(await page.locator('#detail-modal>.dialog').evaluate(e=>{const r=e.getBoundingClientRect();return r.left>=-1&&r.top>=-1&&r.right<=innerWidth+1&&r.bottom<=innerHeight+1;}),name+' unit detail fits');
       check(await page.evaluate(()=>{const rect=id=>document.querySelector('[data-native-id='+id+']').getBoundingClientRect(),boxes=['group_unit','group_ability','group_info'].map(rect);return boxes.every(r=>Math.abs(r.top-boxes[0].top)<1&&Math.abs(r.bottom-boxes[0].bottom)<1)&&Math.abs(boxes[0].width-boxes[2].width)<1;}),name+' upper three panels align and side cards have equal widths');
@@ -62,6 +107,7 @@ const base=process.argv[2]||'http://127.0.0.1:5278',folder=path.resolve('rewrite
       check(await page.locator('[data-native-id=group_info] img').evaluateAll(nodes=>nodes.every(n=>{const r=n.getBoundingClientRect(),panel=n.closest('[data-native-id=group_info]').getBoundingClientRect();return r.left>=panel.left-.5&&r.right<=panel.right+.5&&r.top>=panel.top-.5&&r.bottom<=panel.bottom+.5;})),name+' portrait and badges do not cross panel bottom');
       await page.locator('[data-native-id=btn_info]').click();await shot(name+'-commander');await page.locator('#close-detail').click();await page.waitForSelector('[data-native-id=btn_info]:visible');await page.locator('#close-detail').click();
     }
+    await page.evaluate(roster=>{menus.data.roster=roster;document.getElementById('hq-roster').scrollLeft=0;menus.drawRoster();},actualRoster);
     const candidate=page.locator('#hq-roster [data-commander="'+held.id+'"]');
     await candidate.locator('.commander-open').click();
     await candidate.locator('.deploy-card-confirm').click();

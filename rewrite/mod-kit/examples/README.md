@@ -6,6 +6,8 @@
 
 只修改原版将领技能的倍率、概率、折扣、移动/攻击加成与教学成长，见[原版技能参数模板](legacy-skill-parameters/README.md)。
 
+修改全局或指定剧本的上将派遣名额，见[上将名额模板](deployment-limits/README.md)；空模板保留当前限制。
+
 给已有或新增将领配置专属喊话，见[将领台词 JSON 模板](commander-dialogues/README.md)。当前消费击杀通知，占领和退场字段仅作预留。
 
 多阶段修改胜负条件、替换完整结算布局和按钮绑定见[三阶段胜利示例](victory-stages/README.md)。
