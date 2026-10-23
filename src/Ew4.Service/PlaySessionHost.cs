@@ -71,7 +71,8 @@ public sealed class PlaySessionHost : IHostActivationListener
         };
         var battleFiles = PackScenarioIds.List(activation.Content).Select(id => id + ".btl").ToArray();
         bool verifySources = string.IsNullOrWhiteSpace(activation.Content.Manifest.Parent);
-        var clientContent = new ClientContent(read, battleFiles, verifySourceHashes: verifySources);
+        IReadOnlyDictionary<string, string> scenarioDisplayNames = ScenarioCatalogNames.ReadDisplayNames(packSource);
+        var clientContent = new ClientContent(read, battleFiles, scenarioDisplayNames, verifySourceHashes: verifySources);
         var envelope = new SlotSaveEnvelope.Binding(
             activation.Content.Manifest.Id,
             activation.Content.Fingerprint,

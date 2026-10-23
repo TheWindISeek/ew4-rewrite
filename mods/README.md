@@ -40,7 +40,7 @@ mods/my-mod/
 | **自定义国旗图** | `rewrite/.../*.png` + 在 `countries.json` 里写 `flagImage`: `"rewrite/..."` | 浏览器走 `/content/extensions/…` |
 | **兵种数值 / 兵种表** | `assets/tables/def_army.xml` 等 | 和原版一样叫 `def_*.xml` 的表，多在 `assets/tables/` |
 | **物品、建筑、科技…** | `assets/tables/def_item.xml` 等 | 同上，改哪个表就覆盖哪个文件 |
-| **某一关剧本** | `scenarios/campaign1_01.json` | 嵌入 JSON；只改一关就只放这一个文件 |
+| **某一关剧本** | `scenarios/campaign1_01.json` | 嵌入 JSON；`name` 会显示在选关列表（覆盖 battlelist 标题） |
 | **整包 APK 差异** | 用工具生成 | `Ew4.Tool import-apk-overlay …`，再在 `mods/<id>/` 里微调 |
 
 只改 XML、不改 `countries.json` / `client/manifest.json` 时，**表变了但 UI 可能还是旧样子**（旗、兵种卡、涂色不对）。改国家外观时，记得一起动 **`countries.json`**。

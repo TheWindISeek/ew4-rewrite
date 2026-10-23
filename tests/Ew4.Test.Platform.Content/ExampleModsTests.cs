@@ -81,6 +81,27 @@ public sealed class ExampleModsTests
         Assert.Equal(scenarioId, document.Id);
     }
 
+    [Theory]
+    [InlineData("ex-campaign-tweak", "campaign1_01", "示例战役：第一关（仅改列表名）")]
+    [InlineData("ex-conquest-tweak", "conquest1", "示例征服：第一时代（仅改列表名）")]
+    public void Example_scenario_overlay_display_name_for_catalog(string modId, string scenarioId, string expectedName)
+    {
+        string? baseDir = BasePackDirectory;
+        if (baseDir == null)
+        {
+            return;
+        }
+
+        string modDir = Path.Combine(ModsRoot, modId);
+        var child = new DirectoryPackSource(modDir);
+        var parent = new DirectoryPackSource(baseDir);
+        var merged = new MergedPackSource(child, parent);
+
+        IReadOnlyDictionary<string, string> names = ScenarioCatalogNames.ReadDisplayNames(merged);
+        Assert.True(names.TryGetValue(scenarioId, out string? name), "Missing display name for " + scenarioId);
+        Assert.Equal(expectedName, name);
+    }
+
     [Fact]
     public void Example_commander_overlay_changes_napoleon_skill_with_base()
     {

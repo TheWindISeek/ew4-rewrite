@@ -27,14 +27,17 @@ public sealed class ClientContent
     public IReadOnlyList<XElement> PrincessDefinitions { get; }
     public bool CorrectOriginalEquipment { get; }
     private readonly IReadOnlyDictionary<string, IReadOnlyDictionary<int, string>> scenarioCityNames;
+    private readonly IReadOnlyDictionary<string, string> scenarioDisplayNames;
 
     public ClientContent(
         Func<string, byte[]> read,
         IEnumerable<string> battleFiles,
+        IReadOnlyDictionary<string, string>? scenarioDisplayNames = null,
         bool correctOriginalEquipment = true,
         bool verifySourceHashes = true)
     {
         this.read = read;
+        this.scenarioDisplayNames = scenarioDisplayNames ?? new Dictionary<string, string>(StringComparer.Ordinal);
         string Text(string name)
         {
             using var reader = new StreamReader(new MemoryStream(read("original/" + name)), System.Text.Encoding.UTF8, true);
@@ -122,9 +125,17 @@ public sealed class ClientContent
                 ((string)line.Element.Attribute("countries")!).Split(','))).ToArray();
         foreach (var presentation in Presentations.Values.Where(p => p.Alternate != null))
             battleNames[presentation.Alternate!] = battleNames[presentation.Id];
-        string ScenarioName(string id) => id.StartsWith("conquest", StringComparison.Ordinal) ? Label("text_conquest_age_" + id[8..])
-            : id == "tutorials1" ? Label("btn_basic") : id == "tutorials2" ? Label("btn_classic")
-            : battleNames.TryGetValue(id, out string? key) ? Label("title_" + key) : id;
+        string ScenarioName(string id)
+        {
+            if (this.scenarioDisplayNames.TryGetValue(id, out string? overlay) && !string.IsNullOrEmpty(overlay))
+            {
+                return overlay;
+            }
+
+            return id.StartsWith("conquest", StringComparison.Ordinal) ? Label("text_conquest_age_" + id[8..])
+                : id == "tutorials1" ? Label("btn_basic") : id == "tutorials2" ? Label("btn_classic")
+                : battleNames.TryGetValue(id, out string? key) ? Label("title_" + key) : id;
+        }
         Scenarios = battleFiles.Select(Path.GetFileNameWithoutExtension).Where(n => n != null)
             .Select(n => new ScenarioChoice(n!, ScenarioName(n!), n!.StartsWith("conquest", StringComparison.Ordinal) ? 2
                 : n.StartsWith("tutorial", StringComparison.Ordinal) ? 4 : n.StartsWith("multiplay", StringComparison.Ordinal) ? 3 : 1)).OrderBy(s => s.Mode).ThenBy(s => s.Id, StringComparer.Ordinal).ToArray();
@@ -141,7 +152,8 @@ public sealed class ClientContent
     public string Label(string key) => Strings.TryGetValue(key, out string? label) ? label : Strings.TryGetValue("name_" + key, out label) ? label : key;
     public string CountryName(string id) => Countries.Get(id)?.Name ?? Label(id);
     public CountryDefinition? Country(string id) => Countries.Get(id);
-    internal ClientContent WithoutEquipmentCorrections() => new(read, Scenarios.Select(s => s.Id + ".btl"), false);
+    internal ClientContent WithoutEquipmentCorrections() =>
+        new(read, Scenarios.Select(s => s.Id + ".btl"), scenarioDisplayNames, false);
     public OriginalBattle Battle(string id)
     {
         if (!Scenarios.Any(s => s.Id == id)) throw new RuleViolation("client.scenario", "Unknown scenario");
