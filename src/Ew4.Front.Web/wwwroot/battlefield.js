@@ -93,7 +93,7 @@
       if(this.preparedState!==this.state){
         if(this.preparedMap!==this.map){this.cityLabels.clear();this.mapLabels.clear();this.unitFrames.clear();this.unitFramePixels=0;}
         this.preparedMap=this.map;this.preparedState=this.state;
-        this.factions=new Map(this.state.factions.map(f=>[f.id,f]));
+        this.factions=new Map(this.state.factions.map(f=>[f.id,{...f,color:Ew4Appearance.factionColor(f)}]));
         this.stationed=new Map(this.state.units.map(u=>[u.cell,u]));
         this.orderedUnits=[...this.state.units].sort((a,b)=>a.cell-b.cell);
         this.objectiveCells=[];
@@ -138,13 +138,13 @@
       const {draw}=this;
       // Land in the original texture is transparent. Ownership belongs BELOW coast/river tiles.
       for(const {site:c,cell:i,p} of this.visibleCells){
-        if(c.owner&&!c.sea){const color=Ew4MapSurface.rgba(this.factions.get(c.owner)?.color||0);
+        if(c.owner&&!c.sea){const color=Ew4MapSurface.rgba(Ew4Appearance.factionColor(this.factions.get(c.owner)||{}));
           hex(draw,p.x,p.y);draw.fillStyle=`rgba(${color[0]},${color[1]},${color[2]},${color[3]/255})`;draw.fill();}
         else {const neighbors=this.neighbors(i);if(neighbors.some(n=>n?.active&&!n.sea&&n.color))draw.drawImage(this.surface.coast(neighbors),p.x-32,p.y-36,64,72);}
       }
     }
     neighbors(index){return Array.from({length:6},(_,d)=>{const cell=this.state.cells[neighbor(index,d,this.state.width,this.state.height)];
-      return cell?{...cell,color:this.factions.get(cell.owner)?.color||0}:null;});}
+      return cell?{...cell,color:Ew4Appearance.factionColor(this.factions.get(cell.owner)||{})}:null;});}
     mapTiles() {
       for(const tile of this.map.tiles){if(!this.visible({x:tile.x+tile.width/2,y:tile.y+tile.height/2},Math.max(tile.width,tile.height)))continue;
         const image=this.api.image(tile.file);if(image.complete&&image.naturalWidth)this.draw.drawImage(image,tile.x,tile.y,tile.width,tile.height);

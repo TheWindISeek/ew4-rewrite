@@ -21,7 +21,7 @@ internal static class PackManifestReader
             var root = document.RootElement;
             if (root.ValueKind != JsonValueKind.Object)
             {
-                throw new ContentError("pack.schema", "pack.json must be a JSON object.");
+                throw new ContentError("pack.schema", "mod.json must be a JSON object.");
             }
 
             int schema = root.GetProperty("schema").GetInt32();
@@ -34,7 +34,7 @@ internal static class PackManifestReader
 
             if (!root.TryGetProperty("requires", out var requiresEl) || requiresEl.ValueKind != JsonValueKind.Object)
             {
-                throw new ContentError("pack.requires", "pack.json requires a 'requires' object.");
+                throw new ContentError("pack.requires", "mod.json requires a 'requires' object.");
             }
 
             string engine = requiresEl.GetProperty("engine").GetString() ?? "";
@@ -42,7 +42,7 @@ internal static class PackManifestReader
 
             if (!root.TryGetProperty("formats", out var formatsEl) || formatsEl.ValueKind != JsonValueKind.Object)
             {
-                throw new ContentError("pack.formats", "pack.json requires a 'formats' object.");
+                throw new ContentError("pack.formats", "mod.json requires a 'formats' object.");
             }
 
             var formats = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -61,6 +61,8 @@ internal static class PackManifestReader
                 throw new ContentError("pack.version", "Pack version is required.");
             }
 
+            PackModProfile.ModProfile? mod = PackManifestScenarios.TryParseRoot(root);
+
             return new PackManifest(
                 schema,
                 id,
@@ -68,7 +70,8 @@ internal static class PackManifestReader
                 version,
                 parent,
                 new PackRequirements(engine, capabilities),
-                formats);
+                formats,
+                mod);
         }
         catch (ContentError)
         {
@@ -76,19 +79,23 @@ internal static class PackManifestReader
         }
         catch (Exception ex)
         {
-            throw new ContentError("pack.parse", "Failed to parse pack.json: " + ex.Message);
+            throw new ContentError("pack.parse", "Failed to parse mod.json: " + ex.Message);
         }
     }
 
     public static PackManifest ReadFromSource(IPackSource source)
     {
-        const string path = "pack.json";
-        if (!source.Exists(path))
+        if (source.Exists(PackManifestPaths.FileName))
         {
-            throw new ContentError("pack.missing", "Pack is missing pack.json.");
+            return Read(source.Read(PackManifestPaths.FileName));
         }
 
-        return Read(source.Read(path));
+        if (source.Exists(PackManifestPaths.LegacyPackJson))
+        {
+            return Read(source.Read(PackManifestPaths.LegacyPackJson));
+        }
+
+        throw new ContentError("pack.missing", "Pack is missing mod.json.");
     }
 
     private static IReadOnlyList<string> ReadStringArray(JsonElement parent, string name)

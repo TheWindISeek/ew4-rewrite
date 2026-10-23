@@ -26,6 +26,11 @@
 - 规则/数据错误 → `RuleViolation`（`area.reason`）；HTTP Play API → `{ ok, code, message }`。
 - 提交前：`scripts/ew4.sh fmt`（CI：`fmt --check`）。
 
+## mods/ 与示例包
+
+- 运行时大包（`base`、`ww1` 等）不进 Git；**白名单示例**在 `mods/ex-*`，与 `mods/README.md` 同级，见根 `.gitignore`。
+- 示例必须能跟 `base` 合并跑通，用 `ExampleModsTests` 等单测验证；不要为示例单独加一次性维护脚本。
+
 ## 测试
 
 - 已有：`tests/Ew4.Test.*` 与**目标** `src` 同名（Content、Session、Editor 等，见 `tests/README.md`）。

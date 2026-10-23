@@ -186,7 +186,7 @@ static int RunPackConvertLegacyScenarios(string[] args)
     PackScenarioConvert.Result result = PackScenarioConvert.ToEmbeddedDocumentFormat(Path.GetFullPath(packDir), removeBtl);
     PackScenarioEmbedder.Result embed = result.Embed;
     Console.WriteLine(
-        $"pack-convert-legacy-scenarios: embedded={embed.Embedded} already={embed.AlreadyEmbedded} skipped_missing_btl={embed.SkippedMissingBtl} profile={PackModProfile.FilePath}");
+        $"pack-convert-legacy-scenarios: embedded={embed.Embedded} already={embed.AlreadyEmbedded} skipped_missing_btl={embed.SkippedMissingBtl} manifest={PackManifestPaths.FileName}");
     return 0;
 }
 
@@ -275,7 +275,7 @@ static void PrintHelp()
           validate-btl-roundtrip [--pack mods/base]
           validate-scenario-json-btl [--pack mods/base] [--btl <reference-btl-dir>]
           pack-embed-scenarios [--pack mods/base] [--remove-btl]
-          pack-convert-legacy-scenarios [--pack mods/base]  (BTL→嵌入 JSON + rewrite/mod.json)
+          pack-convert-legacy-scenarios [--pack mods/base]  (BTL→嵌入 JSON，更新 mod.json scenarios)
           import-apk-overlay --apk <file.apk> --id <packId> --name <display> [--base mods/base] [--dest mods/<id>]
           scenario <subcommand>  (see: scenario btl-to-json --help via invalid subcommand)
           workspace <subcommand>  (list|create|delete|validate|export)

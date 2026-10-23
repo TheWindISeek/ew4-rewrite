@@ -54,7 +54,7 @@ internal static class ApkImportCli
         }
 
         Console.WriteLine(
-            $"import-apk-overlay: id={packId} files={result.FilesCopied} scenarios={result.ScenariosIndexed} embedded={embedded} profile={PackModProfile.FilePath} → {result.PackDirectory}");
+            $"import-apk-overlay: id={packId} files={result.FilesCopied} scenarios={result.ScenariosIndexed} embedded={embedded} manifest={PackManifestPaths.FileName} → {result.PackDirectory}");
         return 0;
     }
 }

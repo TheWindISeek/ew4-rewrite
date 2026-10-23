@@ -8,7 +8,7 @@
 |------|------|
 | `Ew4.Interface` | 跨层契约（如 `PlayApiRoutes`） |
 | `Ew4.Platform.Engine` | 规则引擎（`IEngine` / `Engine`） |
-| `Ew4.Platform.Content` | Pack、`pack.json`、`PackInstallGuard`、`ScenarioBtlResolver`、表与剧本加载 |
+| `Ew4.Platform.Content` | Pack、`mod.json`、`PackInstallGuard`、`ScenarioBtlResolver`、表与剧本加载 |
 | `Ew4.Platform.Session` | 局状态、存读档 |
 | `Ew4.Platform.Runtime` | `HostApp`、Pack 激活/导入、`InstallLayout` |
 | `Ew4.Service` | 游玩 RPC（`ClientGame`、`ClientContent`、`PlaySessionHost` 使用的服务逻辑） |
@@ -64,8 +64,8 @@ mods/  ──sync──►  install/mods/
 
 ## 内容包（作者）
 
-维护者规范见 **[mods/README.md](../../mods/README.md)**（目录树、`pack.json` + `mod.json`、嵌入剧本）。  
-待办：合并双清单 → [task/plan/pack-manifest-unify.md](../task/plan/pack-manifest-unify.md)。
+维护者规范见 **[mods/README.md](../../mods/README.md)**（单文件 `mod.json` 字段与目录树）。  
+清单统一说明：[task/plan/pack-manifest-unify.md](../task/plan/pack-manifest-unify.md)。
 
 zip → `install/mods/`；APK → `Ew4.Tool import-apk-overlay` → `mods/` 再同步。
 

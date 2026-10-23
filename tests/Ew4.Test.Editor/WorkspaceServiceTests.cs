@@ -31,7 +31,7 @@ public sealed class WorkspaceServiceTests
         IReadOnlyList<WorkspaceInfo> list = service.List();
         Assert.Contains(list, w => w.Id == "test-ws");
 
-        byte[] packJson = service.ReadFile("test-ws", "pack.json");
+        byte[] packJson = service.ReadFile("test-ws", "mod.json");
         Assert.NotEmpty(packJson);
 
         try
@@ -61,6 +61,6 @@ public sealed class WorkspaceServiceTests
               }
             }
             """;
-        File.WriteAllText(Path.Combine(baseDir, "pack.json"), manifest);
+        File.WriteAllText(Path.Combine(baseDir, "mod.json"), manifest);
     }
 }

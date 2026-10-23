@@ -1,149 +1,95 @@
-# mods/ — 内容包
+# 怎么改 Mod 内容
 
-本目录是 **内容包维护区**（不进 Git，仅本 `README.md` 跟踪）。运行时读 **`install/mods/`**（由 build / web 或手动把 `mods/` 同步过去）。存档与当前包：`install/user/active.json`。
+内容写在 **`mods/<你的名字>/`**，玩之前拷到 **`install/mods/`**（或跑 `scripts/ew4.sh web` 会自动同步）。游戏里左下角 **Mod** 里切换激活的包。
 
-规范说明（**当前实现**：根目录 **`pack.json` + 推荐 `mod.json`**；合并为单文件见 [docs/task/plan/pack-manifest-unify.md](../docs/task/plan/pack-manifest-unify.md)）。
-
----
-
-## 目录约定
-
-| 路径 | 说明 |
-|------|------|
-| `mods/base/` | 原版包，宿主默认激活 |
-| `mods/<packId>/` | 其它 Mod，与 `base` 同级；`pack.json` 的 `id` 与目录名一致 |
-
-策划用 JSON（如地图）在仓库 **`maps/`**，不要放进 `mods/`。
+每个包根上要有 **`mod.json`**（包名、`parent` 等）。**`id` 必须和文件夹名一样**。
 
 ---
 
-## 符合需求的包长什么样
+## 两种包
 
-### 1. 根清单（当前：两个文件）
+**1. 完整包**（例如 `base`）  
+自己带全套表和资源。一般用 `Ew4.Tool import-base` 生成，不要手搓。
 
-**`pack.json`（必填）** — 安装、激活、zip 导入、父子继承都认它。
-
-```json
-{
-  "schema": 1,
-  "id": "base",
-  "name": "EW4 Rewrite Base",
-  "version": "0.0.0",
-  "parent": null,
-  "requires": { "engine": ">=0.3.0" },
-  "formats": {
-    "scenario": 2,
-    "rules": 1,
-    "map": 1,
-    "commander": 1,
-    "unit": 1,
-    "country": 1,
-    "text": 1,
-    "script": 1,
-    "asset": 1,
-    "source": 1,
-    "extension": 1
-  }
-}
-```
-
-差异 Mod 示例：把 `id` / `name` 改成你的包，并设 **`"parent": "base"`**（只允许 **一层** parent，parent 不能再有 parent）。
-
-**`mod.json`（强烈推荐）** — 声明剧本怎么加载（`PackModProfile`）。**目标形态**是嵌入 JSON，而不是包内裸 BTL：
-
-```json
-{
-  "schema": 1,
-  "scenarios": {
-    "storage": "embedded-json",
-    "documentSchema": 2
-  }
-}
-```
-
-| `scenarios.storage` | 含义 |
-|---------------------|------|
-| `embedded-json` | 优先 `scenarios/{id}.json` 完整剧本文档，失败再回退 legacy BTL |
-| `legacy-btl` | 优先 BTL / 索引桩（APK 差异包过渡期） |
-| 省略整个 `mod.json` | **Auto**：按每个 `scenarios/*.json` 自动判断嵌入或 legacy |
-
-没有 `mod.json` 时 Auto 常仍可用，但 **新包请显式写 `embedded-json`**，避免和 overlay 行为不一致。
-
-### 2. 推荐目录树（`base` 或完整包）
+**2. 差异包（最常见）**  
+`mod.json` 里写 `"parent": "base"`，目录里**只放你要改的文件**，其余用原版。  
+激活时：你的文件盖住 `base` 里同名路径。
 
 ```text
-<packId>/
-  pack.json
-  mod.json                    # 推荐：embedded-json
-  scenarios/
-    campaign1_01.json         # ScenarioDocument（嵌入 JSON，非仅 BTL 指针）
-    …
-  assets/
-    client/                   # manifest.json、countries.json、UI 资源映射
-    tables/                   # def_*.xml 等（可与 original 合并布局）
-    runtime-content.json      # 规则表等（按 base 布局）
-  rewrite/                    # 扩展 PNG → 浏览器 /content/extensions/…
-    …
-  source/
-    original/                 # 可选：*.btl 语料；嵌入迁移后可删减
+mods/my-mod/
+  mod.json
+  assets/tables/def_commander.xml    ← 只这一份，就只改将领
 ```
 
-逻辑路径与磁盘路径由 `PackAssetRead` 映射（例如运行时读 `original/def_item.xml` 可能落在 `assets/tables/` 或 `assets/original/`）。
+差异包 `mod.json` 可直接复制仓库里的示例（见下）再改 `id` / `name`。
 
-### 3. 差异包（overlay，`parent: base`）
+有 `mod.json` 时旁边的旧 `pack.json` 会被忽略，不用管。
 
-只放 **相对 base 有改动的文件**，不必复制整包：
+---
+
+## 我想改……该动哪个文件？
+
+运行时读的是「逻辑路径」（如 `original/def_commander.xml`）。**在包里落盘时**，按下面放即可（差异包只放改动的那个文件）。
+
+| 想改什么 | 包里放这里（推荐） | 说明 |
+|----------|-------------------|------|
+| **将领**（属性、技能、头像用的表） | `assets/tables/def_commander.xml` | 从 `base` 拷出整表再改，或只覆盖你动过的条目 |
+| **国家 / 势力**（选关名、地图色、国旗代码） | `assets/client/countries.json` | 改 `name`、`color`（`#RRGGBB`）、`flag` 或 `flagImage` |
+| **自定义国旗图** | `rewrite/.../*.png` + 在 `countries.json` 里写 `flagImage`: `"rewrite/..."` | 浏览器走 `/content/extensions/…` |
+| **兵种数值 / 兵种表** | `assets/tables/def_army.xml` 等 | 和原版一样叫 `def_*.xml` 的表，多在 `assets/tables/` |
+| **物品、建筑、科技…** | `assets/tables/def_item.xml` 等 | 同上，改哪个表就覆盖哪个文件 |
+| **某一关剧本** | `scenarios/campaign1_01.json` | 嵌入 JSON；只改一关就只放这一个文件 |
+| **整包 APK 差异** | 用工具生成 | `Ew4.Tool import-apk-overlay …`，再在 `mods/<id>/` 里微调 |
+
+只改 XML、不改 `countries.json` / `client/manifest.json` 时，**表变了但 UI 可能还是旧样子**（旗、兵种卡、涂色不对）。改国家外观时，记得一起动 **`countries.json`**。
+
+---
+
+## 带 `parent` 时怎么理解？
+
+例子：只加强法国将领。
 
 ```text
-huangkai/
-  pack.json                   # id、name、parent: base
-  mod.json                    # 按本包剧本策略：embedded-json 或 legacy-btl
-  scenarios/                  # 仅改动的剧本 JSON
-  assets/tables/              # 仅改动的 def_*.xml
-  assets/client/              # 如 countries.json、manifest 片段
-  rewrite/                    # 新图集/旗帜等
+mods/fr-commanders/
+  mod.json                 parent: base
+  assets/tables/def_commander.xml
 ```
 
-激活时与 parent **合并读取**；安装校验见 `PackInstallGuard`（P1–P8）。
+不复制 `base` 里其它几千个文件。进游戏激活 `fr-commanders` 后，引擎用 **base + 你这一份 XML** 合并读。
 
-### 4. 前端与资源最低期望
+再举一个：换几个国家的旗和颜色。
 
-切换 Mod 后 UI 正常，通常还需要（在包内或 parent 合并后可见）：
+```text
+mods/pretty-flags/
+  mod.json
+  assets/client/countries.json
+  rewrite/flags/custom_fra.png
+```
 
-| 资源 | 典型路径 |
-|------|----------|
-| UI / 剧本 manifest | `assets/client/manifest.json` |
-| 国家表（旗、色、变体） | `assets/client/countries.json` |
-| 兵种动画绑定 | `assets/client/unit-visuals.json`、`effects.json` |
-| 原版表 | `assets/tables/def_*.xml` 或 `assets/original/def_*.xml` |
-
-只改 XML 未更新 `manifest.json` / `countries.json` 时，容易出现头像、兵种卡、涂色错位（见 [docs/task/plan/mod-experience.md](../docs/task/plan/mod-experience.md)）。
-
-### 5. 剧本 JSON 形态
-
-- **符合需求（嵌入）**：`scenarios/{id}.json` 为 **ScenarioDocument**（`documentSchema: 2`），运行时由 `ScenarioBtlResolver` 导出 BTL 字节再进引擎。
-- **过渡（legacy 桩）**：JSON 仅索引 + `legacy.btl` 路径，需 `mod.json` 的 `legacy-btl` 或 Auto；父包可提供 BTL。
-
-校验：`dotnet run --project src/Ew4.Tool -- check json-btl`（G6）、`validate smoke`（G3）。
+`countries.json` 里对应国家条目加上 `"flagImage": "rewrite/flags/custom_fra.png"`。
 
 ---
 
-## 怎么做出这样的包
+## 做完之后
 
-| 目的 | 做法 |
+```bash
+cp -a mods/my-mod install/mods/my-mod    # 或整包同步 mods/*
+scripts/ew4.sh web                         # 浏览器里激活 Mod
+```
+
+从零做 `base`：`Ew4.Tool import-base`。  
+旧 BTL 转嵌入剧本：`Ew4.Tool pack-convert-legacy-scenarios --pack mods/base`。
+
+## 仓库里的示例 Mod（进 Git，与 `base` 同级）
+
+需本机有 **`mods/base`** 或 **`install/mods/base`**。拷到 `install/mods/` 后在游戏里激活。
+
+| 目录 | 内容 |
 |------|------|
-| 从种子重建 `base` | `Ew4.Tool import-base`（`data/import-seed` → `mods/base`）；建议再跑 `pack-convert-legacy-scenarios` 写入 **`mod.json`** |
-| 旧包迁嵌入 JSON | `Ew4.Tool pack-convert-legacy-scenarios --pack mods/base` |
-| APK 差异 | `Ew4.Tool import-apk-overlay --apk … --id … --name … --base mods/base --dest mods/<id>`；按需补 `mod.json` |
-| 同步到运行时 | 拷贝 `mods/*` → `install/mods/`（或 build/web 自动同步） |
-| 浏览器安装 zip | 根目录含 `pack.json` 的 `.ew4mod` / `.zip` → `POST /api/mod-import` |
+| `mods/ex-commander-skills/` | 只覆盖 `assets/tables/def_commander.xml`（拿破仑 `skill2=99`） |
+| `mods/ex-campaign-tweak/` | 只覆盖 `scenarios/campaign1_01.json`（改战役第一关列表名） |
+| `mods/ex-conquest-tweak/` | 只覆盖 `scenarios/conquest1.json`（改征服第一关列表名） |
 
----
+单测：`ExampleModsTests`（有 base 时会合并解析剧本 / 将领表）。
 
-## 安装与切换
-
-- **不要**依赖 shell「import mod」脚本。
-- Web：**Ew4.Backend.Web** — Mod 菜单或 `/api/mod-import`、`/api/mods`（activate）。
-- 改 `mods/` 后记得同步 **`install/mods/`** 再测。
-
-代码索引：`PackManifestReader`、`PackModProfile`、`ScenarioBtlResolver`、`HostApp`。架构摘要：[docs/arch/README.md](../docs/arch/README.md)。
+更底层的目录规则见 [docs/arch/README.md](../docs/arch/README.md)。

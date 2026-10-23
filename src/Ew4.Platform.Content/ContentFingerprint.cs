@@ -13,7 +13,8 @@ internal static class ContentFingerprint
         var lines = new List<string>();
         foreach (string path in source.List("").OrderBy(p => p, StringComparer.Ordinal))
         {
-            if (string.Equals(path, "pack.json", StringComparison.Ordinal))
+            if (string.Equals(path, PackManifestPaths.FileName, StringComparison.Ordinal)
+                || string.Equals(path, PackManifestPaths.LegacyPackJson, StringComparison.Ordinal))
             {
                 continue;
             }

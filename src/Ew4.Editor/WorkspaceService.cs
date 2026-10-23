@@ -39,7 +39,7 @@ public sealed class WorkspaceService : IWorkspaceService
         var list = new List<WorkspaceInfo>();
         foreach (string directory in Directory.EnumerateDirectories(_workspacesRoot))
         {
-            string manifestPath = Path.Combine(directory, "pack.json");
+            string manifestPath = Path.Combine(directory, "mod.json");
             if (!File.Exists(manifestPath))
             {
                 continue;
@@ -60,7 +60,7 @@ public sealed class WorkspaceService : IWorkspaceService
         }
 
         string workspaceRoot = ResolveWorkspaceRoot(newId);
-        if (Directory.Exists(workspaceRoot) && File.Exists(Path.Combine(workspaceRoot, "pack.json")))
+        if (Directory.Exists(workspaceRoot) && File.Exists(Path.Combine(workspaceRoot, "mod.json")))
         {
             throw new ContentError("workspace.exists", "Workspace already exists: " + newId);
         }
@@ -71,7 +71,7 @@ public sealed class WorkspaceService : IWorkspaceService
 
         foreach (string path in fromPack.List(""))
         {
-            if (string.Equals(path, "pack.json", StringComparison.Ordinal)
+            if (string.Equals(path, "mod.json", StringComparison.Ordinal)
                 || string.Equals(path, ".workspace.json", StringComparison.Ordinal))
             {
                 continue;
@@ -112,7 +112,7 @@ public sealed class WorkspaceService : IWorkspaceService
     public WriteResult WriteFile(string workspaceId, string logicalPath, byte[] data)
     {
         logicalPath = PackPath.Normalize(logicalPath);
-        if (string.Equals(logicalPath, "pack.json", StringComparison.Ordinal)
+        if (string.Equals(logicalPath, "mod.json", StringComparison.Ordinal)
             || string.Equals(logicalPath, ".workspace.json", StringComparison.Ordinal))
         {
             throw new ContentError("workspace.path", "Manifest metadata cannot be written through this API.");
@@ -136,7 +136,7 @@ public sealed class WorkspaceService : IWorkspaceService
         ResolvedContent resolved = WorkspacePackSources.Resolve(workspaceRoot, _packs, _resolver);
         if (!resolved.Manifest.Formats.TryGetValue(kind.Name, out int schema))
         {
-            throw new ContentError("workspace.format", $"pack.json formats.{kind.Name} is required.");
+            throw new ContentError("workspace.format", $"mod.json formats.{kind.Name} is required.");
         }
 
         object model = kind.Load(data, schema);
@@ -225,7 +225,7 @@ public sealed class WorkspaceService : IWorkspaceService
 
     private static void EnsureWorkspaceExists(string workspaceRoot)
     {
-        if (!File.Exists(Path.Combine(workspaceRoot, "pack.json")))
+        if (!File.Exists(Path.Combine(workspaceRoot, "mod.json")))
         {
             throw new ContentError("workspace.missing", "Workspace not found: " + Path.GetFileName(workspaceRoot));
         }
@@ -262,6 +262,6 @@ public sealed class WorkspaceService : IWorkspaceService
         };
 
         string json = JsonSerializer.Serialize(manifest, new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(Path.Combine(workspaceRoot, "pack.json"), json);
+        File.WriteAllText(Path.Combine(workspaceRoot, "mod.json"), json);
     }
 }

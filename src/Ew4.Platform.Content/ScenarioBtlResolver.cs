@@ -97,7 +97,7 @@ public static class ScenarioBtlResolver
 
             throw new ContentError(
                 "scenario.document",
-                "Scenario '" + scenarioId + "' is not embedded JSON (mod.json requests embedded-json).");
+                "Scenario '" + scenarioId + "' is not embedded JSON (mod.json scenarios.storage requests embedded-json).");
         }
 
         return ScenarioPackAccess.ReadEmbeddedDocument(jsonBytes, scenarioId);

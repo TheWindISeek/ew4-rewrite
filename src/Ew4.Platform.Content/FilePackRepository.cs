@@ -25,8 +25,7 @@ public sealed class FilePackRepository : IPackRepository
         var list = new List<PackInfo>();
         foreach (string directory in Directory.EnumerateDirectories(_root))
         {
-            string manifestPath = Path.Combine(directory, "pack.json");
-            if (!File.Exists(manifestPath))
+            if (!PackManifestPaths.DirectoryHasManifest(directory))
             {
                 continue;
             }

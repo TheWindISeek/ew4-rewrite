@@ -32,10 +32,12 @@ public sealed class ContentValidator : IContentValidator
             return diagnostics;
         }
 
+        diagnostics.AddRange(PackContentContract.Validate(content.Source));
+
         foreach (string path in content.Source.List("").OrderBy(p => p, StringComparer.Ordinal))
         {
-            if (string.Equals(path, "pack.json", StringComparison.Ordinal)
-                || string.Equals(path, PackModProfile.FilePath, StringComparison.Ordinal)
+            if (string.Equals(path, PackManifestPaths.FileName, StringComparison.Ordinal)
+                || string.Equals(path, PackManifestPaths.LegacyPackJson, StringComparison.Ordinal)
                 || string.Equals(path, ".workspace.json", StringComparison.Ordinal))
             {
                 continue;
@@ -74,7 +76,7 @@ public sealed class ContentValidator : IContentValidator
                     Severity.Error,
                     "content.format",
                     path,
-                    $"pack.json formats.{kind.Name} is required."));
+                    $"mod.json formats.{kind.Name} is required."));
                 continue;
             }
 

@@ -38,8 +38,8 @@
 
 | 术语 | 定义 |
 |------|------|
-| **Pack** | 含 `pack.json` 的目录或 `.ew4mod`/`.zip`。原版与 Mod **同一种模型** |
-| **`pack.json`** | 包清单：`id`、`version`、`parent`（用于缺文件时从父包补全）、`requires` |
+| **Pack** | 含根清单 `mod.json` 的目录或 `.ew4mod`/`.zip`。原版与 Mod **同一种模型** |
+| **`mod.json`** | 包唯一清单：`id`、`version`、`parent`、`requires`、`formats`，扩展段 `scenarios`（见 [mods/README.md](../mods/README.md)） |
 | **Active Pack** | 当前激活的包 id，写在 `install/user/active.json` |
 | **parent 补全** | Mod 声明 `parent: "base"` 时，缺路径的文件从父包整文件补齐（非字段级合并） |
 | **指纹 (Fingerprint)** | 参与校验的源文件哈希汇总；存档绑定包 id + 指纹 + 引擎行为版本 |

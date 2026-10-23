@@ -12,7 +12,7 @@
 
 | ID | 主题 | 验收方向（摘要） |
 |----|------|------------------|
-| M0 | **合并 pack.json + mod.json** | 单一根清单；兼容旧双文件；见 [pack-manifest-unify.md](./pack-manifest-unify.md) |
+| M0 | **统一 mod.json 清单** | 单文件含 `scenarios` 扩展；见 [pack-manifest-unify.md](./pack-manifest-unify.md) |
 | M1 | **Mod 内容契约收敛** | 合并后清单 + `countries` / `manifest` / `unit-visuals` / `effects` 最低集；导入工具产出同一形状（[mods/README.md](../../mods/README.md)） |
 | M2 | **势力外观统一** | 地图涂色不为 0；未知势力有默认色；`flag` / `flagImage` / `Appearance` 一条解析链（前后端一致） |
 | M3 | **肖像与扩展图** | 指挥部/战役/对话/结算共用资源解析（atlas + `rewrite/` + API 下发的 `image`） |
@@ -49,7 +49,8 @@
 
 ## 当前焦点（维护者填写）
 
-- **进行中：** Mod 体验（M1–M8，见 [mod-experience.md](./mod-experience.md)）
-- **下一步建议：** M1 + M2（契约与地图色），依赖最少、Mod 切换体感提升最大
+- **进行中：** Mod 体验（M3–M8，见 [mod-experience.md](./mod-experience.md)）
+- **已在本分支：** M0（`mod.json`）、M1（客户端资源契约告警）、M2（势力外观/涂色/旗）
+- **下一步建议：** M3 肖像统一，M4 兵种 UI
 
 流程与门禁见 [../todo.md](../todo.md)；本文件记 **功能 backlog**。

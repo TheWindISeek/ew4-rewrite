@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "id": "conquest1",
+  "name": "示例征服：第一时代（仅改列表名）",
+  "mapId": 1,
+  "legacy": {
+    "btl": "source/original/conquest1.btl"
+  }
+}

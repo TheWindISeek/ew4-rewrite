@@ -52,7 +52,7 @@ public sealed class BasePackImporter
             embedded++;
         }
 
-        string packJsonPath = Path.Combine(destination, "pack.json");
+        string packJsonPath = Path.Combine(destination, PackManifestPaths.FileName);
         if (!File.Exists(packJsonPath))
         {
             const string template = """

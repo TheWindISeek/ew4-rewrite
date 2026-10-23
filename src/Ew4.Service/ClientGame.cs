@@ -1,4 +1,5 @@
 using System.Text.Json;
+using Ew4.Platform.Content.Original;
 using Ew4.Platform.Engine;
 using Ew4.Platform.Content.Build;
 using Ew4.Platform.Session.Persistence;
@@ -65,8 +66,20 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
     private static ClientCommand Command(string body) => JsonSerializer.Deserialize<ClientCommand>(body, Json)
         ?? throw new RuleViolation("client.command", "Missing command payload");
     private object Countries(ClientCommand command) => content.Battle(command.Scenario!).Factions
-        .Where(f => f.Camp != 4).Select(f => new { id = content.Countries.Canonical(f.CountryId), name = content.CountryName(f.CountryId), camp = f.Camp,
-            flag = content.Country(f.CountryId)?.Flag ?? f.Variant, flagImage = content.Country(f.CountryId)?.FlagImage }).ToArray();
+        .Where(f => f.Camp != 4).Select(f =>
+        {
+            var country = content.Country(f.CountryId);
+            var resolved = FactionAppearanceResolve.Resolve(
+                null,
+                country?.Flag,
+                country?.FlagImage,
+                country?.Color,
+                f.Variant,
+                f.Color,
+                content.Countries.Canonical(f.CountryId));
+            return new { id = content.Countries.Canonical(f.CountryId), name = content.CountryName(f.CountryId), camp = f.Camp,
+                flag = resolved.Flag, flagImage = resolved.FlagImage, color = resolved.Color };
+        }).ToArray();
     private object Leave(ClientCommand command)
     {
         if (game != null && command.Revision != game.Session.Revision)
@@ -440,15 +453,17 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
             dialoguePresentation = DialoguePresentation(),
             scenarioPopup = ScenarioPopupView(world),
             medals = session.Account.Medals,
-            factions = world.Factions.Select(f => new { f.Id, f.Name, f.Camp, f.Human, f.Defeated, f.Resources,
-                relation = WorldDiplomacy.Relation(world, session.PlayerFaction, f.Id, current.Rules.Turns.NeutralCamps),
-                neutral = WorldDiplomacy.NeutralTo(world, f.Id, session.PlayerFaction, current.Rules.Turns.NeutralCamps),
-                country = countryIds.GetValueOrDefault(f.Id) ?? f.Id,
-                unitVariant = unitVariants.GetValueOrDefault(f.Id),
-                visualVariant = visualVariants.GetValueOrDefault(f.Id),
-                flag = f.Appearance?.Flag ?? (f.Appearance?.FlagImage == null ? content.Country(countryIds[f.Id])?.Flag ?? factionSources.GetValueOrDefault(f.Id)?.Variant : null),
-                flagImage = f.Appearance?.FlagImage ?? (f.Appearance?.Flag == null ? content.Country(countryIds[f.Id])?.FlagImage : null),
-                color = (f.Appearance?.Color ?? content.Country(countryIds[f.Id])?.Color) is string color ? ScenarioFactions.PackedColor(color) : factionColors.GetValueOrDefault(f.Id) }),
+            factions = world.Factions.Select(f =>
+            {
+                FactionAppearanceResolve.Resolved appearance = ResolveFactionAppearance(f, countryIds, factionSources, factionColors);
+                return new { f.Id, f.Name, f.Camp, f.Human, f.Defeated, f.Resources,
+                    relation = WorldDiplomacy.Relation(world, session.PlayerFaction, f.Id, current.Rules.Turns.NeutralCamps),
+                    neutral = WorldDiplomacy.NeutralTo(world, f.Id, session.PlayerFaction, current.Rules.Turns.NeutralCamps),
+                    country = countryIds.GetValueOrDefault(f.Id) ?? f.Id,
+                    unitVariant = unitVariants.GetValueOrDefault(f.Id),
+                    visualVariant = visualVariants.GetValueOrDefault(f.Id),
+                    flag = appearance.Flag, flagImage = appearance.FlagImage, color = appearance.Color };
+            }),
             cells = cellDeltaFrom == null ? world.Cells.Select(CellView).ToArray() : null,
             cellUpdates = cellDeltaFrom == null ? null : world.Cells.Select((c, i) => (c, i))
                 .Where(p => p.c != cellDeltaFrom.Cells[p.i] || world.Jurisdictions?.CellCenters[p.i] != cellDeltaFrom.Jurisdictions?.CellCenters[p.i])
@@ -469,5 +484,24 @@ public sealed partial class ClientGame(ClientContent content, string saveDirecto
                     && content.Catalogs.Runtime.Commanders.TryGetValue(commanded.Commander, out var commander) ? commander.Definition.DisplayName : null }),
             notices = current.Notices
         };
+    }
+
+    private FactionAppearanceResolve.Resolved ResolveFactionAppearance(
+        FactionState faction,
+        IReadOnlyDictionary<string, string> countryIds,
+        IReadOnlyDictionary<string, OriginalFaction> factionSources,
+        IReadOnlyDictionary<string, int> factionColors)
+    {
+        string countryId = countryIds.GetValueOrDefault(faction.Id) ?? faction.Id;
+        var country = content.Country(countryId);
+        var battle = factionSources.GetValueOrDefault(faction.Id);
+        return FactionAppearanceResolve.Resolve(
+            faction.Appearance,
+            country?.Flag,
+            country?.FlagImage,
+            country?.Color,
+            battle?.Variant,
+            factionColors.GetValueOrDefault(faction.Id),
+            faction.Id);
     }
 }

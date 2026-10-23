@@ -182,7 +182,7 @@ public static class ApkOverlayPackImporter
                 formats,
             },
             new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(Path.Combine(dest, "pack.json"), json);
+        File.WriteAllText(Path.Combine(dest, PackManifestPaths.FileName), json);
     }
 
     private static int WriteScenarioStubs(string dest, IPackSource baseline)

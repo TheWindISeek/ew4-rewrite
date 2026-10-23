@@ -100,7 +100,7 @@ public sealed class PackInstallGuardTests
               "formats": { "scenario": {{scenarioFormat}}, "asset": 1 }
             }
             """;
-        File.WriteAllText(Path.Combine(dir, "pack.json"), manifest);
+        File.WriteAllText(Path.Combine(dir, PackManifestPaths.FileName), manifest);
     }
 
     private static ZipPackSource ZipPack(string packsRoot, string id)

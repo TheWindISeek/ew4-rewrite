@@ -21,7 +21,7 @@ cd ew4-rewrite
 
 （SSH：`git@github.com:TheWindISeek/ew4-rewrite.git`）
 
-准备内容包 **`mods/base/`**（`pack.json`、`scenarios/`、`assets/` 等，不进 Git）。有种子数据时可在镜像里跑 Tool 的 `import-base`（见 §5）。
+准备内容包 **`mods/base/`**（根清单 **`mod.json`**、`scenarios/`、`assets/` 等，不进 Git；字段见 [mods/README.md](mods/README.md)）。有种子数据时可在镜像里跑 Tool 的 `import-base`（见 §5）。
 
 ---
 

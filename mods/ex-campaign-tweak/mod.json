@@ -1,0 +1,25 @@
+{
+  "schema": 1,
+  "id": "ex-campaign-tweak",
+  "name": "示例：只改战役一关",
+  "version": "1.0.0",
+  "parent": "base",
+  "requires": { "engine": ">=0.3.0" },
+  "formats": {
+    "scenario": 1,
+    "rules": 1,
+    "map": 1,
+    "commander": 1,
+    "unit": 1,
+    "country": 1,
+    "text": 1,
+    "script": 1,
+    "asset": 1,
+    "source": 1,
+    "extension": 1
+  },
+  "scenarios": {
+    "storage": "legacy-btl",
+    "documentSchema": 2
+  }
+}

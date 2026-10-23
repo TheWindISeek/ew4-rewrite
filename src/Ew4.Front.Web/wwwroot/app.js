@@ -143,7 +143,7 @@ function button(text, action, parent) {
 }
 function countryImage(id,width,height,definition){
   const country=definition||(catalog?.countries&&Object.prototype.hasOwnProperty.call(catalog.countries,id)?catalog.countries[id]:null),flag=document.createElement('img');flag.alt='';flag.width=width;flag.height=height;
-  flag.src=country?.flagImage?'/content/extensions/'+country.flagImage.slice('rewrite/'.length).split('/').map(encodeURIComponent).join('/'):'/content/ui/image_flag_hd/'+encodeURIComponent(country?.flag||id)+'1.png';return flag;
+  flag.src=Ew4Appearance.flagUrl({flag:country?.flag,flagImage:country?.flagImage,country:id,id})||'';return flag;
 }
 function scenarioList() {
   const list=$('scenarios'),render=++conquestRender;list.replaceChildren();list.className='scenario-list';
@@ -419,10 +419,7 @@ async function withLoading(action){
   try{await new Promise(resolve=>requestAnimationFrame(()=>requestAnimationFrame(resolve)));await action();await new Promise(resolve=>setTimeout(resolve,Math.max(0,700-(performance.now()-started))));}
   finally{$('loading-screen').hidden=true;}
 }
-function flagSource(faction){
-  return faction.flagImage?'/content/extensions/'+faction.flagImage.slice('rewrite/'.length).split('/').map(encodeURIComponent).join('/')
-    :'/content/ui/image_flag_hd/'+faction.flag+'1.png';
-}
+function flagSource(faction){return Ew4Appearance.flagUrl(faction)||'';}
 function refreshAiProgress(){
   const active=state.factions.find(f=>f.id===state.activeFaction);
   $('ai-action').hidden=active.human||state.phase==='Finished'||!!state.dialogue;

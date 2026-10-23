@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Ew4.Platform.Content;
 
 /// <summary>
-/// <c>pack.json</c> 解析结果（契约；见 docs/arch/README.md）。
+/// <c>mod.json</c> 解析结果（契约；见 mods/README.md）。
 /// </summary>
 public sealed record PackManifest(
     int Schema,
@@ -12,7 +12,8 @@ public sealed record PackManifest(
     string Version,
     string? Parent,
     PackRequirements Requires,
-    IReadOnlyDictionary<string, int> Formats);
+    IReadOnlyDictionary<string, int> Formats,
+    PackModProfile.ModProfile? Mod = null);
 
 public sealed record PackRequirements(
     string Engine,

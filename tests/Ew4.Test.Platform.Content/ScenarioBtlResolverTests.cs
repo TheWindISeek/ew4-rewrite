@@ -47,6 +47,11 @@ public sealed class ScenarioBtlResolverTests
             """
             {
               "schema": 1,
+              "id": "test",
+              "name": "Test",
+              "version": "1.0.0",
+              "requires": { "engine": ">=0.3.0" },
+              "formats": { "scenario": 1, "asset": 1 },
               "scenarios": { "storage": "legacy-btl", "documentSchema": 2 }
             }
             """);
@@ -91,7 +96,7 @@ public sealed class ScenarioBtlResolverTests
               "formats": { "scenario": 1, "asset": 1 }
             }
             """;
-        File.WriteAllText(Path.Combine(root, "pack.json"), manifest);
+        File.WriteAllText(Path.Combine(root, PackManifestPaths.FileName), manifest);
         string scenario = "{\"schema\":1,\"id\":\"" + id + "\",\"legacy\":{\"btl\":\"" + btlPath + "\"}}";
         File.WriteAllText(Path.Combine(root, "scenarios", id + ".json"), scenario);
     }

@@ -15,9 +15,15 @@
 /build/**
 !/build/README.md
 
-# mods/ — 仅运行时内容包（base 等）
-/mods/**
+# mods/ — 本地 base 等大包忽略；示例 Mod 目录白名单进 Git
+/mods/*
 !/mods/README.md
+!/mods/ex-commander-skills/
+!/mods/ex-commander-skills/**
+!/mods/ex-campaign-tweak/
+!/mods/ex-campaign-tweak/**
+!/mods/ex-conquest-tweak/
+!/mods/ex-conquest-tweak/**
 
 # data/ — 生成 mods/base 用的原料（可选，本地保留）
 /data/

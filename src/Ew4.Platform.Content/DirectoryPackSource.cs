@@ -6,7 +6,7 @@ using System.Linq;
 namespace Ew4.Platform.Content;
 
 /// <summary>
-/// 从磁盘目录读取 Pack；根目录必须包含 <c>pack.json</c>。
+/// 从磁盘目录读取 Pack；根目录必须包含 <c>mod.json</c>（或过渡期的 <c>pack.json</c>）。
 /// </summary>
 public sealed class DirectoryPackSource : IPackSource
 {

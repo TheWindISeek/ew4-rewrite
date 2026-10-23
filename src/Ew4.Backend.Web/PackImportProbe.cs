@@ -18,8 +18,10 @@ internal static class PackImportProbe
                 }
 
                 string normalized = entry.FullName.Replace('\\', '/').TrimEnd('/');
-                if (string.Equals(normalized, "pack.json", StringComparison.OrdinalIgnoreCase)
-                    || normalized.EndsWith("/pack.json", StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(normalized, PackManifestPaths.FileName, StringComparison.OrdinalIgnoreCase)
+                    || normalized.EndsWith("/" + PackManifestPaths.FileName, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(normalized, PackManifestPaths.LegacyPackJson, StringComparison.OrdinalIgnoreCase)
+                    || normalized.EndsWith("/" + PackManifestPaths.LegacyPackJson, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -43,7 +45,7 @@ internal static class PackImportProbe
         {
             throw new ContentError(
                 "pack.import",
-                "仅支持根目录含 pack.json 的 .zip / .ew4mod 内容包（不再支持 APK 或旧格式归档）。");
+                "仅支持根目录含 mod.json 的 .zip / .ew4mod 内容包（不再支持 APK 或旧格式归档）。");
         }
     }
 }

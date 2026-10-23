@@ -1,0 +1,9 @@
+{
+  "schema": 1,
+  "id": "campaign1_01",
+  "name": "示例战役：第一关（仅改列表名）",
+  "mapId": 1,
+  "legacy": {
+    "btl": "source/original/campaign1_01.btl"
+  }
+}
