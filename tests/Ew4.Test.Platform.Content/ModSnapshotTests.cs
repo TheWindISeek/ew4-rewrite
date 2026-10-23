@@ -9,6 +9,26 @@ public sealed class ModSnapshotTests
     private static readonly IEngine Engine = new global::Ew4.Platform.Engine.Engine();
 
     [Fact]
+    public void Loader_builds_content_ref_index()
+    {
+        string? baseDir = BasePackDirectory();
+        if (baseDir == null)
+        {
+            return;
+        }
+
+        var primary = new DirectoryPackSource(baseDir);
+        var loader = new ModSnapshotLoader(
+            new ContentResolver(ContentKindRegistry.CreateDefault(), Engine),
+            new ContentValidator(ContentKindRegistry.CreateDefault()));
+        ResolvedContent loaded = loader.LoadActivatedView(primary, null);
+
+        Assert.NotNull(loaded.ContentRefs);
+        Assert.NotEmpty(loaded.ContentRefs);
+        Assert.Equal(loaded.ContentRefs.Count, loaded.ListContentRefs().Count);
+    }
+
+    [Fact]
     public void Loader_matches_resolver_fingerprint_for_base()
     {
         string? baseDir = BasePackDirectory();

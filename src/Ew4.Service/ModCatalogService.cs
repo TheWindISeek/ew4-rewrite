@@ -34,7 +34,7 @@ public sealed class ModCatalogService
 
     public ModPanelState GetPanelState()
     {
-        string? activeId = _host.ActiveContent?.Manifest.Id;
+        string? activeId = _host.ActiveSnapshot?.Manifest.Id;
         bool baseActive = string.Equals(activeId, PackId.Base, StringComparison.Ordinal);
         var mods = _packs.List()
             .Where(p => !string.Equals(p.Id, PackId.Base, StringComparison.Ordinal))
@@ -49,7 +49,7 @@ public sealed class ModCatalogService
 
         return new ModPanelState(
             baseActive ? null : activeId,
-            _host.ActiveContent?.Fingerprint ?? "",
+            _host.ActiveSnapshot?.Revision ?? "",
             mods,
             new ModPanelImportState("idle", "", 0, 0));
     }

@@ -22,9 +22,17 @@ public sealed partial record ResolvedContent
         return true;
     }
 
-    public IReadOnlyList<ContentRef> ListContentRefs(string prefix = "") =>
-        ModSnapshotIndex.Build(Source)
-            .Where(r => string.IsNullOrEmpty(prefix)
-                || r.LogicalPath.StartsWith(PackPath.Normalize(prefix), StringComparison.Ordinal))
+    public IReadOnlyList<ContentRef> ListContentRefs(string prefix = "")
+    {
+        IReadOnlyList<ContentRef> all = ContentRefs ?? ModSnapshotIndex.Build(Source);
+        if (string.IsNullOrEmpty(prefix))
+        {
+            return all;
+        }
+
+        string normalized = PackPath.Normalize(prefix);
+        return all
+            .Where(r => r.LogicalPath.StartsWith(normalized, StringComparison.Ordinal))
             .ToArray();
+    }
 }

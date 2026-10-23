@@ -25,6 +25,6 @@ public sealed class ModSnapshotLoader : IModSnapshotLoader
             }
         }
 
-        return resolved;
+        return resolved with { ContentRefs = ModSnapshotIndex.Build(resolved.Source) };
     }
 }

@@ -133,16 +133,18 @@ ModSnapshot
 
 ---
 
-## 7. 实现路线（建议，非承诺）
+## 7. 实现路线与进度
 
-按风险从低到高：
+| 步骤 | 状态 | 说明 |
+|------|------|------|
+| 文档与 `IModSnapshot` / `IModSnapshotLoader` | 已做 | `Ew4.Platform.Content/Mod/*`，测试 `ModSnapshotTests` |
+| 激活走 `ModSnapshotLoader` | 已做 | `HostApp.Activate`；`ContentRefs` 在载入期构建 |
+| Play 使用期读 snapshot | 已做 | `PlayEndpoints`、`PlayStaticFiles`、`PlaySessionHost`、`PlayClientFactory`、`ModCatalogService` |
+| 创作/工具载入仍可直接 `ContentResolver` / `PackMerge` | 保留 | 载入阶段；`WorkspacePackSources`、`Ew4.Tool` |
+| 使用期禁止 `PackMerge`（分析器或审查） | 未做 | 靠约定；Author 路径除外 |
+| `SessionService` 等仍持 `ResolvedContent` | 过渡 | 与 `IModSnapshot` 同一实例 |
 
-1. **文档与命名**：对外称「激活 = 生成 ModSnapshot」；`ResolvedContent` 注释与 arch 图一致。
-2. **收口 API**：使用期禁止直接 `PackMerge.OpenMerged`；只从 `HostApp.ActiveContent` / 注入的 snapshot 读。
-3. **显式索引（可选）**：载入期 `List` + Merge 规则生成 `Dictionary<LogicalPath, ContentRef>`；`MergedPackSource` 变为内部实现细节。
-4. **拆分类型（可选）**：`IModLoader.LoadAsync` → `ModSnapshot`；`IGameRuntime` 只持 snapshot。
-
-不必为「指针」过早做性能优化；差异 Mod 文件少时，惰性 Merge 可保留，只要 **阶段边界** 和 **唯一读口** 清晰。
+不必为「指针」过早做性能优化；差异 Mod 文件少时，底层仍可惰性 `MergedPackSource`，只要 **阶段边界** 和 **唯一读口** 清晰。
 
 ---
 

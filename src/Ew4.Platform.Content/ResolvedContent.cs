@@ -8,7 +8,8 @@ namespace Ew4.Platform.Content;
 public sealed partial record ResolvedContent(
     PackManifest Manifest,
     string Fingerprint,
-    IPackSource Source) : IModSnapshot;
+    IPackSource Source,
+    IReadOnlyList<ContentRef>? ContentRefs = null) : IModSnapshot;
 
 public interface IContentResolver
 {

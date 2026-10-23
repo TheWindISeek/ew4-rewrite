@@ -5,7 +5,7 @@ using Ew4.Platform.Runtime;
 namespace Ew4.Service;
 
 /// <summary>
-/// 绑定当前激活 Pack 的 <see cref="ClientGame"/>，对外提供封存 <c>/api/*</c> 语义。
+/// 绑定当前激活 Mod 快照的 <see cref="ClientGame"/>，对外提供封存 <c>/api/*</c> 语义。
 /// </summary>
 public sealed class PlaySessionHost : IHostActivationListener
 {
@@ -36,11 +36,11 @@ public sealed class PlaySessionHost : IHostActivationListener
         }
     }
 
-    public string Dispatch(ResolvedContent content, string path, string body)
+    public string Dispatch(IModSnapshot snapshot, string path, string body)
     {
         lock (_gate)
         {
-            if (_activation == null || _activation.Content.Fingerprint != content.Fingerprint)
+            if (_activation == null || _activation.Snapshot.Revision != snapshot.Revision)
             {
                 throw new InvalidOperationException("Play session is not synchronized with active content.");
             }
