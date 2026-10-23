@@ -11,7 +11,7 @@ namespace Ew4.Platform.Content;
 /// </summary>
 public static class LegacyBattleListScenarios
 {
-    public static void AddIds(IPackSource source, ISet<string> ids)
+    public static void AddIds(IModSource source, ISet<string> ids)
     {
         if (!TryReadBattleList(source, out XDocument? document) || document?.Root == null)
         {
@@ -39,7 +39,7 @@ public static class LegacyBattleListScenarios
         }
     }
 
-    private static bool TryReadBattleList(IPackSource source, out XDocument? document)
+    private static bool TryReadBattleList(IModSource source, out XDocument? document)
     {
         foreach (string path in new[] { "assets/tables/def_battlelist.xml", "assets/original/def_battlelist.xml" })
         {
@@ -69,7 +69,7 @@ public static class LegacyBattleListScenarios
         return XDocument.Parse(reader.ReadToEnd());
     }
 
-    private static bool HasLegacyBtl(IPackSource source, string scenarioId)
+    private static bool HasLegacyBtl(IModSource source, string scenarioId)
     {
         string file = scenarioId + ".btl";
         foreach (string path in new[]

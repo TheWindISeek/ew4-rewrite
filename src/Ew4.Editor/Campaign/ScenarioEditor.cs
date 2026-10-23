@@ -1,7 +1,8 @@
+using Ew4.Editor;
 using Ew4.Platform.Content;
 using Ew4.Platform.Content.ScenarioEdit;
 
-namespace Ew4.Editor;
+namespace Ew4.Editor.Campaign;
 
 public sealed class ScenarioEditor : IScenarioEditor
 {
@@ -15,7 +16,7 @@ public sealed class ScenarioEditor : IScenarioEditor
     }
 
     public ScenarioDocument Open(string workspaceId, string scenarioId) =>
-        _toolkit.OpenFromPack(_workspaces.OpenMergedPack(workspaceId), scenarioId);
+        _toolkit.OpenFromPack(_workspaces.OpenMergedMod(workspaceId), scenarioId);
 
     public ScenarioEditResult Apply(string workspaceId, string scenarioId, ScenarioEdit edit)
     {

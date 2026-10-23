@@ -4,18 +4,18 @@ using System.Text.Json;
 
 namespace Ew4.Platform.Content;
 
-internal static class PackManifestScenarios
+internal static class ModManifestScenarios
 {
-    public static PackModProfile.ModProfile? TryParseRoot(JsonElement root) =>
+    public static ModManifestProfile.ModProfile? TryParseRoot(JsonElement root) =>
         root.TryGetProperty("scenarios", out JsonElement scenarios) && scenarios.ValueKind == JsonValueKind.Object
-            ? PackModProfile.ParseScenariosSection(root, scenarios)
+            ? ModManifestProfile.ParseScenariosSection(root, scenarios)
             : null;
 
-    public static void MergeIntoManifest(string packRootDirectory, PackModProfile.ModProfile profile)
+    public static void MergeIntoManifest(string packRootDirectory, ModManifestProfile.ModProfile profile)
     {
         string root = Path.GetFullPath(packRootDirectory);
-        PackManifestPaths.MigrateLegacyPackJsonIfNeeded(root);
-        string manifestPath = Path.Combine(root, PackManifestPaths.FileName);
+        ModManifestPaths.MigrateLegacyPackJsonIfNeeded(root);
+        string manifestPath = Path.Combine(root, ModManifestPaths.FileName);
 
         using JsonDocument document = JsonDocument.Parse(File.ReadAllBytes(manifestPath));
         using var stream = new MemoryStream();
@@ -39,14 +39,14 @@ internal static class PackManifestScenarios
         File.WriteAllBytes(manifestPath, stream.ToArray());
     }
 
-    public static void WriteScenarios(Utf8JsonWriter writer, PackModProfile.ModProfile profile)
+    public static void WriteScenarios(Utf8JsonWriter writer, ModManifestProfile.ModProfile profile)
     {
         writer.WritePropertyName("scenarios");
         writer.WriteStartObject();
         writer.WriteString("storage", profile.ScenarioStorage switch
         {
-            PackModProfile.ScenarioStorageMode.EmbeddedJson => "embedded-json",
-            PackModProfile.ScenarioStorageMode.LegacyBtl => "legacy-btl",
+            ModManifestProfile.ScenarioStorageMode.EmbeddedJson => "embedded-json",
+            ModManifestProfile.ScenarioStorageMode.LegacyBtl => "legacy-btl",
             _ => "auto",
         });
         writer.WriteNumber("documentSchema", profile.ScenarioDocumentSchema);

@@ -7,7 +7,7 @@ namespace Ew4.Platform.Content;
 /// <summary>
 /// 剧本 Pack 访问便捷入口；解析策略见 <see cref="ScenarioBtlResolver"/>。
 /// </summary>
-public static class ScenarioPackAccess
+public static class ScenarioModAccess
 {
     public static bool IsEmbeddedScenarioJson(JsonElement root)
     {
@@ -34,13 +34,13 @@ public static class ScenarioPackAccess
         return document;
     }
 
-    public static ScenarioDocument OpenScenario(IPackSource source, string scenarioId) =>
+    public static ScenarioDocument OpenScenario(IModSource source, string scenarioId) =>
         ScenarioBtlResolver.OpenScenarioDocument(source, scenarioId);
 
     public static byte[] ExportBtlBytes(ScenarioDocument document) =>
         ScenarioBtlCodec.Export(document, reencodeLayers: false);
 
-    public static byte[] ResolveBtlBytes(IPackSource source, string scenarioId) =>
+    public static byte[] ResolveBtlBytes(IModSource source, string scenarioId) =>
         ScenarioBtlResolver.ResolveBtlBytes(source, scenarioId);
 
     public static string ScenarioJsonPath(string scenarioId) => "scenarios/" + scenarioId + ".json";

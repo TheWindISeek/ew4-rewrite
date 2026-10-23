@@ -14,18 +14,18 @@ public sealed class ContentResolver : IContentResolver
         _engine = engine;
     }
 
-    public ResolvedContent Resolve(IPackSource pack, IPackSource? parent)
+    public ResolvedContent Resolve(IModSource pack, IModSource? parent)
     {
         if (parent != null && pack.Manifest.Parent != null
             && !string.Equals(pack.Manifest.Parent, parent.Manifest.Id, StringComparison.Ordinal))
         {
             throw new ContentError(
-                "pack.parent",
+                "mod.parent",
                 $"Pack parent '{pack.Manifest.Parent}' does not match supplied parent '{parent.Manifest.Id}'.");
         }
 
         EngineRequirement.AssertCompatible(pack.Manifest.Requires, _engine.Info);
-        IPackSource effective = parent == null ? pack : new MergedPackSource(pack, parent);
+        IModSource effective = ModMerge.Apply(pack, parent);
         string fingerprint = ContentFingerprint.Compute(effective, _registry);
         return new ResolvedContent(pack.Manifest, fingerprint, effective);
     }

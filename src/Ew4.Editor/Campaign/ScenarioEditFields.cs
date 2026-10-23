@@ -1,7 +1,7 @@
 using System.Text.Json;
 using Ew4.Platform.Content.ScenarioEdit;
 
-namespace Ew4.Editor;
+namespace Ew4.Editor.Campaign;
 
 public sealed record ScenarioEditArmyFields(int Index, ArmyFieldPatch Fields) : ScenarioEdit;
 

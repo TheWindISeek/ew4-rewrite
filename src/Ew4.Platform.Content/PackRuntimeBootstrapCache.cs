@@ -3,10 +3,10 @@ using Ew4.Platform.Content.Build;
 
 namespace Ew4.Platform.Content;
 
-public static class PackRuntimeBootstrapCache
+public static class ModRuntimeBootstrapCache
 {
-    private static readonly ConcurrentDictionary<string, PackRuntimeBootstrap> Cache = new(StringComparer.Ordinal);
+    private static readonly ConcurrentDictionary<string, ModRuntimeBootstrap> Cache = new(StringComparer.Ordinal);
 
-    internal static PackRuntimeBootstrap Get(ResolvedContent content) =>
-        Cache.GetOrAdd(content.Fingerprint, _ => new PackRuntimeBootstrap(content.Source));
+    internal static ModRuntimeBootstrap Get(ResolvedContent content) =>
+        Cache.GetOrAdd(content.Fingerprint, _ => new ModRuntimeBootstrap(content.Source));
 }

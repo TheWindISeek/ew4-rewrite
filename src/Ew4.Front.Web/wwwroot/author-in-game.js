@@ -6,6 +6,11 @@
   let scenarioDoc = null;
   let scenarioGroups = { campaign: [], conquest: [], tutorial: [], other: [] };
   let scenarioCategory = 'campaign';
+  let workspaceMode = 'commander';
+  let commanders = [];
+  let skillCatalog = [];
+  let commanderId = null;
+  let commanderEntry = null;
 
   function say(text, ok) {
     const box = el('author-notice');
@@ -33,8 +38,28 @@
     el('author-home').hidden = view !== 'home';
     el('author-workspace').hidden = view !== 'workspace';
     el('author-scenario').hidden = view !== 'scenario';
-    el('author-heading').textContent =
-      view === 'home' ? 'Mod 创作' : view === 'workspace' ? workspace.name : `剧本 · ${scenarioId}`;
+    el('author-commander').hidden = view !== 'commander';
+    if (view === 'home') {
+      el('author-heading').textContent = 'Mod 创作';
+    } else if (view === 'workspace') {
+      el('author-heading').textContent = workspace.name;
+    } else if (view === 'scenario') {
+      el('author-heading').textContent = `战役 · ${scenarioId}`;
+    } else if (view === 'commander') {
+      el('author-heading').textContent = `将领 · ${commanderEntry?.name || commanderId}`;
+    }
+  }
+
+  function setWorkspaceMode(mode) {
+    workspaceMode = mode;
+    for (const tab of document.querySelectorAll('.author-mode-tab')) {
+      tab.setAttribute('aria-pressed', tab.dataset.mode === mode ? 'true' : 'false');
+    }
+    el('author-ws-panel-commander').hidden = mode !== 'commander';
+    el('author-ws-panel-campaign').hidden = mode !== 'campaign';
+    el('author-ws-panel-conquest').hidden = mode !== 'conquest';
+    if (mode === 'commander') renderCommanderList();
+    if (mode === 'campaign') renderScenarioList();
   }
 
   function workspaceRow(ws) {
@@ -139,16 +164,111 @@
     }
   }
 
+  function commanderFilterText() {
+    return (el('author-commander-filter')?.value || '').trim().toLowerCase();
+  }
+
+  function renderCommanderList() {
+    const host = el('author-commander-list');
+    if (!host) return;
+    const q = commanderFilterText();
+    const rows = commanders.filter(c => {
+      if (!q) return true;
+      const id = String(c.legacyId);
+      return id.includes(q) || (c.name || '').toLowerCase().includes(q);
+    });
+    host.replaceChildren();
+    const cap = 200;
+    for (const c of rows.slice(0, cap)) {
+      const box = document.createElement('div');
+      box.className = 'mod-row';
+      const info = document.createElement('div');
+      info.className = 'mod-row-info';
+      const title = document.createElement('div');
+      title.className = 'mod-row-name';
+      title.textContent = c.name || `将领 ${c.legacyId}`;
+      const meta = document.createElement('div');
+      meta.className = 'mod-row-meta';
+      meta.textContent = `id=${c.legacyId} · 步/骑/炮/海/塞 ${c.infantry}/${c.cavalry}/${c.artillery}/${c.warship}/${c.fort} · 技 ${c.skill1}/${c.skill2}/${c.skill3}/${c.skill4}`;
+      info.append(title, meta);
+      const actions = document.createElement('div');
+      actions.className = 'mod-row-actions';
+      const edit = document.createElement('button');
+      edit.type = 'button';
+      edit.className = 'native-command blue';
+      edit.textContent = '编辑';
+      edit.onclick = () => openCommander(c.legacyId);
+      actions.append(edit);
+      box.append(info, actions);
+      host.append(box);
+    }
+    if (rows.length > cap) {
+      say(`仅显示前 ${cap} 条，请用筛选缩小范围`, true);
+    }
+  }
+
+  function skillDisplayName(legacyId) {
+    const hit = skillCatalog.find(s => s.legacyId === legacyId);
+    return hit ? `${hit.displayName} (#${legacyId})` : legacyId === 0 ? '无' : `ID ${legacyId}`;
+  }
+
+  function updateSkillCaptions() {
+    for (let i = 1; i <= 4; i++) {
+      const cap = el(`author-commander-skill${i}-name`);
+      if (cap) cap.textContent = skillDisplayName(Number(el(`author-commander-skill${i}`).value));
+    }
+  }
+
+  async function loadCommanders() {
+    const [view, skills] = await Promise.all([
+      api(`/api/author/workspaces/${workspace.id}/commanders`),
+      api(`/api/author/workspaces/${workspace.id}/commanders/skills`),
+    ]);
+    commanders = view.entries || [];
+    skillCatalog = skills.skills || [];
+    renderCommanderList();
+  }
+
   async function openWorkspace(ws) {
     workspace = ws;
+    commanderId = null;
+    commanderEntry = null;
     show('workspace');
     say('');
+    setWorkspaceMode(workspaceMode);
     scenarioGroups = normalizeScenarioGroups(await api(`/api/author/workspaces/${ws.id}/scenarios`));
     if (!scenarioGroups[scenarioCategory]?.length) {
       const order = ['campaign', 'conquest', 'tutorial', 'other'];
       scenarioCategory = order.find(c => scenarioGroups[c]?.length) || 'campaign';
     }
     setScenarioCategory(scenarioCategory);
+    try {
+      await loadCommanders();
+    } catch (err) {
+      say(err.message);
+    }
+  }
+
+  function fillCommanderForm(entry) {
+    el('author-commander-skill1').value = entry.skill1;
+    el('author-commander-skill2').value = entry.skill2;
+    el('author-commander-skill3').value = entry.skill3;
+    el('author-commander-skill4').value = entry.skill4;
+    el('author-commander-infantry').value = entry.infantry;
+    el('author-commander-cavalry').value = entry.cavalry;
+    el('author-commander-artillery').value = entry.artillery;
+    el('author-commander-warship').value = entry.warship;
+    el('author-commander-fort').value = entry.fort;
+    el('author-commander-title').textContent = `${entry.name || '将领'} (表 id=${entry.legacyId} · 军衔 ${entry.rank} · 爵位 ${entry.nobilityRank})`;
+    updateSkillCaptions();
+  }
+
+  async function openCommander(legacyId) {
+    commanderId = legacyId;
+    commanderEntry = await api(`/api/author/workspaces/${workspace.id}/commanders/${legacyId}`);
+    fillCommanderForm(commanderEntry);
+    show('commander');
+    say('');
   }
 
   function renderArmies() {
@@ -200,6 +320,14 @@
   }
 
   function authorGoBack() {
+    if (!el('author-commander').hidden) {
+      commanderId = null;
+      commanderEntry = null;
+      show('workspace');
+      setWorkspaceMode('commander');
+      loadCommanders().catch(err => say(err.message));
+      return;
+    }
     if (!el('author-scenario').hidden) {
       openWorkspace(workspace).catch(err => say(err.message));
       return;
@@ -207,6 +335,7 @@
     if (!el('author-workspace').hidden) {
       workspace = null;
       scenarioId = null;
+      commanderId = null;
       el('author-diag').hidden = true;
       show('home');
       loadWorkspaces();
@@ -224,6 +353,7 @@
       if (typeof popupOpen === 'function') popupOpen(el('author-manager').firstElementChild);
       workspace = null;
       scenarioId = null;
+      workspaceMode = 'commander';
       show('home');
       loadWorkspaces().catch(e => say(e.message));
     },
@@ -233,11 +363,20 @@
     goBack: authorGoBack,
   };
 
+  for (const tab of document.querySelectorAll('.author-mode-tab')) {
+    tab.onclick = () => setWorkspaceMode(tab.dataset.mode);
+  }
+
   for (const tab of document.querySelectorAll('.author-cat-tab')) {
     tab.onclick = () => setScenarioCategory(tab.dataset.cat);
   }
 
   el('author-back').onclick = () => authorGoBack();
+
+  el('author-commander-filter')?.addEventListener('input', () => renderCommanderList());
+  for (let i = 1; i <= 4; i++) {
+    el(`author-commander-skill${i}`)?.addEventListener('input', updateSkillCaptions);
+  }
 
   el('author-create').onsubmit = async e => {
     e.preventDefault();
@@ -254,6 +393,34 @@
       el('author-ws-id').value = '';
       await loadWorkspaces();
       say('草稿已创建', true);
+    } catch (err) {
+      say(err.message);
+    }
+  };
+
+  el('author-commander-save').onclick = async () => {
+    if (!workspace || commanderId == null) return;
+    try {
+      const body = {
+        skill1: Number(el('author-commander-skill1').value),
+        skill2: Number(el('author-commander-skill2').value),
+        skill3: Number(el('author-commander-skill3').value),
+        skill4: Number(el('author-commander-skill4').value),
+        infantry: Number(el('author-commander-infantry').value),
+        cavalry: Number(el('author-commander-cavalry').value),
+        artillery: Number(el('author-commander-artillery').value),
+        warship: Number(el('author-commander-warship').value),
+        fort: Number(el('author-commander-fort').value),
+      };
+      await api(`/api/author/workspaces/${workspace.id}/commanders/${commanderId}/edit`, {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify(body),
+      });
+      commanderEntry = await api(`/api/author/workspaces/${workspace.id}/commanders/${commanderId}`);
+      fillCommanderForm(commanderEntry);
+      await loadCommanders();
+      say('将领已保存', true);
     } catch (err) {
       say(err.message);
     }

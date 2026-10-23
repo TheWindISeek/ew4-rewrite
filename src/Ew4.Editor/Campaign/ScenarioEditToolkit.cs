@@ -1,7 +1,7 @@
 using Ew4.Platform.Content;
 using Ew4.Platform.Content.ScenarioEdit;
 
-namespace Ew4.Editor;
+namespace Ew4.Editor.Campaign;
 
 /// <summary>
 /// <see cref="IScenarioEditToolkit"/> 默认实现；CLI 与未来的 Author API 应只依赖本类型。
@@ -48,8 +48,8 @@ public sealed class ScenarioEditToolkit : IScenarioEditToolkit
     public ScenarioBtlRoundtrip.Result ValidateBtlRoundtrip(string scenarioId, byte[] btlBytes) =>
         ScenarioBtlRoundtrip.Validate(scenarioId, btlBytes);
 
-    public ScenarioDocument OpenFromPack(IPackSource pack, string scenarioId) =>
-        ScenarioPackAccess.OpenScenario(pack, scenarioId);
+    public ScenarioDocument OpenFromPack(IModSource pack, string scenarioId) =>
+        ScenarioModAccess.OpenScenario(pack, scenarioId);
 
     public ScenarioSaveResult SaveToWorkspace(string workspaceRoot, ScenarioDocument document)
     {

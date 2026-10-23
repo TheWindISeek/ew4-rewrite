@@ -12,7 +12,7 @@ public static class EngineRequirement
         if (!Satisfies(requires.Engine, engine.EngineVersion))
         {
             throw new ContentError(
-                "pack.engine",
+                "mod.engine",
                 $"Pack requires engine {requires.Engine}; current engine is {engine.EngineVersion}.");
         }
 
@@ -21,7 +21,7 @@ public static class EngineRequirement
             if (!engine.Capabilities.Contains(capability))
             {
                 throw new ContentError(
-                    "pack.capability",
+                    "mod.capability",
                     $"Pack requires capability '{capability}' which this engine does not provide.");
             }
         }

@@ -32,12 +32,12 @@ public sealed class ContentValidator : IContentValidator
             return diagnostics;
         }
 
-        diagnostics.AddRange(PackContentContract.Validate(content.Source));
+        diagnostics.AddRange(ModContentContract.Validate(content.Source));
 
         foreach (string path in content.Source.List("").OrderBy(p => p, StringComparer.Ordinal))
         {
-            if (string.Equals(path, PackManifestPaths.FileName, StringComparison.Ordinal)
-                || string.Equals(path, PackManifestPaths.LegacyPackJson, StringComparison.Ordinal)
+            if (string.Equals(path, ModManifestPaths.FileName, StringComparison.Ordinal)
+                || string.Equals(path, ModManifestPaths.LegacyPackJson, StringComparison.Ordinal)
                 || string.Equals(path, ".workspace.json", StringComparison.Ordinal))
             {
                 continue;

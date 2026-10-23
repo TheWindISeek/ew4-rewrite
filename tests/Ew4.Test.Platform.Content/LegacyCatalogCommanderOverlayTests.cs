@@ -53,8 +53,8 @@ public sealed class LegacyCatalogCommanderOverlayTests
             return;
         }
 
-        IPackSource merged = new MergedPackSource(new DirectoryPackSource(greatFront), new DirectoryPackSource(baseDir));
-        Func<string, byte[]> read = PackAssetRead.FromPack(merged);
+        IModSource merged = new MergedModSource(new DirectoryModSource(greatFront), new DirectoryModSource(baseDir));
+        Func<string, byte[]> read = ModAssetRead.FromPack(merged);
         var countries = CountryCatalog.Load(read);
         var extensions = ExtensionLoader.Load(read, countries);
         string catalogJson = LegacyCatalogSourceTreeOverlay.SyncChangedTables(
@@ -67,7 +67,7 @@ public sealed class LegacyCatalogCommanderOverlayTests
             extensions.PatchCatalog(catalogJson),
             correctOriginalEquipment: false,
             extensions.LegacySkills);
-        var bootstrap = new PackRuntimeBootstrap(merged);
+        var bootstrap = new ModRuntimeBootstrap(merged);
         foreach (int id in runtime.Commanders.Keys)
         {
             bootstrap.Catalogs.Accounts.PreviewAbilities(id);

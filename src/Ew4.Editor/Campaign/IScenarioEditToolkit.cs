@@ -1,7 +1,7 @@
 using Ew4.Platform.Content;
 using Ew4.Platform.Content.ScenarioEdit;
 
-namespace Ew4.Editor;
+namespace Ew4.Editor.Campaign;
 
 /// <summary>
 /// 剧本 BTL ↔ JSON 编辑工具库：供 CLI、网页编辑器、单测共用；不依赖 Session/Host。
@@ -26,7 +26,7 @@ public interface IScenarioEditToolkit
 
     ScenarioBtlRoundtrip.Result ValidateBtlRoundtrip(string scenarioId, byte[] btlBytes);
 
-    ScenarioDocument OpenFromPack(IPackSource pack, string scenarioId);
+    ScenarioDocument OpenFromPack(IModSource pack, string scenarioId);
 
     ScenarioSaveResult SaveToWorkspace(string workspaceRoot, ScenarioDocument document);
 

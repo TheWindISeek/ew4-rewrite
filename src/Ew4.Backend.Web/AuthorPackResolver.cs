@@ -4,32 +4,17 @@ using Ew4.Platform.Runtime;
 
 namespace Ew4.Backend.Web;
 
-internal static class AuthorPackResolver
+internal static class AuthorModResolver
 {
-    public static IPackSource OpenMergedPack(FilePackRepository repository, string packId)
+    public static IModSource OpenMergedMod(FileModRepository repository, string modId) =>
+        ModMerge.OpenMerged(repository, modId);
+
+    public static IModSource OpenWorkspacePack(FileModRepository repository, string workspaceRoot) =>
+        WorkspaceModSources.OpenMerged(workspaceRoot, repository);
+
+    public static IModSource OpenActivePack(FileModRepository repository, HostApp host)
     {
-        IPackSource pack = repository.Open(packId);
-        return MergeWithParent(repository, pack);
-    }
-
-    public static IPackSource OpenWorkspacePack(FilePackRepository repository, string workspaceRoot) =>
-        WorkspacePackSources.OpenMerged(workspaceRoot, repository);
-
-    public static IPackSource OpenActivePack(FilePackRepository repository, HostApp host)
-    {
-        string packId = host.Status().ActivePackId ?? PackId.Base;
-        return OpenMergedPack(repository, packId);
-    }
-
-    private static IPackSource MergeWithParent(FilePackRepository repository, IPackSource pack)
-    {
-        string? parentId = pack.Manifest.Parent;
-        if (string.IsNullOrWhiteSpace(parentId))
-        {
-            return pack;
-        }
-
-        IPackSource parent = repository.Open(parentId);
-        return new MergedPackSource(pack, parent);
+        string modId = host.Status().ActiveModId ?? ModId.Base;
+        return OpenMergedMod(repository, modId);
     }
 }

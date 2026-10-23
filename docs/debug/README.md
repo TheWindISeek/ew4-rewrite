@@ -7,3 +7,4 @@
 | 文档 | 主题 |
 |------|------|
 | [great-front-campaign-load.md](./great-front-campaign-load.md) | 大前线战役；catalog；huangkai / ww1 战役 UI |
+| [web-catalog-500-and-author-commander.md](./web-catalog-500-and-author-commander.md) | Web catalog 500；`active.json` / `pack.json`；创作将领字段 |

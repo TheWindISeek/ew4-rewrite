@@ -5,7 +5,7 @@ namespace Ew4.Platform.Content;
 /// <summary>
 /// <c>mod.json</c> 内 <c>scenarios</c> 扩展段的解析（剧本如何加载）。
 /// </summary>
-public static class PackModProfile
+public static class ModManifestProfile
 {
     public enum ScenarioStorageMode
     {
@@ -19,7 +19,7 @@ public static class PackModProfile
 
     public sealed record ModProfile(int Schema, ScenarioStorageMode ScenarioStorage, int ScenarioDocumentSchema);
 
-    public static ModProfile? TryRead(IPackSource source) => source.Manifest.Mod;
+    public static ModProfile? TryRead(IModSource source) => source.Manifest.Mod;
 
     internal static ModProfile ParseScenariosSection(JsonElement root, JsonElement scenarios)
     {
@@ -47,7 +47,7 @@ public static class PackModProfile
     public static void WriteEmbeddedJsonProfile(string packRootDirectory)
     {
         var profile = new ModProfile(1, ScenarioStorageMode.EmbeddedJson, 2);
-        PackManifestScenarios.MergeIntoManifest(packRootDirectory, profile);
+        ModManifestScenarios.MergeIntoManifest(packRootDirectory, profile);
     }
 
     private static ScenarioStorageMode ParseStorage(string? value) => value switch

@@ -63,7 +63,7 @@ static int RunImportBase(string[] args)
         btl = Path.GetFullPath(btl);
     }
 
-    var importer = new BasePackImporter();
+    var importer = new BaseModImporter();
     BasePackImportResult result = importer.Import(new BasePackImportOptions(data, dest, btl));
     Console.WriteLine($"Imported {result.ScenarioCount} embedded scenario JSON → {result.PackDirectory}");
     return 0;
@@ -79,7 +79,7 @@ static int Unknown(string command)
 static int RunValidatePack(string[] args)
 {
     string packs = "mods";
-    string packId = "base";
+    string modId = "base";
     ValidationLevel level = ValidationLevel.SmokeStart;
     for (int i = 1; i < args.Length; i++)
     {
@@ -89,7 +89,7 @@ static int RunValidatePack(string[] args)
         }
         else if (args[i] == "--pack" && i + 1 < args.Length)
         {
-            packId = args[++i];
+            modId = args[++i];
         }
         else if (args[i] == "--level" && i + 1 < args.Length)
         {
@@ -104,13 +104,13 @@ static int RunValidatePack(string[] args)
         }
     }
 
-    var repository = new FilePackRepository(Path.GetFullPath(packs));
+    var repository = new FileModRepository(Path.GetFullPath(packs));
     var engine = new global::Ew4.Platform.Engine.Engine();
     var builder = new ScenarioJsonBuilder();
     var resolver = new ContentResolver(ContentKindRegistry.CreateDefault(), engine);
     var validator = new ContentValidator(ContentKindRegistry.CreateDefault(), engine, builder);
-    IPackSource pack = repository.Open(packId);
-    IPackSource? parent = null;
+    IModSource pack = repository.Open(modId);
+    IModSource? parent = null;
     if (!string.IsNullOrWhiteSpace(pack.Manifest.Parent))
     {
         parent = repository.Open(pack.Manifest.Parent);
@@ -134,7 +134,7 @@ static int RunValidatePack(string[] args)
         }
     }
 
-    Console.WriteLine($"validate-pack: pack={packId} level={level} errors={errors} warnings={warnings} checks={diagnostics.Count}");
+    Console.WriteLine($"validate-pack: pack={modId} level={level} errors={errors} warnings={warnings} checks={diagnostics.Count}");
     return errors == 0 ? 0 : 1;
 }
 
@@ -183,10 +183,10 @@ static int RunPackConvertLegacyScenarios(string[] args)
         }
     }
 
-    PackScenarioConvert.Result result = PackScenarioConvert.ToEmbeddedDocumentFormat(Path.GetFullPath(packDir), removeBtl);
-    PackScenarioEmbedder.Result embed = result.Embed;
+    ModScenarioConvert.Result result = ModScenarioConvert.ToEmbeddedDocumentFormat(Path.GetFullPath(packDir), removeBtl);
+    ModScenarioEmbedder.Result embed = result.Embed;
     Console.WriteLine(
-        $"pack-convert-legacy-scenarios: embedded={embed.Embedded} already={embed.AlreadyEmbedded} skipped_missing_btl={embed.SkippedMissingBtl} manifest={PackManifestPaths.FileName}");
+        $"pack-convert-legacy-scenarios: embedded={embed.Embedded} already={embed.AlreadyEmbedded} skipped_missing_btl={embed.SkippedMissingBtl} manifest={ModManifestPaths.FileName}");
     return 0;
 }
 
@@ -206,7 +206,7 @@ static int RunPackEmbedScenarios(string[] args)
         }
     }
 
-    PackScenarioEmbedder.Result result = PackScenarioEmbedder.Embed(Path.GetFullPath(packDir), removeBtl);
+    ModScenarioEmbedder.Result result = ModScenarioEmbedder.Embed(Path.GetFullPath(packDir), removeBtl);
     Console.WriteLine(
         $"pack-embed-scenarios: embedded={result.Embedded} already={result.AlreadyEmbedded} skipped_missing_btl={result.SkippedMissingBtl} removed_btl={result.RemovedBtlFiles}");
     return 0;
@@ -276,7 +276,7 @@ static void PrintHelp()
           validate-scenario-json-btl [--pack mods/base] [--btl <reference-btl-dir>]
           pack-embed-scenarios [--pack mods/base] [--remove-btl]
           pack-convert-legacy-scenarios [--pack mods/base]  (BTL→嵌入 JSON，更新 mod.json scenarios)
-          import-apk-overlay --apk <file.apk> --id <packId> --name <display> [--base mods/base] [--dest mods/<id>]
+          import-apk-overlay --apk <file.apk> --id <modId> --name <display> [--base mods/base] [--dest mods/<id>]
           scenario <subcommand>  (see: scenario btl-to-json --help via invalid subcommand)
           workspace <subcommand>  (list|create|delete|validate|export)
         """);

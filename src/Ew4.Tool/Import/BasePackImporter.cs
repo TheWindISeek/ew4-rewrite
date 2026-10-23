@@ -11,7 +11,7 @@ namespace Ew4.Tool.Import;
 /// <summary>
 /// 从封存运行时目录生成内容包布局（资源复制 + 剧本嵌入 JSON，不复制 BTL 进包）。
 /// </summary>
-public sealed class BasePackImporter
+public sealed class BaseModImporter
 {
     public BasePackImportResult Import(BasePackImportOptions options)
     {
@@ -52,7 +52,7 @@ public sealed class BasePackImporter
             embedded++;
         }
 
-        string packJsonPath = Path.Combine(destination, PackManifestPaths.FileName);
+        string packJsonPath = Path.Combine(destination, ModManifestPaths.FileName);
         if (!File.Exists(packJsonPath))
         {
             const string template = """

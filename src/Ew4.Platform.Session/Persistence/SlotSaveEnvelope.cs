@@ -14,7 +14,7 @@ public static class SlotSaveEnvelope
     public const string Format = "ew4.session";
     public const int SaveSchema = 1;
 
-    public sealed record Binding(string PackId, string Fingerprint, EngineInfo Engine);
+    public sealed record Binding(string ModId, string Fingerprint, EngineInfo Engine);
 
     public static byte[] Wrap(byte[] slotJson, Binding binding)
     {
@@ -27,7 +27,7 @@ public static class SlotSaveEnvelope
             writer.WriteNumber("saveSchema", SaveSchema);
             writer.WriteString("engineVersion", binding.Engine.EngineVersion);
             writer.WriteNumber("behaviorVersion", binding.Engine.BehaviorVersion);
-            writer.WriteString("packId", binding.PackId);
+            writer.WriteString("modId", binding.ModId);
             writer.WriteString("fingerprint", binding.Fingerprint);
             writer.WriteString("sha256", Convert.ToHexStringLower(SHA256.HashData(payload)));
             writer.WritePropertyName("payload");
@@ -63,11 +63,11 @@ public static class SlotSaveEnvelope
             throw new RuleViolation("save.version", "Save requires an explicit migration");
         }
 
-        string packId = root.GetProperty("packId").GetString()
+        string modId = root.GetProperty("modId").GetString()
             ?? throw new RuleViolation("save.format", "Missing pack id");
         string fingerprint = root.GetProperty("fingerprint").GetString()
             ?? throw new RuleViolation("save.format", "Missing content fingerprint");
-        if (!string.Equals(packId, binding.PackId, StringComparison.Ordinal)
+        if (!string.Equals(modId, binding.ModId, StringComparison.Ordinal)
             || !string.Equals(fingerprint, binding.Fingerprint, StringComparison.Ordinal))
         {
             throw new RuleViolation("save.content", "此存档属于另一内容或版本");

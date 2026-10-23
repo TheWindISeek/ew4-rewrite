@@ -19,7 +19,7 @@ internal static class SessionCatalog
         var scenarios = ListScenarioIds(content);
         return new Dictionary<string, object?>
         {
-            ["packId"] = content.Manifest.Id,
+            ["modId"] = content.Manifest.Id,
             ["fingerprint"] = content.Fingerprint,
             ["scenarios"] = scenarios,
         };

@@ -3,15 +3,15 @@ using Xunit;
 
 namespace Ew4.Test.Platform.Content;
 
-public sealed class PackManifestScenariosTests
+public sealed class ModManifestScenariosTests
 {
     [Fact]
     public void Mod_json_wins_when_pack_json_also_present()
     {
         using var temp = new TempDir();
-        WriteManifest(temp.Root, PackManifestPaths.FileName, id: "from-mod");
-        WriteManifest(temp.Root, PackManifestPaths.LegacyPackJson, id: "from-pack");
-        IPackSource pack = new DirectoryPackSource(temp.Root);
+        WriteManifest(temp.Root, ModManifestPaths.FileName, id: "from-mod");
+        WriteManifest(temp.Root, ModManifestPaths.LegacyPackJson, id: "from-pack");
+        IModSource pack = new DirectoryModSource(temp.Root);
         Assert.Equal("from-mod", pack.Manifest.Id);
     }
 
@@ -19,23 +19,23 @@ public sealed class PackManifestScenariosTests
     public void TryRead_uses_scenarios_from_mod_json()
     {
         using var temp = new TempDir();
-        WriteManifest(temp.Root, PackManifestPaths.FileName, withScenarios: true);
-        IPackSource pack = new DirectoryPackSource(temp.Root);
-        PackModProfile.ModProfile? profile = PackModProfile.TryRead(pack);
+        WriteManifest(temp.Root, ModManifestPaths.FileName, withScenarios: true);
+        IModSource pack = new DirectoryModSource(temp.Root);
+        ModManifestProfile.ModProfile? profile = ModManifestProfile.TryRead(pack);
         Assert.NotNull(profile);
-        Assert.Equal(PackModProfile.ScenarioStorageMode.EmbeddedJson, profile!.ScenarioStorage);
+        Assert.Equal(ModManifestProfile.ScenarioStorageMode.EmbeddedJson, profile!.ScenarioStorage);
     }
 
     [Fact]
     public void MergeIntoManifest_writes_scenarios_section()
     {
         using var temp = new TempDir();
-        WriteManifest(temp.Root, PackManifestPaths.FileName, withScenarios: false);
-        PackManifestScenarios.MergeIntoManifest(
+        WriteManifest(temp.Root, ModManifestPaths.FileName, withScenarios: false);
+        ModManifestScenarios.MergeIntoManifest(
             temp.Root,
-            new PackModProfile.ModProfile(1, PackModProfile.ScenarioStorageMode.EmbeddedJson, 2));
-        IPackSource pack = new DirectoryPackSource(temp.Root);
-        Assert.Equal(PackModProfile.ScenarioStorageMode.EmbeddedJson, pack.Manifest.Mod!.ScenarioStorage);
+            new ModManifestProfile.ModProfile(1, ModManifestProfile.ScenarioStorageMode.EmbeddedJson, 2));
+        IModSource pack = new DirectoryModSource(temp.Root);
+        Assert.Equal(ModManifestProfile.ScenarioStorageMode.EmbeddedJson, pack.Manifest.Mod!.ScenarioStorage);
     }
 
     private static void WriteManifest(string root, string fileName, bool withScenarios = true, string id = "test")

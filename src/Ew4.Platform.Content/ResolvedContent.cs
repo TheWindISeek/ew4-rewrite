@@ -5,17 +5,18 @@ namespace Ew4.Platform.Content;
 /// <summary>
 /// 校验通过后的不可变内容快照。
 /// </summary>
-public sealed record ResolvedContent(
-    PackManifest Manifest,
+public sealed partial record ResolvedContent(
+    ModManifest Manifest,
     string Fingerprint,
-    IPackSource Source);
+    IModSource Source,
+    IReadOnlyList<ContentRef>? ContentRefs = null) : IModSnapshot;
 
 public interface IContentResolver
 {
-    ResolvedContent Resolve(IPackSource pack, IPackSource? parent);
+    ResolvedContent Resolve(IModSource pack, IModSource? parent);
 }
 
-public interface IPackExporter
+public interface IModExporter
 {
-    void Export(IPackSource pack, Stream destination);
+    void Export(IModSource pack, Stream destination);
 }

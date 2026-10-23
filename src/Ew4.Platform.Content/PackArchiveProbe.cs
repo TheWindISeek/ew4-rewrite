@@ -1,9 +1,10 @@
+using System;
+using System.IO;
 using System.IO.Compression;
-using Ew4.Platform.Content;
 
-namespace Ew4.Backend.Web;
+namespace Ew4.Platform.Content;
 
-internal static class PackImportProbe
+public static class ModArchiveProbe
 {
     public static bool IsContentPackArchive(string path)
     {
@@ -18,10 +19,10 @@ internal static class PackImportProbe
                 }
 
                 string normalized = entry.FullName.Replace('\\', '/').TrimEnd('/');
-                if (string.Equals(normalized, PackManifestPaths.FileName, StringComparison.OrdinalIgnoreCase)
-                    || normalized.EndsWith("/" + PackManifestPaths.FileName, StringComparison.OrdinalIgnoreCase)
-                    || string.Equals(normalized, PackManifestPaths.LegacyPackJson, StringComparison.OrdinalIgnoreCase)
-                    || normalized.EndsWith("/" + PackManifestPaths.LegacyPackJson, StringComparison.OrdinalIgnoreCase))
+                if (string.Equals(normalized, ModManifestPaths.FileName, StringComparison.OrdinalIgnoreCase)
+                    || normalized.EndsWith("/" + ModManifestPaths.FileName, StringComparison.OrdinalIgnoreCase)
+                    || string.Equals(normalized, ModManifestPaths.LegacyPackJson, StringComparison.OrdinalIgnoreCase)
+                    || normalized.EndsWith("/" + ModManifestPaths.LegacyPackJson, StringComparison.OrdinalIgnoreCase))
                 {
                     return true;
                 }
@@ -44,7 +45,7 @@ internal static class PackImportProbe
         if (!IsContentPackArchive(path))
         {
             throw new ContentError(
-                "pack.import",
+                "mod.import",
                 "仅支持根目录含 mod.json 的 .zip / .ew4mod 内容包（不再支持 APK 或旧格式归档）。");
         }
     }

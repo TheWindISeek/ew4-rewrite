@@ -8,11 +8,11 @@
 |------|------|
 | `Ew4.Interface` | 跨层契约（如 `PlayApiRoutes`） |
 | `Ew4.Platform.Engine` | 规则引擎（`IEngine` / `Engine`） |
-| `Ew4.Platform.Content` | Pack、`mod.json`、`PackInstallGuard`、`ScenarioBtlResolver`、表与剧本加载 |
+| `Ew4.Platform.Content` | Mod 包、`mod.json`、**Mod 运行时**快照、**GameDataLoad**（表/剧本载入）、`ScenarioBtlResolver` |
 | `Ew4.Platform.Session` | 局状态、存读档 |
 | `Ew4.Platform.Runtime` | `HostApp`、Pack 激活/导入、`InstallLayout` |
 | `Ew4.Service` | 游玩 RPC（`ClientGame`、`ClientContent`、`PlaySessionHost` 使用的服务逻辑） |
-| `Ew4.Editor` | 创作（`WorkspaceService`、`ScenarioEditor`） |
+| `Ew4.Editor` | **Mod 创作**（`WorkspaceService`；`Commander` / `Campaign` / `Conquest` 子域） |
 | `Ew4.Backend.Web` | HTTP 宿主（Kestrel、路由、静态文件） |
 | `Ew4.Front.Web` | 浏览器 UI（`wwwroot`，**不**引用 Service/Platform） |
 | `Ew4.Tool` | 离线 CLI（`import-base`、`import-apk-overlay`、`validate` 等） |
@@ -65,7 +65,10 @@ mods/  ──sync──►  install/web/mods/  （及 install/apk/mods/）
 ## 内容包（作者）
 
 维护者规范见 **[mods/README.md](../../mods/README.md)**（单文件 `mod.json` 字段与目录树）。  
-清单统一说明：[task/plan/pack-manifest-unify.md](../task/plan/pack-manifest-unify.md)。
+**Mod 三层（运行时 / 创作 / GameDataLoad）**：[mod-layers.md](./mod-layers.md)。  
+**Mod 统一视图（激活载入 vs 使用、快照与指针）**：[mod-view.md](./mod-view.md)。  
+**将领创作 API（v1）**：[editor-commander-api.md](./editor-commander-api.md)。  
+清单统一说明：[task/plan/pack-manifest-unify.md](../task/plan/pack-manifest-unify.md)（若存在）。
 
 zip → 当前渠道 `EW4_HOME/mods/`；APK 原料 → `Ew4.Tool import-apk-overlay` → `mods/` 再 `sync-mods`。
 

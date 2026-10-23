@@ -1,6 +1,6 @@
 using Ew4.Platform.Content.ScenarioEdit;
 
-namespace Ew4.Editor;
+namespace Ew4.Editor.Campaign;
 
 public abstract record ScenarioEdit;
 

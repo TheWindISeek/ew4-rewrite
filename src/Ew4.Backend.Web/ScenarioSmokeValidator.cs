@@ -80,17 +80,11 @@ internal static class ScenarioSmokeValidator
     }
 
     public static ResolvedContent ResolveWorkspace(
-        ContentResolver resolver,
-        FilePackRepository repository,
+        IModSnapshotLoader loader,
+        FileModRepository repository,
         string workspaceRoot)
     {
-        IPackSource workspace = AuthorPackResolver.OpenWorkspacePack(repository, workspaceRoot);
-        IPackSource? parent = null;
-        if (!string.IsNullOrWhiteSpace(workspace.Manifest.Parent))
-        {
-            parent = repository.Open(workspace.Manifest.Parent!);
-        }
-
-        return resolver.Resolve(new DirectoryPackSource(workspaceRoot), parent);
+        var primary = new DirectoryModSource(Path.GetFullPath(workspaceRoot));
+        return loader.ResolveView(primary, ModMerge.OpenParent(primary, repository));
     }
 }

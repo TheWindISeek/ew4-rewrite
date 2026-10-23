@@ -9,14 +9,14 @@ namespace Ew4.Platform.Content;
 /// <summary>
 /// 内容包安装、启用、删除时的 <c>parent</c> 与清单规则（见 docs/arch/README.md、task/done/refactor.md）。
 /// </summary>
-public static class PackInstallGuard
+public static class ModInstallGuard
 {
-    public static void ValidateInstall(IPackSource source, FilePackRepository repository, IEngine engine)
+    public static void ValidateInstall(IModSource source, FileModRepository repository, IEngine engine)
     {
-        PackManifest manifest = source.Manifest;
+        ModManifest manifest = source.Manifest;
         AssertNotBaseOverwrite(manifest.Id);
         EngineRequirement.AssertCompatible(manifest.Requires, engine.Info);
-        IPackSource? parent = ResolveInstalledParent(manifest, repository);
+        IModSource? parent = ResolveInstalledParent(manifest, repository);
         if (parent != null)
         {
             ValidateParentChain(parent);
@@ -25,10 +25,10 @@ public static class PackInstallGuard
         }
     }
 
-    public static void ValidateActivation(IPackSource pack, FilePackRepository repository, IEngine engine)
+    public static void ValidateActivation(IModSource pack, FileModRepository repository, IEngine engine)
     {
         EngineRequirement.AssertCompatible(pack.Manifest.Requires, engine.Info);
-        IPackSource? parent = ResolveInstalledParent(pack.Manifest, repository);
+        IModSource? parent = ResolveInstalledParent(pack.Manifest, repository);
         if (parent != null)
         {
             ValidateParentChain(parent);
@@ -37,71 +37,71 @@ public static class PackInstallGuard
         }
     }
 
-    public static void ValidateRemove(string packId, FilePackRepository repository)
+    public static void ValidateRemove(string modId, FileModRepository repository)
     {
-        packId = PackId.Validate(packId);
-        if (string.Equals(packId, PackId.Base, StringComparison.Ordinal))
+        modId = ModId.Validate(modId);
+        if (string.Equals(modId, ModId.Base, StringComparison.Ordinal))
         {
-            throw new ContentError("pack.remove", "The base pack cannot be removed.");
+            throw new ContentError("mod.remove", "The base pack cannot be removed.");
         }
 
-        IReadOnlyList<PackInfo> dependents = repository.List()
-            .Where(p => string.Equals(p.Parent, packId, StringComparison.Ordinal))
+        IReadOnlyList<ModInfo> dependents = repository.List()
+            .Where(p => string.Equals(p.Parent, modId, StringComparison.Ordinal))
             .ToList();
         if (dependents.Count > 0)
         {
             string names = string.Join(", ", dependents.Select(p => p.Id));
             throw new ContentError(
-                "pack.remove.dependents",
-                "Cannot remove pack '" + packId + "' because these packs depend on it: " + names + ".");
+                "mod.remove.dependents",
+                "Cannot remove pack '" + modId + "' because these packs depend on it: " + names + ".");
         }
     }
 
     private static void AssertNotBaseOverwrite(string id)
     {
-        if (string.Equals(PackId.Validate(id), PackId.Base, StringComparison.Ordinal))
+        if (string.Equals(ModId.Validate(id), ModId.Base, StringComparison.Ordinal))
         {
-            throw new ContentError("pack.install", "The base pack cannot be imported or overwritten.");
+            throw new ContentError("mod.install", "The base pack cannot be imported or overwritten.");
         }
     }
 
-    private static IPackSource? ResolveInstalledParent(PackManifest manifest, FilePackRepository repository)
+    private static IModSource? ResolveInstalledParent(ModManifest manifest, FileModRepository repository)
     {
         if (string.IsNullOrWhiteSpace(manifest.Parent))
         {
             return null;
         }
 
-        string parentId = PackId.Validate(manifest.Parent);
+        string parentId = ModId.Validate(manifest.Parent);
         string parentDir = Path.Combine(repository.RootDirectory, parentId);
         if (!Directory.Exists(parentDir))
         {
             throw new ContentError(
-                "pack.parent",
+                "mod.parent",
                 "Parent pack '" + parentId + "' is not installed. Install it before this pack.");
         }
 
         return repository.Open(parentId);
     }
 
-    private static void ValidateParentChain(IPackSource parent)
+    private static void ValidateParentChain(IModSource parent)
     {
         if (!string.IsNullOrWhiteSpace(parent.Manifest.Parent))
         {
             throw new ContentError(
-                "pack.parent.chain",
+                "mod.parent.chain",
                 "Parent pack '" + parent.Manifest.Id + "' cannot itself have a parent (only one overlay layer is allowed).");
         }
     }
 
-    private static void AssertFormatsCompatible(PackManifest child, PackManifest parent)
+    private static void AssertFormatsCompatible(ModManifest child, ModManifest parent)
     {
         foreach (KeyValuePair<string, int> pair in child.Formats)
         {
             if (parent.Formats.TryGetValue(pair.Key, out int parentVersion) && parentVersion != pair.Value)
             {
                 throw new ContentError(
-                    "pack.formats",
+                    "mod.formats",
                     $"Format '{pair.Key}' version {pair.Value} does not match parent '{parent.Id}' version {parentVersion}.");
             }
         }

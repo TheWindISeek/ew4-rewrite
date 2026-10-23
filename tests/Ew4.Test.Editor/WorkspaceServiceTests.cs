@@ -16,17 +16,18 @@ public sealed class WorkspaceServiceTests
         Directory.CreateDirectory(packs);
         WriteMinimalBasePack(packs);
 
-        var repository = new FilePackRepository(packs);
+        var repository = new FileModRepository(packs);
         var registry = ContentKindRegistry.CreateDefault();
         var engine = new global::Ew4.Platform.Engine.Engine();
         var builder = new ScenarioJsonBuilder();
         var resolver = new ContentResolver(registry, engine);
         var validator = new ContentValidator(registry, engine, builder);
-        var service = new WorkspaceService(workspaces, repository, registry, resolver, validator);
+        var loader = new ModSnapshotLoader(resolver, validator);
+        var service = new WorkspaceService(workspaces, repository, registry, loader, validator);
 
-        WorkspaceInfo created = service.Create(PackId.Base, "test-ws", "Test workspace");
+        WorkspaceInfo created = service.Create(ModId.Base, "test-ws", "Test workspace");
         Assert.Equal("test-ws", created.Id);
-        Assert.Equal(PackId.Base, created.ParentPackId);
+        Assert.Equal(ModId.Base, created.ParentModId);
 
         IReadOnlyList<WorkspaceInfo> list = service.List();
         Assert.Contains(list, w => w.Id == "test-ws");
@@ -46,7 +47,7 @@ public sealed class WorkspaceServiceTests
 
     private static void WriteMinimalBasePack(string packsRoot)
     {
-        string baseDir = Path.Combine(packsRoot, PackId.Base);
+        string baseDir = Path.Combine(packsRoot, ModId.Base);
         Directory.CreateDirectory(baseDir);
         string manifest = """
             {

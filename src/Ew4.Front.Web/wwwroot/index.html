@@ -108,15 +108,51 @@
         <button type="button" id="author-export" class="native-command blue">导出</button>
         <button type="button" id="author-preview" class="native-command">预览试玩</button>
       </div>
-      <nav class="author-category-tabs" aria-label="剧本类型">
-        <button type="button" class="native-command author-cat-tab" data-cat="campaign" aria-pressed="true">战役</button>
-        <button type="button" class="native-command author-cat-tab" data-cat="conquest">征服</button>
-        <button type="button" class="native-command author-cat-tab" data-cat="tutorial">教程</button>
-        <button type="button" class="native-command author-cat-tab" data-cat="other">其他</button>
+      <nav class="author-mode-tabs" aria-label="创作类型">
+        <button type="button" class="native-command author-mode-tab" data-mode="commander" aria-pressed="true">将领</button>
+        <button type="button" class="native-command author-mode-tab" data-mode="campaign" aria-pressed="false">战役</button>
+        <button type="button" class="native-command author-mode-tab" data-mode="conquest" aria-pressed="false">征服</button>
       </nav>
-      <p id="author-scenario-empty" class="author-scenario-empty" hidden>该分类下暂无剧本。</p>
-      <div id="author-scenario-list" class="mod-list" aria-label="剧本列表"></div>
+      <div id="author-ws-panel-commander">
+        <label class="author-filter-label">筛选<input id="author-commander-filter" type="search" placeholder="名称或 ID" autocomplete="off"></label>
+        <div id="author-commander-list" class="mod-list author-data-table" aria-label="将领列表"></div>
+      </div>
+      <div id="author-ws-panel-campaign" hidden>
+        <nav class="author-category-tabs" aria-label="剧本类型">
+          <button type="button" class="native-command author-cat-tab" data-cat="campaign" aria-pressed="true">战役</button>
+          <button type="button" class="native-command author-cat-tab" data-cat="conquest">征服</button>
+          <button type="button" class="native-command author-cat-tab" data-cat="tutorial">教程</button>
+          <button type="button" class="native-command author-cat-tab" data-cat="other">其他</button>
+        </nav>
+        <p id="author-scenario-empty" class="author-scenario-empty" hidden>该分类下暂无剧本。</p>
+        <div id="author-scenario-list" class="mod-list" aria-label="剧本列表"></div>
+      </div>
+      <div id="author-ws-panel-conquest" hidden>
+        <p class="author-scenario-empty">征服剧本结构化编辑即将提供；可先改 <code>scenarios/conquest*.json</code> 后导出。</p>
+      </div>
       <pre id="author-diag" class="author-diag" hidden></pre>
+    </section>
+    <section id="author-commander" hidden>
+      <p id="author-commander-title" class="author-scenario-title"></p>
+      <p id="author-commander-hint" class="author-scenario-empty">技能 ID 对应 catalog 中 legacy_id；适性与指挥部将领面板一致（步兵/骑兵/炮兵/海军/要塞）。</p>
+      <div class="mod-import-row author-commander-fields">
+        <label>技能1 ID<input type="number" id="author-commander-skill1" min="0" value="0" title="技能表 legacy_id"></label>
+        <label id="author-commander-skill1-name" class="author-skill-caption"></label>
+        <label>技能2 ID<input type="number" id="author-commander-skill2" min="0" value="0"></label>
+        <label id="author-commander-skill2-name" class="author-skill-caption"></label>
+        <label>技能3 ID<input type="number" id="author-commander-skill3" min="0" value="0"></label>
+        <label id="author-commander-skill3-name" class="author-skill-caption"></label>
+        <label>技能4 ID<input type="number" id="author-commander-skill4" min="0" value="0"></label>
+        <label id="author-commander-skill4-name" class="author-skill-caption"></label>
+      </div>
+      <div class="mod-import-row author-commander-fields">
+        <label>步兵适性<input type="number" id="author-commander-infantry" min="0" max="5" value="0"></label>
+        <label>骑兵适性<input type="number" id="author-commander-cavalry" min="0" max="5" value="0"></label>
+        <label>炮兵适性<input type="number" id="author-commander-artillery" min="0" max="5" value="0"></label>
+        <label>海军适性<input type="number" id="author-commander-warship" min="0" max="5" value="0"></label>
+        <label>要塞适性<input type="number" id="author-commander-fort" min="0" max="5" value="0"></label>
+        <button type="button" id="author-commander-save" class="native-command blue">保存</button>
+      </div>
     </section>
     <section id="author-scenario" hidden>
       <p id="author-scenario-title" class="author-scenario-title"></p>
@@ -159,6 +195,6 @@
   <script src="unit-navigation.js?v=20261022.1"></script>
   <script src="app.js?v=20261022.7"></script>
   <script src="mods.js?v=20261022.9"></script>
-  <script src="author-in-game.js?v=20261022.7"></script>
+  <script src="author-in-game.js?v=20261023b"></script>
 </body>
 </html>

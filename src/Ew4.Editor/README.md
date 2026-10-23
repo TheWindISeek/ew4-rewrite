@@ -1,14 +1,25 @@
 # Ew4.Editor
 
-剧本与 Workspace 编辑**工具库**（不引用 Session/Host）。
+Mod **创作**工具库（不引用 Session/Host）。分层见 [docs/arch/mod-layers.md](../../docs/arch/mod-layers.md)。
 
-| 类型 | 名称 |
+## 目录（目标）
+
+| 路径 | 职责 |
+|------|------|
+| 顶层 | `IWorkspaceService`、`WorkspaceService`、`WorkspacePackSources` |
+| `Commander/` | `def_commander.xml` overlay 编辑（[API 文档](../../docs/arch/editor-commander-api.md)） |
+| `Campaign/` | 战役剧本 / BTL（`ScenarioEditor`、`ScenarioEditToolkit` 等） |
+| `Conquest/` | 征服剧本（占位，见 `Conquest/README.md`） |
+
+## 已实现
+
+| 类型 | 说明 |
 |------|------|
 | Workspace | `IWorkspaceService` / `WorkspaceService` |
-| 剧本结构化编辑 | `IScenarioEditor` / `ScenarioEditor` + `ScenarioEditPatch` |
-| BTL ↔ JSON | `IScenarioEditToolkit` / `ScenarioEditToolkit.Default` |
+| 将领 v1 | `ICommanderEditor` / `CommanderEditor` |
+| 战役剧本编辑 | `Ew4.Editor.Campaign`：`IScenarioEditor`、`ScenarioEditToolkit` |
 | 兼容 | `IScenarioEditService` → 转调 Toolkit |
 
-编解码在 `Ew4.Platform.Content.ScenarioEdit`（`ScenarioBtlCodec`）；本层负责草稿包编排、校验与导出。
+编解码在 `Ew4.Platform.Content`（**GameDataLoad** / `ScenarioEdit`）；本层负责草稿包编排、校验与导出。
 
 **CLI**（`Ew4.Tool workspace` / `scenario`）与 **HTTP**（`Ew4.Backend.Web` `/api/author/*`）为薄封装。

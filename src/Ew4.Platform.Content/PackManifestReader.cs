@@ -4,7 +4,7 @@ using System.Text.Json;
 
 namespace Ew4.Platform.Content;
 
-internal static class PackManifestReader
+internal static class ModManifestReader
 {
     private static readonly JsonSerializerOptions Options = new()
     {
@@ -13,7 +13,7 @@ internal static class PackManifestReader
         AllowTrailingCommas = true,
     };
 
-    public static PackManifest Read(byte[] jsonBytes)
+    public static ModManifest Read(byte[] jsonBytes)
     {
         try
         {
@@ -21,11 +21,11 @@ internal static class PackManifestReader
             var root = document.RootElement;
             if (root.ValueKind != JsonValueKind.Object)
             {
-                throw new ContentError("pack.schema", "mod.json must be a JSON object.");
+                throw new ContentError("mod.schema", "mod.json must be a JSON object.");
             }
 
             int schema = root.GetProperty("schema").GetInt32();
-            string id = PackId.Validate(root.GetProperty("id").GetString() ?? "");
+            string id = ModId.Validate(root.GetProperty("id").GetString() ?? "");
             string name = root.GetProperty("name").GetString() ?? "";
             string version = root.GetProperty("version").GetString() ?? "";
             string? parent = root.TryGetProperty("parent", out var parentEl) && parentEl.ValueKind == JsonValueKind.String
@@ -34,7 +34,7 @@ internal static class PackManifestReader
 
             if (!root.TryGetProperty("requires", out var requiresEl) || requiresEl.ValueKind != JsonValueKind.Object)
             {
-                throw new ContentError("pack.requires", "mod.json requires a 'requires' object.");
+                throw new ContentError("mod.requires", "mod.json requires a 'requires' object.");
             }
 
             string engine = requiresEl.GetProperty("engine").GetString() ?? "";
@@ -42,7 +42,7 @@ internal static class PackManifestReader
 
             if (!root.TryGetProperty("formats", out var formatsEl) || formatsEl.ValueKind != JsonValueKind.Object)
             {
-                throw new ContentError("pack.formats", "mod.json requires a 'formats' object.");
+                throw new ContentError("mod.formats", "mod.json requires a 'formats' object.");
             }
 
             var formats = new Dictionary<string, int>(StringComparer.Ordinal);
@@ -53,17 +53,17 @@ internal static class PackManifestReader
 
             if (string.IsNullOrWhiteSpace(name))
             {
-                throw new ContentError("pack.name", "Pack name is required.");
+                throw new ContentError("mod.name", "Pack name is required.");
             }
 
             if (string.IsNullOrWhiteSpace(version))
             {
-                throw new ContentError("pack.version", "Pack version is required.");
+                throw new ContentError("mod.version", "Pack version is required.");
             }
 
-            PackModProfile.ModProfile? mod = PackManifestScenarios.TryParseRoot(root);
+            ModManifestProfile.ModProfile? mod = ModManifestScenarios.TryParseRoot(root);
 
-            return new PackManifest(
+            return new ModManifest(
                 schema,
                 id,
                 name,
@@ -79,23 +79,23 @@ internal static class PackManifestReader
         }
         catch (Exception ex)
         {
-            throw new ContentError("pack.parse", "Failed to parse mod.json: " + ex.Message);
+            throw new ContentError("mod.parse", "Failed to parse mod.json: " + ex.Message);
         }
     }
 
-    public static PackManifest ReadFromSource(IPackSource source)
+    public static ModManifest ReadFromSource(IModSource source)
     {
-        if (source.Exists(PackManifestPaths.FileName))
+        if (source.Exists(ModManifestPaths.FileName))
         {
-            return Read(source.Read(PackManifestPaths.FileName));
+            return Read(source.Read(ModManifestPaths.FileName));
         }
 
-        if (source.Exists(PackManifestPaths.LegacyPackJson))
+        if (source.Exists(ModManifestPaths.LegacyPackJson))
         {
-            return Read(source.Read(PackManifestPaths.LegacyPackJson));
+            return Read(source.Read(ModManifestPaths.LegacyPackJson));
         }
 
-        throw new ContentError("pack.missing", "Pack is missing mod.json.");
+        throw new ContentError("mod.missing", "Pack is missing mod.json.");
     }
 
     private static IReadOnlyList<string> ReadStringArray(JsonElement parent, string name)

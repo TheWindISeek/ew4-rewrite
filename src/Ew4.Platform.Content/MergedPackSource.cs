@@ -7,13 +7,13 @@ namespace Ew4.Platform.Content;
 /// <summary>
 /// 以主 Pack 覆盖父 Pack 的虚拟文件系统（整文件级补全）。
 /// </summary>
-public sealed class MergedPackSource : IPackSource
+public sealed class MergedModSource : IModSource
 {
-    private readonly IPackSource _primary;
-    private readonly IPackSource? _parent;
+    private readonly IModSource _primary;
+    private readonly IModSource? _parent;
     private readonly HashSet<string> _paths;
 
-    public MergedPackSource(IPackSource primary, IPackSource? parent)
+    public MergedModSource(IModSource primary, IModSource? parent)
     {
         _primary = primary;
         _parent = parent;
@@ -32,21 +32,21 @@ public sealed class MergedPackSource : IPackSource
         }
     }
 
-    public IPackSource Primary => _primary;
+    public IModSource Primary => _primary;
 
-    public IPackSource? Parent => _parent;
+    public IModSource? Parent => _parent;
 
-    public PackManifest Manifest => _primary.Manifest;
+    public ModManifest Manifest => _primary.Manifest;
 
     public bool Exists(string path)
     {
-        path = PackPath.Normalize(path);
+        path = ModPath.Normalize(path);
         return _primary.Exists(path) || (_parent?.Exists(path) ?? false);
     }
 
     public byte[] Read(string path)
     {
-        path = PackPath.Normalize(path);
+        path = ModPath.Normalize(path);
         if (_primary.Exists(path))
         {
             return _primary.Read(path);
@@ -57,9 +57,9 @@ public sealed class MergedPackSource : IPackSource
             return _parent.Read(path);
         }
 
-        throw new ContentError("pack.missing-file", "Pack file not found: " + path);
+        throw new ContentError("mod.missing-file", "Pack file not found: " + path);
     }
 
     public IEnumerable<string> List(string prefix) =>
-        _paths.Where(p => string.IsNullOrEmpty(prefix) || p.StartsWith(PackPath.Normalize(prefix), StringComparison.Ordinal));
+        _paths.Where(p => string.IsNullOrEmpty(prefix) || p.StartsWith(ModPath.Normalize(prefix), StringComparison.Ordinal));
 }

@@ -13,13 +13,13 @@ namespace Ew4.Tool.Import;
 /// <summary>
 /// 离线工具：将原版 Mod APK（assets/ 与 base 差异）转为 <c>parent: base</c> 内容包目录。不属于运行时 Content API。
 /// </summary>
-public static class ApkOverlayPackImporter
+public static class ApkOverlayModImporter
 {
     public sealed record Result(string PackDirectory, int FilesCopied, int ScenariosIndexed);
 
     public static Result Import(
         string apkPath,
-        string packId,
+        string modId,
         string packName,
         string basePackDirectory,
         string destinationPackDirectory)
@@ -27,10 +27,10 @@ public static class ApkOverlayPackImporter
         apkPath = Path.GetFullPath(apkPath);
         string baseRoot = Path.GetFullPath(basePackDirectory);
         string dest = Path.GetFullPath(destinationPackDirectory);
-        packId = PackId.Validate(packId);
+        modId = ModId.Validate(modId);
         if (string.IsNullOrWhiteSpace(packName))
         {
-            throw new ContentError("pack.name", "Pack name is required.");
+            throw new ContentError("mod.name", "Pack name is required.");
         }
 
         if (!File.Exists(apkPath))
@@ -38,7 +38,7 @@ public static class ApkOverlayPackImporter
             throw new ContentError("import.apk", "APK not found: " + apkPath);
         }
 
-        IPackSource baseline = new DirectoryPackSource(baseRoot);
+        IModSource baseline = new DirectoryModSource(baseRoot);
         if (Directory.Exists(dest))
         {
             Directory.Delete(dest, recursive: true);
@@ -65,7 +65,7 @@ public static class ApkOverlayPackImporter
                     continue;
                 }
 
-                string? logical = ResolvePackPath(baseline, relative);
+                string? logical = ResolveModPath(baseline, relative);
                 if (logical == null)
                 {
                     continue;
@@ -93,9 +93,9 @@ public static class ApkOverlayPackImporter
                 copied++;
             }
 
-            WritePackJson(dest, packId, packName, baseline.Manifest);
+            WritePackJson(dest, modId, packName, baseline.Manifest);
             int scenarios = WriteScenarioStubs(dest, baseline);
-            PackFlagPlaceholder.Ensure(dest, baseRoot);
+            ModFlagPlaceholder.Ensure(dest, baseRoot);
             return new(dest, copied, scenarios);
         }
         finally
@@ -110,7 +110,7 @@ public static class ApkOverlayPackImporter
         }
     }
 
-    public static string? ResolvePackPath(IPackSource baseline, string apkRelativePath)
+    public static string? ResolveModPath(IModSource baseline, string apkRelativePath)
     {
         string fileName = Path.GetFileName(apkRelativePath);
         if (fileName.EndsWith(".btl", StringComparison.OrdinalIgnoreCase))
@@ -167,25 +167,25 @@ public static class ApkOverlayPackImporter
         return null;
     }
 
-    private static void WritePackJson(string dest, string packId, string packName, PackManifest baseManifest)
+    private static void WritePackJson(string dest, string modId, string packName, ModManifest baseManifest)
     {
         var formats = new Dictionary<string, int>(baseManifest.Formats, StringComparer.Ordinal);
         string json = JsonSerializer.Serialize(
             new
             {
                 schema = 1,
-                id = packId,
+                id = modId,
                 name = packName,
                 version = "1.0.0",
-                parent = PackId.Base,
+                parent = ModId.Base,
                 requires = new { engine = baseManifest.Requires.Engine },
                 formats,
             },
             new JsonSerializerOptions { WriteIndented = true });
-        File.WriteAllText(Path.Combine(dest, PackManifestPaths.FileName), json);
+        File.WriteAllText(Path.Combine(dest, ModManifestPaths.FileName), json);
     }
 
-    private static int WriteScenarioStubs(string dest, IPackSource baseline)
+    private static int WriteScenarioStubs(string dest, IModSource baseline)
     {
         byte[] xmlBytes = ReadFirstExisting(baseline, dest,
             "assets/original/def_battlelist.xml",
@@ -232,7 +232,7 @@ public static class ApkOverlayPackImporter
         return count;
     }
 
-    private static byte[] ReadFirstExisting(IPackSource baseline, string destRoot, params string[] paths)
+    private static byte[] ReadFirstExisting(IModSource baseline, string destRoot, params string[] paths)
     {
         foreach (string path in paths)
         {

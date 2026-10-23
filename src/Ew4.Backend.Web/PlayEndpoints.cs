@@ -24,8 +24,8 @@ public static class PlayEndpoints
                 return Results.StatusCode(403);
             }
 
-            ResolvedContent? content = host.ActiveContent;
-            if (content == null)
+            IModSnapshot? snapshot = host.ActiveSnapshot;
+            if (snapshot == null)
             {
                 return PlayError("client.no_pack", "No content pack is active.");
             }
@@ -35,7 +35,7 @@ public static class PlayEndpoints
             string path = "/api/" + route;
             try
             {
-                string json = play.Dispatch(content, path, body);
+                string json = play.Dispatch(snapshot, path, body);
                 return Results.Text(json, "application/json; charset=utf-8");
             }
             catch (Exception error) when (error is RuleViolation or ContentError or IOException or InvalidOperationException)

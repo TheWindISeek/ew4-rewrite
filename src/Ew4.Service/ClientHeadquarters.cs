@@ -245,9 +245,9 @@ public sealed partial class ClientGame
 
     private string AccountContentRevision()
     {
-        string packId = slotEnvelope?.PackId ?? "";
-        return string.IsNullOrEmpty(packId)
+        string modId = slotEnvelope?.ModId ?? "";
+        return string.IsNullOrEmpty(modId)
             ? content.Catalogs.Accounts.SourceRevision
-            : packId + ":" + content.Catalogs.Accounts.SourceRevision;
+            : modId + ":" + content.Catalogs.Accounts.SourceRevision;
     }
 }

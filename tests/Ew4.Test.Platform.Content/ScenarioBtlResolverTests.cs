@@ -40,9 +40,9 @@ public sealed class ScenarioBtlResolverTests
         File.Copy(
             sourceBtl,
             Path.Combine(temp.Root, "source", "original", id + ".btl"));
-        PackModProfile.WriteEmbeddedJsonProfile(temp.Root);
+        ModManifestProfile.WriteEmbeddedJsonProfile(temp.Root);
 
-        IPackSource pack = new DirectoryPackSource(temp.Root);
+        IModSource pack = new DirectoryModSource(temp.Root);
         ScenarioDocument doc = ScenarioBtlResolver.OpenScenarioDocument(pack, id);
         Assert.Equal(id, doc.Id);
     }
@@ -76,7 +76,7 @@ public sealed class ScenarioBtlResolverTests
             }
             """);
 
-        IPackSource pack = new DirectoryPackSource(temp.Root);
+        IModSource pack = new DirectoryModSource(temp.Root);
         ScenarioDocument doc = ScenarioBtlResolver.OpenScenarioDocument(pack, id);
         Assert.Equal(id, doc.Id);
     }
@@ -98,7 +98,7 @@ public sealed class ScenarioBtlResolverTests
             sourceBtl,
             Path.Combine(temp.Root, "source", "original", id + ".btl"));
 
-        IPackSource pack = new DirectoryPackSource(temp.Root);
+        IModSource pack = new DirectoryModSource(temp.Root);
         ScenarioDocument doc = ScenarioBtlResolver.OpenScenarioDocument(pack, id);
         Assert.Equal(id, doc.Id);
     }
@@ -117,7 +117,7 @@ public sealed class ScenarioBtlResolverTests
               "formats": { "scenario": 1, "asset": 1 }
             }
             """;
-        File.WriteAllText(Path.Combine(root, PackManifestPaths.FileName), manifest);
+        File.WriteAllText(Path.Combine(root, ModManifestPaths.FileName), manifest);
         string scenario = "{\"schema\":1,\"id\":\"" + id + "\",\"legacy\":{\"btl\":\"" + btlPath + "\"}}";
         File.WriteAllText(Path.Combine(root, "scenarios", id + ".json"), scenario);
     }

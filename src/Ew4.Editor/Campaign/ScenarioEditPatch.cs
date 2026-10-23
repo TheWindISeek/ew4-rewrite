@@ -3,7 +3,7 @@ using Ew4.Platform.Content.Build;
 using Ew4.Platform.Content.ScenarioEdit;
 using Ew4.Platform.Engine;
 
-namespace Ew4.Editor;
+namespace Ew4.Editor.Campaign;
 
 /// <summary>
 /// 结构化剧本编辑：只改 <see cref="ScenarioDocument.Layers"/>，再经 <see cref="ScenarioBtlCodec.ApplyLayers"/> 同步 sections。

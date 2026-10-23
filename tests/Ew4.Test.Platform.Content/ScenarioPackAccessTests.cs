@@ -4,13 +4,13 @@ using Xunit;
 
 namespace Ew4.Test.Platform.Content;
 
-public sealed class ScenarioPackAccessTests
+public sealed class ScenarioModAccessTests
 {
     [Fact]
     public void Embedded_json_detected_by_schema_2()
     {
         using JsonDocument doc = JsonDocument.Parse("""{"schema":2,"id":"x","sections":{}}""");
-        Assert.True(ScenarioPackAccess.IsEmbeddedScenarioJson(doc.RootElement));
+        Assert.True(ScenarioModAccess.IsEmbeddedScenarioJson(doc.RootElement));
     }
 
     [Fact]
@@ -18,6 +18,6 @@ public sealed class ScenarioPackAccessTests
     {
         using JsonDocument doc = JsonDocument.Parse(
             """{"schema":1,"id":"x","legacy":{"btl":"source/original/x.btl"}}""");
-        Assert.False(ScenarioPackAccess.IsEmbeddedScenarioJson(doc.RootElement));
+        Assert.False(ScenarioModAccess.IsEmbeddedScenarioJson(doc.RootElement));
     }
 }

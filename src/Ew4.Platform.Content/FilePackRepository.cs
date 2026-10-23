@@ -5,45 +5,45 @@ using System.Linq;
 
 namespace Ew4.Platform.Content;
 
-public sealed class FilePackRepository : IPackRepository
+public sealed class FileModRepository : IModRepository
 {
     private readonly string _root;
 
-    public FilePackRepository(string packsRootDirectory)
+    public FileModRepository(string packsRootDirectory)
     {
         _root = Path.GetFullPath(packsRootDirectory);
         Directory.CreateDirectory(_root);
     }
 
-    public IReadOnlyList<PackInfo> List()
+    public IReadOnlyList<ModInfo> List()
     {
         if (!Directory.Exists(_root))
         {
-            return Array.Empty<PackInfo>();
+            return Array.Empty<ModInfo>();
         }
 
-        var list = new List<PackInfo>();
+        var list = new List<ModInfo>();
         foreach (string directory in Directory.EnumerateDirectories(_root))
         {
-            if (!PackManifestPaths.DirectoryHasManifest(directory))
+            if (!ModManifestPaths.DirectoryHasManifest(directory))
             {
                 continue;
             }
 
-            var source = new DirectoryPackSource(directory);
-            list.Add(new PackInfo(source.Manifest.Id, source.Manifest.Name, source.Manifest.Version, source.Manifest.Parent));
+            var source = new DirectoryModSource(directory);
+            list.Add(new ModInfo(source.Manifest.Id, source.Manifest.Name, source.Manifest.Version, source.Manifest.Parent));
         }
 
         return list.OrderBy(p => p.Id, StringComparer.Ordinal).ToList();
     }
 
-    public PackInfo Install(IPackSource source, InstallOptions options)
+    public ModInfo Install(IModSource source, InstallOptions options)
     {
-        string id = PackId.Validate(source.Manifest.Id);
+        string id = ModId.Validate(source.Manifest.Id);
         string destination = Path.Combine(_root, id);
         if (Directory.Exists(destination) && !options.ReplaceExisting)
         {
-            throw new ContentError("pack.install", $"Pack '{id}' is already installed.");
+            throw new ContentError("mod.install", $"Pack '{id}' is already installed.");
         }
 
         if (Directory.Exists(destination))
@@ -64,25 +64,25 @@ public sealed class FilePackRepository : IPackRepository
             File.WriteAllBytes(target, source.Read(path));
         }
 
-        return new PackInfo(source.Manifest.Id, source.Manifest.Name, source.Manifest.Version, source.Manifest.Parent);
+        return new ModInfo(source.Manifest.Id, source.Manifest.Name, source.Manifest.Version, source.Manifest.Parent);
     }
 
-    public void Remove(string packId)
+    public void Remove(string modId)
     {
-        PackInstallGuard.ValidateRemove(packId, this);
-        packId = PackId.Validate(packId);
-        string destination = Path.Combine(_root, packId);
+        ModInstallGuard.ValidateRemove(modId, this);
+        modId = ModId.Validate(modId);
+        string destination = Path.Combine(_root, modId);
         if (Directory.Exists(destination))
         {
             Directory.Delete(destination, recursive: true);
         }
     }
 
-    public IPackSource Open(string packId)
+    public IModSource Open(string modId)
     {
-        packId = PackId.Validate(packId);
-        string destination = Path.Combine(_root, packId);
-        return new DirectoryPackSource(destination);
+        modId = ModId.Validate(modId);
+        string destination = Path.Combine(_root, modId);
+        return new DirectoryModSource(destination);
     }
 
     public string RootDirectory => _root;

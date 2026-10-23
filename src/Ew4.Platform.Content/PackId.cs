@@ -2,9 +2,9 @@ using System.Text.RegularExpressions;
 
 namespace Ew4.Platform.Content;
 
-public static partial class PackId
+public static partial class ModId
 {
-    private static readonly Regex Pattern = PackIdRegex();
+    private static readonly Regex Pattern = ModIdRegex();
 
     public const string Base = "base";
 
@@ -12,22 +12,22 @@ public static partial class PackId
     {
         if (string.IsNullOrWhiteSpace(id))
         {
-            throw new ContentError("pack.id", "Pack id is required.");
+            throw new ContentError("mod.id", "Pack id is required.");
         }
 
         if (id.Length > 64)
         {
-            throw new ContentError("pack.id", "Pack id must be at most 64 characters.");
+            throw new ContentError("mod.id", "Pack id must be at most 64 characters.");
         }
 
         if (!Pattern.IsMatch(id))
         {
-            throw new ContentError("pack.id", "Pack id may only use lowercase letters, digits, '.', '-', and '_'.");
+            throw new ContentError("mod.id", "Pack id may only use lowercase letters, digits, '.', '-', and '_'.");
         }
 
         return id;
     }
 
     [GeneratedRegex("^[a-z0-9._-]+$")]
-    private static partial Regex PackIdRegex();
+    private static partial Regex ModIdRegex();
 }

@@ -5,9 +5,9 @@ namespace Ew4.Platform.Content;
 /// <summary>
 /// 目录或 zip 的统一读取。
 /// </summary>
-public interface IPackSource
+public interface IModSource
 {
-    PackManifest Manifest { get; }
+    ModManifest Manifest { get; }
 
     bool Exists(string path);
 

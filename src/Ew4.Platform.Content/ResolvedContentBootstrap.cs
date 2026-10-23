@@ -4,5 +4,5 @@ namespace Ew4.Platform.Content;
 
 public static class ResolvedContentBootstrap
 {
-    public static PackRuntimeBootstrap Get(ResolvedContent content) => PackRuntimeBootstrapCache.Get(content);
+    public static ModRuntimeBootstrap Get(ResolvedContent content) => ModRuntimeBootstrapCache.Get(content);
 }

@@ -13,17 +13,17 @@ public sealed class ScenarioJsonBuilder : IScenarioBuilder
 {
     public BuiltScenario Build(ResolvedContent content, string scenarioId, ScenarioSelection selection)
     {
-        if (!content.Source.Exists(ScenarioPackAccess.ScenarioJsonPath(scenarioId)))
+        if (!content.Source.Exists(ScenarioModAccess.ScenarioJsonPath(scenarioId)))
         {
             throw new ContentError("scenario.missing", "Scenario not found in pack: " + scenarioId);
         }
 
         int mode = ScenarioStartHelpers.ResolveMode(scenarioId);
-        var bootstrap = PackRuntimeBootstrapCache.Get(content);
+        var bootstrap = ModRuntimeBootstrapCache.Get(content);
         byte[] btlBytes = ScenarioBtlCache.GetOrAdd(
             content,
             scenarioId,
-            () => ScenarioPackAccess.ResolveBtlBytes(content.Source, scenarioId));
+            () => ScenarioModAccess.ResolveBtlBytes(content.Source, scenarioId));
         OriginalBattle battle = bootstrap.ReadBattle(btlBytes);
         if (battle.CountryIds != null && battle.Factions.Any(f => bootstrap.Countries.Get(f.CountryId) == null))
         {
@@ -46,7 +46,7 @@ public sealed class ScenarioJsonBuilder : IScenarioBuilder
         string scenarioId,
         int mode,
         OriginalBattle battle,
-        PackRuntimeBootstrap bootstrap)
+        ModRuntimeBootstrap bootstrap)
     {
         string? selectedCountry = mode == 2 ? ScenarioStartHelpers.SelectConquestCountry(battle) : null;
         return new OriginalScenarioRequest

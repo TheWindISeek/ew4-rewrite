@@ -6,7 +6,7 @@ namespace Ew4.Platform.Content;
 /// <summary>
 /// Mod 切换后 UI 正常所需的客户端资源最低集（M1）；合并后的 effective 包上检查。
 /// </summary>
-public static class PackContentContract
+public static class ModContentContract
 {
     public static readonly string[] RecommendedClientPaths =
     [
@@ -16,7 +16,7 @@ public static class PackContentContract
         "client/effects.json",
     ];
 
-    public static IEnumerable<Diagnostic> Validate(IPackSource source)
+    public static IEnumerable<Diagnostic> Validate(IModSource source)
     {
         foreach (string path in RecommendedClientPaths)
         {
@@ -24,7 +24,7 @@ public static class PackContentContract
             {
                 yield return new Diagnostic(
                     Severity.Warning,
-                    "pack.client.missing",
+                    "mod.client.missing",
                     path,
                     "Recommended client asset is missing after pack merge; UI may show wrong flags, units, or colors.",
                     "Add the file under assets/client/ or ensure parent pack provides it.");

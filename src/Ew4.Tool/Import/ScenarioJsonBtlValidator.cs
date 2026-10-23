@@ -26,14 +26,14 @@ public static class ScenarioJsonBtlValidator
         int skippedStub = 0;
         int total = 0;
 
-        IPackSource pack = new DirectoryPackSource(root);
+        IModSource pack = new DirectoryModSource(root);
         foreach (ScenarioIndex scenario in ScenarioCatalog.List(pack))
         {
             total++;
             string jsonPath = Path.Combine(root, scenario.JsonPath.Replace('/', Path.DirectorySeparatorChar));
             byte[] jsonBytes = File.ReadAllBytes(jsonPath);
             using var json = System.Text.Json.JsonDocument.Parse(jsonBytes);
-            if (!ScenarioPackAccess.IsEmbeddedScenarioJson(json.RootElement))
+            if (!ScenarioModAccess.IsEmbeddedScenarioJson(json.RootElement))
             {
                 skippedStub++;
                 if (!scenario.Id.StartsWith("multiplay", StringComparison.Ordinal))
@@ -44,8 +44,8 @@ public static class ScenarioJsonBtlValidator
                 continue;
             }
 
-            byte[] generated = ScenarioPackAccess.ExportBtlBytes(
-                ScenarioPackAccess.ReadEmbeddedDocument(jsonBytes, scenario.Id));
+            byte[] generated = ScenarioModAccess.ExportBtlBytes(
+                ScenarioModAccess.ReadEmbeddedDocument(jsonBytes, scenario.Id));
             string referencePath = Path.Combine(referenceRoot, scenario.Id + ".btl");
             if (!File.Exists(referencePath))
             {

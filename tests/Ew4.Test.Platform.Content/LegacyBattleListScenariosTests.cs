@@ -18,7 +18,7 @@ public sealed class LegacyBattleListScenariosTests
             return;
         }
 
-        IPackSource merged = new MergedPackSource(new DirectoryPackSource(greatFront), new DirectoryPackSource(baseDir));
+        IModSource merged = new MergedModSource(new DirectoryModSource(greatFront), new DirectoryModSource(baseDir));
         var ids = new HashSet<string>(StringComparer.Ordinal);
         LegacyBattleListScenarios.AddIds(merged, ids);
         Assert.Contains("campaign3_01", ids);

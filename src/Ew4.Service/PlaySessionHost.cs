@@ -1,14 +1,11 @@
-using System.Linq;
 using Ew4.Platform.Content;
 using Ew4.Platform.Engine;
 using Ew4.Platform.Runtime;
-using Ew4.Service;
-using Ew4.Platform.Session.Persistence;
 
 namespace Ew4.Service;
 
 /// <summary>
-/// 绑定当前激活 Pack 的 <see cref="ClientGame"/>，对外提供封存 <c>/api/*</c> 语义。
+/// 绑定当前激活 Mod 快照的 <see cref="ClientGame"/>，对外提供封存 <c>/api/*</c> 语义。
 /// </summary>
 public sealed class PlaySessionHost : IHostActivationListener
 {
@@ -39,44 +36,17 @@ public sealed class PlaySessionHost : IHostActivationListener
         }
     }
 
-    public string Dispatch(ResolvedContent content, string path, string body)
+    public string Dispatch(IModSnapshot snapshot, string path, string body)
     {
         lock (_gate)
         {
-            if (_activation == null || _activation.Content.Fingerprint != content.Fingerprint)
+            if (_activation == null || _activation.Snapshot.Revision != snapshot.Revision)
             {
                 throw new InvalidOperationException("Play session is not synchronized with active content.");
             }
 
-            _game ??= CreateGame(_activation);
+            _game ??= PlayClientFactory.Create(_activation, _engine);
             return _game.Dispatch(path, body);
         }
-    }
-
-    private ClientGame CreateGame(HostActivationInfo activation)
-    {
-        Directory.CreateDirectory(activation.SaveRoot);
-        IPackSource packSource = activation.Content.Source;
-        Func<string, byte[]> baseRead = PackAssetReader.Open(packSource);
-        Func<string, byte[]> read = path =>
-        {
-            if (path.StartsWith("original/", StringComparison.Ordinal)
-                && path.EndsWith(".btl", StringComparison.OrdinalIgnoreCase))
-            {
-                string scenarioId = Path.GetFileNameWithoutExtension(path["original/".Length..]);
-                return ScenarioBtlResolver.ResolveBtlBytes(packSource, scenarioId);
-            }
-
-            return baseRead(path);
-        };
-        var battleFiles = PackScenarioIds.List(activation.Content).Select(id => id + ".btl").ToArray();
-        bool verifySources = string.IsNullOrWhiteSpace(activation.Content.Manifest.Parent);
-        IReadOnlyDictionary<string, string> scenarioDisplayNames = ScenarioCatalogNames.ReadDisplayNames(packSource);
-        var clientContent = new ClientContent(read, battleFiles, scenarioDisplayNames, verifySourceHashes: verifySources);
-        var envelope = new SlotSaveEnvelope.Binding(
-            activation.Content.Manifest.Id,
-            activation.Content.Fingerprint,
-            _engine.Info);
-        return new ClientGame(clientContent, activation.SaveRoot, envelope);
     }
 }

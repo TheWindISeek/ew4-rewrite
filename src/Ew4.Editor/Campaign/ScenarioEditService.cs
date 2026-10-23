@@ -1,7 +1,7 @@
 using Ew4.Platform.Content;
 using Ew4.Platform.Content.ScenarioEdit;
 
-namespace Ew4.Editor;
+namespace Ew4.Editor.Campaign;
 
 /// <summary>
 /// 兼容旧接口名；新代码请使用 <see cref="IScenarioEditToolkit"/> / <see cref="ScenarioEditToolkit"/>.
@@ -12,7 +12,7 @@ public sealed class ScenarioEditService : IScenarioEditService
 
     public ScenarioEditService(IScenarioEditToolkit? toolkit = null) => _toolkit = toolkit ?? ScenarioEditToolkit.Default;
 
-    public ScenarioDocument OpenFromPack(IPackSource pack, string scenarioId) => _toolkit.OpenFromPack(pack, scenarioId);
+    public ScenarioDocument OpenFromPack(IModSource pack, string scenarioId) => _toolkit.OpenFromPack(pack, scenarioId);
 
     public ScenarioSaveResult SaveDocument(string workspaceRoot, ScenarioDocument document) =>
         _toolkit.SaveToWorkspace(workspaceRoot, document);

@@ -34,7 +34,7 @@ internal static class AuthorWorkspaceEndpoints
     {
         try
         {
-            WorkspaceInfo info = workspaces.Create(request.FromPackId ?? PackId.Base, request.Id, request.Name);
+            WorkspaceInfo info = workspaces.Create(request.FromModId ?? ModId.Base, request.Id, request.Name);
             return Results.Json(info, statusCode: StatusCodes.Status201Created);
         }
         catch (ContentError ex)
@@ -100,7 +100,7 @@ internal static class AuthorWorkspaceEndpoints
     {
         try
         {
-            IPackSource pack = workspaces.OpenMergedPack(workspaceId);
+            IModSource pack = workspaces.OpenMergedMod(workspaceId);
             var campaign = new List<string>();
             var conquest = new List<string>();
             var tutorial = new List<string>();
@@ -222,5 +222,5 @@ internal static class AuthorWorkspaceEndpoints
 
     private static IResult GetPreviewStatus(HostApp hostApp) => Results.Json(hostApp.PreviewState);
 
-    private sealed record CreateWorkspaceRequest(string Id, string Name, string? FromPackId);
+    private sealed record CreateWorkspaceRequest(string Id, string Name, string? FromModId);
 }

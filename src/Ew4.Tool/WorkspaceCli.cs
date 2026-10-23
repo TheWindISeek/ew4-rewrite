@@ -31,13 +31,14 @@ internal static class WorkspaceCli
 
     private static IWorkspaceService CreateService(string packs, string workspaces)
     {
-        var repository = new FilePackRepository(Path.GetFullPath(packs));
+        var repository = new FileModRepository(Path.GetFullPath(packs));
         var registry = ContentKindRegistry.CreateDefault();
         var engine = new global::Ew4.Platform.Engine.Engine();
         var builder = new ScenarioJsonBuilder();
         var resolver = new ContentResolver(registry, engine);
         var validator = new ContentValidator(registry, engine, builder);
-        return new WorkspaceService(Path.GetFullPath(workspaces), repository, registry, resolver, validator);
+        var loader = new ModSnapshotLoader(resolver, validator);
+        return new WorkspaceService(Path.GetFullPath(workspaces), repository, registry, loader, validator);
     }
 
     private static int List(string[] args)
@@ -53,7 +54,7 @@ internal static class WorkspaceCli
         IWorkspaceService service = CreateService(packs, workspaces);
         foreach (WorkspaceInfo info in service.List())
         {
-            Console.WriteLine($"{info.Id}\t{info.Name}\tparent={info.ParentPackId}");
+            Console.WriteLine($"{info.Id}\t{info.Name}\tparent={info.ParentModId}");
         }
 
         return 0;
@@ -65,7 +66,7 @@ internal static class WorkspaceCli
         string workspaces = "build/workspaces";
         string? id = null;
         string? name = null;
-        string fromPack = PackId.Base;
+        string fromPack = ModId.Base;
         for (int i = 2; i < args.Length; i++)
         {
             if (args[i] == "--packs" && i + 1 < args.Length) packs = args[++i];
@@ -82,7 +83,7 @@ internal static class WorkspaceCli
         }
 
         WorkspaceInfo info = CreateService(packs, workspaces).Create(fromPack, id, name);
-        Console.WriteLine($"workspace create: id={info.Id} parent={info.ParentPackId}");
+        Console.WriteLine($"workspace create: id={info.Id} parent={info.ParentModId}");
         return 0;
     }
 

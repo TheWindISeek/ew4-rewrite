@@ -3,7 +3,7 @@ using Xunit;
 
 namespace Ew4.Test.Platform.Content;
 
-public sealed class PackAssetReadTests
+public sealed class ModAssetReadTests
 {
     [Fact]
     public void Resolve_prefers_child_tables_over_parent_original_for_def_xml()
@@ -16,8 +16,8 @@ public sealed class PackAssetReadTests
             return;
         }
 
-        IPackSource merged = new MergedPackSource(new DirectoryPackSource(ww1), new DirectoryPackSource(baseDir));
-        bool ok = PackAssetReader.TryResolve(merged, "original/def_battlelist.xml", out string packPath);
+        IModSource merged = new MergedModSource(new DirectoryModSource(ww1), new DirectoryModSource(baseDir));
+        bool ok = ModAssetReader.TryResolve(merged, "original/def_battlelist.xml", out string packPath);
         Assert.True(ok);
         Assert.StartsWith("assets/tables/def_battlelist.xml", packPath, StringComparison.Ordinal);
         byte[] bytes = merged.Read(packPath);

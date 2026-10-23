@@ -1,13 +1,16 @@
 # Ew4.Platform.Content
 
-Pack 读取、迁移、校验、导入导出与 Builder。见 [docs/arch/README.md](../../docs/arch/README.md)。
+Mod 包读取、**Mod 运行时**快照、**GameDataLoad**（表/剧本载入）、校验与导出。见 [docs/arch/mod-layers.md](../../docs/arch/mod-layers.md)、[GameDataLoad/README.md](./GameDataLoad/README.md)。
 
 ## 已实现（P1 骨架）
 
 | 类型 | 说明 |
 |------|------|
 | `DirectoryPackSource` / `ZipPackSource` | 读取目录与 zip |
-| `MergedPackSource` | 按 parent 整文件补全 |
+| `PackMerge` / `MergedPackSource` | 按 parent 整文件补全（统一入口） |
+| `PackScenarioCatalog` | Play 剧本 id 与 overlay 显示名 |
+| `LegacyPackRuntimeLoader` | 共享 catalog / 地图加载（Play 与剧本构建） |
+| `PackArchiveProbe` | 导入前校验 zip 含 `mod.json` |
 | `ContentResolver` | 引擎要求、指纹、`ResolvedContent` |
 | `ContentValidator` | Schema 级校验与路径白名单 |
 | `FilePackRepository` | `packs/{id}/` 安装与打开 |

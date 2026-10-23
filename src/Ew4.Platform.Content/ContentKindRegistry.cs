@@ -31,7 +31,7 @@ public sealed class ContentKindRegistry : IContentKindRegistry
 
     public IContentKind? Match(string logicalPath)
     {
-        logicalPath = PackPath.Normalize(logicalPath);
+        logicalPath = ModPath.Normalize(logicalPath);
         foreach (IContentKind kind in _kinds)
         {
             if (GlobMatcher.IsMatch(kind.PathPattern, logicalPath))

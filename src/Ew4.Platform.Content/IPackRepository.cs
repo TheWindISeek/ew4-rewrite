@@ -5,13 +5,13 @@ namespace Ew4.Platform.Content;
 /// <summary>
 /// 已安装包管理（不含会话）。
 /// </summary>
-public interface IPackRepository
+public interface IModRepository
 {
-    IReadOnlyList<PackInfo> List();
+    IReadOnlyList<ModInfo> List();
 
-    PackInfo Install(IPackSource source, InstallOptions options);
+    ModInfo Install(IModSource source, InstallOptions options);
 
-    void Remove(string packId);
+    void Remove(string modId);
 
-    IPackSource Open(string packId);
+    IModSource Open(string modId);
 }

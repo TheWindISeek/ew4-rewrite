@@ -1,6 +1,6 @@
 using System.Text.Json;
 using Ew4.Platform.Content;
-using Ew4.Platform.Runtime;
+using Ew4.Service;
 using Microsoft.AspNetCore.Http.Features;
 
 namespace Ew4.Backend.Web;
@@ -11,7 +11,7 @@ public static class PlayModEndpoints
 
     public static void MapPlayModApi(this WebApplication app)
     {
-        app.MapMethods("/api/mods", ["GET", "POST"], async (HttpRequest request, HostApp host, FilePackRepository packs, AuthorHostOptions options, PlayModImportStore imports) =>
+        app.MapMethods("/api/mods", ["GET", "POST"], async (HttpRequest request, ModCatalogService catalog, ModImportService imports) =>
         {
             if (PlayEndpoints.IsForbiddenCrossSite(request))
             {
@@ -29,14 +29,14 @@ public static class PlayModEndpoints
                     if (op == "activate")
                     {
                         string? key = document.RootElement.TryGetProperty("key", out JsonElement keyEl) ? keyEl.GetString() : null;
-                        host.Activate(string.IsNullOrEmpty(key) ? PackId.Base : key);
+                        catalog.Activate(key);
                     }
                     else if (op == "delete")
                     {
                         string? key = document.RootElement.TryGetProperty("key", out JsonElement keyEl) ? keyEl.GetString() : null;
                         if (!string.IsNullOrEmpty(key))
                         {
-                            host.Remove(key);
+                            catalog.Remove(key);
                         }
                     }
                     else if (op == "import")
@@ -46,7 +46,7 @@ public static class PlayModEndpoints
                         string? name = document.RootElement.TryGetProperty("name", out JsonElement nameEl) ? nameEl.GetString() : null;
                         if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(name))
                         {
-                            imports.Import(token, id, name);
+                            imports.Commit(token, id, name);
                         }
                     }
                     else if (op == "discard")
@@ -56,7 +56,9 @@ public static class PlayModEndpoints
                     }
                 }
 
-                return Results.Text(JsonSerializer.Serialize(BuildStatus(host, packs, options), Json), "application/json; charset=utf-8");
+                return Results.Text(
+                    JsonSerializer.Serialize(ModPanelApi.Serialize(catalog.GetPanelState()), Json),
+                    "application/json; charset=utf-8");
             }
             catch (Exception error) when (error is IOException or InvalidOperationException or ArgumentException or JsonException or ContentError)
             {
@@ -64,7 +66,7 @@ public static class PlayModEndpoints
             }
         });
 
-        app.MapPost("/api/mod-prepare", async (HttpRequest request, PlayModImportStore imports) =>
+        app.MapPost("/api/mod-prepare", async (HttpRequest request, ModImportService imports) =>
         {
             string? temp = null;
             try
@@ -82,7 +84,7 @@ public static class PlayModEndpoints
                     await file.CopyToAsync(output);
                 }
 
-                PreparedImport prepared = imports.Prepare(temp, file.FileName);
+                PreparedModImport prepared = imports.StageUploadedFile(temp, file.FileName);
                 temp = null;
                 return Results.Json(new { token = prepared.Token, identity = prepared.Identity });
             }
@@ -99,55 +101,20 @@ public static class PlayModEndpoints
             }
         }).DisableAntiforgery();
 
-        app.MapPost("/api/mod-import", async (HttpRequest request, PlayModImportStore imports, HostApp host, FilePackRepository packs, AuthorHostOptions options) =>
+        app.MapPost("/api/mod-import", async (HttpRequest request, ModImportService imports, ModCatalogService catalog) =>
         {
             try
             {
                 var form = await request.ReadFormAsync();
-                imports.Import(form["token"].ToString(), form["id"].ToString(), form["name"].ToString());
-                return Results.Text(JsonSerializer.Serialize(BuildStatus(host, packs, options), Json), "application/json; charset=utf-8");
+                imports.Commit(form["token"].ToString(), form["id"].ToString(), form["name"].ToString());
+                return Results.Text(
+                    JsonSerializer.Serialize(ModPanelApi.Serialize(catalog.GetPanelState()), Json),
+                    "application/json; charset=utf-8");
             }
             catch (Exception error) when (error is IOException or InvalidOperationException or ArgumentException or ContentError)
             {
                 return Results.Json(new { error = error.Message }, statusCode: 400);
             }
         }).DisableAntiforgery();
-    }
-
-    private static object BuildStatus(HostApp host, FilePackRepository packs, AuthorHostOptions options)
-    {
-        string? activeId = host.ActiveContent?.Manifest.Id;
-        bool baseActive = string.Equals(activeId, PackId.Base, StringComparison.Ordinal);
-        var mods = packs.List()
-            .Where(p => !string.Equals(p.Id, PackId.Base, StringComparison.Ordinal))
-            .Select(p =>
-            {
-                string directory = Path.Combine(options.PacksDirectory, p.Id);
-                long bytes = Directory.Exists(directory)
-                    ? Directory.EnumerateFiles(directory, "*", SearchOption.AllDirectories).Sum(f => new FileInfo(f).Length)
-                    : 0;
-                return new
-                {
-                    key = p.Id,
-                    id = p.Id,
-                    name = p.Name,
-                    version = p.Version,
-                    revision = p.Id,
-                    logicRevision = p.Version,
-                    bytes,
-                    files = 0,
-                    warnings = Array.Empty<string>(),
-                    active = string.Equals(activeId, p.Id, StringComparison.Ordinal),
-                };
-            })
-            .ToArray();
-
-        return new
-        {
-            active = baseActive ? null : activeId,
-            baseRevision = host.ActiveContent?.Fingerprint ?? "",
-            mods,
-            import = new { status = "idle", message = "", completed = 0, total = 0 },
-        };
     }
 }

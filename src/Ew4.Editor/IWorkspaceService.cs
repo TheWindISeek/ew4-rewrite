@@ -5,7 +5,7 @@ namespace Ew4.Editor;
 public sealed record WorkspaceInfo(
     string Id,
     string Name,
-    string ParentPackId,
+    string ParentModId,
     DateTimeOffset CreatedAt,
     DateTimeOffset? LastValidatedAt,
     ValidationLevel? LastValidationLevel);
@@ -27,7 +27,7 @@ public interface IWorkspaceService
 
     IReadOnlyList<WorkspaceInfo> List();
 
-    WorkspaceInfo Create(string fromPackId, string newId, string name);
+    WorkspaceInfo Create(string fromModId, string newId, string name);
 
     void Delete(string workspaceId);
 
@@ -39,7 +39,7 @@ public interface IWorkspaceService
 
     ExportResult Export(string workspaceId, ExportOptions options);
 
-    IPackSource OpenMergedPack(string workspaceId);
+    IModSource OpenMergedMod(string workspaceId);
 
     string ResolveWorkspaceRoot(string workspaceId);
 }

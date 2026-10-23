@@ -6,7 +6,7 @@ using Xunit;
 
 namespace Ew4.Test.Platform.Content;
 
-public sealed class PackInstallGuardTests
+public sealed class ModInstallGuardTests
 {
     private static readonly IEngine Engine = new global::Ew4.Platform.Engine.Engine();
 
@@ -15,7 +15,7 @@ public sealed class PackInstallGuardTests
     {
         using TempPacks temp = WritePack("base", parent: null, scenarioFormat: 2);
         var zip = ZipPack(temp.Root, "base");
-        Assert.Throws<ContentError>(() => PackInstallGuard.ValidateInstall(zip, temp.Repository, Engine));
+        Assert.Throws<ContentError>(() => ModInstallGuard.ValidateInstall(zip, temp.Repository, Engine));
     }
 
     [Fact]
@@ -23,8 +23,8 @@ public sealed class PackInstallGuardTests
     {
         using TempPacks temp = WritePack("child", parent: "base", scenarioFormat: 2);
         var zip = ZipPack(temp.Root, "child");
-        var ex = Assert.Throws<ContentError>(() => PackInstallGuard.ValidateInstall(zip, temp.Repository, Engine));
-        Assert.Equal("pack.parent", ex.Code);
+        var ex = Assert.Throws<ContentError>(() => ModInstallGuard.ValidateInstall(zip, temp.Repository, Engine));
+        Assert.Equal("mod.parent", ex.Code);
     }
 
     [Fact]
@@ -33,12 +33,12 @@ public sealed class PackInstallGuardTests
         using TempPacks temp = WritePack("base", parent: null, scenarioFormat: 2);
         WritePackInto(temp, "mid", parent: "base", scenarioFormat: 2);
         var zip = ZipPack(temp.Root, "mid");
-        PackInstallGuard.ValidateInstall(zip, temp.Repository, Engine);
+        ModInstallGuard.ValidateInstall(zip, temp.Repository, Engine);
 
         WritePackInto(temp, "child", parent: "mid", scenarioFormat: 2);
         var childZip = ZipPack(temp.Root, "child");
-        var ex = Assert.Throws<ContentError>(() => PackInstallGuard.ValidateInstall(childZip, temp.Repository, Engine));
-        Assert.Equal("pack.parent.chain", ex.Code);
+        var ex = Assert.Throws<ContentError>(() => ModInstallGuard.ValidateInstall(childZip, temp.Repository, Engine));
+        Assert.Equal("mod.parent.chain", ex.Code);
     }
 
     [Fact]
@@ -47,8 +47,8 @@ public sealed class PackInstallGuardTests
         using TempPacks temp = WritePack("base", parent: null, scenarioFormat: 2);
         WritePackInto(temp, "child", parent: "base", scenarioFormat: 1);
         var zip = ZipPack(temp.Root, "child");
-        var ex = Assert.Throws<ContentError>(() => PackInstallGuard.ValidateInstall(zip, temp.Repository, Engine));
-        Assert.Equal("pack.formats", ex.Code);
+        var ex = Assert.Throws<ContentError>(() => ModInstallGuard.ValidateInstall(zip, temp.Repository, Engine));
+        Assert.Equal("mod.formats", ex.Code);
     }
 
     [Fact]
@@ -57,16 +57,16 @@ public sealed class PackInstallGuardTests
         using TempPacks temp = WritePack("base", parent: null, scenarioFormat: 2);
         WritePackInto(temp, "parent-pack", parent: "base", scenarioFormat: 2);
         WritePackInto(temp, "child", parent: "parent-pack", scenarioFormat: 2);
-        var ex = Assert.Throws<ContentError>(() => PackInstallGuard.ValidateRemove("parent-pack", temp.Repository));
-        Assert.Equal("pack.remove.dependents", ex.Code);
+        var ex = Assert.Throws<ContentError>(() => ModInstallGuard.ValidateRemove("parent-pack", temp.Repository));
+        Assert.Equal("mod.remove.dependents", ex.Code);
     }
 
     [Fact]
     public void Remove_rejects_base()
     {
         using TempPacks temp = WritePack("base", parent: null, scenarioFormat: 2);
-        var ex = Assert.Throws<ContentError>(() => PackInstallGuard.ValidateRemove("base", temp.Repository));
-        Assert.Equal("pack.remove", ex.Code);
+        var ex = Assert.Throws<ContentError>(() => ModInstallGuard.ValidateRemove("base", temp.Repository));
+        Assert.Equal("mod.remove", ex.Code);
     }
 
     [Fact]
@@ -75,7 +75,7 @@ public sealed class PackInstallGuardTests
         using TempPacks temp = WritePack("base", parent: null, scenarioFormat: 2);
         WritePackInto(temp, "overlay", parent: "base", scenarioFormat: 2);
         var zip = ZipPack(temp.Root, "overlay");
-        PackInstallGuard.ValidateInstall(zip, temp.Repository, Engine);
+        ModInstallGuard.ValidateInstall(zip, temp.Repository, Engine);
     }
 
     private static TempPacks WritePack(string id, string? parent, int scenarioFormat)
@@ -100,27 +100,27 @@ public sealed class PackInstallGuardTests
               "formats": { "scenario": {{scenarioFormat}}, "asset": 1 }
             }
             """;
-        File.WriteAllText(Path.Combine(dir, PackManifestPaths.FileName), manifest);
+        File.WriteAllText(Path.Combine(dir, ModManifestPaths.FileName), manifest);
     }
 
-    private static ZipPackSource ZipPack(string packsRoot, string id)
+    private static ZipModSource ZipPack(string packsRoot, string id)
     {
         string zipPath = Path.Combine(Path.GetTempPath(), "ew4-pack-" + Guid.NewGuid().ToString("N") + ".zip");
         string sourceDir = Path.Combine(packsRoot, id);
         ZipFile.CreateFromDirectory(sourceDir, zipPath);
-        return new ZipPackSource(zipPath);
+        return new ZipModSource(zipPath);
     }
 
     private sealed class TempPacks : IDisposable
     {
         public string Root { get; } = Path.Combine(Path.GetTempPath(), "ew4-packs-" + Guid.NewGuid().ToString("N"));
 
-        public FilePackRepository Repository { get; }
+        public FileModRepository Repository { get; }
 
         public TempPacks()
         {
             Directory.CreateDirectory(Root);
-            Repository = new FilePackRepository(Root);
+            Repository = new FileModRepository(Root);
         }
 
         public void Dispose()

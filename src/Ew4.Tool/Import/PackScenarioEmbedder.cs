@@ -8,14 +8,14 @@ namespace Ew4.Tool.Import;
 /// <summary>
 /// 将已有包内的 schema 1 索引桩 + <c>source/original/*.btl</c> 转为嵌入 JSON（就地迁移）。
 /// </summary>
-public static class PackScenarioEmbedder
+public static class ModScenarioEmbedder
 {
     public sealed record Result(int Embedded, int AlreadyEmbedded, int SkippedMissingBtl, int RemovedBtlFiles);
 
     public static Result Embed(string packDirectory, bool removePackBtl = false)
     {
         string root = Path.GetFullPath(packDirectory);
-        IPackSource pack = new DirectoryPackSource(root);
+        IModSource pack = new DirectoryModSource(root);
         int embedded = 0;
         int already = 0;
         int skipped = 0;
@@ -26,7 +26,7 @@ public static class PackScenarioEmbedder
             string jsonPath = Path.Combine(root, scenario.JsonPath.Replace('/', Path.DirectorySeparatorChar));
             byte[] jsonBytes = File.ReadAllBytes(jsonPath);
             using var json = System.Text.Json.JsonDocument.Parse(jsonBytes);
-            if (ScenarioPackAccess.IsEmbeddedScenarioJson(json.RootElement))
+            if (ScenarioModAccess.IsEmbeddedScenarioJson(json.RootElement))
             {
                 already++;
                 continue;
@@ -69,7 +69,7 @@ public static class PackScenarioEmbedder
 
         if (embedded > 0 || already > 0)
         {
-            PackModProfile.WriteEmbeddedJsonProfile(root);
+            ModManifestProfile.WriteEmbeddedJsonProfile(root);
         }
 
         return new(embedded, already, skipped, removed);

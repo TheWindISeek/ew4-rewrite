@@ -9,9 +9,8 @@ namespace Ew4.Platform.Runtime;
 
 public sealed class HostApp : IHostApp
 {
-    private readonly FilePackRepository _repository;
-    private readonly ContentResolver _resolver;
-    private readonly ContentValidator _validator;
+    private readonly FileModRepository _repository;
+    private readonly IModSnapshotLoader _snapshotLoader;
     private readonly ActivePackStore _active;
     private readonly IEngine _engine;
     private readonly IScenarioBuilder _builder;
@@ -19,26 +18,26 @@ public sealed class HostApp : IHostApp
     private readonly IReadOnlyList<IHostActivationListener> _activationListeners;
     private ResolvedContent? _resolved;
     private SessionService? _session;
-    private string? _previewPreviousPackId;
+    private string? _previewPreviousModId;
     private string? _previewWorkspaceId;
 
     public HostApp(HostPaths paths, IEngine engine, IScenarioBuilder? builder = null, IEnumerable<IHostActivationListener>? activationListeners = null)
+        : this(
+            new FileModRepository(paths.ModsDirectory),
+            new ModSnapshotLoader(
+                new ContentResolver(ContentKindRegistry.CreateDefault(), engine),
+                new ContentValidator(ContentKindRegistry.CreateDefault(), engine, builder ?? new ScenarioJsonBuilder())),
+            new ActivePackStore(paths.StateDirectory),
+            engine,
+            builder ?? new ScenarioJsonBuilder(),
+            paths.StateDirectory,
+            activationListeners)
     {
-        IScenarioBuilder scenarioBuilder = builder ?? new ScenarioJsonBuilder();
-        _repository = new FilePackRepository(paths.ModsDirectory);
-        _resolver = new ContentResolver(ContentKindRegistry.CreateDefault(), engine);
-        _validator = new ContentValidator(ContentKindRegistry.CreateDefault(), engine, scenarioBuilder);
-        _active = new ActivePackStore(paths.StateDirectory);
-        _engine = engine;
-        _builder = scenarioBuilder;
-        _stateDirectory = paths.StateDirectory;
-        _activationListeners = activationListeners?.ToArray() ?? Array.Empty<IHostActivationListener>();
     }
 
     public HostApp(
-        FilePackRepository repository,
-        ContentResolver resolver,
-        ContentValidator validator,
+        FileModRepository repository,
+        IModSnapshotLoader snapshotLoader,
         ActivePackStore active,
         IEngine engine,
         IScenarioBuilder builder,
@@ -46,8 +45,7 @@ public sealed class HostApp : IHostApp
         IEnumerable<IHostActivationListener>? activationListeners = null)
     {
         _repository = repository;
-        _resolver = resolver;
-        _validator = validator;
+        _snapshotLoader = snapshotLoader;
         _active = active;
         _engine = engine;
         _builder = builder;
@@ -57,43 +55,45 @@ public sealed class HostApp : IHostApp
 
     public ResolvedContent? ActiveContent => _resolved;
 
+    public IModSnapshot? ActiveSnapshot => _resolved;
+
     public SessionService? Session => _session;
 
     public HostPreviewState PreviewState => new(
         _previewWorkspaceId != null,
         _previewWorkspaceId,
-        _previewPreviousPackId);
+        _previewPreviousModId);
 
-    public PackStatus Status()
+    public ModStatus Status()
     {
         string? active = _active.Read() ?? _resolved?.Manifest.Id;
-        return new PackStatus(_repository.List(), active, false);
+        return new ModStatus(_repository.List(), active, false);
     }
 
-    public void Activate(string? packId)
+    public void Activate(string? modId)
     {
-        packId = string.IsNullOrWhiteSpace(packId) ? PackId.Base : PackId.Validate(packId);
-        IPackSource pack = _repository.Open(packId);
-        PackInstallGuard.ValidateActivation(pack, _repository, _engine);
-        IPackSource? parent = OpenParentIfDeclared(pack);
+        modId = string.IsNullOrWhiteSpace(modId) ? ModId.Base : ModId.Validate(modId);
+        IModSource pack = _repository.Open(modId);
+        ModInstallGuard.ValidateActivation(pack, _repository, _engine);
+        IModSource? parent = ModMerge.OpenParent(pack, _repository);
 
-        ActivateResolved(pack, parent, persistActivePackId: packId, workspacePreviewId: null);
+        ActivateResolved(pack, parent, persistActiveModId: modId, workspacePreviewId: null);
         ClearPreviewState();
     }
 
     public void EnterWorkspacePreview(string workspaceRoot, string workspaceId)
     {
-        workspaceId = PackId.Validate(workspaceId);
-        var pack = new DirectoryPackSource(Path.GetFullPath(workspaceRoot));
-        PackInstallGuard.ValidateActivation(pack, _repository, _engine);
-        IPackSource? parent = OpenParentIfDeclared(pack);
+        workspaceId = ModId.Validate(workspaceId);
+        var pack = new DirectoryModSource(Path.GetFullPath(workspaceRoot));
+        ModInstallGuard.ValidateActivation(pack, _repository, _engine);
+        IModSource? parent = ModMerge.OpenParent(pack, _repository);
 
         if (_previewWorkspaceId == null)
         {
-            _previewPreviousPackId = _active.Read() ?? PackId.Base;
+            _previewPreviousModId = _active.Read() ?? ModId.Base;
         }
 
-        ActivateResolved(pack, parent, persistActivePackId: null, workspacePreviewId: workspaceId);
+        ActivateResolved(pack, parent, persistActiveModId: null, workspacePreviewId: workspaceId);
         _previewWorkspaceId = workspaceId;
     }
 
@@ -107,29 +107,20 @@ public sealed class HostApp : IHostApp
             return;
         }
 
-        string restore = _previewPreviousPackId ?? PackId.Base;
+        string restore = _previewPreviousModId ?? ModId.Base;
         ClearPreviewState();
         Activate(restore);
     }
 
-    private void ActivateResolved(IPackSource pack, IPackSource? parent, string? persistActivePackId, string? workspacePreviewId)
+    private void ActivateResolved(IModSource pack, IModSource? parent, string? persistActiveModId, string? workspacePreviewId)
     {
-        ResolvedContent resolved = _resolver.Resolve(pack, parent);
-        IReadOnlyList<Diagnostic> diagnostics = _validator.Run(resolved, ValidationLevel.Schema);
-        foreach (Diagnostic diagnostic in diagnostics)
-        {
-            if (diagnostic.Severity == Severity.Error)
-            {
-                throw new ContentError(diagnostic.Code, diagnostic.Message);
-            }
-        }
-
+        ResolvedContent resolved = _snapshotLoader.LoadActivatedView(pack, parent);
         _resolved = resolved;
         string saveRoot = SaveDirectoryLayout.Root(_stateDirectory, resolved, workspacePreviewId);
         _session = new SessionService(resolved, _engine, _builder, saveRoot);
-        if (persistActivePackId != null)
+        if (persistActiveModId != null)
         {
-            _active.Write(persistActivePackId);
+            _active.Write(persistActiveModId);
         }
 
         var info = new HostActivationInfo(resolved, workspacePreviewId != null, workspacePreviewId, saveRoot);
@@ -142,17 +133,7 @@ public sealed class HostApp : IHostApp
     private void ClearPreviewState()
     {
         _previewWorkspaceId = null;
-        _previewPreviousPackId = null;
-    }
-
-    private IPackSource? OpenParentIfDeclared(IPackSource pack)
-    {
-        if (string.IsNullOrWhiteSpace(pack.Manifest.Parent))
-        {
-            return null;
-        }
-
-        return _repository.Open(pack.Manifest.Parent);
+        _previewPreviousModId = null;
     }
 
     public ImportToken Prepare(Stream package, string fileName)
@@ -165,21 +146,13 @@ public sealed class HostApp : IHostApp
             package.CopyTo(file);
         }
 
-        var source = new ZipPackSource(archivePath);
+        var source = new ZipModSource(archivePath);
         return new ImportToken(temp, archivePath, source.Manifest.Id, source.Manifest.Name);
     }
 
     public void Import(ImportToken token, string id, string name)
     {
-        id = PackId.Validate(id);
-        var source = new ZipPackSource(token.ArchivePath);
-        if (!string.Equals(source.Manifest.Id, id, StringComparison.Ordinal))
-        {
-            throw new ContentError("pack.import", "Pack id does not match archive manifest.");
-        }
-
-        PackInstallGuard.ValidateInstall(source, _repository, _engine);
-        _repository.Install(source, new InstallOptions(ReplaceExisting: true));
+        InstallFromArchive(token.ArchivePath, id);
         try
         {
             Directory.Delete(token.TempDirectory, recursive: true);
@@ -190,25 +163,35 @@ public sealed class HostApp : IHostApp
         }
     }
 
-    public void Remove(string packId)
+    public void InstallFromArchive(string archivePath, string id)
     {
-        _repository.Remove(packId);
-        if (string.Equals(_active.Read(), packId, StringComparison.Ordinal))
+        id = ModId.Validate(id);
+        var source = new ZipModSource(archivePath);
+        if (!string.Equals(source.Manifest.Id, id, StringComparison.Ordinal))
         {
-            Activate(PackId.Base);
+            throw new ContentError("mod.import", "Pack id does not match archive manifest.");
+        }
+
+        ModInstallGuard.ValidateInstall(source, _repository, _engine);
+        _repository.Install(source, new InstallOptions(ReplaceExisting: true));
+    }
+
+    public void Remove(string modId)
+    {
+        _repository.Remove(modId);
+        if (string.Equals(_active.Read(), modId, StringComparison.Ordinal))
+        {
+            Activate(ModId.Base);
         }
     }
 
     public void ActivateStoredOrDefault()
     {
-        string? packId = _active.Read();
-        Activate(packId);
+        string? modId = _active.Read();
+        Activate(modId);
     }
 }
 
-public sealed record HostPaths(string ModsDirectory, string StateDirectory)
-{
-    public string PacksDirectory => ModsDirectory;
-}
+public sealed record HostPaths(string ModsDirectory, string StateDirectory);
 
-public sealed record HostPreviewState(bool Active, string? WorkspaceId, string? PreviousPackId);
+public sealed record HostPreviewState(bool Active, string? WorkspaceId, string? PreviousModId);

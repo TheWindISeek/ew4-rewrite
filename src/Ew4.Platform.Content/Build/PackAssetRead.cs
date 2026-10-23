@@ -7,9 +7,9 @@ namespace Ew4.Platform.Content.Build;
 /// <summary>
 /// 将封存运行时路径映射到 Pack 内布局（<c>data/*</c> → <c>assets/tables/*</c>，兼容旧 <c>assets/legacy/*</c>；<c>rewrite/*</c> 支持包根或 <c>assets/rewrite/*</c>）。
 /// </summary>
-internal static class PackAssetRead
+internal static class ModAssetRead
 {
-    internal static Func<string, byte[]> FromPack(IPackSource pack)
+    internal static Func<string, byte[]> FromPack(IModSource pack)
     {
         return path =>
         {
@@ -23,7 +23,7 @@ internal static class PackAssetRead
         };
     }
 
-    internal static string? Resolve(IPackSource pack, string path)
+    internal static string? Resolve(IModSource pack, string path)
     {
         foreach (string candidate in Candidates(path))
         {

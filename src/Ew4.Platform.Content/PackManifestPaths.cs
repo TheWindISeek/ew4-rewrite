@@ -6,11 +6,11 @@ namespace Ew4.Platform.Content;
 /// <summary>
 /// 内容包根清单路径：作者只维护 <see cref="FileName"/>（<c>mod.json</c>）。
 /// </summary>
-public static class PackManifestPaths
+public static class ModManifestPaths
 {
     public const string FileName = "mod.json";
 
-    /// <summary>旧版清单；有 <see cref="FileName"/> 时忽略，仅在其缺失时只读回退。</summary>
+    /// <summary>旧版清单文件名（磁盘上可能与 <see cref="FileName"/> 并存，载入时忽略）。</summary>
     public const string LegacyPackJson = "pack.json";
 
     public static void MigrateLegacyPackJsonIfNeeded(string packRootDirectory)
@@ -25,7 +25,7 @@ public static class PackManifestPaths
         string packPath = Path.Combine(root, LegacyPackJson);
         if (!File.Exists(packPath))
         {
-            throw new ContentError("pack.missing", "Pack is missing mod.json.");
+            throw new ContentError("mod.missing", "Pack is missing mod.json.");
         }
 
         File.Copy(packPath, modPath);

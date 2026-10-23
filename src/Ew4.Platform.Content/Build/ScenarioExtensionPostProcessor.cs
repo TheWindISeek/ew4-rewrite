@@ -18,7 +18,7 @@ internal static class ScenarioExtensionPostProcessor
         OriginalBattle battle,
         string scenarioId,
         int mode,
-        PackRuntimeBootstrap bootstrap)
+        ModRuntimeBootstrap bootstrap)
     {
         ExtensionLoader extensions = bootstrap.Extensions;
         OriginalScenarioCatalogs catalogs = bootstrap.Catalogs;
@@ -205,7 +205,7 @@ internal static class ScenarioExtensionPostProcessor
         WorldState world,
         string scenarioId,
         int mode,
-        PackRuntimeBootstrap bootstrap)
+        ModRuntimeBootstrap bootstrap)
     {
         BuiltSessionAttach session = ScenarioSessionBootstrap.Create(
             built,

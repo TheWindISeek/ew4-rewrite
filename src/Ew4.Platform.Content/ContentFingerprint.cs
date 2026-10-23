@@ -8,13 +8,13 @@ namespace Ew4.Platform.Content;
 
 internal static class ContentFingerprint
 {
-    public static string Compute(IPackSource source, IContentKindRegistry registry)
+    public static string Compute(IModSource source, IContentKindRegistry registry)
     {
         var lines = new List<string>();
         foreach (string path in source.List("").OrderBy(p => p, StringComparer.Ordinal))
         {
-            if (string.Equals(path, PackManifestPaths.FileName, StringComparison.Ordinal)
-                || string.Equals(path, PackManifestPaths.LegacyPackJson, StringComparison.Ordinal))
+            if (string.Equals(path, ModManifestPaths.FileName, StringComparison.Ordinal)
+                || string.Equals(path, ModManifestPaths.LegacyPackJson, StringComparison.Ordinal))
             {
                 continue;
             }

@@ -50,8 +50,8 @@ public static class PlayStaticFiles
         try
         {
             HostApp host = context.RequestServices.GetRequiredService<HostApp>();
-            ResolvedContent? content = host.ActiveContent;
-            if (content == null)
+            IModSnapshot? snapshot = host.ActiveSnapshot;
+            if (snapshot == null)
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 return;
@@ -72,14 +72,16 @@ public static class PlayStaticFiles
             }
 
             string runtimePath = MapContentPath(path["/content/".Length..]);
-            if (!PackAssetReader.TryResolve(content.Source, runtimePath, out string packPath))
+            if (!snapshot.TryReadRuntimeAsset(runtimePath, out byte[] bytes))
             {
                 context.Response.StatusCode = StatusCodes.Status404NotFound;
                 return;
             }
 
-            context.Response.ContentType = Mime(packPath);
-            byte[] bytes = content.Source.Read(packPath);
+            string mimePath = ModAssetReader.TryResolve(snapshot.Source, runtimePath, out string packPath)
+                ? packPath
+                : runtimePath;
+            context.Response.ContentType = Mime(mimePath);
             await context.Response.Body.WriteAsync(bytes);
         }
         catch (IOException)

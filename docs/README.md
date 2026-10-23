@@ -3,6 +3,7 @@
 | 你想… | 去读 |
 |--------|------|
 | 代码分层、Pack、API | **[arch/README.md](arch/README.md)** |
+| Mod 快照与两阶段载入 | **[arch/mod-view.md](arch/mod-view.md)** |
 | 怎么推进任务、跑门禁 | **[task/todo.md](task/todo.md)** |
 | 接下来做什么 | [task/plan/roadmap.md](task/plan/roadmap.md) |
 | 配环境、目录 | [development/environment.md](development/environment.md) |

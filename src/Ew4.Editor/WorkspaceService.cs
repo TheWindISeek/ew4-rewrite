@@ -6,23 +6,23 @@ namespace Ew4.Editor;
 public sealed class WorkspaceService : IWorkspaceService
 {
     private readonly string _workspacesRoot;
-    private readonly FilePackRepository _packs;
+    private readonly FileModRepository _packs;
     private readonly IContentKindRegistry _registry;
-    private readonly ContentResolver _resolver;
+    private readonly IModSnapshotLoader _snapshotLoader;
     private readonly IContentValidator _validator;
-    private readonly ZipPackExporter _exporter = new();
+    private readonly ZipModExporter _exporter = new();
 
     public WorkspaceService(
         string workspacesRoot,
-        FilePackRepository packs,
+        FileModRepository packs,
         IContentKindRegistry registry,
-        ContentResolver resolver,
+        IModSnapshotLoader snapshotLoader,
         IContentValidator validator)
     {
         _workspacesRoot = Path.GetFullPath(workspacesRoot);
         _packs = packs;
         _registry = registry;
-        _resolver = resolver;
+        _snapshotLoader = snapshotLoader;
         _validator = validator;
         Directory.CreateDirectory(_workspacesRoot);
     }
@@ -51,9 +51,9 @@ public sealed class WorkspaceService : IWorkspaceService
         return list.OrderBy(w => w.Id, StringComparer.Ordinal).ToList();
     }
 
-    public WorkspaceInfo Create(string fromPackId, string newId, string name)
+    public WorkspaceInfo Create(string fromModId, string newId, string name)
     {
-        newId = PackId.Validate(newId);
+        newId = ModId.Validate(newId);
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new ContentError("workspace.name", "Workspace name is required.");
@@ -65,8 +65,8 @@ public sealed class WorkspaceService : IWorkspaceService
             throw new ContentError("workspace.exists", "Workspace already exists: " + newId);
         }
 
-        IPackSource fromPack = _packs.Open(fromPackId);
-        string parentPackId = fromPack.Manifest.Parent ?? fromPackId;
+        IModSource fromPack = _packs.Open(fromModId);
+        string parentModId = fromPack.Manifest.Parent ?? fromModId;
         Directory.CreateDirectory(workspaceRoot);
 
         foreach (string path in fromPack.List(""))
@@ -80,7 +80,7 @@ public sealed class WorkspaceService : IWorkspaceService
             WritePhysicalFile(workspaceRoot, path, fromPack.Read(path));
         }
 
-        WritePackManifest(workspaceRoot, newId, name, parentPackId, fromPack.Manifest.Formats);
+        WriteModManifest(workspaceRoot, newId, name, parentModId, fromPack.Manifest.Formats);
         var metadata = new WorkspaceMetadata { CreatedAt = DateTimeOffset.UtcNow };
         metadata.Save(workspaceRoot);
         return ReadInfo(workspaceRoot);
@@ -99,8 +99,8 @@ public sealed class WorkspaceService : IWorkspaceService
 
     public byte[] ReadFile(string workspaceId, string logicalPath)
     {
-        logicalPath = PackPath.Normalize(logicalPath);
-        IPackSource merged = OpenMergedPack(workspaceId);
+        logicalPath = ModPath.Normalize(logicalPath);
+        IModSource merged = OpenMergedMod(workspaceId);
         if (!merged.Exists(logicalPath))
         {
             throw new ContentError("workspace.file", "File not found in workspace pack: " + logicalPath);
@@ -111,7 +111,7 @@ public sealed class WorkspaceService : IWorkspaceService
 
     public WriteResult WriteFile(string workspaceId, string logicalPath, byte[] data)
     {
-        logicalPath = PackPath.Normalize(logicalPath);
+        logicalPath = ModPath.Normalize(logicalPath);
         if (string.Equals(logicalPath, "mod.json", StringComparison.Ordinal)
             || string.Equals(logicalPath, ".workspace.json", StringComparison.Ordinal))
         {
@@ -133,7 +133,7 @@ public sealed class WorkspaceService : IWorkspaceService
 
         string workspaceRoot = ResolveWorkspaceRoot(workspaceId);
         EnsureWorkspaceExists(workspaceRoot);
-        ResolvedContent resolved = WorkspacePackSources.Resolve(workspaceRoot, _packs, _resolver);
+        ResolvedContent resolved = WorkspaceModSources.Resolve(workspaceRoot, _packs, _snapshotLoader);
         if (!resolved.Manifest.Formats.TryGetValue(kind.Name, out int schema))
         {
             throw new ContentError("workspace.format", $"mod.json formats.{kind.Name} is required.");
@@ -158,7 +158,7 @@ public sealed class WorkspaceService : IWorkspaceService
     {
         string workspaceRoot = ResolveWorkspaceRoot(workspaceId);
         EnsureWorkspaceExists(workspaceRoot);
-        ResolvedContent resolved = WorkspacePackSources.Resolve(workspaceRoot, _packs, _resolver);
+        ResolvedContent resolved = WorkspaceModSources.Resolve(workspaceRoot, _packs, _snapshotLoader);
         IReadOnlyList<Diagnostic> diagnostics = _validator.Run(resolved, upTo);
         WorkspaceMetadata metadata = WorkspaceMetadata.Load(workspaceRoot);
         metadata.LastValidatedAt = DateTimeOffset.UtcNow;
@@ -177,7 +177,7 @@ public sealed class WorkspaceService : IWorkspaceService
             return new ExportResult(false, null, diagnostics);
         }
 
-        IPackSource merged = OpenMergedPack(workspaceId);
+        IModSource merged = OpenMergedMod(workspaceId);
         string exportsDir = Path.Combine(workspaceRoot, "exports");
         Directory.CreateDirectory(exportsDir);
         string fileName = string.IsNullOrWhiteSpace(options.FileName)
@@ -200,20 +200,20 @@ public sealed class WorkspaceService : IWorkspaceService
         return new ExportResult(true, archivePath, diagnostics);
     }
 
-    public IPackSource OpenMergedPack(string workspaceId) =>
-        WorkspacePackSources.OpenMerged(ResolveWorkspaceRoot(workspaceId), _packs);
+    public IModSource OpenMergedMod(string workspaceId) =>
+        WorkspaceModSources.OpenMerged(ResolveWorkspaceRoot(workspaceId), _packs);
 
     public string ResolveWorkspaceRoot(string workspaceId)
     {
-        workspaceId = PackId.Validate(workspaceId);
+        workspaceId = ModId.Validate(workspaceId);
         return Path.Combine(_workspacesRoot, workspaceId);
     }
 
     private WorkspaceInfo ReadInfo(string workspaceRoot)
     {
-        var source = new DirectoryPackSource(workspaceRoot);
+        var source = new DirectoryModSource(workspaceRoot);
         WorkspaceMetadata metadata = WorkspaceMetadata.Load(workspaceRoot);
-        string parent = source.Manifest.Parent ?? PackId.Base;
+        string parent = source.Manifest.Parent ?? ModId.Base;
         return new(
             source.Manifest.Id,
             source.Manifest.Name,
@@ -243,11 +243,11 @@ public sealed class WorkspaceService : IWorkspaceService
         File.WriteAllBytes(target, data);
     }
 
-    private static void WritePackManifest(
+    private static void WriteModManifest(
         string workspaceRoot,
         string id,
         string name,
-        string parentPackId,
+        string parentModId,
         IReadOnlyDictionary<string, int> formats)
     {
         var manifest = new
@@ -256,7 +256,7 @@ public sealed class WorkspaceService : IWorkspaceService
             id,
             name,
             version = "0.0.0",
-            parent = parentPackId,
+            parent = parentModId,
             requires = new { engine = ">=0.3.0", capabilities = Array.Empty<string>() },
             formats = formats.ToDictionary(p => p.Key, p => p.Value),
         };

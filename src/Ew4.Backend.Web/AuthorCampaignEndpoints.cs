@@ -1,5 +1,6 @@
 using System.Text.Json;
 using Ew4.Editor;
+using Ew4.Editor.Campaign;
 using Ew4.Platform.Content;
 using Ew4.Platform.Content.ScenarioEdit;
 using Ew4.Platform.Engine;
@@ -8,9 +9,10 @@ using Microsoft.AspNetCore.Mvc;
 
 namespace Ew4.Backend.Web;
 
-internal static class AuthorScenarioEndpoints
+/// <summary>战役 / 通用剧本创作 HTTP（<c>Ew4.Editor.Campaign</c>）。URL 仍含 <c>/scenario/</c> 以兼容前端。</summary>
+internal static class AuthorCampaignEndpoints
 {
-    public static void MapAuthorScenarioApi(this WebApplication app)
+    public static void MapAuthorCampaignApi(this WebApplication app)
     {
         var workspaceScenario = app.MapGroup("/api/author/workspaces/{workspaceId}/scenario");
         workspaceScenario.MapGet("/{scenarioId}", GetWorkspaceScenario);
@@ -46,8 +48,8 @@ internal static class AuthorScenarioEndpoints
         HttpRequest request,
         [FromQuery] bool smoke,
         IWorkspaceService workspaces,
-        ContentResolver resolver,
-        FilePackRepository repository,
+        IModSnapshotLoader snapshotLoader,
+        FileModRepository repository,
         IEngine engine,
         IScenarioBuilder builder,
         IScenarioEditToolkit toolkit)
@@ -60,7 +62,7 @@ internal static class AuthorScenarioEndpoints
                 request,
                 smoke,
                 workspaces,
-                resolver,
+                snapshotLoader,
                 repository,
                 engine,
                 builder,
@@ -80,7 +82,7 @@ internal static class AuthorScenarioEndpoints
     {
         try
         {
-            return Roundtrip(workspaces.OpenMergedPack(workspaceId), scenarioId, toolkit);
+            return Roundtrip(workspaces.OpenMergedMod(workspaceId), scenarioId, toolkit);
         }
         catch (ContentError ex)
         {
@@ -115,13 +117,13 @@ internal static class AuthorScenarioEndpoints
         string scenarioId,
         [FromQuery] string? workspace,
         AuthorHostOptions hostOptions,
-        FilePackRepository repository,
+        FileModRepository repository,
         HostApp hostApp,
         IScenarioEditToolkit toolkit)
     {
         try
         {
-            IPackSource pack = ResolveLegacyPack(workspace, hostOptions, repository, hostApp);
+            IModSource pack = ResolveLegacyPack(workspace, hostOptions, repository, hostApp);
             return DocumentJson(toolkit.OpenFromPack(pack, scenarioId));
         }
         catch (ContentError ex)
@@ -137,8 +139,8 @@ internal static class AuthorScenarioEndpoints
         [FromQuery] bool smoke,
         AuthorHostOptions hostOptions,
         IWorkspaceService workspaceService,
-        ContentResolver resolver,
-        FilePackRepository repository,
+        IModSnapshotLoader snapshotLoader,
+        FileModRepository repository,
         IEngine engine,
         IScenarioBuilder builder,
         IScenarioEditToolkit toolkit)
@@ -154,7 +156,7 @@ internal static class AuthorScenarioEndpoints
                 request,
                 smoke,
                 workspaceService,
-                resolver,
+                snapshotLoader,
                 repository,
                 engine,
                 builder,
@@ -170,13 +172,13 @@ internal static class AuthorScenarioEndpoints
         string scenarioId,
         [FromQuery] string? workspace,
         AuthorHostOptions hostOptions,
-        FilePackRepository repository,
+        FileModRepository repository,
         HostApp hostApp,
         IScenarioEditToolkit toolkit)
     {
         try
         {
-            IPackSource pack = ResolveLegacyPack(workspace, hostOptions, repository, hostApp);
+            IModSource pack = ResolveLegacyPack(workspace, hostOptions, repository, hostApp);
             return Roundtrip(pack, scenarioId, toolkit);
         }
         catch (ContentError ex)
@@ -235,8 +237,8 @@ internal static class AuthorScenarioEndpoints
         HttpRequest request,
         bool smoke,
         IWorkspaceService workspaces,
-        ContentResolver resolver,
-        FilePackRepository repository,
+        IModSnapshotLoader snapshotLoader,
+        FileModRepository repository,
         IEngine engine,
         IScenarioBuilder builder,
         IScenarioEditToolkit toolkit)
@@ -255,7 +257,7 @@ internal static class AuthorScenarioEndpoints
         if (smoke)
         {
             ResolvedContent resolved = ScenarioSmokeValidator.ResolveWorkspace(
-                resolver,
+                snapshotLoader,
                 repository,
                 workspaces.ResolveWorkspaceRoot(workspaceId));
             IReadOnlyList<Diagnostic> smokeDiagnostics =
@@ -266,9 +268,9 @@ internal static class AuthorScenarioEndpoints
         return Results.Json(new { saved.BtlPath, saved.DocumentPath, diagnostics });
     }
 
-    private static IResult Roundtrip(IPackSource pack, string scenarioId, IScenarioEditToolkit toolkit)
+    private static IResult Roundtrip(IModSource pack, string scenarioId, IScenarioEditToolkit toolkit)
     {
-        byte[] raw = ScenarioPackAccess.ResolveBtlBytes(pack, scenarioId);
+        byte[] raw = ScenarioModAccess.ResolveBtlBytes(pack, scenarioId);
         ScenarioBtlRoundtrip.Result result = toolkit.ValidateBtlRoundtrip(scenarioId, raw);
         return Results.Json(new
         {
@@ -280,18 +282,18 @@ internal static class AuthorScenarioEndpoints
         });
     }
 
-    private static IPackSource ResolveLegacyPack(
+    private static IModSource ResolveLegacyPack(
         string? workspace,
         AuthorHostOptions hostOptions,
-        FilePackRepository repository,
+        FileModRepository repository,
         HostApp hostApp)
     {
         if (string.IsNullOrWhiteSpace(workspace))
         {
-            return AuthorPackResolver.OpenActivePack(repository, hostApp);
+            return AuthorModResolver.OpenActivePack(repository, hostApp);
         }
 
-        return AuthorPackResolver.OpenWorkspacePack(repository, hostOptions.ResolveWorkspaceRoot(workspace));
+        return AuthorModResolver.OpenWorkspacePack(repository, hostOptions.ResolveWorkspaceRoot(workspace));
     }
 
     private static IResult DocumentJson(ScenarioDocument document) =>

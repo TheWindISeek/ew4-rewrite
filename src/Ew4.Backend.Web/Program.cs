@@ -1,4 +1,6 @@
 using Ew4.Editor;
+using Ew4.Editor.Campaign;
+using Ew4.Editor.Commander;
 using Ew4.Platform.Content;
 using Ew4.Platform.Engine;
 using Ew4.Platform.Runtime;
@@ -21,7 +23,11 @@ builder.Services.AddSingleton<IScenarioBuilder, ScenarioJsonBuilder>();
 builder.Services.AddSingleton<IContentKindRegistry>(_ => ContentKindRegistry.CreateDefault());
 builder.Services.AddSingleton(sp =>
     new ContentResolver(sp.GetRequiredService<IContentKindRegistry>(), sp.GetRequiredService<IEngine>()));
-builder.Services.AddSingleton(sp => new FilePackRepository(hostOptions.ModsDirectory));
+builder.Services.AddSingleton<IModSnapshotLoader>(sp =>
+    new ModSnapshotLoader(
+        sp.GetRequiredService<ContentResolver>(),
+        sp.GetRequiredService<ContentValidator>()));
+builder.Services.AddSingleton(sp => new FileModRepository(hostOptions.ModsDirectory));
 builder.Services.AddSingleton(sp =>
     new ContentValidator(
         sp.GetRequiredService<IContentKindRegistry>(),
@@ -31,14 +37,16 @@ builder.Services.AddSingleton<IContentValidator>(sp => sp.GetRequiredService<Con
 builder.Services.AddSingleton<IWorkspaceService>(sp =>
     new WorkspaceService(
         hostOptions.WorkspacesDirectory,
-        sp.GetRequiredService<FilePackRepository>(),
+        sp.GetRequiredService<FileModRepository>(),
         sp.GetRequiredService<IContentKindRegistry>(),
-        sp.GetRequiredService<ContentResolver>(),
+        sp.GetRequiredService<IModSnapshotLoader>(),
         sp.GetRequiredService<IContentValidator>()));
 builder.Services.AddSingleton<IScenarioEditor>(sp =>
     new ScenarioEditor(
         sp.GetRequiredService<IWorkspaceService>(),
         sp.GetRequiredService<IScenarioEditToolkit>()));
+builder.Services.AddSingleton<ICommanderEditor>(sp =>
+    new CommanderEditor(sp.GetRequiredService<IWorkspaceService>()));
 builder.Services.AddSingleton<PlaySessionHost>();
 builder.Services.AddSingleton<IHostActivationListener>(sp => sp.GetRequiredService<PlaySessionHost>());
 builder.Services.AddSingleton(sp =>
@@ -47,9 +55,12 @@ builder.Services.AddSingleton(sp =>
     var scenarioBuilder = sp.GetRequiredService<IScenarioBuilder>();
     var listeners = sp.GetServices<IHostActivationListener>();
     var app = new HostApp(
-        new HostPaths(hostOptions.ModsDirectory, hostOptions.StateDirectory),
+        sp.GetRequiredService<FileModRepository>(),
+        sp.GetRequiredService<IModSnapshotLoader>(),
+        new ActivePackStore(hostOptions.StateDirectory),
         engine,
         scenarioBuilder,
+        hostOptions.StateDirectory,
         listeners);
     try
     {
@@ -57,13 +68,20 @@ builder.Services.AddSingleton(sp =>
     }
     catch (ContentError)
     {
-        app.Activate(PackId.Base);
+        app.Activate(ModId.Base);
     }
 
     return app;
 });
 builder.Services.AddSingleton(sp =>
-    new PlayModImportStore(sp.GetRequiredService<HostApp>(), sp.GetRequiredService<AuthorHostOptions>()));
+    new ModCatalogService(
+        sp.GetRequiredService<HostApp>(),
+        sp.GetRequiredService<FileModRepository>(),
+        hostOptions.ModsDirectory));
+builder.Services.AddSingleton(sp =>
+    new ModImportService(
+        sp.GetRequiredService<HostApp>(),
+        hostOptions.PendingImportsDirectory));
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 1024L * 1024 * 1024);
 builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024L * 1024 * 1024);
 
@@ -72,5 +90,6 @@ app.UsePlayFrontend(hostOptions);
 app.MapPlayModApi();
 app.MapPlayApi();
 app.MapAuthorWorkspaceApi();
-app.MapAuthorScenarioApi();
+app.MapAuthorCampaignApi();
+app.MapAuthorCommanderApi();
 app.Run();

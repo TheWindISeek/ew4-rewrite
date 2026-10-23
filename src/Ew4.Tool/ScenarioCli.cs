@@ -1,6 +1,6 @@
 using System;
 using System.IO;
-using Ew4.Editor;
+using Ew4.Editor.Campaign;
 using Ew4.Platform.Content;
 using Ew4.Platform.Content.ScenarioEdit;
 
@@ -111,13 +111,13 @@ internal static class ScenarioCli
     private static int PackToJson(string[] args)
     {
         string packs = "mods";
-        string packId = "base";
+        string modId = "base";
         string? scenarioId = null;
         string? output = null;
         for (int i = 2; i < args.Length; i++)
         {
             if (args[i] == "--packs" && i + 1 < args.Length) packs = args[++i];
-            else if (args[i] == "--pack" && i + 1 < args.Length) packId = args[++i];
+            else if (args[i] == "--pack" && i + 1 < args.Length) modId = args[++i];
             else if (args[i] == "--id" && i + 1 < args.Length) scenarioId = args[++i];
             else if (args[i] == "--output" && i + 1 < args.Length) output = args[++i];
         }
@@ -128,10 +128,10 @@ internal static class ScenarioCli
             return 2;
         }
 
-        var repository = new FilePackRepository(Path.GetFullPath(packs));
-        ScenarioDocument document = Toolkit.OpenFromPack(repository.Open(packId), scenarioId);
+        var repository = new FileModRepository(Path.GetFullPath(packs));
+        ScenarioDocument document = Toolkit.OpenFromPack(repository.Open(modId), scenarioId);
         Toolkit.WriteJsonFile(output, document);
-        Console.WriteLine($"scenario pack-to-json: pack={packId} id={scenarioId} → {Path.GetFullPath(output)}");
+        Console.WriteLine($"scenario pack-to-json: pack={modId} id={scenarioId} → {Path.GetFullPath(output)}");
         return 0;
     }
 

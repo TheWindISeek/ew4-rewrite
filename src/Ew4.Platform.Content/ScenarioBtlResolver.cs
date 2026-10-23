@@ -10,26 +10,26 @@ namespace Ew4.Platform.Content;
 /// </summary>
 public static class ScenarioBtlResolver
 {
-    public static byte[] ResolveBtlBytes(IPackSource source, string scenarioId)
+    public static byte[] ResolveBtlBytes(IModSource source, string scenarioId)
     {
         ScenarioDocument document = OpenScenarioDocument(source, scenarioId);
         return ScenarioBtlCodec.Export(document, reencodeLayers: false);
     }
 
-    public static ScenarioDocument OpenScenarioDocument(IPackSource source, string scenarioId)
+    public static ScenarioDocument OpenScenarioDocument(IModSource source, string scenarioId)
     {
-        PackModProfile.ModProfile? profile = PackModProfile.TryRead(source);
-        PackModProfile.ScenarioStorageMode mode = profile?.ScenarioStorage ?? PackModProfile.ScenarioStorageMode.Auto;
+        ModManifestProfile.ModProfile? profile = ModManifestProfile.TryRead(source);
+        ModManifestProfile.ScenarioStorageMode mode = profile?.ScenarioStorage ?? ModManifestProfile.ScenarioStorageMode.Auto;
 
         return mode switch
         {
-            PackModProfile.ScenarioStorageMode.EmbeddedJson => OpenWithEmbeddedFirst(source, scenarioId),
-            PackModProfile.ScenarioStorageMode.LegacyBtl => OpenWithLegacyFirst(source, scenarioId),
+            ModManifestProfile.ScenarioStorageMode.EmbeddedJson => OpenWithEmbeddedFirst(source, scenarioId),
+            ModManifestProfile.ScenarioStorageMode.LegacyBtl => OpenWithLegacyFirst(source, scenarioId),
             _ => OpenAuto(source, scenarioId),
         };
     }
 
-    private static ScenarioDocument OpenWithEmbeddedFirst(IPackSource source, string scenarioId)
+    private static ScenarioDocument OpenWithEmbeddedFirst(IModSource source, string scenarioId)
     {
         try
         {
@@ -41,7 +41,7 @@ public static class ScenarioBtlResolver
         }
     }
 
-    private static ScenarioDocument OpenWithLegacyFirst(IPackSource source, string scenarioId)
+    private static ScenarioDocument OpenWithLegacyFirst(IModSource source, string scenarioId)
     {
         try
         {
@@ -53,9 +53,9 @@ public static class ScenarioBtlResolver
         }
     }
 
-    private static ScenarioDocument OpenAuto(IPackSource source, string scenarioId)
+    private static ScenarioDocument OpenAuto(IModSource source, string scenarioId)
     {
-        string path = ScenarioPackAccess.ScenarioJsonPath(scenarioId);
+        string path = ScenarioModAccess.ScenarioJsonPath(scenarioId);
         if (!source.Exists(path))
         {
             throw new ContentError("scenario.missing", "Scenario not found in pack: " + scenarioId);
@@ -63,23 +63,23 @@ public static class ScenarioBtlResolver
 
         byte[] jsonBytes = source.Read(path);
         using JsonDocument json = JsonDocument.Parse(jsonBytes);
-        if (ScenarioPackAccess.IsEmbeddedScenarioJson(json.RootElement))
+        if (ScenarioModAccess.IsEmbeddedScenarioJson(json.RootElement))
         {
-            return ScenarioPackAccess.ReadEmbeddedDocument(jsonBytes, scenarioId);
+            return ScenarioModAccess.ReadEmbeddedDocument(jsonBytes, scenarioId);
         }
 
         string sidecarPath = "scenarios/" + scenarioId + ".ew4scenario.json";
         if (source.Exists(sidecarPath))
         {
-            return ScenarioPackAccess.ReadEmbeddedDocument(source.Read(sidecarPath), scenarioId);
+            return ScenarioModAccess.ReadEmbeddedDocument(source.Read(sidecarPath), scenarioId);
         }
 
         return OpenLegacyBtl(source, scenarioId);
     }
 
-    private static ScenarioDocument OpenEmbeddedOnly(IPackSource source, string scenarioId)
+    private static ScenarioDocument OpenEmbeddedOnly(IModSource source, string scenarioId)
     {
-        string path = ScenarioPackAccess.ScenarioJsonPath(scenarioId);
+        string path = ScenarioModAccess.ScenarioJsonPath(scenarioId);
         if (!source.Exists(path))
         {
             throw new ContentError("scenario.missing", "Scenario not found in pack: " + scenarioId);
@@ -87,12 +87,12 @@ public static class ScenarioBtlResolver
 
         byte[] jsonBytes = source.Read(path);
         using JsonDocument json = JsonDocument.Parse(jsonBytes);
-        if (!ScenarioPackAccess.IsEmbeddedScenarioJson(json.RootElement))
+        if (!ScenarioModAccess.IsEmbeddedScenarioJson(json.RootElement))
         {
             string sidecarPath = "scenarios/" + scenarioId + ".ew4scenario.json";
             if (source.Exists(sidecarPath))
             {
-                return ScenarioPackAccess.ReadEmbeddedDocument(source.Read(sidecarPath), scenarioId);
+                return ScenarioModAccess.ReadEmbeddedDocument(source.Read(sidecarPath), scenarioId);
             }
 
             throw new ContentError(
@@ -100,12 +100,12 @@ public static class ScenarioBtlResolver
                 "Scenario '" + scenarioId + "' is not embedded JSON (mod.json scenarios.storage requests embedded-json).");
         }
 
-        return ScenarioPackAccess.ReadEmbeddedDocument(jsonBytes, scenarioId);
+        return ScenarioModAccess.ReadEmbeddedDocument(jsonBytes, scenarioId);
     }
 
-    private static ScenarioDocument OpenLegacyBtl(IPackSource source, string scenarioId)
+    private static ScenarioDocument OpenLegacyBtl(IModSource source, string scenarioId)
     {
-        string path = ScenarioPackAccess.ScenarioJsonPath(scenarioId);
+        string path = ScenarioModAccess.ScenarioJsonPath(scenarioId);
         if (source.Exists(path))
         {
             byte[] jsonBytes = source.Read(path);
@@ -124,7 +124,7 @@ public static class ScenarioBtlResolver
         }
 
         string logicalBtl = "original/" + scenarioId + ".btl";
-        string? packPath = PackAssetRead.Resolve(source, logicalBtl);
+        string? packPath = ModAssetRead.Resolve(source, logicalBtl);
         if (packPath != null)
         {
             return ScenarioBtlCodec.Import(scenarioId, source.Read(packPath));

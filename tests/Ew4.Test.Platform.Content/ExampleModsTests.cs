@@ -35,14 +35,14 @@ public sealed class ExampleModsTests
             foreach (string relative in new[] { Path.Combine("install", "web", "mods", "base"), Path.Combine("install", "mods", "base") })
             {
                 string install = Path.GetFullPath(relative);
-                if (PackManifestPaths.DirectoryHasManifest(install))
+                if (ModManifestPaths.DirectoryHasManifest(install))
                 {
                     return install;
                 }
             }
 
             string mods = Path.GetFullPath(Path.Combine("mods", "base"));
-            return PackManifestPaths.DirectoryHasManifest(mods) ? mods : null;
+            return ModManifestPaths.DirectoryHasManifest(mods) ? mods : null;
         }
     }
 
@@ -54,7 +54,7 @@ public sealed class ExampleModsTests
     {
         string dir = Path.Combine(ModsRoot, id);
         Assert.True(Directory.Exists(dir), "Missing example mod: " + dir);
-        IPackSource pack = new DirectoryPackSource(dir);
+        IModSource pack = new DirectoryModSource(dir);
         Assert.Equal(id, pack.Manifest.Id);
         Assert.Equal("base", pack.Manifest.Parent);
     }
@@ -71,11 +71,11 @@ public sealed class ExampleModsTests
         }
 
         string modDir = Path.Combine(ModsRoot, modId);
-        var child = new DirectoryPackSource(modDir);
-        var parent = new DirectoryPackSource(baseDir);
-        var merged = new MergedPackSource(child, parent);
-        var repository = new FilePackRepository(Path.GetDirectoryName(baseDir)!);
-        PackInstallGuard.ValidateActivation(child, repository, Engine);
+        var child = new DirectoryModSource(modDir);
+        var parent = new DirectoryModSource(baseDir);
+        var merged = new MergedModSource(child, parent);
+        var repository = new FileModRepository(Path.GetDirectoryName(baseDir)!);
+        ModInstallGuard.ValidateActivation(child, repository, Engine);
 
         ScenarioDocument document = ScenarioBtlResolver.OpenScenarioDocument(merged, scenarioId);
         Assert.Equal(scenarioId, document.Id);
@@ -93,13 +93,32 @@ public sealed class ExampleModsTests
         }
 
         string modDir = Path.Combine(ModsRoot, modId);
-        var child = new DirectoryPackSource(modDir);
-        var parent = new DirectoryPackSource(baseDir);
-        var merged = new MergedPackSource(child, parent);
+        var child = new DirectoryModSource(modDir);
+        var parent = new DirectoryModSource(baseDir);
+        var merged = new MergedModSource(child, parent);
 
         IReadOnlyDictionary<string, string> names = ScenarioCatalogNames.ReadDisplayNames(merged);
         Assert.True(names.TryGetValue(scenarioId, out string? name), "Missing display name for " + scenarioId);
         Assert.Equal(expectedName, name);
+    }
+
+    [Fact]
+    public void Example_commander_overlay_passes_activation_snapshot_load()
+    {
+        string? baseDir = BasePackDirectory;
+        string modDir = Path.Combine(ModsRoot, "ex-commander-skills");
+        if (baseDir == null || !File.Exists(Path.Combine(modDir, "assets", "tables", "def_commander.xml")))
+        {
+            return;
+        }
+
+        var child = new DirectoryModSource(modDir);
+        var parent = new DirectoryModSource(baseDir);
+        var registry = ContentKindRegistry.CreateDefault();
+        var resolver = new ContentResolver(registry, Engine);
+        var loader = new ModSnapshotLoader(resolver, new ContentValidator(registry, Engine, new ScenarioJsonBuilder()));
+        ResolvedContent loaded = loader.LoadActivatedView(child, parent);
+        Assert.Equal("ex-commander-skills", loaded.Manifest.Id);
     }
 
     [Fact]
@@ -112,13 +131,13 @@ public sealed class ExampleModsTests
             return;
         }
 
-        var child = new DirectoryPackSource(modDir);
-        var parent = new DirectoryPackSource(baseDir);
-        var merged = new MergedPackSource(child, parent);
-        var repository = new FilePackRepository(Path.GetDirectoryName(baseDir)!);
-        PackInstallGuard.ValidateActivation(child, repository, Engine);
+        var child = new DirectoryModSource(modDir);
+        var parent = new DirectoryModSource(baseDir);
+        var merged = new MergedModSource(child, parent);
+        var repository = new FileModRepository(Path.GetDirectoryName(baseDir)!);
+        ModInstallGuard.ValidateActivation(child, repository, Engine);
 
-        byte[] xml = PackAssetRead.FromPack(merged)("original/def_commander.xml");
+        byte[] xml = ModAssetRead.FromPack(merged)("original/def_commander.xml");
         string text = System.Text.Encoding.UTF8.GetString(xml);
         Assert.Contains("Napoleon (example)", text, StringComparison.Ordinal);
         Assert.Contains("skill2=\"99\"", text, StringComparison.Ordinal);

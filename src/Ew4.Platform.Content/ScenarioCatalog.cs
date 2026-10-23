@@ -10,7 +10,7 @@ namespace Ew4.Platform.Content;
 /// </summary>
 public static class ScenarioCatalog
 {
-    public static IReadOnlyList<ScenarioIndex> List(IPackSource source)
+    public static IReadOnlyList<ScenarioIndex> List(IModSource source)
     {
         var list = new List<ScenarioIndex>();
         foreach (string path in source.List("scenarios/").OrderBy(p => p, StringComparer.Ordinal))
@@ -29,7 +29,7 @@ public static class ScenarioCatalog
                 continue;
             }
 
-            bool embedded = ScenarioPackAccess.IsEmbeddedScenarioJson(root);
+            bool embedded = ScenarioModAccess.IsEmbeddedScenarioJson(root);
             string? btl = null;
             if (!embedded
                 && root.TryGetProperty("legacy", out JsonElement legacy)

@@ -46,8 +46,6 @@ public static class RepositoryLayout
     public static string ModsDirectory(string repositoryRoot) =>
         Path.Combine(ResolveInstallHome(repositoryRoot), ModsRootRelative);
 
-    public static string PacksDirectory(string repositoryRoot) => ModsDirectory(repositoryRoot);
-
     public static string UserStateDirectory(string repositoryRoot) =>
         Path.Combine(ResolveInstallHome(repositoryRoot), "user");
 

@@ -10,8 +10,6 @@ public sealed class AuthorHostOptions
 
     public string ModsDirectory => Install.ModsDirectory;
 
-    public string PacksDirectory => ModsDirectory;
-
     /// <summary>用户数据根（<c>install.user</c>）：<c>active.json</c>、存档等。</summary>
     public string StateDirectory => Install.UserDirectory;
 

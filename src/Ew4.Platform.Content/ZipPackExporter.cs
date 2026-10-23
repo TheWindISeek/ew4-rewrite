@@ -3,9 +3,9 @@ using System.IO.Compression;
 
 namespace Ew4.Platform.Content;
 
-public sealed class ZipPackExporter : IPackExporter
+public sealed class ZipModExporter : IModExporter
 {
-    public void Export(IPackSource pack, Stream destination)
+    public void Export(IModSource pack, Stream destination)
     {
         using var zip = new ZipArchive(destination, ZipArchiveMode.Create, leaveOpen: true);
         foreach (string path in pack.List(""))

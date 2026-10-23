@@ -9,7 +9,7 @@ namespace Ew4.Tool.Import;
 /// <summary>
 /// 离线工具：为 APK 差异包补齐缺失国旗 HUD 图（<c>data/placeholders/flag_blank.png</c>）。
 /// </summary>
-public static class PackFlagPlaceholder
+public static class ModFlagPlaceholder
 {
     public sealed record Result(int Added);
 
@@ -18,8 +18,8 @@ public static class PackFlagPlaceholder
         string packRoot = Path.GetFullPath(packDirectory);
         string baseRoot = Path.GetFullPath(basePackDirectory);
         byte[] blank = File.ReadAllBytes(ResolvePlaceholderPath(placeholderFlagPng));
-        IPackSource overlay = new DirectoryPackSource(packRoot);
-        IPackSource baseline = new DirectoryPackSource(baseRoot);
+        IModSource overlay = new DirectoryModSource(packRoot);
+        IModSource baseline = new DirectoryModSource(baseRoot);
         IReadOnlyDictionary<string, string> flags = ReadCountryFlags(overlay, baseline);
         int added = 0;
         foreach (string flag in flags.Values)
@@ -87,7 +87,7 @@ public static class PackFlagPlaceholder
         return null;
     }
 
-    private static IReadOnlyDictionary<string, string> ReadCountryFlags(IPackSource overlay, IPackSource baseline)
+    private static IReadOnlyDictionary<string, string> ReadCountryFlags(IModSource overlay, IModSource baseline)
     {
         const string path = "assets/client/countries.json";
         byte[] json = overlay.Exists(path) ? overlay.Read(path) : baseline.Read(path);

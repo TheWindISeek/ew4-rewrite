@@ -1,5 +1,5 @@
 using System.Buffers.Binary;
-using Ew4.Editor;
+using Ew4.Editor.Campaign;
 using Ew4.Platform.Content.Build;
 using Ew4.Platform.Content.ScenarioEdit;
 using Xunit;
