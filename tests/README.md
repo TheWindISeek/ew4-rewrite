@@ -1,6 +1,6 @@
 # tests
 
-单元测试程序集命名与 **重构完成后的 `src/` 目标项目名** 一一对应（见 [docs/architecture/11-simplification-and-layout.md](../docs/architecture/11-simplification-and-layout.md) §3.1）：
+单元测试程序集命名与 **重构完成后的 `src/` 目标项目名** 一一对应（见 [docs/arch/README.md](../docs/arch/README.md)）：
 
 | 测试项目 | 目标被测 `src` | 说明 |
 |----------|----------------|------|
@@ -73,4 +73,4 @@ scripts/ew4.sh dotnet test tests/Ew4.Test.Platform.Content/Ew4.Test.Platform.Con
 | `Ew4.Test.Interface` | DTO 序列化、路由形状稳定性 |
 | `Ew4.Test.Architecture` | 解决方案依赖图约束 |
 
-门禁流程：[docs/development/verification.md](../docs/development/verification.md)。
+门禁流程：[docs/task/todo.md](../docs/task/todo.md)（G1–G6）。

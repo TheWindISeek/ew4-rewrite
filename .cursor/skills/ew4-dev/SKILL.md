@@ -6,6 +6,8 @@ description: >-
 
 # EW4 开发
 
+结构见 [docs/arch/README.md](../../../docs/arch/README.md)；任务 [docs/task/todo.md](../../../docs/task/todo.md)；计划 [docs/task/plan/roadmap.md](../../../docs/task/plan/roadmap.md)。**勿随意改 `docs/development/`。**
+
 ```bash
 scripts/ew4.sh build -c Release
 scripts/ew4.sh install              # publish → install/app

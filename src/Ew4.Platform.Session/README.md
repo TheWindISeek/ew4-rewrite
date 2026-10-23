@@ -1,6 +1,6 @@
 # Ew4.Platform.Session
 
-一局游戏、局外账户与存读档。见 [docs/architecture/04-session-play-host.md](../../docs/architecture/04-session-play-host.md)。
+一局游戏、局外账户与存读档。见 [docs/arch/README.md](../../docs/arch/README.md)。
 
 ## 已实现
 

@@ -1,6 +1,6 @@
 # Ew4.Platform.Runtime
 
-Web / Android 共用的 Pack 激活与导入。见 [docs/architecture/04-session-play-host.md](../../docs/architecture/04-session-play-host.md) §3。
+Web / Android 共用的 Pack 激活与导入。见 [docs/arch/README.md](../../docs/arch/README.md)。
 
 ## 已实现
 

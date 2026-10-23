@@ -1,8 +1,10 @@
 # 大前线战役载入失败与原版 catalog Error
 
-**日期**：2026-10-23  
-**影响 Mod**：`great-front`（大前线）、切换 **base** 后仍可能看到主菜单 Error  
-**对照**：`huangkai`（革命之火）战役正常  
+| 字段 | 值 |
+|------|-----|
+| 日期 | 2026-10-23 |
+| 状态 | 已修复 |
+| 影响 | Mod `great-front`、切 **base** 后 catalog Error；对照 `huangkai` 正常 |
 
 ## 现象
 

@@ -1,6 +1,6 @@
 # Ew4.Platform.Content
 
-Pack 读取、迁移、校验、导入导出与 Builder。见 [docs/architecture/03-content-and-packs.md](../../docs/architecture/03-content-and-packs.md)。
+Pack 读取、迁移、校验、导入导出与 Builder。见 [docs/arch/README.md](../../docs/arch/README.md)。
 
 ## 已实现（P1 骨架）
 

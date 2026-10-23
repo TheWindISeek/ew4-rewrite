@@ -3,7 +3,7 @@ using System.Collections.Generic;
 namespace Ew4.Platform.Content;
 
 /// <summary>
-/// <c>pack.json</c> 解析结果（契约；字段以 architecture/03 为准）。
+/// <c>pack.json</c> 解析结果（契约；见 docs/arch/README.md）。
 /// </summary>
 public sealed record PackManifest(
     int Schema,

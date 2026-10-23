@@ -1,6 +1,6 @@
 # src
 
-新代码树。设计见 [docs/](../docs/README.md)，进度见 [docs/development/todo.md](../docs/development/todo.md)。
+新代码树。设计见 [docs/](../docs/README.md)，任务与进度见 [docs/task/todo.md](../docs/task/todo.md)。
 
 ## 分层（程序集名）
 

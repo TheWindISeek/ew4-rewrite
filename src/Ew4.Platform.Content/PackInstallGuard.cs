@@ -7,7 +7,7 @@ using Ew4.Platform.Engine;
 namespace Ew4.Platform.Content;
 
 /// <summary>
-/// 内容包安装、启用、删除时的 <c>parent</c> 与清单规则（architecture/11 §4.3 P1–P8）。
+/// 内容包安装、启用、删除时的 <c>parent</c> 与清单规则（见 docs/arch/README.md、task/done/refactor.md）。
 /// </summary>
 public static class PackInstallGuard
 {

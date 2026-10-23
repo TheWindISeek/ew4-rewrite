@@ -1,12 +1,13 @@
 # 文档速查
 
-权威入口：根 [README.md](../README.md)、[docs/README.md](README.md)、`scripts/ew4.sh help`。
-
 | 目标 | 文档 |
 |------|------|
-| 编译 / Web / 目录 / 烟测 | [development/environment.md](development/environment.md) |
-| 进度与 Agent 约束 | [development/todo.md](development/todo.md) |
+| 代码结构与接口 | [arch/README.md](arch/README.md) |
+| 任务流程与门禁 | [task/todo.md](task/todo.md) |
+| 计划 backlog | [task/plan/roadmap.md](task/plan/roadmap.md) |
+| 环境 / `ew4.sh` | [development/environment.md](development/environment.md) |
+| `install/` 布局 | [development/build-install-layout.md](development/build-install-layout.md) |
 | 代码规范 | [development/conventions.md](development/conventions.md) |
 | Mod 声明式规则 | [development/rule-extensions-without-lua.md](development/rule-extensions-without-lua.md) |
+| Bug 模板 | [debug/TEMPLATE.md](debug/TEMPLATE.md) |
 | 术语 | [glossary.md](glossary.md) |
-| 架构分层 | [architecture/01-overview.md](architecture/01-overview.md) |

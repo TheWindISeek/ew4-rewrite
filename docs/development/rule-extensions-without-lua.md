@@ -35,4 +35,4 @@
 
 - `mods/base` SmokeStart **无** `rewrite/extension.json` → 零脚本。
 - 示例 Pack 声明式 JSON 化后,`scripts/ew4.sh validate smoke` 通过。
-- 新字段有文档与 schema 版本;行为变更走 `BehaviorVersion`(见 architecture/06)。
+- 新字段有文档与 schema 版本;行为变更走 `BehaviorVersion`(见 [arch/versioning.md](../arch/versioning.md))。
