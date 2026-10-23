@@ -6,11 +6,8 @@ namespace Ew4.Backend.Web;
 
 internal static class AuthorPackResolver
 {
-    public static IPackSource OpenMergedPack(FilePackRepository repository, string packId)
-    {
-        IPackSource pack = repository.Open(packId);
-        return MergeWithParent(repository, pack);
-    }
+    public static IPackSource OpenMergedPack(FilePackRepository repository, string packId) =>
+        PackMerge.OpenMerged(repository, packId);
 
     public static IPackSource OpenWorkspacePack(FilePackRepository repository, string workspaceRoot) =>
         WorkspacePackSources.OpenMerged(workspaceRoot, repository);
@@ -19,17 +16,5 @@ internal static class AuthorPackResolver
     {
         string packId = host.Status().ActivePackId ?? PackId.Base;
         return OpenMergedPack(repository, packId);
-    }
-
-    private static IPackSource MergeWithParent(FilePackRepository repository, IPackSource pack)
-    {
-        string? parentId = pack.Manifest.Parent;
-        if (string.IsNullOrWhiteSpace(parentId))
-        {
-            return pack;
-        }
-
-        IPackSource parent = repository.Open(parentId);
-        return new MergedPackSource(pack, parent);
     }
 }

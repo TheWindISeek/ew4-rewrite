@@ -25,7 +25,7 @@ public sealed class ContentResolver : IContentResolver
         }
 
         EngineRequirement.AssertCompatible(pack.Manifest.Requires, _engine.Info);
-        IPackSource effective = parent == null ? pack : new MergedPackSource(pack, parent);
+        IPackSource effective = PackMerge.Apply(pack, parent);
         string fingerprint = ContentFingerprint.Compute(effective, _registry);
         return new ResolvedContent(pack.Manifest, fingerprint, effective);
     }

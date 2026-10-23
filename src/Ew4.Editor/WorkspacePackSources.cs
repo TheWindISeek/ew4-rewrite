@@ -7,8 +7,7 @@ public static class WorkspacePackSources
     public static IPackSource OpenMerged(string workspaceRoot, FilePackRepository packs)
     {
         var primary = new DirectoryPackSource(workspaceRoot);
-        IPackSource? parent = OpenParent(primary, packs);
-        return parent == null ? primary : new MergedPackSource(primary, parent);
+        return PackMerge.Apply(primary, PackMerge.OpenParent(primary, packs));
     }
 
     public static ResolvedContent Resolve(
@@ -17,18 +16,6 @@ public static class WorkspacePackSources
         ContentResolver resolver)
     {
         var primary = new DirectoryPackSource(workspaceRoot);
-        IPackSource? parent = OpenParent(primary, packs);
-        return resolver.Resolve(primary, parent);
-    }
-
-    private static IPackSource? OpenParent(IPackSource primary, FilePackRepository packs)
-    {
-        string? parentId = primary.Manifest.Parent;
-        if (string.IsNullOrWhiteSpace(parentId))
-        {
-            return null;
-        }
-
-        return packs.Open(parentId);
+        return resolver.Resolve(primary, PackMerge.OpenParent(primary, packs));
     }
 }

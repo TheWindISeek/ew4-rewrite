@@ -1,9 +1,10 @@
+using System;
+using System.IO;
 using System.IO.Compression;
-using Ew4.Platform.Content;
 
-namespace Ew4.Backend.Web;
+namespace Ew4.Platform.Content;
 
-internal static class PackImportProbe
+public static class PackArchiveProbe
 {
     public static bool IsContentPackArchive(string path)
     {

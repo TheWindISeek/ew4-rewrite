@@ -24,5 +24,8 @@ public interface IHostApp
 
     void Import(ImportToken token, string id, string name);
 
+    /// <summary>从磁盘上的 zip/.ew4mod 安装包（不复制临时文件）。</summary>
+    void InstallFromArchive(string archivePath, string id);
+
     void Remove(string packId);
 }

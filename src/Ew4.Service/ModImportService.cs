@@ -1,24 +1,27 @@
 using System.Collections.Concurrent;
 using Ew4.Platform.Content;
 using Ew4.Platform.Runtime;
-namespace Ew4.Backend.Web;
 
-public sealed class PlayModImportStore
+namespace Ew4.Service;
+
+public sealed record ModImportIdentity(string Id, string Name);
+
+public sealed record PreparedModImport(string Token, ModImportIdentity Identity);
+
+public sealed class ModImportService
 {
     private readonly ConcurrentDictionary<string, PendingImport> _pending = new(StringComparer.Ordinal);
     private readonly HostApp _host;
-    private readonly AuthorHostOptions _options;
     private readonly string _pendingRoot;
 
-    public PlayModImportStore(HostApp host, AuthorHostOptions options)
+    public ModImportService(HostApp host, string pendingImportsDirectory)
     {
         _host = host;
-        _options = options;
-        _pendingRoot = options.PendingImportsDirectory;
+        _pendingRoot = pendingImportsDirectory;
         Directory.CreateDirectory(_pendingRoot);
     }
 
-    public PreparedImport Prepare(string sourcePath, string fileName)
+    public PreparedModImport StageUploadedFile(string sourcePath, string fileName)
     {
         ExpireStale();
         if (_pending.Count >= 4)
@@ -36,10 +39,10 @@ public sealed class PlayModImportStore
         string target = Path.Combine(_pendingRoot, token + extension);
         File.Move(sourcePath, target);
 
-        PackImportProbe.EnsureContentPackArchive(target);
+        PackArchiveProbe.EnsureContentPackArchive(target);
         var source = new ZipPackSource(target);
         _pending[token] = new PendingImport(target, DateTimeOffset.UtcNow.AddHours(1));
-        return new PreparedImport(token, new ModImportIdentity(source.Manifest.Id, source.Manifest.Name));
+        return new PreparedModImport(token, new ModImportIdentity(source.Manifest.Id, source.Manifest.Name));
     }
 
     public void Discard(string? token)
@@ -52,7 +55,7 @@ public sealed class PlayModImportStore
         TryDelete(pending.Path);
     }
 
-    public void Import(string token, string id, string name)
+    public void Commit(string token, string id, string name)
     {
         if (!_pending.TryRemove(token, out PendingImport? pending))
         {
@@ -68,31 +71,18 @@ public sealed class PlayModImportStore
         id = PackId.Validate(id);
         if (string.IsNullOrWhiteSpace(name) || name.Length > 80 || name.Any(char.IsControl))
         {
+            TryDelete(pending.Path);
             throw new InvalidDataException("名称须为1至80个可见字符");
         }
 
         try
         {
-            ImportContentPack(pending.Path, id, name);
-        }
-        finally
-        {
-            TryDelete(pending.Path);
-        }
-    }
-
-    private void ImportContentPack(string archivePath, string id, string name)
-    {
-        var tokenInfo = _host.Prepare(File.OpenRead(archivePath), Path.GetFileName(archivePath));
-        try
-        {
-            _host.Import(tokenInfo, id, name.Trim());
+            _host.InstallFromArchive(pending.Path, id);
             _host.Activate(id);
         }
         finally
         {
-            TryDelete(tokenInfo.ArchivePath);
-            TryDeleteDirectory(tokenInfo.TempDirectory);
+            TryDelete(pending.Path);
         }
     }
 
@@ -121,23 +111,5 @@ public sealed class PlayModImportStore
         }
     }
 
-    private static void TryDeleteDirectory(string path)
-    {
-        try
-        {
-            if (Directory.Exists(path))
-            {
-                Directory.Delete(path, recursive: true);
-            }
-        }
-        catch (IOException)
-        {
-        }
-    }
-
     private sealed record PendingImport(string Path, DateTimeOffset Expires);
 }
-
-public sealed record PreparedImport(string Token, ModImportIdentity Identity);
-
-public sealed record ModImportIdentity(string Id, string Name);

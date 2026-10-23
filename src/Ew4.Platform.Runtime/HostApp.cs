@@ -23,16 +23,16 @@ public sealed class HostApp : IHostApp
     private string? _previewWorkspaceId;
 
     public HostApp(HostPaths paths, IEngine engine, IScenarioBuilder? builder = null, IEnumerable<IHostActivationListener>? activationListeners = null)
+        : this(
+            new FilePackRepository(paths.ModsDirectory),
+            new ContentResolver(ContentKindRegistry.CreateDefault(), engine),
+            new ContentValidator(ContentKindRegistry.CreateDefault(), engine, builder ?? new ScenarioJsonBuilder()),
+            new ActivePackStore(paths.StateDirectory),
+            engine,
+            builder ?? new ScenarioJsonBuilder(),
+            paths.StateDirectory,
+            activationListeners)
     {
-        IScenarioBuilder scenarioBuilder = builder ?? new ScenarioJsonBuilder();
-        _repository = new FilePackRepository(paths.ModsDirectory);
-        _resolver = new ContentResolver(ContentKindRegistry.CreateDefault(), engine);
-        _validator = new ContentValidator(ContentKindRegistry.CreateDefault(), engine, scenarioBuilder);
-        _active = new ActivePackStore(paths.StateDirectory);
-        _engine = engine;
-        _builder = scenarioBuilder;
-        _stateDirectory = paths.StateDirectory;
-        _activationListeners = activationListeners?.ToArray() ?? Array.Empty<IHostActivationListener>();
     }
 
     public HostApp(
@@ -75,7 +75,7 @@ public sealed class HostApp : IHostApp
         packId = string.IsNullOrWhiteSpace(packId) ? PackId.Base : PackId.Validate(packId);
         IPackSource pack = _repository.Open(packId);
         PackInstallGuard.ValidateActivation(pack, _repository, _engine);
-        IPackSource? parent = OpenParentIfDeclared(pack);
+        IPackSource? parent = PackMerge.OpenParent(pack, _repository);
 
         ActivateResolved(pack, parent, persistActivePackId: packId, workspacePreviewId: null);
         ClearPreviewState();
@@ -86,7 +86,7 @@ public sealed class HostApp : IHostApp
         workspaceId = PackId.Validate(workspaceId);
         var pack = new DirectoryPackSource(Path.GetFullPath(workspaceRoot));
         PackInstallGuard.ValidateActivation(pack, _repository, _engine);
-        IPackSource? parent = OpenParentIfDeclared(pack);
+        IPackSource? parent = PackMerge.OpenParent(pack, _repository);
 
         if (_previewWorkspaceId == null)
         {
@@ -145,16 +145,6 @@ public sealed class HostApp : IHostApp
         _previewPreviousPackId = null;
     }
 
-    private IPackSource? OpenParentIfDeclared(IPackSource pack)
-    {
-        if (string.IsNullOrWhiteSpace(pack.Manifest.Parent))
-        {
-            return null;
-        }
-
-        return _repository.Open(pack.Manifest.Parent);
-    }
-
     public ImportToken Prepare(Stream package, string fileName)
     {
         string temp = Path.Combine(Path.GetTempPath(), "ew4-import-" + Guid.NewGuid().ToString("N"));
@@ -171,15 +161,7 @@ public sealed class HostApp : IHostApp
 
     public void Import(ImportToken token, string id, string name)
     {
-        id = PackId.Validate(id);
-        var source = new ZipPackSource(token.ArchivePath);
-        if (!string.Equals(source.Manifest.Id, id, StringComparison.Ordinal))
-        {
-            throw new ContentError("pack.import", "Pack id does not match archive manifest.");
-        }
-
-        PackInstallGuard.ValidateInstall(source, _repository, _engine);
-        _repository.Install(source, new InstallOptions(ReplaceExisting: true));
+        InstallFromArchive(token.ArchivePath, id);
         try
         {
             Directory.Delete(token.TempDirectory, recursive: true);
@@ -188,6 +170,19 @@ public sealed class HostApp : IHostApp
         {
             // Best effort cleanup.
         }
+    }
+
+    public void InstallFromArchive(string archivePath, string id)
+    {
+        id = PackId.Validate(id);
+        var source = new ZipPackSource(archivePath);
+        if (!string.Equals(source.Manifest.Id, id, StringComparison.Ordinal))
+        {
+            throw new ContentError("pack.import", "Pack id does not match archive manifest.");
+        }
+
+        PackInstallGuard.ValidateInstall(source, _repository, _engine);
+        _repository.Install(source, new InstallOptions(ReplaceExisting: true));
     }
 
     public void Remove(string packId)

@@ -47,9 +47,13 @@ builder.Services.AddSingleton(sp =>
     var scenarioBuilder = sp.GetRequiredService<IScenarioBuilder>();
     var listeners = sp.GetServices<IHostActivationListener>();
     var app = new HostApp(
-        new HostPaths(hostOptions.ModsDirectory, hostOptions.StateDirectory),
+        sp.GetRequiredService<FilePackRepository>(),
+        sp.GetRequiredService<ContentResolver>(),
+        sp.GetRequiredService<ContentValidator>(),
+        new ActivePackStore(hostOptions.StateDirectory),
         engine,
         scenarioBuilder,
+        hostOptions.StateDirectory,
         listeners);
     try
     {
@@ -63,7 +67,14 @@ builder.Services.AddSingleton(sp =>
     return app;
 });
 builder.Services.AddSingleton(sp =>
-    new PlayModImportStore(sp.GetRequiredService<HostApp>(), sp.GetRequiredService<AuthorHostOptions>()));
+    new ModCatalogService(
+        sp.GetRequiredService<HostApp>(),
+        sp.GetRequiredService<FilePackRepository>(),
+        hostOptions.ModsDirectory));
+builder.Services.AddSingleton(sp =>
+    new ModImportService(
+        sp.GetRequiredService<HostApp>(),
+        hostOptions.PendingImportsDirectory));
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 1024L * 1024 * 1024);
 builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024L * 1024 * 1024);
 

@@ -1,9 +1,6 @@
-using System.Linq;
 using Ew4.Platform.Content;
 using Ew4.Platform.Engine;
 using Ew4.Platform.Runtime;
-using Ew4.Service;
-using Ew4.Platform.Session.Persistence;
 
 namespace Ew4.Service;
 
@@ -48,35 +45,8 @@ public sealed class PlaySessionHost : IHostActivationListener
                 throw new InvalidOperationException("Play session is not synchronized with active content.");
             }
 
-            _game ??= CreateGame(_activation);
+            _game ??= PlayClientFactory.Create(_activation, _engine);
             return _game.Dispatch(path, body);
         }
-    }
-
-    private ClientGame CreateGame(HostActivationInfo activation)
-    {
-        Directory.CreateDirectory(activation.SaveRoot);
-        IPackSource packSource = activation.Content.Source;
-        Func<string, byte[]> baseRead = PackAssetReader.Open(packSource);
-        Func<string, byte[]> read = path =>
-        {
-            if (path.StartsWith("original/", StringComparison.Ordinal)
-                && path.EndsWith(".btl", StringComparison.OrdinalIgnoreCase))
-            {
-                string scenarioId = Path.GetFileNameWithoutExtension(path["original/".Length..]);
-                return ScenarioBtlResolver.ResolveBtlBytes(packSource, scenarioId);
-            }
-
-            return baseRead(path);
-        };
-        var battleFiles = PackScenarioIds.List(activation.Content).Select(id => id + ".btl").ToArray();
-        bool verifySources = string.IsNullOrWhiteSpace(activation.Content.Manifest.Parent);
-        IReadOnlyDictionary<string, string> scenarioDisplayNames = ScenarioCatalogNames.ReadDisplayNames(packSource);
-        var clientContent = new ClientContent(read, battleFiles, scenarioDisplayNames, verifySourceHashes: verifySources);
-        var envelope = new SlotSaveEnvelope.Binding(
-            activation.Content.Manifest.Id,
-            activation.Content.Fingerprint,
-            _engine.Info);
-        return new ClientGame(clientContent, activation.SaveRoot, envelope);
     }
 }
