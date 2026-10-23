@@ -10,8 +10,7 @@ namespace Ew4.Platform.Runtime;
 public sealed class HostApp : IHostApp
 {
     private readonly FilePackRepository _repository;
-    private readonly ContentResolver _resolver;
-    private readonly ContentValidator _validator;
+    private readonly IModSnapshotLoader _snapshotLoader;
     private readonly ActivePackStore _active;
     private readonly IEngine _engine;
     private readonly IScenarioBuilder _builder;
@@ -25,8 +24,9 @@ public sealed class HostApp : IHostApp
     public HostApp(HostPaths paths, IEngine engine, IScenarioBuilder? builder = null, IEnumerable<IHostActivationListener>? activationListeners = null)
         : this(
             new FilePackRepository(paths.ModsDirectory),
-            new ContentResolver(ContentKindRegistry.CreateDefault(), engine),
-            new ContentValidator(ContentKindRegistry.CreateDefault(), engine, builder ?? new ScenarioJsonBuilder()),
+            new ModSnapshotLoader(
+                new ContentResolver(ContentKindRegistry.CreateDefault(), engine),
+                new ContentValidator(ContentKindRegistry.CreateDefault(), engine, builder ?? new ScenarioJsonBuilder())),
             new ActivePackStore(paths.StateDirectory),
             engine,
             builder ?? new ScenarioJsonBuilder(),
@@ -37,8 +37,7 @@ public sealed class HostApp : IHostApp
 
     public HostApp(
         FilePackRepository repository,
-        ContentResolver resolver,
-        ContentValidator validator,
+        IModSnapshotLoader snapshotLoader,
         ActivePackStore active,
         IEngine engine,
         IScenarioBuilder builder,
@@ -46,8 +45,7 @@ public sealed class HostApp : IHostApp
         IEnumerable<IHostActivationListener>? activationListeners = null)
     {
         _repository = repository;
-        _resolver = resolver;
-        _validator = validator;
+        _snapshotLoader = snapshotLoader;
         _active = active;
         _engine = engine;
         _builder = builder;
@@ -56,6 +54,8 @@ public sealed class HostApp : IHostApp
     }
 
     public ResolvedContent? ActiveContent => _resolved;
+
+    public IModSnapshot? ActiveSnapshot => _resolved;
 
     public SessionService? Session => _session;
 
@@ -114,16 +114,7 @@ public sealed class HostApp : IHostApp
 
     private void ActivateResolved(IPackSource pack, IPackSource? parent, string? persistActivePackId, string? workspacePreviewId)
     {
-        ResolvedContent resolved = _resolver.Resolve(pack, parent);
-        IReadOnlyList<Diagnostic> diagnostics = _validator.Run(resolved, ValidationLevel.Schema);
-        foreach (Diagnostic diagnostic in diagnostics)
-        {
-            if (diagnostic.Severity == Severity.Error)
-            {
-                throw new ContentError(diagnostic.Code, diagnostic.Message);
-            }
-        }
-
+        ResolvedContent resolved = _snapshotLoader.LoadActivatedView(pack, parent);
         _resolved = resolved;
         string saveRoot = SaveDirectoryLayout.Root(_stateDirectory, resolved, workspacePreviewId);
         _session = new SessionService(resolved, _engine, _builder, saveRoot);

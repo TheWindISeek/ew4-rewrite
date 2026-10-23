@@ -5,10 +5,10 @@ namespace Ew4.Platform.Content;
 /// <summary>
 /// 校验通过后的不可变内容快照。
 /// </summary>
-public sealed record ResolvedContent(
+public sealed partial record ResolvedContent(
     PackManifest Manifest,
     string Fingerprint,
-    IPackSource Source);
+    IPackSource Source) : IModSnapshot;
 
 public interface IContentResolver
 {

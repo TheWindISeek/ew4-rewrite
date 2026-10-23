@@ -65,7 +65,8 @@ mods/  ──sync──►  install/web/mods/  （及 install/apk/mods/）
 ## 内容包（作者）
 
 维护者规范见 **[mods/README.md](../../mods/README.md)**（单文件 `mod.json` 字段与目录树）。  
-清单统一说明：[task/plan/pack-manifest-unify.md](../task/plan/pack-manifest-unify.md)。
+**Mod 统一视图（载入 vs 使用、快照与指针）**：[mod-view.md](./mod-view.md)（设计稿，实现前对齐用）。  
+清单统一说明：[task/plan/pack-manifest-unify.md](../task/plan/pack-manifest-unify.md)（若存在）。
 
 zip → 当前渠道 `EW4_HOME/mods/`；APK 原料 → `Ew4.Tool import-apk-overlay` → `mods/` 再 `sync-mods`。
 

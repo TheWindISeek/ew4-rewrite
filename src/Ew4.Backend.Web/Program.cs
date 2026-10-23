@@ -21,6 +21,10 @@ builder.Services.AddSingleton<IScenarioBuilder, ScenarioJsonBuilder>();
 builder.Services.AddSingleton<IContentKindRegistry>(_ => ContentKindRegistry.CreateDefault());
 builder.Services.AddSingleton(sp =>
     new ContentResolver(sp.GetRequiredService<IContentKindRegistry>(), sp.GetRequiredService<IEngine>()));
+builder.Services.AddSingleton<IModSnapshotLoader>(sp =>
+    new ModSnapshotLoader(
+        sp.GetRequiredService<ContentResolver>(),
+        sp.GetRequiredService<ContentValidator>()));
 builder.Services.AddSingleton(sp => new FilePackRepository(hostOptions.ModsDirectory));
 builder.Services.AddSingleton(sp =>
     new ContentValidator(
@@ -48,8 +52,7 @@ builder.Services.AddSingleton(sp =>
     var listeners = sp.GetServices<IHostActivationListener>();
     var app = new HostApp(
         sp.GetRequiredService<FilePackRepository>(),
-        sp.GetRequiredService<ContentResolver>(),
-        sp.GetRequiredService<ContentValidator>(),
+        sp.GetRequiredService<IModSnapshotLoader>(),
         new ActivePackStore(hostOptions.StateDirectory),
         engine,
         scenarioBuilder,
