@@ -1,0 +1,28 @@
+<Project Sdk="Microsoft.NET.Sdk.Web">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Ew4.Backend.Web</RootNamespace>
+    <AssemblyName>Ew4.Backend.Web</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+    <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ew4.Front.Web\Ew4.Front.Web.csproj">
+      <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
+    </ProjectReference>
+    <ProjectReference Include="..\Ew4.Editor\Ew4.Editor.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Content\Ew4.Platform.Content.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Engine\Ew4.Platform.Engine.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Runtime\Ew4.Platform.Runtime.csproj" />
+    <ProjectReference Include="..\Ew4.Service\Ew4.Service.csproj" />
+    <ProjectReference Include="..\Ew4.Interface\Ew4.Interface.csproj" />
+  </ItemGroup>
+  <ItemGroup>
+    <Content Include="..\Ew4.Front.Web\wwwroot\**\*">
+      <Link>wwwroot\%(RecursiveDir)%(Filename)%(Extension)</Link>
+      <CopyToOutputDirectory>PreserveNewest</CopyToOutputDirectory>
+      <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
+    </Content>
+  </ItemGroup>
+</Project>

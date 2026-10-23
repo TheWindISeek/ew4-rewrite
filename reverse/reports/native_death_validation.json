@@ -1,9 +1,0 @@
-{
-  "counts": {
-    "death_dispatch": 600,
-    "alive": 238,
-    "dead": 362
-  },
-  "errors": [],
-  "scope": "Original damage/death dispatch; injected event services, defeat predicate, surrender, retreat/kill dialogue and destruction. 5be90/5c060 are dialogue services, not commander-roster return or loot grants."
-}

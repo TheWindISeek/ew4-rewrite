@@ -1,9 +1,0 @@
-{
-  "counts": {
-    "objective_count": 400,
-    "capture_reference": 1152,
-    "death_reference_target": 72
-  },
-  "errors": [],
-  "scope": "Probe original objective counting and capture/death event targeting.\n\nScene, ownership, survival and dialogue services are injected, not an APK test."
-}

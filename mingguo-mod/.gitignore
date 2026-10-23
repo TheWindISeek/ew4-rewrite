@@ -1,6 +1,0 @@
-runtime/
-build/
-tools/bin/
-tools/obj/
-reports/protected-before.json
-reports/server*.log

@@ -1,61 +1,57 @@
-# EW4 rewrite
+# EW4 Rewrite
 
-本仓库保存 rewrite 游戏源码、运行资源、地图制作配置和 Mod 制作指南。
-项目仓库：[aztksilence111/ew4-rewrite](https://github.com/aztksilence111/ew4-rewrite)，公开仓库。
-项目状态见 [STATUS.md](STATUS.md)，开发说明见 [rewrite/README.md](rewrite/README.md)，
-Mod 制作资料见 [rewrite/mod-kit/README.md](rewrite/mod-kit/README.md)。
+《欧陆战争4》新架构重写（分支 `refactor/pack-architecture`）。**玩法与内容在 `mods/`；引擎与宿主在 `src/`。**
 
-## 当前快照
+- 架构与术语：[docs/README.md](docs/README.md)
+- 开发环境：[docs/development/environment.md](docs/development/environment.md)
+- 进度快照：[docs/development/todo.md](docs/development/todo.md)
+- Cursor Agent：[.cursor/skills/ew4-dev/SKILL.md](.cursor/skills/ew4-dev/SKILL.md)
 
-2026-10-22：当前 0.2.10 在 0.2.9 基础上新增指挥部三档筛选、60槽及标签模式，按三星到一星逐列上下排列，加入条件击杀台词、物品效果扩展、全局国家/兵模配置和过回合显示开关。
-[开放规则 API 1/2](rewrite/mod-kit/docs/porting/RULE_EXTENSIONS.md)提供动态技能、离线 Lua 和可配置胜负条件；完整作者指南和示例随 Web 包提供。
-[0.2.10 发布说明](rewrite/RELEASE_0.2.10_20261022.md)记录验证范围和已知限制；APK 未进行本轮真机运行验收。下载见[GitHub Releases](https://github.com/aztksilence111/ew4-rewrite/releases/latest)。Web 包完整解压后双击 `Start-Web.cmd`，无需安装 .NET。
+## 环境
 
-## 目录
+只需 **Docker**。不在宿主机安装 .NET；SDK 版本由 **`.config/docker/Dockerfile.dev`** 基础镜像 `mcr.microsoft.com/dotnet/sdk:10.0` 固定。
 
-| 路径 | 内容 |
-| --- | --- |
-| `rewrite/Ew4.Core` | 与显示平台无关的世界、战斗、技能和胜负规则 |
-| `rewrite/Ew4.Legacy` | 原格式解析、兼容目录、扩展加载和 Lua 运行时 |
-| `rewrite/Ew4.Client` | 两端共享 API、账户、存档和玩法宿主 |
-| `rewrite/Ew4.Web` | 网页预览服务及前端 |
-| `rewrite/Ew4.Android` | Android 宿主 |
-| `rewrite/Ew4.Mods`、`Ew4.ModTool` | 离线导入、校验、打包及命令行工具 |
-| `rewrite/Ew4.Persistence` | 存档编解码 |
-| `rewrite/Ew4.Verify`、`Ew4.ModChecks` | 规则和 Mod 验证程序 |
-| `rewrite/data` | 唯一基础运行资源，Web 与 Android 共用 |
-| `rewrite/data/original/eastasia.bin` | 内置东亚地形；同目录map.json保存城市、设施与桥梁模板 |
-| `rewrite/mod-kit` | 工具包文档、模板和示例；发行工具由源码构建 |
-| `maps` | 地图制作的文本配置和说明 |
-| `tools` | 构建、转换、测试及逆向辅助脚本 |
-| `reverse` | 逆向结论、维护记录及测试基准 JSON |
+## 快速开始
 
-## 开发运行
+1. 准备 **`mods/base/`**（原版 Pack：`pack.json`、`scenarios/`、`assets/` 等；目录不进 Git，本机自行维护）。
+2. 编译并起 Web：
 
-安装 .NET 10 SDK。运行 Web：
-
-```powershell
-dotnet run --project rewrite/Ew4.Web -- --root . --urls http://127.0.0.1:5184
+```bash
+scripts/ew4.sh build -c Release
+scripts/ew4.sh web          # Ew4.Backend.Web，http://127.0.0.1:5184
 ```
 
-从仓库根目录执行。若 5184 已被使用，选用其他端口。
-普通运行使用 `rewrite/data`，不需要根目录原始 APK 或解包副本。
-Android 构建另需 .NET Android workload 和 Android SDK。
+首次 `build` / `web` 会自动构建 dev 镜像 `ew4-dev:local`。子命令与 `dev/` 模块说明见 **`scripts/ew4.sh` 文件头** 与 [scripts/README.md](scripts/README.md)。
 
-```powershell
-dotnet run --project rewrite/Ew4.Verify -- . --extension-only
-dotnet run --project rewrite/Ew4.Verify -- . --client-only
+**Mod**：在 `mods/` 下增加 `<id>/` 与 `base` 同级，或通过浏览器 / API 安装（`/api/mod-import` 等）。**没有**单独的 shell「import mod」脚本。
+
+## 运行栈（当前）
+
+```text
+mods/  ──copy──►  install/mods/  ──►  Ew4.Platform.Runtime（激活 Pack）
+                              │
+                              ▼
+                      Ew4.Platform.Session + Ew4.Service（/api/*）
+                              │
+                              ▼
+                      Ew4.Backend.Web（Front.Web + /content/* + /api/author/*）
 ```
 
-完整历史验证中部分逆向工具仍需本机原包或额外依赖，见各脚本说明。
+- 存档与当前包：`install/user/`（`EW4_HOME`，默认 `install/`）
+- 策划 JSON：`maps/`（进 Git）
+- 封存对照：`backup/`（不参与编译，勿引用其 csproj）
 
-## 存储边界
+## 仓库目录
 
-`.gitignore` 排除原始 APK/压缩包、历史安装包、工具包构建副本、编译缓存、
-本地 Mod/账户/存档、测试截图和解包产物。它们不作为重复资源上传。
-Git 中保留一份实际运行资源和独立地图内容。2026-10-22 已按用户要求直接删除
-无用旧构建、安装包和测试临时资源，不保留恢复归档；详见
-[清理记录](reverse/LOCAL_RESOURCE_CLEANUP_20261022.md)。
-不包含签名密钥或登录凭据。
-
-现有原游戏和第三方 Mod 资源的权利归各自权利人所有；本文件不授予这些资源的新授权。
+| 路径 | 作用 |
+|------|------|
+| `src/` | `Ew4.Platform.Engine`、`Ew4.Platform.Content`、`Ew4.Platform.Session`、`Ew4.Platform.Runtime`、`Ew4.Service`、`Ew4.Interface`、`Ew4.Front.Web`、`Ew4.Backend.Web`、`Ew4.Editor`、`Ew4.Tool` … |
+| `tests/` | 单元测试 `Ew4.Test.*`（见 [tests/README.md](tests/README.md)） |
+| `scripts/ew4.sh` | 唯一开发入口（容器内 `dotnet`） |
+| `mods/` | 内容包维护目录（仅 `mods/README.md` 进 Git）；运行时镜像在 `install/mods/` |
+| `maps/` | 地图等策划数据 |
+| `build/` | MSBuild 输出（`bin`/`obj`） |
+| `install/` | 发行 publish（日常开发可忽略） |
+| `.config/` | `dotnet-tools.json`、`Dockerfile.dev`、compose |
+| `docs/` | 架构、ADR、开发说明 |
+| `backup/` | 旧代码只读封存 |

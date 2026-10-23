@@ -1,0 +1,8 @@
+<Project>
+  <!-- 全解决方案：编译产物集中到 build/<项目名>/，见 docs/development/build-install-layout.md -->
+  <PropertyGroup>
+    <RepoRoot>$([System.IO.Path]::GetFullPath('$(MSBuildThisFileDirectory)'))</RepoRoot>
+    <BaseOutputPath>$(RepoRoot)build\$(MSBuildProjectName)\</BaseOutputPath>
+    <BaseIntermediateOutputPath>$(RepoRoot)build\$(MSBuildProjectName)\obj\</BaseIntermediateOutputPath>
+  </PropertyGroup>
+</Project>

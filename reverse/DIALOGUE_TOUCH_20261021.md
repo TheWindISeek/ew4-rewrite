@@ -1,8 +1,0 @@
-# Rewrite dialogue touch area
-
-- Request: preserve the dialogue panel's appearance, size and position; advance by touching anywhere except the pause button.
-- `app.js`: move the single advance handler from `dialogue-ok` to its existing full-screen transparent parent `dialogue`. Child clicks bubble once. Preserve the action busy guard and block advancement while pause/settings or an event choice is open.
-- `original-ui.css`: keep the pause button above the dialogue input layer and modal windows above both while dialogue is visible. No panel geometry, art, portrait or text styles changed.
-- `index.html`: update the CSS/JS cache versions. Android uses these same frontend files; no APK was built.
-- Validation: Web build passed with zero warnings/errors; JS syntax and diff checks passed. `tools/verify_dialogue_touch.cjs` passed 61 checks on desktop 1280x720, mobile landscape 844x390 and portrait 390x844. Real campaign dialogue, edge/center touches, child propagation, keyboard activation, busy guard, pause/settings, and original panel screenshot equality were checked. The animated map is hidden only during the panel image comparison to exclude changing background pixels at transparent edges. No browser errors or missing assets.
-- Evidence: `rewrite/reports/dialogue-touch-20261021/web.json` and three viewport screenshots. Final verification used independent preview http://127.0.0.1:5226/ (PID 50128), build `build/dialogue-touch-20261021`, and its own report profile. Initial preview startup on 5225 failed because another task had occupied the port; initial tests used that task's test service before the final isolated rerun. No existing service was stopped or restarted.

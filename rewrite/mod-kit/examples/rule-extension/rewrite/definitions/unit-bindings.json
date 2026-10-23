@@ -1,4 +1,0 @@
-[
-  {"target": "ew4.unit.fra.heavy_artillery.1", "mode": "append", "traits": ["example.armored"],
-   "skills": [{"id": "example.repair", "instanceId": "unit.repair", "level": 1, "order": 0}]}
-]

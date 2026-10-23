@@ -1,0 +1,163 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; img-src 'self' data:; script-src 'self'; style-src 'self'; connect-src 'self'">
+  <title>欧陆战争4</title>
+  <link rel="stylesheet" href="style.css?v=20261022.3">
+  <link rel="stylesheet" href="original-ui.css?v=20261022.3">
+  <link rel="stylesheet" href="mods.css?v=20261022.9">
+  <link rel="stylesheet" href="victory-ui.css?v=20261021.3">
+  <link rel="stylesheet" href="local-multiplayer.css?v=20261021.1">
+  <link rel="stylesheet" href="single-action.css?v=20261021.2">
+</head>
+<body>
+  <section id="menu">
+    <div id="menu-stage">
+      <main id="main-menu">
+        <button id="mod-open" class="native-command" title="Mod 与创作" aria-label="Mod 与创作">Mod</button>
+        <img class="game-title" src="content/ui/title.png" alt="欧陆战争4 拿破仑">
+        <nav aria-label="游戏模式"><button class="main-entry" data-mode="1" data-label="campaign_label" disabled>战役</button><button class="main-entry" data-mode="2" data-label="conquest_label" disabled>征服</button><button class="main-entry" data-mode="4" data-label="tutorial_label" disabled>教程</button><button class="main-entry" id="headquarters" data-label="headquarters_label" disabled>指挥部</button><button class="main-entry" id="main-settings" data-label="settings_label" disabled>设定</button></nav>
+      </main>
+      <section id="scenario-menu" hidden>
+        <header class="menu-bar"><button id="menu-back" class="back-icon" aria-label="返回" title="返回"></button><h1 id="mode-title" data-label="conquest_label">征服</h1><button id="continue" class="load-icon" aria-label="载入" title="载入"></button></header>
+        <div id="scenarios" class="scenario-list"></div>
+        <nav id="conquest-pagination" aria-label="征服分页" hidden>
+          <button id="conquest-prev" aria-label="上一页" title="上一页"></button>
+          <span id="conquest-page-number" aria-live="polite" aria-atomic="true"></span>
+          <button id="conquest-next" aria-label="下一页" title="下一页"></button>
+        </nav>
+      </section>
+      <section id="countries" hidden>
+        <canvas id="strategic-map" width="1136" height="640" aria-label="征服战略地图"></canvas>
+        <header class="menu-bar"><button id="cancel-country" class="back-icon" aria-label="返回" title="返回"></button><h1 data-label="country_label">选择国家</h1></header>
+        <div id="country-list" aria-label="国家列表"></div><button id="confirm-country" aria-label="确认" title="确认" disabled></button>
+      </section>
+      <section id="campaign-screen" hidden>
+        <canvas id="campaign-map" aria-label="战役战略地图"></canvas>
+        <header class="menu-bar"><button id="campaign-back" class="back-icon" aria-label="返回剧本" title="返回"></button><h1 id="campaign-title"></h1></header>
+        <div id="campaign-battles" class="country-sidebar" aria-label="战役列表"></div>
+        <div id="campaign-intro"><div id="campaign-commander"></div><p id="campaign-description"></p></div>
+        <button id="campaign-confirm" title="开始战役" aria-label="开始战役"></button>
+      </section>
+      <section id="hq-screen" hidden>
+        <header class="menu-bar"><button id="hq-back" class="back-icon" aria-label="返回" title="返回"></button><h1 data-label="headquarters_label">指挥部</h1><span id="hq-medals"></span></header>
+        <div id="hq-filters" role="tablist" aria-label="将领分类"></div><button id="hq-recruit" class="native-command">招募</button>
+        <div id="hq-roster" aria-label="将领名册" tabindex="0"></div>
+        <span id="hq-count" aria-label="将领容量"></span>
+      </section>
+    </div>
+  </section>
+  <section id="play" hidden>
+    <canvas id="map" aria-label="战场地图"></canvas>
+    <div class="battle-resources"><img id="player-flag" alt=""><div id="resources"></div></div>
+    <button id="menu-button" class="corner-button" title="暂停" aria-label="暂停"><span class="pause-symbol"></span></button>
+    <button id="end-turn" class="corner-button" title="结束回合" aria-label="结束回合"><span class="hourglass-symbol"></span></button>
+    <button id="undo-move" class="corner-button" title="撤回移动" aria-label="撤回移动" disabled></button>
+    <button id="next-unit" class="corner-button" title="寻找可行动部队" aria-label="寻找可行动部队" disabled></button>
+    <button id="skip-ai" class="corner-button" title="跳过AI行动演出" aria-label="跳过AI行动演出" hidden></button>
+    <div id="ai-action" aria-label="电脑行动中" hidden><img id="ai-flag" alt=""><span>&gt;&gt;&gt;</span></div>
+    <aside id="selection" hidden><div id="terrain-info" aria-label="地块收入与防御"></div><div id="actions" aria-label="地块操作"></div><div id="single-action" hidden><div id="single-action-cost" role="group"></div><button id="single-action-confirm" type="button" data-tutorial-id="btn_done" title="确认" aria-label="确认"></button></div></aside>
+    <footer id="status" role="status"></footer>
+    <div id="pause" class="modal" hidden><div class="dialog pause-dialog"><header class="menu-bar"><button id="resume" class="close-icon" aria-label="返回战场" title="返回战场"></button><h2 data-label="pause_label">暂停</h2></header><p id="turn"></p><button id="save" data-label="save_label">保存</button><button id="pause-settings" data-label="settings_label">设定</button><button id="restart" data-label="restart_label">重新开始</button><button id="return-menu" data-label="main_label">退出</button></div></div>
+    <div id="dialogue" hidden><button id="dialogue-ok" aria-label="继续对白"><img id="dialogue-portrait" alt=""><div class="talk-content"><div id="dialogue-speaker"></div><p id="dialogue-text"></p></div></button></div>
+    <div id="scenario-event" class="modal" hidden role="dialog" aria-modal="true" aria-labelledby="scenario-event-title"><section class="dialog scenario-event-dialog"><div class="menu-bar"><h2 id="scenario-event-title"></h2></div><div id="scenario-event-content" tabindex="0" role="region" aria-label="事件内容"><img id="scenario-event-image" alt="" hidden><p id="scenario-event-text" hidden></p></div><div id="scenario-event-choices" tabindex="0" role="group" aria-label="事件选项"></div></section></div>
+    <div id="tutorial-talk" hidden><img id="tutorial-portrait" alt="拿破仑"><div class="talk-content"><div id="tutorial-speaker"></div><p id="tutorial-text"></p></div></div><div id="tutorial-focus" hidden></div>
+  </section>
+  <div id="detail-modal" class="modal" hidden><div class="dialog original-dialog"><header class="menu-bar"><button id="close-detail" class="close-icon" aria-label="关闭信息" title="关闭"></button><h2 id="detail-title"></h2></header><div id="detail-content"></div><button id="detail-confirm" class="confirm-corner" aria-label="确认" title="确认"></button></div></div>
+  <div id="settings" class="modal" hidden><div class="dialog settings-dialog">
+    <header class="menu-bar"><button id="close-settings" class="close-icon" aria-label="关闭" title="关闭"></button><h2 data-label="settings_label">设定</h2></header>
+    <div id="settings-content" tabindex="0" role="region" aria-label="设定选项">
+      <div class="settings-audio">
+        <label class="volume music"><span data-label="name_music">音乐</span><input id="music-volume" type="range" min="0" max="100" aria-label="音乐音量"></label>
+        <label class="volume sound"><span data-label="name_sound">音效</span><input id="sound-volume" type="range" min="0" max="100" aria-label="音效音量"></label>
+      </div>
+      <label class="setting-row speed"><span data-label="name_gamespeed">游戏速度</span><input id="game-speed" type="range" min="1" max="5" step="1" aria-label="游戏速度"></label>
+      <label class="setting-row grid"><span data-label="name_showgrid">显示网格</span><input id="show-grid" type="checkbox"></label>
+      <label class="setting-row hd"><span data-label="name_hdversion">高清模式</span><input id="hd-mode" type="checkbox"></label>
+      <label class="setting-row local-mode"><span>本地多人模式</span><input id="local-multiplayer-mode" type="checkbox" aria-label="本地多人模式"></label>
+      <label class="setting-row"><span>跳过回合快进</span><input id="skip-turn-fast" type="checkbox" aria-label="跳过回合快进"></label>
+      <label class="setting-row"><span>过回合跟随行动部队</span><input id="follow-ai" type="checkbox" aria-label="过回合跟随行动部队"></label>
+      <label class="setting-row screen"><span data-label="name_screen_extra">屏幕尺寸</span><input id="screen-size" type="range" min="80" max="100" value="100" aria-label="屏幕尺寸"></label>
+      <label class="setting-row event-size"><span>事件弹窗大小</span><output id="event-size-value" for="event-size">100%</output><input id="event-size" type="range" min="60" max="180" step="1" value="100" aria-label="事件弹窗大小"></label>
+    </div>
+    <div class="settings-footer"><button id="confirm-settings" class="confirm-corner" aria-label="确认设定" title="确认"></button></div>
+  </div></div>
+  <div id="notice" role="alert" hidden></div>
+  <div id="mod-hub" class="modal" hidden><div class="dialog mod-dialog mod-hub-dialog">
+    <header class="menu-bar"><button id="mod-hub-close" class="close-icon" title="关闭" aria-label="关闭"></button><h2>Mod</h2></header>
+    <p class="mod-hub-hint">管理已安装内容包，或编辑草稿并导出 Mod。</p>
+    <button type="button" id="mod-hub-packages" class="native-command mod-hub-choice">内容包管理</button>
+    <button type="button" id="mod-hub-author" class="native-command blue mod-hub-choice">Mod 创作</button>
+  </div></div>
+  <div id="author-manager" class="modal" hidden><div class="dialog mod-dialog author-dialog">
+    <header class="menu-bar"><button type="button" id="author-back" class="back-icon" title="返回" aria-label="返回"></button><h2 id="author-heading">Mod 创作</h2></header>
+    <div id="author-notice" class="author-notice" hidden role="status"></div>
+    <section id="author-home">
+      <form id="author-create" class="mod-import-row">
+        <label>标识<input id="author-ws-id" placeholder="my-mod" maxlength="64" pattern="[a-z0-9._-]{1,64}" required></label>
+        <label>名称<input id="author-ws-name" placeholder="我的 Mod" maxlength="80" required></label>
+        <button type="submit" class="native-command">新建</button>
+      </form>
+      <div id="author-workspace-list" class="mod-list" aria-label="草稿列表"></div>
+    </section>
+    <section id="author-workspace" hidden>
+      <div class="author-toolbar author-actions">
+        <button type="button" id="author-validate" class="native-command">校验</button>
+        <button type="button" id="author-export" class="native-command blue">导出</button>
+        <button type="button" id="author-preview" class="native-command">预览试玩</button>
+      </div>
+      <nav class="author-category-tabs" aria-label="剧本类型">
+        <button type="button" class="native-command author-cat-tab" data-cat="campaign" aria-pressed="true">战役</button>
+        <button type="button" class="native-command author-cat-tab" data-cat="conquest">征服</button>
+        <button type="button" class="native-command author-cat-tab" data-cat="tutorial">教程</button>
+        <button type="button" class="native-command author-cat-tab" data-cat="other">其他</button>
+      </nav>
+      <p id="author-scenario-empty" class="author-scenario-empty" hidden>该分类下暂无剧本。</p>
+      <div id="author-scenario-list" class="mod-list" aria-label="剧本列表"></div>
+      <pre id="author-diag" class="author-diag" hidden></pre>
+    </section>
+    <section id="author-scenario" hidden>
+      <p id="author-scenario-title" class="author-scenario-title"></p>
+      <div class="mod-import-row">
+        <label>部队#<input type="number" id="author-army-index" min="0" value="0"></label>
+        <label>格子<input type="number" id="author-army-cell" min="0" value="0"></label>
+        <button type="button" id="author-army-apply" class="native-command">改格子</button>
+      </div>
+      <div id="author-army-table" class="mod-list author-data-table" aria-label="部队表"></div>
+    </section>
+  </div></div>
+  <div id="mod-manager" class="modal" hidden><div class="dialog mod-dialog">
+    <header class="menu-bar"><button id="mod-close" class="close-icon" title="关闭" aria-label="关闭"></button><h2>本地 Mod</h2></header>
+    <p class="mod-import-hint">支持 <strong>.ew4mod</strong> 与 <strong>.zip</strong>（本质都是 zip；根目录须含 <code>pack.json</code>）。导入后写入本地内容目录并启用。</p>
+    <div class="mod-import-row"><label>标识<input id="mod-id" placeholder="自动识别" maxlength="64" spellcheck="false" aria-label="Mod 标识"></label><label>名称<input id="mod-name" placeholder="自动识别" maxlength="80" aria-label="Mod 名称"></label><button id="mod-select" class="native-command blue">选择文件</button><button id="mod-import" class="native-command" disabled>导入</button><input id="mod-file" type="file" accept=".zip,.ew4mod,application/zip" hidden></div>
+    <div id="mod-file-name" aria-live="polite"></div>
+    <div id="mod-progress" role="status" aria-live="polite"></div><div id="mod-list" aria-label="本地内容包"></div>
+  </div></div>
+  <dialog id="mod-delete-confirm" class="dialog" aria-labelledby="mod-delete-title" aria-describedby="mod-delete-description">
+    <h2 id="mod-delete-title">删除 Mod</h2><p id="mod-delete-description"></p>
+    <div class="mod-confirm-actions"><button id="mod-delete-cancel" class="native-command blue" autofocus>取消</button><button id="mod-delete-submit" class="native-command red">删除</button></div>
+  </dialog>
+  <div id="startup-status" role="status" aria-live="polite"><span id="startup-message">正在载入…</span><button id="startup-retry" type="button" title="重试载入" aria-label="重试载入" hidden>&#8635;</button></div>
+  <div id="loading-screen" role="status" aria-label="载入" hidden><div class="loading-stage"><img src="content/ui/title.png" alt="欧陆战争4 拿破仑"><div id="loading-tip"></div><div id="loading-word"></div></div></div>
+  <script src="startup.js?v=20261021.1"></script>
+  <script src="camera.js"></script>
+  <script src="map-surface.js"></script>
+  <script src="battlefield.js?v=20261021.18"></script>
+  <script src="original-ui.js?v=20261021.16"></script>
+  <script src="menu-art.js?v=20261021.1"></script>
+  <script src="effects.js?v=20261021.4"></script>
+  <script src="native-layout.js?v=20261021.2"></script>
+  <script src="menus.js?v=20261022.3"></script>
+  <script src="commander-workflows.js?v=20261022.2"></script>
+  <script src="tutorial.js"></script>
+  <script src="skill-ui.js?v=20261020.3"></script>
+  <script src="victory-ui.js?v=20261021.4"></script>
+  <script src="local-multiplayer.js?v=20261021.3"></script>
+  <script src="unit-navigation.js?v=20261022.1"></script>
+  <script src="app.js?v=20261022.7"></script>
+  <script src="mods.js?v=20261022.9"></script>
+  <script src="author-in-game.js?v=20261022.7"></script>
+</body>
+</html>

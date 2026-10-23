@@ -1,0 +1,15 @@
+# 构建 context = 仓库根；说明见 .config/docker/README.md
+.git
+.gitattributes
+.gitignore
+.vs
+.vscode
+**/bin/
+**/obj/
+build/
+docs/
+local/
+scripts/e2e/
+tests/
+packs/
+backup/

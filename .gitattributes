@@ -1,3 +1,5 @@
+# 文本文件统一 LF,避免 Windows/macOS/Linux 混用时的无意义 diff。
+# 二进制扩展名标记为 -text,防止 Git 做行尾转换损坏内容。
 * text=auto
 *.cs text eol=lf
 *.csproj text eol=lf
@@ -8,10 +10,9 @@
 *.md text eol=lf
 *.py text eol=lf
 *.ps1 text eol=lf
+*.sh text eol=lf
+*.json text eol=lf
 
-# Source hashes, package revisions and legacy bytes require exact content.
-rewrite/data/** -text
-rewrite/content/** -text
 *.png -text
 *.jpg -text
 *.ttf -text
@@ -20,3 +21,6 @@ rewrite/content/** -text
 *.mp3 -text
 *.wav -text
 *.ogg -text
+
+# 本地原料/运行时目录(多在 .gitignore 内);若被跟踪则仍按二进制处理
+/data/** -text

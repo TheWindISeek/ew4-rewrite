@@ -1,0 +1,9 @@
+# syntax=docker/dockerfile:1
+# 本地开发与 CI 用的统一环境：.NET SDK + Python + Node（校验脚本后续也在这里跑）。
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends python3 nodejs npm ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+WORKDIR /src
+ENV DOTNET_NOLOGO=1 \
+    PATH="/src/scripts/dev:${PATH}"

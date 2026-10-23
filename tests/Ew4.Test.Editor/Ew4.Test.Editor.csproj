@@ -1,0 +1,17 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <IsPackable>false</IsPackable>
+    <RootNamespace>Ew4.Test.Editor</RootNamespace>
+    <ImplicitUsings>enable</ImplicitUsings>
+  </PropertyGroup>
+  <ItemGroup>
+    <PackageReference Include="Microsoft.NET.Test.Sdk" Version="17.12.0" />
+    <PackageReference Include="xunit" Version="2.9.2" />
+    <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
+  </ItemGroup>
+  <!-- 被测目标名 Ew4.Editor；src 改名前仍引用 Ew4.Editor -->
+  <ItemGroup>
+    <ProjectReference Include="..\..\src\Ew4.Editor\Ew4.Editor.csproj" />
+  </ItemGroup>
+</Project>

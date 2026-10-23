@@ -1,9 +1,0 @@
-{
-  "conquest1": {
-    "descriptionKey": "坚持到第20回合",
-    "win": {"type": "round_reached", "round": 20},
-    "priority": "defeat",
-    "roundLimit": 50,
-    "requirePlayerSurvival": true
-  }
-}

@@ -1,7 +1,8 @@
-# Original input archives and release copies; runtime data lives in rewrite/data.
-/*.apk
-/*.apK
-/*.APK
+# APK / 大包（不进 Git）
+/**/*.apk
+/**/*.apK
+/**/*.APK
+/install/apk/imports/
 /*.zip
 /*.xls
 /*.xlsx
@@ -9,50 +10,31 @@
 *.ew4mod
 *.ew4mod.previous
 /apk_work/
-/build/
 
-# Reproducible compiler, package, editor and interpreter caches.
+# build/ — MSBuild bin/obj
+/build/**
+!/build/README.md
+
+# mods/ — 仅运行时内容包（base 等）
+/mods/**
+!/mods/README.md
+
+# data/ — 生成 mods/base 用的原料（可选，本地保留）
+/data/
+
+# install/ — 发行产物
+/install/**
+!/install/README.md
+
+# Legacy
+/local/**
+/packs/
+/workspaces/
+/.ew4-host/
+
 **/bin/
 **/obj/
 **/node_modules/
 **/__pycache__/
 *.pyc
 .vs/
-.idea/
-*.user
-*.suo
-*.log
-
-# User accounts, installed Mods, local servers, and generated test artifacts.
-/rewrite/local/
-/rewrite/reports/
-/reverse/references/
-/reverse/native/
-/reverse/java/
-/reverse/ghidra/
-/reverse/reports/*
-!/reverse/reports/*.json
-
-# Preserve map authoring text/configuration, exclude generated texture copies.
-/maps/**
-!/maps/**/
-!/maps/**/*.md
-!/maps/**/*.json
-!/maps/**/*.geojson
-!/maps/**/*.html
-/maps/source_cache/
-/maps/**/runtime/
-/maps/eastasia_v[1-5]/
-/rewrite/content/eastasia/
-
-# Never add credentials or signing keys.
-.env
-.env.*
-*.keystore
-*.jks
-*.pfx
-*.p12
-*.pem
-*.key
-credentials.json
-secrets.json

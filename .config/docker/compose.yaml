@@ -1,0 +1,24 @@
+# 开发: scripts/dev/ensure-dev-image.sh 或 docker compose -f .config/docker/compose.yaml build dev
+# Web: scripts/dev/docker-build-web.sh
+services:
+  dev:
+    build:
+      context: ../..
+      dockerfile: .config/docker/Dockerfile.dev
+    image: ew4-dev:local
+    working_dir: /src
+    volumes:
+      - ../..:/src
+
+  web:
+    build:
+      context: ../..
+      dockerfile: .config/docker/Dockerfile
+    image: ew4-web:local
+    ports:
+      - "${EW4_WEB_PORT:-5184}:8080"
+    environment:
+      EW4_CONTENT_ROOT: /app
+    volumes:
+      - ../..:/app
+    restart: unless-stopped

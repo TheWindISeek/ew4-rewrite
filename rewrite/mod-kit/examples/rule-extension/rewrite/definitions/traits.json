@@ -1,3 +1,0 @@
-[
-  {"id": "example.armored", "kind": "tag", "nameKey": "装甲", "descriptionKey": "自定义兵种标签，可供Lua与targetTag查询。"}
-]
