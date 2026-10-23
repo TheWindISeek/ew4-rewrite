@@ -42,7 +42,7 @@ public static class RepositoryLayout
     public static string MingguoCityPlanDirectory(string contentRoot) =>
         RepositoryPaths.MingguoCityPlan(contentRoot);
 
-    /// <summary>内容包目录：<c>EW4_HOME/mods</c>（默认 <c>install/mods</c>）。</summary>
+    /// <summary>内容包目录：<c>EW4_HOME/mods</c>（默认 <c>install/web/mods</c>）。</summary>
     public static string ModsDirectory(string repositoryRoot) =>
         Path.Combine(ResolveInstallHome(repositoryRoot), ModsRootRelative);
 

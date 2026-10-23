@@ -32,7 +32,7 @@ Front.Web  ←  Backend.Web  →  Service, Editor
 ## 运行时（Web）
 
 ```text
-mods/  ──sync──►  install/mods/
+mods/  ──sync──►  install/web/mods/  （及 install/apk/mods/）
                       │
                  HostApp.Activate
                       │
@@ -43,7 +43,7 @@ mods/  ──sync──►  install/mods/
          wwwroot + GET /content/*（Pack 资源）
 ```
 
-- **安装根：** `EW4_HOME`，默认 `<仓库>/install`；`install/mods/`、`install/user/`（`active.json`、存档）。
+- **安装根：** `EW4_HOME`，默认 `<仓库>/install/web`；各渠道自有 `mods/`、`user/`（Web 与 APK 不共用）。
 - **维护目录：** 仓库根 `mods/`（不进 Git，除 `mods/README.md`）。
 
 ## HTTP 接口（摘要）
@@ -67,7 +67,7 @@ mods/  ──sync──►  install/mods/
 维护者规范见 **[mods/README.md](../../mods/README.md)**（单文件 `mod.json` 字段与目录树）。  
 清单统一说明：[task/plan/pack-manifest-unify.md](../task/plan/pack-manifest-unify.md)。
 
-zip → `install/mods/`；APK → `Ew4.Tool import-apk-overlay` → `mods/` 再同步。
+zip → 当前渠道 `EW4_HOME/mods/`；APK 原料 → `Ew4.Tool import-apk-overlay` → `mods/` 再 `sync-mods`。
 
 ## 关键代码入口
 

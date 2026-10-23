@@ -1,6 +1,8 @@
 # 怎么改 Mod 内容
 
-内容写在 **`mods/<你的名字>/`**，玩之前拷到 **`install/mods/`**（或跑 `scripts/ew4.sh web` 会自动同步）。游戏里左下角 **Mod** 里切换激活的包。
+内容写在 **`mods/<你的名字>/`**，玩之前同步到 **`install/web/mods/`**（`scripts/ew4.sh web` / `sync-mods` 会自动从仓库 `mods/` 拷贝；APK 渠道用 **`install/apk/mods/`**）。
+
+**切换已安装的 Mod（已实现）**：浏览器打开游戏后，点左下角 **Mod** → 在列表中选择要用的包 → 确认激活（会校验 `parent`、引擎版本等，成功后刷新页面）。当前激活包记录在 **`install/web/user/active.json`**。也可在同一面板导入 zip / `.ew4mod` 到 `install/web/mods/<id>/`。
 
 每个包根上要有 **`mod.json`**（包名、`parent` 等）。**`id` 必须和文件夹名一样**。
 
@@ -73,7 +75,7 @@ mods/pretty-flags/
 ## 做完之后
 
 ```bash
-cp -a mods/my-mod install/mods/my-mod    # 或整包同步 mods/*
+cp -a mods/my-mod install/web/mods/my-mod    # 或 scripts/ew4.sh sync-mods
 scripts/ew4.sh web                         # 浏览器里激活 Mod
 ```
 
@@ -82,7 +84,7 @@ scripts/ew4.sh web                         # 浏览器里激活 Mod
 
 ## 仓库里的示例 Mod（进 Git，与 `base` 同级）
 
-需本机有 **`mods/base`** 或 **`install/mods/base`**。拷到 `install/mods/` 后在游戏里激活。
+需本机有 **`mods/base`** 或 **`install/web/mods/base`**。`sync-mods` 后在游戏里激活。
 
 | 目录 | 内容 |
 |------|------|

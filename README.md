@@ -5,8 +5,18 @@
 | 文档 | 说明 |
 |------|------|
 | [docs/arch/README.md](docs/arch/README.md) | 项目分层与 HTTP 接口 |
+| [mods/README.md](mods/README.md) | 怎么写 Mod、差异包目录 |
+| [install/README.md](install/README.md) | **发行目录**（只拷 `install/` 也能玩） |
 | [docs/task/todo.md](docs/task/todo.md) | 回归门禁 G1–G6 |
 | [docs/README.md](docs/README.md) | 文档总索引 |
+
+## 发行与 Mod（已实现）
+
+**最终发布形态是 `install/` 目录**：拷贝整个 `install/`（至少含 `web/app` 的 publish、`web/mods/base`、`web/user`）即可在装有 .NET 运行时的机器上游玩，**不需要**本仓库的 `src/` 或 `Ew4.sln`。在仓库内执行 `scripts/ew4.sh install` 会生成 `install/web/app` 与 `install/web/run.sh`；详见 [install/README.md](install/README.md)。
+
+**Mod 切换已实现**：Web 主界面左下角 **Mod** 打开内容包面板，列出 `install/web/mods/` 下已安装包，点选即可 **激活**（写入 `install/web/user/active.json`，页面刷新后生效）。带 `parent: "base"` 的差异包会与 `base` 按文件路径合并加载。也可在面板内 **导入** `.zip` / `.ew4mod`（`POST /api/mod-import`）。作者维护包在仓库 `mods/<id>/`，用 `scripts/ew4.sh sync-mods` 同步到运行时目录。
+
+---
 
 下文在**仓库根目录**执行。需要 **Docker**（镜像内带 .NET 10 SDK，宿主机不必装 SDK）。可选封装脚本：`scripts/ew4.sh`（见文末）。
 
@@ -41,20 +51,18 @@ docker compose -f .config/docker/compose.yaml build dev
 
 ## 3. 同步内容包到运行时目录
 
-运行时读 **`install/mods/`**，维护在 **`mods/`**。启动 Web 或跑校验前先同步一次：
-
-**Linux / macOS / Git Bash：**
+运行时读 **`install/web/mods/`**（APK 渠道为 **`install/apk/mods/`**），维护在 **`mods/`**。推荐：
 
 ```bash
-mkdir -p install/mods install/user
-cp -a mods/. install/mods/
+scripts/ew4.sh sync-mods
 ```
 
-**PowerShell：**
+或手动：
 
-```powershell
-New-Item -ItemType Directory -Force -Path install\mods, install\user
-Copy-Item -Path mods\* -Destination install\mods -Recurse -Force
+```bash
+mkdir -p install/web/mods install/web/user install/apk/mods install/apk/user
+cp -a mods/. install/web/mods/
+cp -a mods/. install/apk/mods/
 ```
 
 ---
@@ -94,7 +102,7 @@ docker run --rm -v "$(pwd):/src" -w /src ew4-dev:local \
   dotnet test tests/Ew4.Test.Platform.Content/Ew4.Test.Platform.Content.csproj -c Release
 ```
 
-**内容包校验**（需已同步 `mods/base` 到 `install/mods/base`）：
+**内容包校验**（需已同步 `mods/base` 到 `install/web/mods/base`）：
 
 ```bash
 docker run --rm -v "$(pwd):/src" -w /src ew4-dev:local \
@@ -111,19 +119,28 @@ docker run --rm -v "$(pwd):/src" -w /src ew4-dev:local \
 
 ```bash
 docker run --rm -it \
-  -e EW4_HOME=/src/install \
+  -e EW4_HOME=/src/install/web \
   -v "$(pwd):/src" -w /src \
   -p 5184:5184 \
   ew4-dev:local \
   dotnet run --project src/Ew4.Backend.Web/Ew4.Backend.Web.csproj -- \
   --root /src \
-  --home /src/install \
+  --home /src/install/web \
   --urls "http://0.0.0.0:5184"
 ```
 
 浏览器打开：**http://127.0.0.1:5184**
 
-**PowerShell** 把 `$(pwd)` 换成 `${PWD}`。Mod：页面左下角或 `POST /api/mod-import`（zip）。
+**PowerShell** 把 `$(pwd)` 换成 `${PWD}`。
+
+开发态用 `scripts/ew4.sh web` 时，Mod 面板同样可用（读写 `install/web/mods` 与 `install/web/user`）。
+
+**仅 `install/` 发行包**（已 `install` publish 过）：
+
+```bash
+./install/web/run.sh
+# 浏览器 http://127.0.0.1:5184 → 左下角 Mod 切换内容包
+```
 
 ---
 
@@ -131,7 +148,8 @@ docker run --rm -it \
 
 | 变量 | 默认 | 含义 |
 |------|------|------|
-| `EW4_HOME` | 容器内建议 `/src/install` | `install/mods`、`install/user` |
+| `EW4_HOME` | 容器内建议 `/src/install/web` | Web 渠道 `mods`、`user` |
+| `EW4_CHANNEL` | `web`（默认）或 `apk` | 未设 `EW4_HOME` 时的默认安装根 |
 | 仓库根 `--root` | `/src` | 代码与 `mods/` 维护目录 |
 
 更细的目录说明：[docs/development/environment.md](docs/development/environment.md)。
@@ -145,9 +163,9 @@ docker run --rm -it \
 ```bash
 dotnet build Ew4.sln -c Release
 dotnet test Ew4.sln -c Release
-# 先 §3 同步 mods → install/mods
+# 先 §3 同步 mods → install/web/mods
 dotnet run --project src/Ew4.Backend.Web/Ew4.Backend.Web.csproj -- \
-  --root . --home install --urls http://127.0.0.1:5184
+  --root . --home install/web --urls http://127.0.0.1:5184
 ```
 
 适合 Windows 上不想开 Docker、直接 Visual Studio / `dotnet` 开发的场景。
@@ -177,7 +195,8 @@ scripts/ew4.sh web
 ## 仓库目录（摘要）
 
 ```text
-mods/  ──同步──►  install/mods/  ──►  HostApp
+mods/  ──同步──►  install/web/mods/  ──►  HostApp（Web）
+         └──►  install/apk/mods/     （APK 渠道，独立 user）
                       ▼
            Ew4.Service（/api/*）
                       ▼
@@ -188,5 +207,6 @@ mods/  ──同步──►  install/mods/  ──►  HostApp
 |------|------|
 | `src/` | 解决方案主体 |
 | `tests/` | `Ew4.Test.*` |
-| `install/user/` | 存档、`active.json` |
+| `install/web/` | Web 渠道：`app/`、`mods/`、`user/` |
+| `install/apk/` | APK 渠道（与 Web 隔离） |
 | `maps/` | 策划 JSON（进 Git） |

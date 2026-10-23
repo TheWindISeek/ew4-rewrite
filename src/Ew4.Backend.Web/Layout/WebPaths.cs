@@ -21,6 +21,12 @@ public static class WebPaths
             return published;
         }
 
+        string besideHost = Path.Combine(AppContext.BaseDirectory, App.WwwRoot);
+        if (Directory.Exists(besideHost))
+        {
+            return besideHost;
+        }
+
         string dev = RepositoryPaths.FrontendWwwRoot(repositoryRoot);
         return Directory.Exists(dev) ? dev : published;
     }

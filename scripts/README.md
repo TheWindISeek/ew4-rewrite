@@ -15,21 +15,21 @@
 
 | 文件 | 职责 |
 |------|------|
-| [dev/paths.sh](dev/paths.sh) | 仓库根、`mods/`、`EW4_HOME`、`install/mods` 同步、`install/user`、容器 `/src` 路径 |
+| [dev/paths.sh](dev/paths.sh) | 仓库根、`install/web` & `install/apk`、`EW4_HOME` / `EW4_CHANNEL`、mods 同步、容器 `/src` 路径 |
 | [dev/docker.sh](dev/docker.sh) | `ew4-dev:local` 镜像、`docker run` 里跑 dotnet |
 | [dev/cli.sh](dev/cli.sh) | 包装 **Ew4.Tool**：`import-base`、`validate`、`smoke-start`、`check btl` |
-| [dev/install.sh](dev/install.sh) | `publish` → `install/app/`，并同步 `mods/` → `install/mods/` |
+| [dev/install.sh](dev/install.sh) | `publish` → `install/web/app/`，并同步 `mods/` → web & apk |
 
 ## 常用命令
 
 ```bash
-scripts/ew4.sh build              # 编译后自动 sync mods → install/mods
-scripts/ew4.sh sync-mods          # 仅同步内容包
-scripts/ew4.sh install          # 可选：发布到 install/
-scripts/ew4.sh web                # http://127.0.0.1:5184
+scripts/ew4.sh build              # 编译后 sync mods → install/web & install/apk
+scripts/ew4.sh sync-mods          # 默认 all；或 sync-mods web | apk
+scripts/ew4.sh install          # publish → install/web/app
+scripts/ew4.sh web                # http://127.0.0.1:5184（--home install/web）
 scripts/ew4.sh test
 scripts/ew4.sh import-base        # 需本地 data/import-seed
 scripts/ew4.sh validate smoke
 ```
 
-内容包在仓库 **`mods/`** 维护；运行时读 **`install/mods/`**（`build` / `install` / `web` 会拷贝同步）。详见 [build-install-layout.md](../docs/development/build-install-layout.md)。
+内容包在仓库 **`mods/`** 维护；Web 运行时读 **`install/web/mods/`**，APK 读 **`install/apk/mods/`**。详见 [build-install-layout.md](../docs/development/build-install-layout.md)。

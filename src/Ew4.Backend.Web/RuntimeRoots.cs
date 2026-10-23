@@ -29,6 +29,12 @@ public sealed record RuntimeRoots(InstallLayout Install, string RepositoryRoot)
             return envHome;
         }
 
+        string? inferred = InstallChannelProbe.TryFindFromProcess();
+        if (!string.IsNullOrWhiteSpace(inferred))
+        {
+            return inferred;
+        }
+
         string defaultInstall = InstallLayout.DefaultUnderRepository(repositoryRoot).Home;
         if (Directory.Exists(defaultInstall))
         {

@@ -32,10 +32,13 @@ public sealed class ExampleModsTests
     {
         get
         {
-            string install = Path.GetFullPath(Path.Combine("install", "mods", "base"));
-            if (PackManifestPaths.DirectoryHasManifest(install))
+            foreach (string relative in new[] { Path.Combine("install", "web", "mods", "base"), Path.Combine("install", "mods", "base") })
             {
-                return install;
+                string install = Path.GetFullPath(relative);
+                if (PackManifestPaths.DirectoryHasManifest(install))
+                {
+                    return install;
+                }
             }
 
             string mods = Path.GetFullPath(Path.Combine("mods", "base"));

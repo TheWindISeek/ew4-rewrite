@@ -5,31 +5,35 @@
 | 路径 | 作用 | Git |
 |------|------|-----|
 | `build/<项目名>/` | MSBuild 的 bin/obj（`Directory.Build.props`） | 否 |
-| `install/` | 可运行安装根（`EW4_HOME`） | 否 |
-| `install/app/` | `dotnet publish` 的 Web 宿主 + `wwwroot` | 否 |
-| `install/mods/` | 内容包（`base` 等） | 否 |
-| `install/user/` | `active.json`、存档、编辑器草稿、缓存 | 否 |
+| `install/web/` | **Web 渠道**安装根（默认 `EW4_HOME`） | 否 |
+| `install/web/app/` | `dotnet publish` 的 Web 宿主 + `wwwroot` | 否 |
+| `install/web/mods/` | Web 运行时内容包 | 否 |
+| `install/web/user/` | Web 用户数据 | 否 |
+| `install/apk/` | **APK 渠道**安装根（`EW4_CHANNEL=apk`） | 否 |
+| `install/apk/mods/`、`install/apk/user/` | APK 内容与存档（与 Web 隔离） | 否 |
 
-仓库根 **`mods/`** 为内容包维护目录（不进 Git，仅 `mods/README.md` 进 Git）。`scripts/ew4.sh build`、`install`、`web` 会把 `mods/` 拷贝到 **`install/mods/`**；运行时 `EW4_HOME` 只读后者。
+仓库根 **`mods/`** 为内容包维护目录。`build`、`install`、`web`、`sync-mods` 会把 `mods/` 拷贝到 **`install/web/mods`** 与 **`install/apk/mods`**（可用 `sync-mods web` 只同步一侧）。
+
+**发行游玩**：只需拷贝整个 **`install/`** 目录（`web/app` 已 publish、`web/mods` 含 `base`），运行 `install/web/run.sh`；无需 `src/` 或 `Ew4.sln`。
 
 ## 命令
 
 ```bash
-scripts/ew4.sh build          # 编译（build/）+ 拷贝 mods/ → install/mods/
-scripts/ew4.sh install        # 发布到 install/app，并拷贝 mods/ → install/mods/
-scripts/ew4.sh sync-mods      # 仅拷贝 mods/ → install/mods/
-scripts/ew4.sh web            # --root <repo> --home install/
+scripts/ew4.sh build          # 编译 + sync mods → web & apk
+scripts/ew4.sh install        # publish → install/web/app + sync
+scripts/ew4.sh sync-mods      # 或 sync-mods web | apk | all
+scripts/ew4.sh web            # --home install/web
 ```
 
-## 代码中的路径（每包一个文件）
+## 代码中的路径
 
 | 程序集 | 文件 | 含义 |
 |--------|------|------|
-| `Ew4.Platform.Content` | `Layout/RepositoryPaths.cs` | 仓库根相对路径（`repo.build`、`repo.data.import_seed`…） |
-| `Ew4.Platform.Runtime` | `Layout/InstallLayout.cs` | 安装根相对路径（`install.app`、`install.user.saves`…） |
-| `Ew4.Platform.Runtime.Web` | `Layout/WebPaths.cs` | 发布态 `app/wwwroot` 与开发态 `repo.src.host.web.wwwroot` |
+| `Ew4.Platform.Content` | `Layout/RepositoryPaths.cs` | 仓库根相对路径 |
+| `Ew4.Platform.Runtime` | `Layout/InstallLayout.cs` | 渠道安装根下 `app`、`mods`、`user` |
+| `Ew4.Backend.Web` | `Layout/WebPaths.cs` | `install/web/app/wwwroot` 与开发态 `wwwroot` |
 
-解析安装根：`--home` → 环境变量 `EW4_HOME` → `<repo>/install`。  
+解析安装根：`--home` → `EW4_HOME` → `<repo>/install/web`（`InstallLayout.DefaultUnderRepository`）。  
 解析仓库根：`--root` → `EW4_REPOSITORY_ROOT` → 当前目录（若在仓库根且存在 `Ew4.sln`）。
 
 `RepositoryLayout` 仅为兼容旧调用，新代码请直接用上述类型。

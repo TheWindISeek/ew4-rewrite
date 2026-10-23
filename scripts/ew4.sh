@@ -7,13 +7,14 @@
 #   scripts/ew4.sh build | test | install | web | …
 #
 # 模块（scripts/dev/，仅供本脚本 source，勿直接运行）：
-#   paths.sh                 仓库根、EW4_HOME、mods/user 路径、宿主机→/src 路径
+#   paths.sh                 仓库根、渠道 install/web|apk、mods/user、宿主机→/src 路径
 #   docker.sh                构建 ew4-dev 镜像、在容器内执行 dotnet
 #   cli.sh                   调用 Ew4.Tool：import-base、validate、smoke-start、check btl
-#   install.sh               publish 到 install/app，同步 mods
+#   install.sh               publish → install/web/app，同步 mods 到 web/apk
 #
 # 环境变量：
-#   EW4_HOME          安装根，默认 <repo>/install
+#   EW4_HOME          安装根（覆盖默认）；未设时 EW4_CHANNEL 决定 install/web 或 install/apk
+#   EW4_CHANNEL       web | apk，默认 web
 #   EW4_DEV_IMAGE     开发镜像名，默认 ew4-dev:local
 #   EW4_IMPORT_SEED   import-base 原料目录，默认 data/import-seed
 #   PORT              web 监听端口，默认 5184
@@ -21,8 +22,8 @@
 #
 # 典型流程：
 #   1. scripts/ew4.sh build
-#   2. 准备 mods/base（import-base 或手动放入仓库 mods/）；build/install/web 会同步到 install/mods/
-#   3. scripts/ew4.sh web   → http://127.0.0.1:5184
+#   2. 准备 mods/base；build/install/web 会同步到 install/web/mods 与 install/apk/mods
+#   3. scripts/ew4.sh web   → http://127.0.0.1:5184（EW4_HOME=install/web）
 #
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -39,11 +40,11 @@ ew4_usage() {
 用法: scripts/ew4.sh <命令> [参数…]
 
   build [args…]       在 Docker 内编译 Ew4.sln（输出到 build/<项目>/）
-  install [Release]   publish → install/app
+  install [Release]   publish → install/web/app
   test [args…]        dotnet test
-  web                 开发态启动 Ew4.Backend.Web（--root 仓库 --home install/）
+  web                 开发态启动 Ew4.Backend.Web（--home install/web）
   import-base         Ew4.Tool：data/import-seed → mods/base
-  sync-mods           将 mods/ 同步到 install/mods/（build/install/web 也会自动执行）
+  sync-mods [web|apk|all]  mods/ → install/<channel>/mods（默认 all）
   validate smoke      Ew4.Tool：对内容包做 SmokeStart（默认 base）
   smoke-start         Ew4.Tool：单剧本开局烟测
   check btl           Ew4.Tool：BTL 往返校验（包内语料）
@@ -54,7 +55,7 @@ ew4_usage() {
   shell <cmd…>        在 dev 容器内执行任意命令
   dotnet <args…>      在 dev 容器内执行 dotnet
 
-环境变量: EW4_HOME, EW4_DEV_IMAGE, EW4_IMPORT_SEED, PORT, EW4_WEB_BIND
+环境变量: EW4_HOME, EW4_CHANNEL, EW4_DEV_IMAGE, EW4_IMPORT_SEED, PORT, EW4_WEB_BIND
 详见脚本头部注释与 scripts/README.md
 EOF
 }
@@ -62,15 +63,20 @@ EOF
 cmd_web() {
   local root home home_container port host_bind web
   root="$(ew4_repo_root)"
-  home="$(ew4_home_dir "$root")"
+  if [[ -n "${EW4_HOME:-}" ]]; then
+    home="$(ew4_home_dir "$root")"
+  else
+    home="$(ew4_web_home_dir "$root")"
+  fi
   home_container="$(ew4_container_path "$root" "$home")"
   web="src/Ew4.Backend.Web/Ew4.Backend.Web.csproj"
   [[ -f "$root/$web" ]] || { echo "找不到 $web" >&2; exit 1; }
   port="${PORT:-5184}"
   host_bind="${EW4_WEB_BIND:-0.0.0.0}"
   ew4_ensure_dev_image
-  mkdir -p "$home/mods" "$home/user"
-  ew4_sync_repo_mods_to_install "$root"
+  ew4_migrate_legacy_install_layout "$root"
+  ew4_ensure_channel_runtime_dirs "$home"
+  ew4_sync_repo_mods_to_install "$root" web
   echo "Ew4.Backend.Web → http://127.0.0.1:${port}/" >&2
   echo "  EW4_HOME: $home" >&2
   echo "  mods:     $(ew4_install_mods_dir "$root") (来自 $(ew4_repo_mods_dir "$root"))" >&2
@@ -125,7 +131,7 @@ main() {
       ew4_sync_repo_mods_to_install "$(ew4_repo_root)"
       ;;
     install) cmd_install "$@" ;;
-    sync-mods) ew4_sync_repo_mods_to_install "$(ew4_repo_root)" ;;
+    sync-mods) ew4_sync_repo_mods_to_install "$(ew4_repo_root)" "${1:-all}" ;;
     test) ew4_docker_dotnet test Ew4.sln "$@" ;;
     web|run-web) cmd_web "$@" ;;
     import-base) cmd_import_base "$@" ;;

@@ -9,13 +9,14 @@
 | 路径 | 用途 | Git |
 |------|------|-----|
 | `mods/` | 内容包维护：`base/` + 其它 `<id>/` | 忽略（仅 `mods/README.md` 跟踪） |
-| `install/mods/` | 运行时内容包（从 `mods/` 拷贝） | 忽略 |
-| `install/user/` | `active.json`、存档 | 忽略 |
+| `install/web/mods/` | Web 运行时内容包（从 `mods/` 拷贝） | 忽略 |
+| `install/web/user/` | Web `active.json`、存档 | 忽略 |
+| `install/apk/mods/`、`install/apk/user/` | APK 渠道（与 Web 隔离） | 忽略 |
 | `maps/` | 策划 JSON | 跟踪 |
 | `build/` | MSBuild bin/obj | 忽略 |
 | `install/` | 发行 publish（日常可忽略） | 忽略 |
 
-Web 启动时 **`--root` = 仓库根**、**`--home` = `install/`**（或 `EW4_HOME`）；读写 `install/mods/` 与 `install/user/`。
+Web 启动时 **`--root` = 仓库根**、**`--home` = `install/web`**（或 `EW4_HOME`）；读写该渠道下的 `mods/` 与 `user/`。
 
 ## 日常命令
 
@@ -32,7 +33,7 @@ scripts/ew4.sh smoke-start
 scripts/ew4.sh check btl
 scripts/ew4.sh check json-btl
 scripts/ew4.sh import-base       # data/import-seed → mods/base
-scripts/ew4.sh sync-mods         # mods/ → install/mods/
+scripts/ew4.sh sync-mods         # mods/ → install/web & install/apk
 scripts/ew4.sh fmt --check
 ```
 
@@ -44,7 +45,8 @@ Mod 安装/切换：**Ew4.Backend.Web HTTP**（`/api/mod-import` 等），无 sh
 
 | 变量 | 含义 |
 |------|------|
-| `EW4_HOME` | 安装根（默认 `<repo>/install`；运行时 mods 在 `install/mods`，用户在 `install/user`；维护者在仓库 `mods/`） |
+| `EW4_HOME` | 安装根（覆盖默认）；未设时 Web 为 `<repo>/install/web` |
+| `EW4_CHANNEL` | `web`（默认）或 `apk`，决定默认安装根 |
 | `EW4_IMPORT_SEED` | `import-base` 原料目录（默认 `data/import-seed`） |
 | `PORT` | `web` 端口（默认 5184） |
 | `EW4_DEV_IMAGE` | dev 镜像名（默认 `ew4-dev:local`） |

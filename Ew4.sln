@@ -29,6 +29,8 @@ Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ew4.Test.Platform.Content",
 EndProject
 Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ew4.Test.Platform.Session", "tests\Ew4.Test.Platform.Session\Ew4.Test.Platform.Session.csproj", "{D5E6F7A8-B9C0-1234-DEF1-23456789012D}"
 EndProject
+Project("{9A19103F-16F7-4668-BE54-9A1E7A4F7556}") = "Ew4.Test.Platform.Runtime", "tests\Ew4.Test.Platform.Runtime\Ew4.Test.Platform.Runtime.csproj", "{E6F7A8B9-C0D1-2345-EF12-34567890123E}"
+EndProject
 Global
 	GlobalSection(SolutionConfigurationPlatforms) = preSolution
 		Debug|Any CPU = Debug|Any CPU
@@ -90,5 +92,9 @@ Global
 		{D5E6F7A8-B9C0-1234-DEF1-23456789012D}.Debug|Any CPU.Build.0 = Debug|Any CPU
 		{D5E6F7A8-B9C0-1234-DEF1-23456789012D}.Release|Any CPU.ActiveCfg = Release|Any CPU
 		{D5E6F7A8-B9C0-1234-DEF1-23456789012D}.Release|Any CPU.Build.0 = Release|Any CPU
+		{E6F7A8B9-C0D1-2345-EF12-34567890123E}.Debug|Any CPU.ActiveCfg = Debug|Any CPU
+		{E6F7A8B9-C0D1-2345-EF12-34567890123E}.Debug|Any CPU.Build.0 = Debug|Any CPU
+		{E6F7A8B9-C0D1-2345-EF12-34567890123E}.Release|Any CPU.ActiveCfg = Release|Any CPU
+		{E6F7A8B9-C0D1-2345-EF12-34567890123E}.Release|Any CPU.Build.0 = Release|Any CPU
 	EndGlobalSection
 EndGlobal

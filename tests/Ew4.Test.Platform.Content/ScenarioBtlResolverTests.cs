@@ -6,12 +6,31 @@ namespace Ew4.Test.Platform.Content;
 
 public sealed class ScenarioBtlResolverTests
 {
+    private static string? BaseCampaignBtl(string fileName)
+    {
+        foreach (string relative in new[]
+                 {
+                     Path.Combine("install", "web", "mods", "base", "source", "original", fileName),
+                     Path.Combine("install", "mods", "base", "source", "original", fileName),
+                 })
+        {
+            string path = Path.GetFullPath(relative);
+            if (File.Exists(path))
+            {
+                return path;
+            }
+        }
+
+        return null;
+    }
+
     [Fact]
     public void Embedded_profile_falls_back_to_legacy_btl_when_json_is_stub()
     {
         using TempPack temp = new();
         const string id = "campaign1_01";
-        if (!File.Exists(Path.GetFullPath("install/mods/base/source/original/campaign1_01.btl")))
+        string? sourceBtl = BaseCampaignBtl("campaign1_01.btl");
+        if (sourceBtl == null)
         {
             return;
         }
@@ -19,7 +38,7 @@ public sealed class ScenarioBtlResolverTests
         WriteLegacyStub(temp.Root, id, "source/original/" + id + ".btl");
         Directory.CreateDirectory(Path.Combine(temp.Root, "source", "original"));
         File.Copy(
-            Path.GetFullPath("install/mods/base/source/original/campaign1_01.btl"),
+            sourceBtl,
             Path.Combine(temp.Root, "source", "original", id + ".btl"));
         PackModProfile.WriteEmbeddedJsonProfile(temp.Root);
 
@@ -33,14 +52,15 @@ public sealed class ScenarioBtlResolverTests
     {
         using TempPack temp = new();
         const string id = "campaign3_01";
-        if (!File.Exists(Path.GetFullPath("install/mods/base/source/original/campaign3_01.btl")))
+        string? sourceBtl3 = BaseCampaignBtl("campaign3_01.btl");
+        if (sourceBtl3 == null)
         {
             return;
         }
 
         Directory.CreateDirectory(Path.Combine(temp.Root, "source", "original"));
         File.Copy(
-            Path.GetFullPath("install/mods/base/source/original/campaign3_01.btl"),
+            sourceBtl3,
             Path.Combine(temp.Root, "source", "original", id + ".btl"));
         File.WriteAllText(
             Path.Combine(temp.Root, "mod.json"),
@@ -66,7 +86,8 @@ public sealed class ScenarioBtlResolverTests
     {
         using TempPack temp = new();
         const string id = "campaign1_01";
-        if (!File.Exists(Path.GetFullPath("install/mods/base/source/original/campaign1_01.btl")))
+        string? sourceBtl = BaseCampaignBtl("campaign1_01.btl");
+        if (sourceBtl == null)
         {
             return;
         }
@@ -74,7 +95,7 @@ public sealed class ScenarioBtlResolverTests
         WriteLegacyStub(temp.Root, id, "source/original/" + id + ".btl");
         Directory.CreateDirectory(Path.Combine(temp.Root, "source", "original"));
         File.Copy(
-            Path.GetFullPath("install/mods/base/source/original/campaign1_01.btl"),
+            sourceBtl,
             Path.Combine(temp.Root, "source", "original", id + ".btl"));
 
         IPackSource pack = new DirectoryPackSource(temp.Root);
