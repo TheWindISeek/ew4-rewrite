@@ -10,8 +10,9 @@
     <PackageReference Include="xunit" Version="2.9.2" />
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
-  <!-- 被测目标名 Ew4.Editor；src 改名前仍引用 Ew4.Editor -->
+  <!-- 被测目标名 Ew4.Platform.Editor；src 改名前仍引用 Ew4.Platform.Editor -->
   <ItemGroup>
-    <ProjectReference Include="..\..\src\Ew4.Editor\Ew4.Editor.csproj" />
+    <ProjectReference Include="..\..\src\Ew4.Platform.Editor\Ew4.Platform.Editor.csproj" />
+    <ProjectReference Include="..\..\src\Ew4.Platform.Persistence\Ew4.Platform.Persistence.csproj" />
   </ItemGroup>
 </Project>

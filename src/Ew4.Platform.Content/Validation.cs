@@ -1,28 +1,7 @@
 using System.Collections.Generic;
+using Ew4.Interface.Common;
 
 namespace Ew4.Platform.Content;
-
-public enum ValidationLevel
-{
-    Schema,
-    Reference,
-    Constraint,
-    SmokeStart,
-}
-
-public enum Severity
-{
-    Info,
-    Warning,
-    Error,
-}
-
-public sealed record Diagnostic(
-    Severity Severity,
-    string Code,
-    string Path,
-    string Message,
-    string? Hint = null);
 
 public sealed record ContentLimits(long MaxBytesPerFile, int MaxFiles);
 

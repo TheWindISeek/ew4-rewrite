@@ -6,6 +6,8 @@
 | 状态 | 已修复 |
 | 影响 | Mod `great-front`、切 **base** 后 catalog Error；对照 `huangkai` 正常 |
 
+> 注：本文是历史排障记录。文中的 `ScenarioBtlResolver` / `legacy-btl` 读取路径已在 content-json-redesign 步骤 5 中删除，Content 现在只读 schema 3 场景 JSON。
+
 ## 现象
 
 1. **主菜单**：底部出现 `Error` + 重试；`initializeClient` 里 `rpc('catalog')` 失败，整页无法进入正常菜单。

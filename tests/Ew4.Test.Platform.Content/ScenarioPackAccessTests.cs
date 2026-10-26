@@ -7,17 +7,18 @@ namespace Ew4.Test.Platform.Content;
 public sealed class ScenarioModAccessTests
 {
     [Fact]
-    public void Embedded_json_detected_by_schema_2()
+    public void Schema_3_is_scenario_json()
     {
-        using JsonDocument doc = JsonDocument.Parse("""{"schema":2,"id":"x","sections":{}}""");
-        Assert.True(ScenarioModAccess.IsEmbeddedScenarioJson(doc.RootElement));
+        using JsonDocument doc = JsonDocument.Parse("""{"schema":3,"id":"x"}""");
+        Assert.True(ScenarioModAccess.IsScenarioJson(doc.RootElement));
     }
 
-    [Fact]
-    public void Stub_json_is_not_embedded()
+    [Theory]
+    [InlineData("""{"schema":1,"id":"x","legacy":{"btl":"source/original/x.btl"}}""")]
+    [InlineData("""{"schema":2,"id":"x","sections":{}}""")]
+    public void Older_schemas_are_not_scenario_json(string text)
     {
-        using JsonDocument doc = JsonDocument.Parse(
-            """{"schema":1,"id":"x","legacy":{"btl":"source/original/x.btl"}}""");
-        Assert.False(ScenarioModAccess.IsEmbeddedScenarioJson(doc.RootElement));
+        using JsonDocument doc = JsonDocument.Parse(text);
+        Assert.False(ScenarioModAccess.IsScenarioJson(doc.RootElement));
     }
 }

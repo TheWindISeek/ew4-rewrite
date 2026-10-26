@@ -1,14 +1,14 @@
 using System;
 using System.IO;
-using Ew4.Editor.Campaign;
+using System.Linq;
+using Ew4.Platform.Editor.Campaign;
 using Ew4.Platform.Content;
-using Ew4.Platform.Content.ScenarioEdit;
 
 namespace Ew4.Tool;
 
 internal static class ScenarioCli
 {
-    private static readonly IScenarioEditToolkit Toolkit = ScenarioEditToolkit.Default;
+    private static readonly Ew4.Platform.Mod.Scenario.ScenarioBtlConverter Converter = new();
 
     internal static int Run(string[] args)
     {
@@ -23,10 +23,31 @@ internal static class ScenarioCli
             "btl-to-json" => BtlToJson(args),
             "json-to-btl" => JsonToBtl(args),
             "roundtrip" => Roundtrip(args),
-            "pack-to-json" => PackToJson(args),
+            "mod-to-json" => ModToJson(args),
+            "to-v3" => ToSchema3(args),
             "patch-army" => PatchArmy(args),
             _ => Unknown(args[1]),
         };
+    }
+
+    /// <summary>把一个 mod 的 scenarios/*.json（legacy btl 索引桩）原地转成 schema 3，并逐份验证往返字节一致。</summary>
+    private static int ToSchema3(string[] args)
+    {
+        string? mod = null;
+        for (int i = 2; i < args.Length; i++)
+        {
+            if (args[i] == "--mod" && i + 1 < args.Length) mod = args[++i];
+        }
+
+        if (string.IsNullOrWhiteSpace(mod) || !Directory.Exists(Path.Combine(mod, "scenarios")))
+        {
+            Console.Error.WriteLine("scenario to-v3 requires --mod <dir containing scenarios/>");
+            return 2;
+        }
+
+        var result = Ew4.Tool.Import.ModScenarioConvert.ToSchema3(mod);
+        Console.WriteLine($"scenario to-v3: {result.Converted} converted, {result.Skipped} skipped in {Path.GetFullPath(mod)}");
+        return 0;
     }
 
     private static int BtlToJson(string[] args)
@@ -47,8 +68,7 @@ internal static class ScenarioCli
             return 2;
         }
 
-        ScenarioDocument document = Toolkit.ReadBtlFile(id, input);
-        Toolkit.WriteJsonFile(output, document);
+        File.WriteAllText(output, Converter.ToJson(id, File.ReadAllBytes(input), new()).Json!);
         Console.WriteLine($"scenario btl-to-json: id={id} → {Path.GetFullPath(output)}");
         return 0;
     }
@@ -57,12 +77,10 @@ internal static class ScenarioCli
     {
         string? input = null;
         string? output = null;
-        bool applyLayers = true;
         for (int i = 2; i < args.Length; i++)
         {
             if (args[i] == "--input" && i + 1 < args.Length) input = args[++i];
             else if (args[i] == "--output" && i + 1 < args.Length) output = args[++i];
-            else if (args[i] == "--preserve-sections") applyLayers = false;
         }
 
         if (string.IsNullOrWhiteSpace(input) || string.IsNullOrWhiteSpace(output))
@@ -71,11 +89,8 @@ internal static class ScenarioCli
             return 2;
         }
 
-        ScenarioDocument document = Toolkit.ReadJsonFile(input);
-        Toolkit.WriteBtlFile(
-            output,
-            document,
-            applyLayers ? ScenarioExportMode.ApplyLayers : ScenarioExportMode.PreserveSections);
+        using (var json = System.Text.Json.JsonDocument.Parse(File.ReadAllBytes(input)))
+            File.WriteAllBytes(output, Converter.ToBtl(json.RootElement, new()).Bytes!);
         Console.WriteLine($"scenario json-to-btl: {Path.GetFullPath(input)} → {Path.GetFullPath(output)}");
         return 0;
     }
@@ -97,18 +112,12 @@ internal static class ScenarioCli
         }
 
         byte[] raw = File.ReadAllBytes(Path.GetFullPath(input));
-        ScenarioBtlRoundtrip.Result result = Toolkit.ValidateBtlRoundtrip(id, raw);
-        Console.WriteLine(
-            $"scenario roundtrip: id={id} legacy={result.OriginalClone} document={result.Document} json={result.DocumentJson} layers={result.Layers}");
-        if (!result.Layers && result.LayerMismatchSection != null)
-        {
-            Console.Error.WriteLine("layer mismatch section: " + result.LayerMismatchSection);
-        }
-
-        return result.OriginalClone && result.Document && result.DocumentJson && result.Layers ? 0 : 1;
+        var result = Ew4.Platform.Editor.Campaign.ScenarioRoundtrip.CheckBinary(Converter, id, raw);
+        Console.WriteLine($"scenario roundtrip: id={id} stable={result.Stable} source={result.SourceLength} exported={result.ExportedLength}");
+        return result.Stable ? 0 : 1;
     }
 
-    private static int PackToJson(string[] args)
+    private static int ModToJson(string[] args)
     {
         string packs = "mods";
         string modId = "base";
@@ -129,8 +138,7 @@ internal static class ScenarioCli
         }
 
         var repository = new FileModRepository(Path.GetFullPath(packs));
-        ScenarioDocument document = Toolkit.OpenFromPack(repository.Open(modId), scenarioId);
-        Toolkit.WriteJsonFile(output, document);
+        File.WriteAllBytes(output, Ew4.Platform.Editor.Campaign.EditSession.Open(repository.Open(modId), scenarioId).ToUtf8());
         Console.WriteLine($"scenario pack-to-json: pack={modId} id={scenarioId} → {Path.GetFullPath(output)}");
         return 0;
     }
@@ -155,10 +163,12 @@ internal static class ScenarioCli
             return 2;
         }
 
-        ScenarioDocument document = Toolkit.ReadJsonFile(jsonPath);
-        ScenarioDocument patched = Toolkit.PatchArmyCell(document, index.Value, cell.Value);
+        var doc = (System.Text.Json.Nodes.JsonObject)System.Text.Json.Nodes.JsonNode.Parse(File.ReadAllBytes(jsonPath))!;
+        Ew4.Platform.Editor.Campaign.ScenarioJsonPatch.Apply(doc,
+            new Ew4.Platform.Editor.Campaign.ScenarioEditArmyCell(index.Value, cell.Value),
+            Ew4.Platform.Editor.Campaign.Capabilities.For(Ew4.Platform.Editor.Campaign.EditorMode.Free));
         string outPath = string.IsNullOrWhiteSpace(output) ? jsonPath : output;
-        Toolkit.WriteJsonFile(outPath, patched);
+        File.WriteAllText(outPath, doc.ToJsonString(new System.Text.Json.JsonSerializerOptions { WriteIndented = true, Encoder = System.Text.Encodings.Web.JavaScriptEncoder.UnsafeRelaxedJsonEscaping }));
         Console.WriteLine(
             $"scenario patch-army: index={index.Value} cell={cell.Value} → {Path.GetFullPath(outPath)}");
         return 0;
@@ -170,7 +180,7 @@ internal static class ScenarioCli
     {
         Console.WriteLine("""
           scenario btl-to-json --id <scenarioId> --input <file.btl> --output <file.ew4scenario.json>
-          scenario json-to-btl --input <file.ew4scenario.json> --output <file.btl> [--preserve-sections]
+          scenario json-to-btl --input <file.ew4scenario.json> --output <file.btl>
           scenario roundtrip --id <scenarioId> --input <file.btl>
           scenario pack-to-json --id <scenarioId> --output <file.ew4scenario.json> [--packs packs] [--pack base]
           scenario patch-army --json <file.ew4scenario.json> --index <n> --cell <cell> [--output <file>]

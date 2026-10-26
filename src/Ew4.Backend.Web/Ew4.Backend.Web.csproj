@@ -11,10 +11,6 @@
     <ProjectReference Include="..\Ew4.Front.Web\Ew4.Front.Web.csproj">
       <ReferenceOutputAssembly>false</ReferenceOutputAssembly>
     </ProjectReference>
-    <ProjectReference Include="..\Ew4.Editor\Ew4.Editor.csproj" />
-    <ProjectReference Include="..\Ew4.Platform.Content\Ew4.Platform.Content.csproj" />
-    <ProjectReference Include="..\Ew4.Platform.Engine\Ew4.Platform.Engine.csproj" />
-    <ProjectReference Include="..\Ew4.Platform.Runtime\Ew4.Platform.Runtime.csproj" />
     <ProjectReference Include="..\Ew4.Service\Ew4.Service.csproj" />
     <ProjectReference Include="..\Ew4.Interface\Ew4.Interface.csproj" />
   </ItemGroup>
@@ -25,4 +21,5 @@
       <CopyToPublishDirectory>PreserveNewest</CopyToPublishDirectory>
     </Content>
   </ItemGroup>
+  <Import Project="android.targets" Condition="'$(Ew4Android)' == 'true'" />
 </Project>

@@ -8,7 +8,8 @@
   <ItemGroup>
     <ProjectReference Include="..\Ew4.Platform.Content\Ew4.Platform.Content.csproj" />
     <ProjectReference Include="..\Ew4.Platform.Engine\Ew4.Platform.Engine.csproj" />
-    <ProjectReference Include="..\Ew4.Editor\Ew4.Editor.csproj" />
-    <ProjectReference Include="..\Ew4.Platform.Runtime\Ew4.Platform.Runtime.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Editor\Ew4.Platform.Editor.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Persistence\Ew4.Platform.Persistence.csproj" />
+    <ProjectReference Include="..\Ew4.Service\Ew4.Service.csproj" />
   </ItemGroup>
 </Project>

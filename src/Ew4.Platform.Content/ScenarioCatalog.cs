@@ -29,20 +29,11 @@ public static class ScenarioCatalog
                 continue;
             }
 
-            bool embedded = ScenarioModAccess.IsEmbeddedScenarioJson(root);
-            string? btl = null;
-            if (!embedded
-                && root.TryGetProperty("legacy", out JsonElement legacy)
-                && legacy.TryGetProperty("btl", out JsonElement btlEl))
-            {
-                btl = btlEl.GetString();
-            }
-
-            list.Add(new ScenarioIndex(id, path, btl, embedded));
+            list.Add(new ScenarioIndex(id, path, ScenarioModAccess.IsScenarioJson(root)));
         }
 
         return list;
     }
 }
 
-public sealed record ScenarioIndex(string Id, string JsonPath, string? OriginalBtlPath, bool IsEmbeddedDocument);
+public sealed record ScenarioIndex(string Id, string JsonPath, bool IsSchema3);

@@ -1,7 +1,8 @@
-using Ew4.Editor;
-using Ew4.Editor.Commander;
+using Ew4.Platform.Editor;
+using Ew4.Platform.Editor.Commander;
 using Ew4.Platform.Content;
 using Ew4.Platform.Engine;
+using Ew4.Platform.Persistence.Workspaces;
 using Xunit;
 
 namespace Ew4.Test.Editor;
@@ -94,7 +95,12 @@ public sealed class CommanderEditorTests
         var resolver = new ContentResolver(registry, engine);
         var validator = new ContentValidator(registry, engine, builder);
         var loader = new ModSnapshotLoader(resolver, validator);
-        var service = new WorkspaceService(workspaces, repository, registry, loader, validator);
+        var service = new WorkspaceService(
+            new WorkspaceStore(workspaces),
+            repository,
+            registry,
+            loader,
+            validator);
         WorkspaceInfo created = service.Create(ModId.Base, "cmd-ws", "Commander test workspace");
         return (service, created.Id);
     }

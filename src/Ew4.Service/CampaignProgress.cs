@@ -4,13 +4,13 @@ namespace Ew4.Service;
 
 public static class CampaignProgress
 {
-    public static bool Accessible(ClientContent content, PlayerAccount account, string id)
+    public static bool Accessible(Play.PlayContent content, PlayerAccount account, string id)
     {
         var entry = content.Presentations.Values.FirstOrDefault(p => p.Id == id || p.Alternate == id);
         return entry == null || !entry.Hidden || account.UnlockedCampaigns.Contains(entry.Id);
     }
 
-    public static int RemainingYellow(ClientContent content, WorldState world)
+    public static int RemainingYellow(Play.PlayContent content, WorldState world)
     {
         var source = content.Battle(world.ScenarioId);
         var ai = world.Factions.Where(f => !f.Human).Select(f => f.Id).ToHashSet(StringComparer.Ordinal);
@@ -22,7 +22,7 @@ public static class CampaignProgress
             + world.Units.Count(u => markedUnits.Contains(u.Id) && ai.Contains(u.Owner));
     }
 
-    public static PlayerAccount Settle(ClientContent content, GameSession session)
+    public static PlayerAccount Settle(Play.PlayContent content, GameSession session)
     {
         var world = session.World;
         if (world.Outcome != BattleOutcome.Victory) return session.Account;

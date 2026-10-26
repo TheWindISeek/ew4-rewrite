@@ -19,7 +19,7 @@
     "extension": 1
   },
   "scenarios": {
-    "storage": "legacy-btl",
-    "documentSchema": 2
+    "storage": "embedded-json",
+    "documentSchema": 3
   }
 }

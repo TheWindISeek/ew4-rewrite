@@ -12,5 +12,6 @@
   </ItemGroup>
   <ItemGroup>
     <ProjectReference Include="..\..\src\Ew4.Platform.Content\Ew4.Platform.Content.csproj" />
+    <ProjectReference Include="..\..\src\Ew4.Platform.Persistence\Ew4.Platform.Persistence.csproj" />
   </ItemGroup>
 </Project>

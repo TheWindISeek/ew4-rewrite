@@ -18,15 +18,15 @@
       return new Promise(resolve=>{
         const selected=new Set(factions.filter(f=>f.locked).map(f=>f.id));
         const done=value=>{this.panel?.closest('.dialog')?.style.removeProperty('--ui-scale');resolve(value);};
-        const panel=this.panelFor('选择本局势力',()=>done(null),()=>done(factions.filter(f=>selected.has(f.id)).map(f=>f.id)));
+        const panel=this.panelFor(ew4t('ui.local_pick_factions','选择本局势力'),()=>done(null),()=>done(factions.filter(f=>selected.has(f.id)).map(f=>f.id)));
         const toolbar=document.createElement('div');toolbar.className='local-selection-toolbar';
         const inputs=[];
-        for(const [label,select] of [['全选',true],['全不选',false]]){
+        for(const [label,select] of [[ew4t('ui.all','全选'),true],[ew4t('ui.none','全不选'),false]]){
           const button=this.api.button('',()=>{for(const {input,faction} of inputs){input.checked=select||faction.locked;if(input.checked)selected.add(faction.id);else selected.delete(faction.id);}},toolbar);
           button.setAttribute('aria-label',label);button.append(this.text(label));
         }
         panel.append(toolbar);
-        const list=document.createElement('div');list.className='local-faction-list';list.setAttribute('role','group');list.setAttribute('aria-label','本局玩家势力');
+        const list=document.createElement('div');list.className='local-faction-list';list.setAttribute('role','group');list.setAttribute('aria-label',ew4t('ui.local_player_factions','本局玩家势力'));
         for(const faction of factions){
           const label=document.createElement('label');label.className='local-faction-row';label.dataset.faction=faction.id;
           const input=document.createElement('input');input.type='checkbox';input.checked=faction.locked;input.disabled=faction.locked;
@@ -45,18 +45,18 @@
       if(this.resultId===result.id||state.dialogue||state.scenarioPopup||!this.api.ready())return;
       this.resultId=result.id;
       const winner=state.factions.find(f=>f.id===local.winnerFaction);
-      const panel=this.panelFor('本局结果');
-      const title=document.createElement('div');title.className='local-winner';title.append(this.text(winner?winner.name+' 胜利':'本局结束'));panel.append(title);
-      const list=document.createElement('div');list.className='local-faction-list';list.setAttribute('aria-label','各势力结果');
+      const panel=this.panelFor(ew4t('ui.local_result','本局结果'));
+      const title=document.createElement('div');title.className='local-winner';title.append(this.text(winner?ew4t('ui.winner_wins','{0} 胜利',[winner.name]):ew4t('ui.game_over','本局结束')));panel.append(title);
+      const list=document.createElement('div');list.className='local-faction-list';list.setAttribute('aria-label',ew4t('ui.local_results_by_faction','各势力结果'));
       for(const faction of state.factions){
         const row=document.createElement('div');row.className='local-faction-row local-result-row';row.dataset.faction=faction.id;
         const name=document.createElement('span');name.className='local-faction-name';name.append(this.text(faction.name));
         const outcome=document.createElement('span');outcome.className=faction.id===local.winnerFaction?'local-won':'local-lost';
-        outcome.append(this.text(faction.id===local.winnerFaction?'胜利':'失败'));row.append(name,outcome);list.append(row);
+        outcome.append(this.text(faction.id===local.winnerFaction?ew4t('ui.victory','胜利'):ew4t('ui.defeat','失败')));row.append(name,outcome);list.append(row);
       }
       panel.append(list);
       const actions=document.createElement('div');actions.className='local-result-actions';
-      for(const [label,action] of [['重新开始',()=>this.api.restart(state)],['退出',()=>this.api.main()]]){
+      for(const [label,action] of [[ew4t('ui.restart','重新开始'),()=>this.api.restart(state)],[ew4t('ui.quit','退出'),()=>this.api.main()]]){
         const button=this.api.button('',async()=>{this.api.close();await action();},actions);button.setAttribute('aria-label',label);button.append(this.text(label));
       }
       panel.append(actions);

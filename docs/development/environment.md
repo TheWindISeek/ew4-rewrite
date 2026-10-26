@@ -30,8 +30,6 @@ scripts/ew4.sh web          # http://127.0.0.1:5184 ，Ew4.Backend.Web 开发态
 ```bash
 scripts/ew4.sh validate smoke    # mods/base 全包 SmokeStart
 scripts/ew4.sh smoke-start
-scripts/ew4.sh check btl
-scripts/ew4.sh check json-btl
 scripts/ew4.sh import-base       # data/import-seed → mods/base
 scripts/ew4.sh sync-mods         # mods/ → install/web & install/apk
 scripts/ew4.sh fmt --check
@@ -51,7 +49,7 @@ Mod 安装/切换：**Ew4.Backend.Web HTTP**（`/api/mod-import` 等），无 sh
 | `PORT` | `web` 端口（默认 5184） |
 | `EW4_DEV_IMAGE` | dev 镜像名（默认 `ew4-dev:local`） |
 
-脚本模块划分见 [scripts/README.md](../../scripts/README.md)。路径常量代码：`Ew4.Platform.Content.Layout.RepositoryPaths`、`Ew4.Platform.Runtime.Layout.InstallLayout`。
+脚本模块划分见 [scripts/README.md](../../scripts/README.md)。安装根与仓库路径代码：`Ew4.Platform.Persistence.Layout`（`InstallLayout`、`InstallChannelProbe`、`RepositoryPaths`）；低级文件 API：`Persistence.Io` / `Workspaces` / `Import`。
 
 ## 浏览器烟测（改 Play / Host 后）
 

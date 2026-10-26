@@ -31,7 +31,7 @@
 
 | ID | 主题 | 验收方向（摘要） |
 |----|------|------------------|
-| E1 | **测试分层** | 新增 `Ew4.Test.Service`、`Ew4.Test.Platform.Runtime` 等（见 [tests/README.md](../../tests/README.md)） |
+| E1 | **测试分层** | 新增 `Ew4.Test.Service`、`Ew4.Test.Platform.Play` 等（见 [tests/README.md](../../tests/README.md)） |
 | E2 | **Mod 回归** | 扩展 `test-mod-switch.sh`：除 catalog 计数外，可选快照/关键 API 字段（势力 color、scenario 数） |
 | E3 | **Legacy 命名收敛** | `Client*` → 域名词（非阻塞）；`Original*` 边界文档化，避免新代码再扩 legacy 路径 |
 | E4 | **文档** | `arch/` 与实现对账；根 README 保持与实现一致 |
@@ -42,8 +42,10 @@
 
 | ID | 主题 | 说明 |
 |----|------|------|
-| H1 | **Android 壳** | 复用 `Ew4.Backend.Web` + WebView；D5 暂停 |
+| H1 | **Android 壳** | 路线 A：APK 内带后端 + WebView；见 [android-shell.md](./android-shell.md) |
+| L1 | **多语言** | `zh-Hans/zh-Hant/en`；见 [arch/localization.md](../../arch/localization.md) |
 | H2 | **发行内置 Mod** | 默认 `base` + 样例包打进 `install/mods/` 的安装器体验 |
+| H3 | **APK 导出** | 内置 `ew4-base.apk` + 合并 Mod → 可安装 APK；`Ew4.Tool export-apk`；见 [apk-export.md](./apk-export.md) |
 
 ---
 

@@ -2,9 +2,11 @@ using System;
 using System.Collections.Generic;
 using System.IO;
 using System.Linq;
-using Ew4.Editor;
+using Ew4.Interface.Common;
+using Ew4.Platform.Editor;
 using Ew4.Platform.Content;
 using Ew4.Platform.Engine;
+using Ew4.Platform.Persistence.Workspaces;
 
 namespace Ew4.Tool;
 
@@ -38,7 +40,12 @@ internal static class WorkspaceCli
         var resolver = new ContentResolver(registry, engine);
         var validator = new ContentValidator(registry, engine, builder);
         var loader = new ModSnapshotLoader(resolver, validator);
-        return new WorkspaceService(Path.GetFullPath(workspaces), repository, registry, loader, validator);
+        return new WorkspaceService(
+            new WorkspaceStore(Path.GetFullPath(workspaces)),
+            repository,
+            registry,
+            loader,
+            validator);
     }
 
     private static int List(string[] args)
@@ -66,14 +73,14 @@ internal static class WorkspaceCli
         string workspaces = "build/workspaces";
         string? id = null;
         string? name = null;
-        string fromPack = ModId.Base;
+        string fromMod = ModId.Base;
         for (int i = 2; i < args.Length; i++)
         {
             if (args[i] == "--packs" && i + 1 < args.Length) packs = args[++i];
             else if (args[i] == "--workspaces" && i + 1 < args.Length) workspaces = args[++i];
             else if (args[i] == "--id" && i + 1 < args.Length) id = args[++i];
             else if (args[i] == "--name" && i + 1 < args.Length) name = args[++i];
-            else if (args[i] == "--from" && i + 1 < args.Length) fromPack = args[++i];
+            else if (args[i] == "--from" && i + 1 < args.Length) fromMod = args[++i];
         }
 
         if (string.IsNullOrWhiteSpace(id) || string.IsNullOrWhiteSpace(name))
@@ -82,7 +89,7 @@ internal static class WorkspaceCli
             return 2;
         }
 
-        WorkspaceInfo info = CreateService(packs, workspaces).Create(fromPack, id, name);
+        WorkspaceInfo info = CreateService(packs, workspaces).Create(fromMod, id, name);
         Console.WriteLine($"workspace create: id={info.Id} parent={info.ParentModId}");
         return 0;
     }

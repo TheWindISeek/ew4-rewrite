@@ -2,7 +2,7 @@
 
 | 目标 | 文档 |
 |------|------|
-| 代码结构与接口 | [arch/README.md](arch/README.md) |
+| 架构（三文档） | [arch/module-responsibilities.md](arch/module-responsibilities.md) · [interface-contracts.md](arch/interface-contracts.md) · [operations.md](arch/operations.md) |
 | 任务流程与门禁 | [task/todo.md](task/todo.md) |
 | 计划 backlog | [task/plan/roadmap.md](task/plan/roadmap.md) |
 | 环境 / `ew4.sh` | [development/environment.md](development/environment.md) |

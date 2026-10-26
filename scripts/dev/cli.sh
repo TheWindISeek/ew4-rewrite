@@ -1,6 +1,6 @@
 # shellcheck shell=bash
 #
-# Ew4.Tool 命令的 shell 封装（由 scripts/ew4.sh 的 import-base / validate / smoke-start / check 调用）。
+# Ew4.Tool 命令的 shell 封装（由 scripts/ew4.sh 的 import-base / validate / smoke-start 调用）。
 #
 # 均在 Docker 容器内 dotnet run Ew4.Tool；内容包目录来自 ew4_repo_mods_dir（仓库 mods/）。
 # import-base 原料：EW4_IMPORT_SEED 或仓库下 data/import-seed。
@@ -9,7 +9,6 @@
 #   cmd_import_base [cli args…]
 #   cmd_validate <smoke|schema|reference|constraint> [--pack id] [--packs dir]
 #   cmd_smoke_start [--scenario id] [--packs dir]
-#   cmd_check btl|json-btl [cli args…]
 
 readonly EW4_TOOL_PROJECT="src/Ew4.Tool/Ew4.Tool.csproj"
 
@@ -100,33 +99,5 @@ cmd_validate() {
   done
   packs="$(ew4_container_path "$root" "$packs")"
   ew4_docker_dotnet run --project "$EW4_TOOL_PROJECT" -- \
-    validate-pack --packs "$packs" --pack "$pack_id" --level "$level"
-}
-
-cmd_check() {
-  local root packs kind
-  root="$(ew4_repo_root)"
-  packs="$(ew4_repo_mods_dir "$root")"
-  kind="${1:-}"
-  shift || true
-  case "$kind" in
-    btl)
-      packs="$(ew4_container_path "$root" "$packs")"
-      ew4_docker_dotnet run --project "$EW4_TOOL_PROJECT" -- \
-        validate-btl-roundtrip --pack "$packs/base" "$@"
-      ;;
-    json-btl|g6)
-      packs="$(ew4_container_path "$root" "$packs")"
-      ew4_docker_dotnet run --project "$EW4_TOOL_PROJECT" -- \
-        validate-scenario-json-btl --pack "$packs/base" "$@"
-      ;;
-    "")
-      echo "用法: scripts/ew4.sh check btl|json-btl [args…]" >&2
-      return 2
-      ;;
-    *)
-      echo "check: 未知子命令 «$kind»（btl | json-btl）" >&2
-      return 2
-      ;;
-  esac
+    validate-mod --packs "$packs" --pack "$pack_id" --level "$level"
 }

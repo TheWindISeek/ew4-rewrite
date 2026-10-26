@@ -1,0 +1,56 @@
+using System.Globalization;
+using System.Security.Cryptography;
+using System.Text.Json;
+using Ew4.Platform.Engine;
+
+namespace Ew4.Platform.Content.StaticData;
+
+public sealed record StaticDataInitializedFactions(IReadOnlyList<StaticDataFaction> Records, IReadOnlyList<int> TurnOrder,
+    int PlayerIndex, VictoryRules Victory, int HighestRatingRound, string SourceRevision);
+
+public static class StaticDataScenarioInitialization
+{
+    public static StaticDataInitializedFactions Prepare(StaticDataBattle battle, int mode, string? selectedCountry,
+        StaticDataWarzoneTechnology technology, int warzone = 0, IReadOnlyList<int>? technologySnapshot = null,
+        IReadOnlyDictionary<string, string>? countryUnitVariants = null)
+    {
+        if (mode is not (1 or 2 or 4)) throw new RuleViolation("legacy.start_mode", "This single-player importer supports campaign, conquest and tutorial modes");
+        if (battle.Factions.Count == 0
+            || battle.MinimumRound < 1 || battle.RatingRound < 0)
+            throw new RuleViolation("legacy.start_header", "Invalid or ambiguous scenario startup metadata");
+        var records = battle.Factions.Select(f => f with { Values68 = Array.AsReadOnly(f.Values68.ToArray()) }).ToArray();
+        if (countryUnitVariants != null)
+            for (int i = 0; i < records.Length; i++)
+                if (countryUnitVariants.TryGetValue(records[i].CountryId, out string? variant)) records[i] = records[i] with { Variant = variant };
+        if (mode == 2)
+        {
+            int chosen = Array.FindIndex(records, f => f.CountryId == selectedCountry);
+            if (chosen < 0) throw new RuleViolation("legacy.start_player", "Selected conquest country does not exist");
+            records[chosen] = records[chosen] with { Ai = false };
+            if (records.Where((f, i) => i != chosen).Any(f => !f.Ai))
+                throw new RuleViolation("legacy.start_player", "Conquest contains another human faction; an explicit multiplayer policy is required");
+        }
+        else if (selectedCountry != null)
+            throw new RuleViolation("legacy.start_player", "Campaign and tutorial human factions come from their scenario records");
+        int player = Array.FindIndex(records, f => !f.Ai);
+        if (player < 0) throw new RuleViolation("legacy.start_player", "Scenario has no human faction");
+        if (mode == 2)
+            for (int i = 0; i < records.Length; i++)
+                if (records[i].Camp == records[player].Camp)
+                    records[i] = records[i] with { IncomeMultiplier = 1, AiEvasionBonus = 0 };
+        records[player] = technology.Apply(records[player], mode, true, warzone, technologySnapshot);
+        var order = new[] { player }.Concat(Enumerable.Range(0, records.Length).Where(i => i != player)).ToArray();
+        var victory = new VictoryRules(battle.MinimumRound, battle.ObjectivesDisabled == 0);
+        string revision = Convert.ToHexStringLower(Ew4.Interface.Common.Sha256Hash.HashData(JsonSerializer.SerializeToUtf8Bytes(new
+            { schema = 1, battle = battle.Fingerprint, mode, selectedCountry, warzone,
+                technology = technology.SourceRevision, records, order, victory, ratingRound = battle.RatingRound })));
+        return new(Array.AsReadOnly(records), Array.AsReadOnly(order), player, victory, battle.RatingRound, revision);
+    }
+
+    public static string FactionId(string scenarioId, int sourceIndex, StaticDataFaction source)
+    {
+        if (string.IsNullOrWhiteSpace(scenarioId) || sourceIndex < 0 || string.IsNullOrWhiteSpace(source.CountryId))
+            throw new RuleViolation("legacy.start_identity", "Missing scenario faction identity");
+        return scenarioId + ".faction." + sourceIndex.ToString(CultureInfo.InvariantCulture) + "." + source.CountryId;
+    }
+}

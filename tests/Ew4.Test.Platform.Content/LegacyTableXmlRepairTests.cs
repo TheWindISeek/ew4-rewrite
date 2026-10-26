@@ -1,5 +1,5 @@
 using System.Text;
-using Ew4.Platform.Content.Build;
+using Ew4.Platform.Content.CatalogLoad;
 using Xunit;
 
 namespace Ew4.Test.Platform.Content;

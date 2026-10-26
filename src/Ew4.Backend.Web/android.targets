@@ -1,0 +1,23 @@
+<Project>
+  <!--
+    仅在 Android 壳的发布中启用（-p:Ew4Android=true -r linux-bionic-arm64）。
+    ASP.NET Core 没有 linux-bionic 的运行时包；它的托管程序集与 libc 无关，所以借用 linux-arm64 的那份。
+    Microsoft.NETCore.App 仍用 linux-bionic-arm64 的运行时（含 bionic 版原生库）。
+    Android 没有 ICU，必须使用 Invariant 全球化。
+  -->
+  <PropertyGroup>
+    <InvariantGlobalization>true</InvariantGlobalization>
+    <SelfContained>true</SelfContained>
+    <PublishSingleFile>false</PublishSingleFile>
+    <DebugType>none</DebugType>
+    <AutoreleasePoolSupport>false</AutoreleasePoolSupport>
+    <ServerGarbageCollector>false</ServerGarbageCollector>
+    <ConcurrentGarbageCollection>false</ConcurrentGarbageCollection>
+  </PropertyGroup>
+  <ItemGroup>
+    <KnownFrameworkReference Update="Microsoft.AspNetCore.App"
+                             RuntimePackRuntimeIdentifiers="$(RuntimePackRuntimeIdentifiers);linux-bionic-arm64"
+                             RuntimePackNamePatterns="Microsoft.AspNetCore.App.Runtime.linux-arm64"
+                             RuntimePackExcludedRuntimeIdentifiers="" />
+  </ItemGroup>
+</Project>

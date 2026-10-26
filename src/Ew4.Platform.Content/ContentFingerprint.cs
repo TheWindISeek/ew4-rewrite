@@ -14,7 +14,7 @@ internal static class ContentFingerprint
         foreach (string path in source.List("").OrderBy(p => p, StringComparer.Ordinal))
         {
             if (string.Equals(path, ModManifestPaths.FileName, StringComparison.Ordinal)
-                || string.Equals(path, ModManifestPaths.LegacyPackJson, StringComparison.Ordinal))
+                || string.Equals(path, ModManifestPaths.LegacyModJson, StringComparison.Ordinal))
             {
                 continue;
             }
@@ -26,11 +26,11 @@ internal static class ContentFingerprint
             }
 
             byte[] bytes = source.Read(path);
-            string hash = Convert.ToHexString(SHA256.HashData(bytes)).ToLowerInvariant();
+            string hash = Convert.ToHexString(Ew4.Interface.Common.Sha256Hash.HashData(bytes)).ToLowerInvariant();
             lines.Add(path + ":" + hash);
         }
 
         string payload = string.Join('\n', lines);
-        return Convert.ToHexString(SHA256.HashData(Encoding.UTF8.GetBytes(payload))).ToLowerInvariant();
+        return Convert.ToHexString(Ew4.Interface.Common.Sha256Hash.HashData(Encoding.UTF8.GetBytes(payload))).ToLowerInvariant();
     }
 }

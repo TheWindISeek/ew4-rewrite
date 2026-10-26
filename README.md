@@ -4,7 +4,10 @@
 
 | 文档 | 说明 |
 |------|------|
-| [docs/arch/README.md](docs/arch/README.md) | 项目分层与 HTTP 接口 |
+| [docs/arch/frozen/](docs/arch/frozen/README.md) | **冻结架构约束（AI 不可改）** |
+| [docs/arch/module-responsibilities.md](docs/arch/module-responsibilities.md) | 模块职责 |
+| [docs/arch/interface-contracts.md](docs/arch/interface-contracts.md) | 接口定义 |
+| [docs/arch/operations.md](docs/arch/operations.md) | 操作如何完成 |
 | [mods/README.md](mods/README.md) | 怎么写 Mod、差异包目录 |
 | [install/README.md](install/README.md) | **发行目录**（只拷 `install/` 也能玩） |
 | [docs/task/todo.md](docs/task/todo.md) | 回归门禁 G1–G6 |
@@ -109,7 +112,7 @@ docker run --rm -v "$(pwd):/src" -w /src ew4-dev:local \
   dotnet run --project src/Ew4.Tool/Ew4.Tool.csproj -c Release -- validate smoke
 ```
 
-其它 Tool 子命令：`check btl`、`check json-btl`、`import-base` 等同理，把参数接在 `--` 后面。
+其它 Tool 子命令：`import-base` 等同理，把参数接在 `--` 后面。
 
 ---
 

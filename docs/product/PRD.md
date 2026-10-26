@@ -256,11 +256,11 @@ Fork 方希望：**引擎可持续升级**，**Mod 制作与引擎优化分开�
 
 | 原文 | 讨论后的理解 | 影响文档 |
 |---|---|---|
-| FR-E03 "保存为符合 EW4 的 **BTL**" | 编辑器**读写 JSON**(原生格式);BTL/XML 经 Exporter 生成,用于兼容与验收。见 [ADR-0003](../adr/0003-json-native-format-bidirectional.md) | [03](../arch/README.md) |
-| FR-E02 / FR-MAP02 "不可自带未内置 BIN" | 默认只选已有地图 id;**后期**可上传/编辑地图,但必须经 MapPolicy 校验(尺寸、地形枚举、城市落点、可达性等),且单独立项 | [03 §7](../arch/README.md#7-地图) |
-| FR-M02 "资源按路径覆盖内置包" | 原版是 `base` Pack,Mod 与其同格式;同一时间只激活一个 Pack,不做多 Mod 叠加。见 [ADR-0002](../adr/0002-pack-model-single-active.md) | [03](../arch/README.md) |
+| FR-E03 "保存为符合 EW4 的 **BTL**" | 编辑器**读写 JSON**(原生格式);BTL/XML 经 Exporter 生成,用于兼容与验收。见 [ADR-0003](../adr/0003-json-native-format-bidirectional.md) | [arch](../arch/module-responsibilities.md) |
+| FR-E02 / FR-MAP02 "不可自带未内置 BIN" | 默认只选已有地图 id;**后期**可上传/编辑地图,但必须经 MapPolicy 校验(尺寸、地形枚举、城市落点、可达性等),且单独立项 | [arch](../arch/module-responsibilities.md) |
+| FR-M02 "资源按路径覆盖内置包" | 原版是 `base` Pack,Mod 与其同格式;同一时间只激活一个 Pack,不做多 Mod 叠加。见 [ADR-0002](../adr/0002-pack-model-single-active.md) | [arch](../arch/module-responsibilities.md) |
 | FR-M06 / FR-A05 `baseRevision`、`apiVersion` | 拆为四个版本号:`formats`、`capabilities`、`behaviorVersion`、`saveSchema`。见 [ADR-0007](../adr/0007-four-version-numbers.md) | [06](../arch/versioning.md) |
-| FR-S02 读档校验 | 现阶段不做存档迁移:任何不匹配且无法由兼容开关还原的存档一律拒绝。见 [ADR-0006](../adr/0006-reject-incompatible-saves.md) | [04 §1.1](../arch/README.md) |
-| FR-E08 `extension.json` / Lua | Lua 保留为逃生舱,稳定逻辑走 C# 加 JSON。见 [ADR-0005](../adr/0005-lua-as-escape-hatch.md) | [03 §8](../arch/README.md#8-脚本lua) |
+| FR-S02 读档校验 | 现阶段不做存档迁移:任何不匹配且无法由兼容开关还原的存档一律拒绝。见 [ADR-0006](../adr/0006-reject-incompatible-saves.md) | [arch](../arch/module-responsibilities.md) |
+| FR-E08 `extension.json` / Lua | Lua 保留为逃生舱,稳定逻辑走 C# 加 JSON。见 [ADR-0005](../adr/0005-lua-as-escape-hatch.md) | [arch](../arch/module-responsibilities.md) |
 | 第 9.3 流程"导出 BTL 或一键打包 Mod" | 增加"实时预览":编辑中可随时切换到草稿试玩,不必先导出 | [05 §4](../arch/authoring.md#4-实时预览) |
 | 第 11 节阶段 C 之前 | 增加前置门槛:导入/导出往返验收通过 | [07 P1](../task/done/refactor.md) |

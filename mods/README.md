@@ -38,6 +38,7 @@ mods/my-mod/
 | **将领**（属性、技能、头像用的表） | `assets/tables/def_commander.xml` | 从 `base` 拷出整表再改，或只覆盖你动过的条目 |
 | **国家 / 势力**（选关名、地图色、国旗代码） | `assets/client/countries.json` | 改 `name`、`color`（`#RRGGBB`）、`flag` 或 `flagImage` |
 | **自定义国旗图** | `rewrite/.../*.png` + 在 `countries.json` 里写 `flagImage`: `"rewrite/..."` | 浏览器走 `/content/extensions/…` |
+| **背景音乐** | `assets/client/music.json` + `assets/client/music/*.ogg` | `default` 是默认曲目，`countries` 里按国家 id 指定专属曲目；进入战役/征服的局后循环播放（`.ogg/.mp3/.m4a/.wav`，路径相对 `client/`）；玩家可在本机按国家覆盖（`play.music` 接口，存于存档根 `music.json`）。默认曲目是公有领域的《马赛曲》（Wikimedia Commons） |
 | **兵种数值 / 兵种表** | `assets/tables/def_army.xml` 等 | 和原版一样叫 `def_*.xml` 的表，多在 `assets/tables/` |
 | **物品、建筑、科技…** | `assets/tables/def_item.xml` 等 | 同上，改哪个表就覆盖哪个文件 |
 | **某一关剧本** | `scenarios/campaign1_01.json` | 嵌入 JSON；`name` 会显示在选关列表（覆盖 battlelist 标题） |
@@ -80,7 +81,7 @@ scripts/ew4.sh web                         # 浏览器里激活 Mod
 ```
 
 从零做 `base`：`Ew4.Tool import-base`。  
-旧 BTL 转嵌入剧本：`Ew4.Tool pack-convert-legacy-scenarios --pack mods/base`。
+旧 BTL 索引桩转 schema 3 场景 JSON：`Ew4.Tool scenario to-v3 --mod mods/<id>`。
 
 ## 仓库里的示例 Mod（进 Git，与 `base` 同级）
 
@@ -94,4 +95,4 @@ scripts/ew4.sh web                         # 浏览器里激活 Mod
 
 单测：`ExampleModsTests`（有 base 时会合并解析剧本 / 将领表）。
 
-更底层的目录规则见 [docs/arch/README.md](../docs/arch/README.md)。
+更底层的目录规则见 [docs/arch/module-responsibilities.md](../docs/arch/module-responsibilities.md)。

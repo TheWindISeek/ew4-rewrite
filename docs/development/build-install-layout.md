@@ -23,17 +23,17 @@ scripts/ew4.sh build          # 编译 + sync mods → web & apk
 scripts/ew4.sh install        # publish → install/web/app + sync
 scripts/ew4.sh sync-mods      # 或 sync-mods web | apk | all
 scripts/ew4.sh web            # --home install/web
+scripts/ew4.sh apk            # Android 壳 → install/apk/ew4.apk（见 task/plan/android-shell.md）
 ```
 
 ## 代码中的路径
 
-| 程序集 | 文件 | 含义 |
+| 程序集 | 类型 | 含义 |
 |--------|------|------|
-| `Ew4.Platform.Content` | `Layout/RepositoryPaths.cs` | 仓库根相对路径 |
-| `Ew4.Platform.Runtime` | `Layout/InstallLayout.cs` | 渠道安装根下 `app`、`mods`、`user` |
-| `Ew4.Backend.Web` | `Layout/WebPaths.cs` | `install/web/app/wwwroot` 与开发态 `wwwroot` |
+| `Ew4.Platform.Persistence` | `Layout.InstallLayout` | 渠道安装根下 `app`、`mods`、`user`、workspaces、pending-imports |
+| `Ew4.Platform.Persistence` | `Layout.RepositoryPaths` | 仓库根相对路径（`maps/`、`data/import-seed`、`wwwroot` 开发路径等） |
+| `Ew4.Platform.Persistence` | `Layout.InstallChannelProbe` | 从 CWD / 进程路径推断 `EW4_HOME` |
+| `Ew4.Service` | `Host/WebHostPaths` | publish 的 `wwwroot` 与开发态 `src/Ew4.Front.Web/wwwroot` |
 
 解析安装根：`--home` → `EW4_HOME` → `<repo>/install/web`（`InstallLayout.DefaultUnderRepository`）。  
 解析仓库根：`--root` → `EW4_REPOSITORY_ROOT` → 当前目录（若在仓库根且存在 `Ew4.sln`）。
-
-`RepositoryLayout` 仅为兼容旧调用，新代码请直接用上述类型。

@@ -1,0 +1,622 @@
+{
+ "ui.app_title": {
+  "zh-Hans": "欧陆战争4",
+  "en": "Europe War 4"
+ },
+ "ui.app_title_napoleon": {
+  "zh-Hans": "欧陆战争4 拿破仑",
+  "en": "Europe War 4: Napoleon"
+ },
+ "ui.mod_authoring": {
+  "zh-Hans": "Mod 与创作",
+  "en": "Mods & Authoring"
+ },
+ "ui.prev_page": {
+  "zh-Hans": "上一页",
+  "en": "Previous page"
+ },
+ "ui.next_page": {
+  "zh-Hans": "下一页",
+  "en": "Next page"
+ },
+ "ui.event_content": {
+  "zh-Hans": "事件内容",
+  "en": "Event details"
+ },
+ "ui.event_size": {
+  "zh-Hans": "事件弹窗大小",
+  "en": "Event popup size"
+ },
+ "ui.event_choices": {
+  "zh-Hans": "事件选项",
+  "en": "Event choices"
+ },
+ "ui.save": {
+  "zh-Hans": "保存",
+  "en": "Save"
+ },
+ "ui.saves": {
+  "zh-Hans": "存档",
+  "en": "Saves"
+ },
+ "ui.load": {
+  "zh-Hans": "载入",
+  "en": "Load"
+ },
+ "ui.close": {
+  "zh-Hans": "关闭",
+  "en": "Close"
+ },
+ "ui.close_info": {
+  "zh-Hans": "关闭信息",
+  "en": "Close info"
+ },
+ "ui.country_list": {
+  "zh-Hans": "国家列表",
+  "en": "Country list"
+ },
+ "ui.tile_actions": {
+  "zh-Hans": "地块操作",
+  "en": "Tile actions"
+ },
+ "ui.tile_info": {
+  "zh-Hans": "地块收入与防御",
+  "en": "Tile income and defense"
+ },
+ "ui.find_unit": {
+  "zh-Hans": "寻找可行动部队",
+  "en": "Find a unit that can act"
+ },
+ "ui.hero_filters": {
+  "zh-Hans": "将领分类",
+  "en": "Commander categories"
+ },
+ "ui.hero_roster": {
+  "zh-Hans": "将领名册",
+  "en": "Commander roster"
+ },
+ "ui.hero_capacity": {
+  "zh-Hans": "将领容量",
+  "en": "Commander capacity"
+ },
+ "ui.screen_size": {
+  "zh-Hans": "屏幕尺寸",
+  "en": "Screen size"
+ },
+ "ui.start_campaign": {
+  "zh-Hans": "开始战役",
+  "en": "Start campaign"
+ },
+ "ui.conquest": {
+  "zh-Hans": "征服",
+  "en": "Conquest"
+ },
+ "ui.conquest_pages": {
+  "zh-Hans": "征服分页",
+  "en": "Conquest pages"
+ },
+ "ui.conquest_map": {
+  "zh-Hans": "征服战略地图",
+  "en": "Conquest strategic map"
+ },
+ "ui.battle_map": {
+  "zh-Hans": "战场地图",
+  "en": "Battlefield map"
+ },
+ "ui.campaign": {
+  "zh-Hans": "战役",
+  "en": "Campaign"
+ },
+ "ui.campaign_list": {
+  "zh-Hans": "战役列表",
+  "en": "Campaign list"
+ },
+ "ui.campaign_map": {
+  "zh-Hans": "战役战略地图",
+  "en": "Campaign strategic map"
+ },
+ "ui.recruit": {
+  "zh-Hans": "招募",
+  "en": "Recruit"
+ },
+ "ui.napoleon": {
+  "zh-Hans": "拿破仑",
+  "en": "Napoleon"
+ },
+ "ui.headquarters": {
+  "zh-Hans": "指挥部",
+  "en": "Headquarters"
+ },
+ "ui.undo_move": {
+  "zh-Hans": "撤回移动",
+  "en": "Undo move"
+ },
+ "ui.tutorial": {
+  "zh-Hans": "教程",
+  "en": "Tutorial"
+ },
+ "ui.show_grid": {
+  "zh-Hans": "显示网格",
+  "en": "Show grid"
+ },
+ "ui.pause": {
+  "zh-Hans": "暂停",
+  "en": "Pause"
+ },
+ "ui.local_multiplayer": {
+  "zh-Hans": "本地多人模式",
+  "en": "Local multiplayer"
+ },
+ "ui.game_modes": {
+  "zh-Hans": "游戏模式",
+  "en": "Game modes"
+ },
+ "ui.game_speed": {
+  "zh-Hans": "游戏速度",
+  "en": "Game speed"
+ },
+ "ui.ai_acting": {
+  "zh-Hans": "电脑行动中",
+  "en": "AI is acting"
+ },
+ "ui.confirm": {
+  "zh-Hans": "确认",
+  "en": "Confirm"
+ },
+ "ui.confirm_settings": {
+  "zh-Hans": "确认设定",
+  "en": "Confirm settings"
+ },
+ "ui.end_turn": {
+  "zh-Hans": "结束回合",
+  "en": "End turn"
+ },
+ "ui.continue_dialogue": {
+  "zh-Hans": "继续对白",
+  "en": "Continue dialogue"
+ },
+ "ui.settings": {
+  "zh-Hans": "设定",
+  "en": "Settings"
+ },
+ "ui.settings_options": {
+  "zh-Hans": "设定选项",
+  "en": "Settings options"
+ },
+ "ui.skip_ai": {
+  "zh-Hans": "跳过AI行动演出",
+  "en": "Skip AI action animation"
+ },
+ "ui.skip_fast": {
+  "zh-Hans": "跳过回合快进",
+  "en": "Fast-forward skipped turns"
+ },
+ "ui.follow_ai": {
+  "zh-Hans": "过回合跟随行动部队",
+  "en": "Follow acting units between turns"
+ },
+ "ui.back": {
+  "zh-Hans": "返回",
+  "en": "Back"
+ },
+ "ui.back_scenario": {
+  "zh-Hans": "返回剧本",
+  "en": "Back to scenarios"
+ },
+ "ui.back_battle": {
+  "zh-Hans": "返回战场",
+  "en": "Back to battle"
+ },
+ "ui.quit": {
+  "zh-Hans": "退出",
+  "en": "Quit"
+ },
+ "ui.restart": {
+  "zh-Hans": "重新开始",
+  "en": "Restart"
+ },
+ "ui.continue": {
+  "zh-Hans": "继续",
+  "en": "Continue"
+ },
+ "ui.choose_country": {
+  "zh-Hans": "选择国家",
+  "en": "Choose country"
+ },
+ "ui.loading": {
+  "zh-Hans": "正在载入…",
+  "en": "Loading…"
+ },
+ "ui.retry_load": {
+  "zh-Hans": "重试载入",
+  "en": "Retry loading"
+ },
+ "ui.music": {
+  "zh-Hans": "音乐",
+  "en": "Music"
+ },
+ "ui.music_volume": {
+  "zh-Hans": "音乐音量",
+  "en": "Music volume"
+ },
+ "ui.sound": {
+  "zh-Hans": "音效",
+  "en": "Sound"
+ },
+ "ui.sound_volume": {
+  "zh-Hans": "音效音量",
+  "en": "Sound volume"
+ },
+ "ui.hd": {
+  "zh-Hans": "高清模式",
+  "en": "HD mode"
+ },
+ "ui.language": {
+  "zh-Hans": "语言",
+  "en": "Language"
+ },
+ "ui.language_switch_hint": {
+  "zh-Hans": "切换语言会返回主菜单，进度以自动存档为准。继续？",
+  "en": "Changing the language returns to the main menu; progress is kept in the autosave. Continue?"
+ },
+ "ui.city_names": {
+  "zh-Hans": "城市名称",
+  "en": "City names"
+ },
+ "ui.geo_names": {
+  "zh-Hans": "地理名称",
+  "en": "Geographic names"
+ },
+ "ui.info": {
+  "zh-Hans": "信息",
+  "en": "Info"
+ },
+ "ui.defense": {
+  "zh-Hans": "防御",
+  "en": "Defense"
+ },
+ "ui.page_of": {
+  "zh-Hans": "第{0}页，共{1}页",
+  "en": "Page {0} of {1}"
+ },
+ "ui.round": {
+  "zh-Hans": "回合  {0}",
+  "en": "Round {0}"
+ },
+ "ui.money": {
+  "zh-Hans": "金钱",
+  "en": "Money"
+ },
+ "ui.coin": {
+  "zh-Hans": "金币",
+  "en": "Gold"
+ },
+ "ui.industry": {
+  "zh-Hans": "工业",
+  "en": "Industry"
+ },
+ "ui.food": {
+  "zh-Hans": "粮食",
+  "en": "Food"
+ },
+ "ui.victory": {
+  "zh-Hans": "胜利",
+  "en": "Victory"
+ },
+ "ui.defeat": {
+  "zh-Hans": "失败",
+  "en": "Defeat"
+ },
+ "ui.game_over": {
+  "zh-Hans": "本局结束",
+  "en": "Game over"
+ },
+ "ui.round_desync": {
+  "zh-Hans": "回合状态不同步",
+  "en": "Turn state is out of sync"
+ },
+ "ui.connect_failed": {
+  "zh-Hans": "连接失败 ({0})",
+  "en": "Connection failed ({0})"
+ },
+ "ui.state_stale": {
+  "zh-Hans": "状态已更新，请重新选择",
+  "en": "State updated, please select again"
+ },
+ "ui.save_settings_failed": {
+  "zh-Hans": "无法保存设定",
+  "en": "Unable to save settings"
+ },
+ "ui.wait_action": {
+  "zh-Hans": "请等待当前行动完成",
+  "en": "Please wait for the current action to finish"
+ },
+ "ui.resource_load_failed": {
+  "zh-Hans": "资源载入失败：",
+  "en": "Failed to load resource: "
+ },
+ "ui.font_fallback": {
+  "zh-Hans": "字体载入失败，已使用内置备用字体：",
+  "en": "Font failed to load; using built-in fallback fonts: "
+ },
+ "ui.act.deploy": {
+  "zh-Hans": "任命将领",
+  "en": "Appoint commander"
+ },
+ "ui.act.upgrade": {
+  "zh-Hans": "升级建筑",
+  "en": "Upgrade building"
+ },
+ "ui.act.train": {
+  "zh-Hans": "培训",
+  "en": "Train"
+ },
+ "ui.act.items": {
+  "zh-Hans": "使用物品",
+  "en": "Use items"
+ },
+ "ui.act.hire": {
+  "zh-Hans": "雇佣",
+  "en": "Hire"
+ },
+ "ui.act.fortress": {
+  "zh-Hans": "建造要塞",
+  "en": "Build fortress"
+ },
+ "ui.act.transport": {
+  "zh-Hans": "改装运输船",
+  "en": "Convert to transport ship"
+ },
+ "ui.act.tavern": {
+  "zh-Hans": "酒馆",
+  "en": "Tavern"
+ },
+ "ui.act.shop": {
+  "zh-Hans": "商店",
+  "en": "Shop"
+ },
+ "ui.act.market": {
+  "zh-Hans": "市场",
+  "en": "Market"
+ },
+ "ui.act.unit_info": {
+  "zh-Hans": "部队信息",
+  "en": "Unit info"
+ },
+ "ui.act.disband": {
+  "zh-Hans": "解散部队",
+  "en": "Disband unit"
+ },
+ "ui.act.disband_fort": {
+  "zh-Hans": "解散要塞",
+  "en": "Dismantle fortress"
+ },
+ "ui.skills_effects": {
+  "zh-Hans": "技能 / 效果",
+  "en": "Skills / Effects"
+ },
+ "ui.skills_effects_label": {
+  "zh-Hans": "技能与效果",
+  "en": "Skills and effects"
+ },
+ "ui.one_time": {
+  "zh-Hans": "一次性",
+  "en": "One-time"
+ },
+ "ui.refund": {
+  "zh-Hans": "返还",
+  "en": "Refund"
+ },
+ "ui.cost": {
+  "zh-Hans": "费用",
+  "en": "Cost"
+ },
+ "ui.confirm_prefix": {
+  "zh-Hans": "确认",
+  "en": "Confirm "
+ },
+ "ui.enter": {
+  "zh-Hans": "进入 ",
+  "en": "Enter "
+ },
+ "ui.commander_info": {
+  "zh-Hans": "将领信息",
+  "en": "Commander info"
+ },
+ "ui.tagged": {
+  "zh-Hans": "已标记",
+  "en": "Tagged"
+ },
+ "ui.dispatched": {
+  "zh-Hans": "已派遣",
+  "en": "Dispatched"
+ },
+ "ui.star1_zone": {
+  "zh-Hans": "一星招募区",
+  "en": "One-star recruitment zone"
+ },
+ "ui.star2_zone": {
+  "zh-Hans": "二星招募区",
+  "en": "Two-star recruitment zone"
+ },
+ "ui.star3_zone": {
+  "zh-Hans": "三星招募区",
+  "en": "Three-star recruitment zone"
+ },
+ "ui.all": {
+  "zh-Hans": "全选",
+  "en": "All"
+ },
+ "ui.none": {
+  "zh-Hans": "全不选",
+  "en": "None"
+ },
+ "ui.star1": {
+  "zh-Hans": "一星区",
+  "en": "1-star"
+ },
+ "ui.star2": {
+  "zh-Hans": "二星区",
+  "en": "2-star"
+ },
+ "ui.star3": {
+  "zh-Hans": "三星区",
+  "en": "3-star"
+ },
+ "ui.pinned": {
+  "zh-Hans": "置顶",
+  "en": "Pinned"
+ },
+ "ui.appoint": {
+  "zh-Hans": "任命 ",
+  "en": "Appoint "
+ },
+ "ui.empty_slot": {
+  "zh-Hans": "空将领位",
+  "en": "Empty commander slot"
+ },
+ "ui.refresh_commanders": {
+  "zh-Hans": "刷新将领",
+  "en": "Refresh commanders"
+ },
+ "ui.badge": {
+  "zh-Hans": "徽章",
+  "en": "Badge"
+ },
+ "ui.medal": {
+  "zh-Hans": "勋章",
+  "en": "Medal"
+ },
+ "ui.recruit_for": {
+  "zh-Hans": "招募 ",
+  "en": "Recruit for "
+ },
+ "ui.save_corrupt": {
+  "zh-Hans": "存档损坏",
+  "en": "Save is corrupted"
+ },
+ "ui.save_to": {
+  "zh-Hans": "保存到",
+  "en": "Save to "
+ },
+ "ui.load_from": {
+  "zh-Hans": "载入",
+  "en": "Load "
+ },
+ "ui.autosave": {
+  "zh-Hans": "自动存档",
+  "en": "Autosave"
+ },
+ "ui.save_slot": {
+  "zh-Hans": "存档 {0}",
+  "en": "Save {0}"
+ },
+ "ui.save_row": {
+  "zh-Hans": "{0} 回合 {1}",
+  "en": "{0} Round {1}"
+ },
+ "ui.slot_empty": {
+  "zh-Hans": " 空",
+  "en": " (empty)"
+ },
+ "ui.saved": {
+  "zh-Hans": "已保存",
+  "en": "Saved"
+ },
+ "ui.local_pick_factions": {
+  "zh-Hans": "选择本局势力",
+  "en": "Choose factions"
+ },
+ "ui.local_player_factions": {
+  "zh-Hans": "本局玩家势力",
+  "en": "Player factions"
+ },
+ "ui.local_result": {
+  "zh-Hans": "本局结果",
+  "en": "Game result"
+ },
+ "ui.local_results_by_faction": {
+  "zh-Hans": "各势力结果",
+  "en": "Results by faction"
+ },
+ "ui.winner_wins": {
+  "zh-Hans": "{0} 胜利",
+  "en": "{0} wins"
+ },
+ "ui.stars": {
+  "zh-Hans": "{0}星",
+  "en": "{0} stars"
+ },
+ "ui.withdrawn": {
+  "zh-Hans": " 已退场",
+  "en": " (withdrawn)"
+ },
+ "err.client.player_turn": {
+  "zh-Hans": "请等待己方回合",
+  "en": "Please wait for your turn"
+ },
+ "err.client.stale": {
+  "zh-Hans": "状态已更新，请重新选择",
+  "en": "State updated, please select again"
+ },
+ "err.client.ai_turn": {
+  "zh-Hans": "当前并非电脑回合",
+  "en": "It is not the AI turn"
+ },
+ "err.action.dialogue_pending": {
+  "zh-Hans": "请先确认当前对白",
+  "en": "Please dismiss the current dialogue first"
+ },
+ "err.action.phase": {
+  "zh-Hans": "回合尚未就绪",
+  "en": "The turn is not ready yet"
+ },
+ "err.turn.finished": {
+  "zh-Hans": "本局已经结束",
+  "en": "This game has ended"
+ },
+ "err.training.unit": {
+  "zh-Hans": "请先选择已任职将领的己方部队",
+  "en": "Select one of your units that has a commander first"
+ },
+ "err.client.no_session": {
+  "zh-Hans": "请先开始游戏",
+  "en": "Start a game first"
+ },
+ "err.training.resources": {
+  "zh-Hans": "培训所需金币或粮食不足",
+  "en": "Not enough gold or food to train"
+ },
+ "err.training.unavailable": {
+  "zh-Hans": "该部队当前无法培训",
+  "en": "This unit cannot be trained now"
+ },
+ "err.training.limit": {
+  "zh-Hans": "已达到培训上限",
+  "en": "Training limit reached"
+ },
+ "err.upgrade.resources": {
+  "zh-Hans": "建筑升级所需资源不足",
+  "en": "Not enough resources to upgrade"
+ },
+ "err.upgrade.used": {
+  "zh-Hans": "该建筑本回合已升级",
+  "en": "This building was already upgraded this turn"
+ },
+ "err.upgrade.limit": {
+  "zh-Hans": "建筑已达到升级上限",
+  "en": "Building is at its upgrade limit"
+ },
+ "err.purchase.resources": {
+  "zh-Hans": "改装所需资源不足",
+  "en": "Not enough resources to convert"
+ },
+ "err.transport.unavailable": {
+  "zh-Hans": "该部队无法改装运输船",
+  "en": "This unit cannot be converted to a transport ship"
+ },
+ "err.client.undo_move": {
+  "zh-Hans": "该部队目前没有可以撤回的移动：已攻击、原位被占用或相关地块已发生变化",
+  "en": "No move can be undone for this unit: it attacked, its original tile is occupied, or nearby tiles changed"
+ }
+}

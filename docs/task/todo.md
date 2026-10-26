@@ -37,9 +37,9 @@
 | G1 | `scripts/ew4.sh build -c Release` | 0 error / 0 warning |
 | G2 | `scripts/ew4.sh test -c Release` | 全绿 |
 | G3 | `scripts/ew4.sh validate smoke` | `mods/base` SmokeStart |
-| G4 | `scripts/ew4.sh check btl` | BTL 往返 |
+| G4 | （已移除）`check btl` | btl 往返由 `Ew4.Test.Platform.Mod` 覆盖 |
 | G5 | `scripts/ew4.sh web` → 浏览器 | 开局、回合、存读档、切包 |
-| G6 | `scripts/ew4.sh check json-btl` | JSON→BTL 与语料一致 |
+| G6 | （已移除）`check json-btl` | 同上 |
 
 Mod HTTP 烟测：`scripts/dev/test-mod-switch.sh`（web 已起）。
 
@@ -50,7 +50,7 @@ Mod HTTP 烟测：`scripts/dev/test-mod-switch.sh`（web 已起）。
 ## 4. 纪律（Agent 与贡献者）
 
 - `Ew4.Front.Web` **不**引用 `Ew4.Service` / `Ew4.Platform.*`
-- 路径用 `InstallLayout`、`RepositoryPaths`；维护 `mods/`，运行 `install/mods/`
+- 路径用 `Ew4.Platform.Persistence.Layout`（`InstallLayout`、`RepositoryPaths`）；维护 `mods/`，运行 `install/*/mods/`
 - 不恢复应用内 APK、`Ew4.Mods`、Lua/API1；不引用 `backup/**/*.csproj`
 - zip 走 HTTP；APK 走 `Ew4.Tool`；不加 shell「import mod」
 

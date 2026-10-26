@@ -10,7 +10,7 @@ public sealed class ModManifestScenariosTests
     {
         using var temp = new TempDir();
         WriteManifest(temp.Root, ModManifestPaths.FileName, id: "from-mod");
-        WriteManifest(temp.Root, ModManifestPaths.LegacyPackJson, id: "from-pack");
+        WriteManifest(temp.Root, ModManifestPaths.LegacyModJson, id: "from-pack");
         IModSource pack = new DirectoryModSource(temp.Root);
         Assert.Equal("from-mod", pack.Manifest.Id);
     }

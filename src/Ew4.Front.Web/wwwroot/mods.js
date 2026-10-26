@@ -26,7 +26,7 @@
   el('mod-open').onclick=()=>openModal('mod-hub');
   el('mod-hub-close').onclick=()=>{el('mod-hub').hidden=true;};
   el('mod-hub-packages').onclick=()=>{el('mod-hub').hidden=true;openModal('mod-manager');refresh();clearInterval(polling);polling=setInterval(refresh,1000);};
-  el('mod-hub-author').onclick=()=>{el('mod-hub').hidden=true;if(window.Ew4Author)window.Ew4Author.open();};
+  el('mod-hub-editor').onclick=()=>{el('mod-hub').hidden=true;if(window.Ew4Editor)window.Ew4Editor.open();};
   el('mod-close').onclick=()=>{el('mod-manager').hidden=true;clearInterval(polling);};
   el('mod-delete-cancel').onclick=()=>el('mod-delete-confirm').close();
   el('mod-delete-confirm').onclose=()=>{deleteTarget=null;};

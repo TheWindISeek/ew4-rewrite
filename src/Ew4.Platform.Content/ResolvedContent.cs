@@ -1,4 +1,5 @@
 using System.IO;
+using Ew4.Interface.Mod;
 
 namespace Ew4.Platform.Content;
 
@@ -9,7 +10,7 @@ public sealed partial record ResolvedContent(
     ModManifest Manifest,
     string Fingerprint,
     IModSource Source,
-    IReadOnlyList<ContentRef>? ContentRefs = null) : IModSnapshot;
+    IReadOnlyList<ModContentRef>? ContentRefs = null) : IModSnapshot;
 
 public interface IContentResolver
 {

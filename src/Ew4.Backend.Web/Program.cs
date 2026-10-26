@@ -1,95 +1,42 @@
-using Ew4.Editor;
-using Ew4.Editor.Campaign;
-using Ew4.Editor.Commander;
-using Ew4.Platform.Content;
-using Ew4.Platform.Engine;
-using Ew4.Platform.Runtime;
 using Ew4.Backend.Web;
-using Ew4.Service;
+using Ew4.Interface.Host;
+using Ew4.Service.Host;
 using Microsoft.AspNetCore.Http.Features;
 
-RuntimeRoots roots = RuntimeRoots.Resolve(args);
-AuthorHostOptions hostOptions = new()
+if (args.Contains("--probe"))
 {
-    Install = roots.Install,
-    RepositoryRoot = roots.RepositoryRoot,
-};
+    await ProbeMode.RunAsync();
+    return;
+}
+
+Ew4HostLaunchOptions launch = Ew4HostLaunch.Resolve(args);
 
 WebApplicationBuilder builder = WebApplication.CreateBuilder(args);
-builder.Services.AddSingleton(hostOptions);
-builder.Services.AddSingleton<IScenarioEditToolkit>(ScenarioEditToolkit.Default);
-builder.Services.AddSingleton<IEngine>(_ => new global::Ew4.Platform.Engine.Engine());
-builder.Services.AddSingleton<IScenarioBuilder, ScenarioJsonBuilder>();
-builder.Services.AddSingleton<IContentKindRegistry>(_ => ContentKindRegistry.CreateDefault());
-builder.Services.AddSingleton(sp =>
-    new ContentResolver(sp.GetRequiredService<IContentKindRegistry>(), sp.GetRequiredService<IEngine>()));
-builder.Services.AddSingleton<IModSnapshotLoader>(sp =>
-    new ModSnapshotLoader(
-        sp.GetRequiredService<ContentResolver>(),
-        sp.GetRequiredService<ContentValidator>()));
-builder.Services.AddSingleton(sp => new FileModRepository(hostOptions.ModsDirectory));
-builder.Services.AddSingleton(sp =>
-    new ContentValidator(
-        sp.GetRequiredService<IContentKindRegistry>(),
-        sp.GetRequiredService<IEngine>(),
-        sp.GetRequiredService<IScenarioBuilder>()));
-builder.Services.AddSingleton<IContentValidator>(sp => sp.GetRequiredService<ContentValidator>());
-builder.Services.AddSingleton<IWorkspaceService>(sp =>
-    new WorkspaceService(
-        hostOptions.WorkspacesDirectory,
-        sp.GetRequiredService<FileModRepository>(),
-        sp.GetRequiredService<IContentKindRegistry>(),
-        sp.GetRequiredService<IModSnapshotLoader>(),
-        sp.GetRequiredService<IContentValidator>()));
-builder.Services.AddSingleton<IScenarioEditor>(sp =>
-    new ScenarioEditor(
-        sp.GetRequiredService<IWorkspaceService>(),
-        sp.GetRequiredService<IScenarioEditToolkit>()));
-builder.Services.AddSingleton<ICommanderEditor>(sp =>
-    new CommanderEditor(sp.GetRequiredService<IWorkspaceService>()));
-builder.Services.AddSingleton<PlaySessionHost>();
-builder.Services.AddSingleton<IHostActivationListener>(sp => sp.GetRequiredService<PlaySessionHost>());
-builder.Services.AddSingleton(sp =>
-{
-    var engine = sp.GetRequiredService<IEngine>();
-    var scenarioBuilder = sp.GetRequiredService<IScenarioBuilder>();
-    var listeners = sp.GetServices<IHostActivationListener>();
-    var app = new HostApp(
-        sp.GetRequiredService<FileModRepository>(),
-        sp.GetRequiredService<IModSnapshotLoader>(),
-        new ActivePackStore(hostOptions.StateDirectory),
-        engine,
-        scenarioBuilder,
-        hostOptions.StateDirectory,
-        listeners);
-    try
-    {
-        app.ActivateStoredOrDefault();
-    }
-    catch (ContentError)
-    {
-        app.Activate(ModId.Base);
-    }
-
-    return app;
-});
-builder.Services.AddSingleton(sp =>
-    new ModCatalogService(
-        sp.GetRequiredService<HostApp>(),
-        sp.GetRequiredService<FileModRepository>(),
-        hostOptions.ModsDirectory));
-builder.Services.AddSingleton(sp =>
-    new ModImportService(
-        sp.GetRequiredService<HostApp>(),
-        hostOptions.PendingImportsDirectory));
+builder.Services.AddEw4GameHost(launch);
 builder.WebHost.ConfigureKestrel(options => options.Limits.MaxRequestBodySize = 1024L * 1024 * 1024);
 builder.Services.Configure<FormOptions>(options => options.MultipartBodyLengthLimit = 1024L * 1024 * 1024);
 
 WebApplication app = builder.Build();
-app.UsePlayFrontend(hostOptions);
+// Android 壳在本机起后端：设置了 EW4_ACCESS_TOKEN 就要求 cookie ew4_token 匹配，防止本机其它应用访问。
+string? accessToken = Environment.GetEnvironmentVariable("EW4_ACCESS_TOKEN");
+if (!string.IsNullOrEmpty(accessToken))
+{
+    byte[] expected = System.Text.Encoding.UTF8.GetBytes(accessToken);
+    app.Use(async (context, next) =>
+    {
+        byte[] actual = System.Text.Encoding.UTF8.GetBytes(context.Request.Cookies["ew4_token"] ?? "");
+        if (!System.Security.Cryptography.CryptographicOperations.FixedTimeEquals(actual, expected))
+        {
+            context.Response.StatusCode = StatusCodes.Status403Forbidden;
+            return;
+        }
+
+        await next();
+    });
+}
+
+app.UsePlayFrontend();
 app.MapPlayModApi();
 app.MapPlayApi();
-app.MapAuthorWorkspaceApi();
-app.MapAuthorCampaignApi();
-app.MapAuthorCommanderApi();
+app.MapEditorApi();
 app.Run();

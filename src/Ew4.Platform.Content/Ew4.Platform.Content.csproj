@@ -7,6 +7,10 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <ProjectReference Include="..\Ew4.Interface\Ew4.Interface.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Ai\Ew4.Platform.Ai.csproj" />
     <ProjectReference Include="..\Ew4.Platform.Engine\Ew4.Platform.Engine.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Mod\Ew4.Platform.Mod.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Persistence\Ew4.Platform.Persistence.csproj" />
   </ItemGroup>
 </Project>

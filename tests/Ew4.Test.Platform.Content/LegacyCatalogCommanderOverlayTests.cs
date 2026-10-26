@@ -2,8 +2,8 @@ using System.Security.Cryptography;
 using System.Text;
 using System.Text.Json;
 using Ew4.Platform.Content;
-using Ew4.Platform.Content.Build;
-using Ew4.Platform.Content.Original;
+using Ew4.Platform.Content.CatalogLoad;
+using Ew4.Platform.Content.StaticData;
 using Xunit;
 
 namespace Ew4.Test.Platform.Content;
@@ -54,19 +54,17 @@ public sealed class LegacyCatalogCommanderOverlayTests
         }
 
         IModSource merged = new MergedModSource(new DirectoryModSource(greatFront), new DirectoryModSource(baseDir));
-        Func<string, byte[]> read = ModAssetRead.FromPack(merged);
+        Func<string, byte[]> read = ModAssetRead.FromMod(merged);
         var countries = CountryCatalog.Load(read);
-        var extensions = ExtensionLoader.Load(read, countries);
         string catalogJson = LegacyCatalogSourceTreeOverlay.SyncChangedTables(
             File.ReadAllText(catalogPath),
             name => read("original/" + name));
         catalogJson = LegacyCatalogCommanderOverlay.ApplyIfCommanderSourceChanged(
             catalogJson,
             read("original/def_commander.xml"));
-        var runtime = OriginalRuntimeCatalog.FromJson(
-            extensions.PatchCatalog(catalogJson),
-            correctOriginalEquipment: false,
-            extensions.LegacySkills);
+        var runtime = StaticDataRuntimeCatalog.FromJson(
+            catalogJson,
+            correctOriginalEquipment: false);
         var bootstrap = new ModRuntimeBootstrap(merged);
         foreach (int id in runtime.Commanders.Keys)
         {

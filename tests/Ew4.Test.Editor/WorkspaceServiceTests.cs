@@ -1,6 +1,7 @@
-using Ew4.Editor;
+using Ew4.Platform.Editor;
 using Ew4.Platform.Content;
 using Ew4.Platform.Engine;
+using Ew4.Platform.Persistence.Workspaces;
 using Xunit;
 
 namespace Ew4.Test.Editor;
@@ -23,7 +24,12 @@ public sealed class WorkspaceServiceTests
         var resolver = new ContentResolver(registry, engine);
         var validator = new ContentValidator(registry, engine, builder);
         var loader = new ModSnapshotLoader(resolver, validator);
-        var service = new WorkspaceService(workspaces, repository, registry, loader, validator);
+        var service = new WorkspaceService(
+            new WorkspaceStore(workspaces),
+            repository,
+            registry,
+            loader,
+            validator);
 
         WorkspaceInfo created = service.Create(ModId.Base, "test-ws", "Test workspace");
         Assert.Equal("test-ws", created.Id);
@@ -34,6 +40,11 @@ public sealed class WorkspaceServiceTests
 
         byte[] packJson = service.ReadFile("test-ws", "mod.json");
         Assert.NotEmpty(packJson);
+
+        Assert.Contains("\"parent\"", System.Text.Encoding.UTF8.GetString(service.ReadFile("test-ws", "mod.json")));
+        var standalone = new ExportModSource(service.OpenMergedMod("test-ws"), dropParent: true);
+        Assert.Null(standalone.Manifest.Parent);
+        Assert.DoesNotContain("\"parent\"", System.Text.Encoding.UTF8.GetString(standalone.Read("mod.json")));
 
         try
         {

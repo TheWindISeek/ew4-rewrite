@@ -34,7 +34,7 @@
 
 Mod 已统一为根目录 `mod.json`，但 overlay/父包目录里仍可能躺着历史 **`pack.json`**（未被删除）。`DirectoryPackSource` 列表会把它当作普通资源文件；`ContentValidator` 对「无注册 kind」的路径报 **Error**，激活/拉 catalog 即失败。
 
-处理：`ModManifestPaths.LegacyPackJson` 明确该文件名；校验与指纹扫描时 **跳过** `mod.json` / `pack.json` / `.workspace.json`（manifest 仍由 `PackManifestReader` 按规则读取，不经过 kind 注册表）。
+处理：`ModManifestPaths.LegacyModJson` 明确该文件名；校验与指纹扫描时 **跳过** `mod.json` / `pack.json` / `.workspace.json`（manifest 仍由 `PackManifestReader` 按规则读取，不经过 kind 注册表）。
 
 ### C. 错误信息缺少路径
 
@@ -45,16 +45,16 @@ Mod 已统一为根目录 `mod.json`，但 overlay/父包目录里仍可能躺�
 - 引擎侧「适性」对应 commander 条目里的兵种适性列，**不是** XML 里名为 `star` 的遗留字段（当前玩法未用）。
 - 技能在数据里是 **catalog `legacy_id`**（整数），展示应结合 `catalog.json` 解析名称，与指挥部一致。
 
-创作 API 与字段说明见 [editor-commander-api.md](../arch/editor-commander-api.md)。
+创作 API 路由与契约见 [operations.md](../arch/operations.md)、[interface-contracts.md](../arch/interface-contracts.md)。
 
 ## 修复摘要
 
 | 问题 | 改动要点 |
 |------|----------|
-| catalog 500 / pack.json | `ContentValidator`、`ContentFingerprint` 跳过 `LegacyPackJson`；常量集中在 `PackManifestPaths` |
+| catalog 500 / pack.json | `ContentValidator`、`ContentFingerprint` 跳过 `LegacyModJson`；常量集中在 `PackManifestPaths` |
 | 激活 id 读不到 | `ActivePackStore` 兼容 `packId` / `modId` |
 | 日志难读 | `ModSnapshotLoader` detail 带 `diagnostic.Path` |
-| 将领 UI | `author-in-game.js` + `/api/author/.../commanders`：适性列、技能 ID + 名称 |
+| 将领 UI | `editor-in-game.js` + `/api/editor/.../commanders`：适性列、技能 ID + 名称 |
 
 ## 复现与验证
 
@@ -76,9 +76,9 @@ curl -sS -X POST 'http://127.0.0.1:5184/api/catalog' -H 'Content-Type: applicati
 
 创作将领：
 
-- `GET /api/author/workspaces/{id}/commanders`
-- `GET /api/author/workspaces/{id}/skills`
-- `GET /api/author/workspaces/{id}/commanders/{legacyId}/edit`
+- `GET /api/editor/workspaces/{id}/commanders`
+- `GET /api/editor/workspaces/{id}/skills`
+- `GET /api/editor/workspaces/{id}/commanders/{legacyId}/edit`
 
 ## 教训
 

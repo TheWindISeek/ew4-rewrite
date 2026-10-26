@@ -8,10 +8,16 @@
     <TreatWarningsAsErrors>true</TreatWarningsAsErrors>
   </PropertyGroup>
   <ItemGroup>
+    <PackageReference Include="Microsoft.Extensions.DependencyInjection.Abstractions" Version="9.0.0" />
+  </ItemGroup>
+  <ItemGroup>
     <ProjectReference Include="..\Ew4.Platform.Content\Ew4.Platform.Content.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Ai\Ew4.Platform.Ai.csproj" />
     <ProjectReference Include="..\Ew4.Platform.Engine\Ew4.Platform.Engine.csproj" />
-    <ProjectReference Include="..\Ew4.Platform.Runtime\Ew4.Platform.Runtime.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Mod\Ew4.Platform.Mod.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Play\Ew4.Platform.Play.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Editor\Ew4.Platform.Editor.csproj" />
     <ProjectReference Include="..\Ew4.Interface\Ew4.Interface.csproj" />
-    <ProjectReference Include="..\Ew4.Platform.Session\Ew4.Platform.Session.csproj" />
+    <ProjectReference Include="..\Ew4.Platform.Persistence\Ew4.Platform.Persistence.csproj" />
   </ItemGroup>
 </Project>

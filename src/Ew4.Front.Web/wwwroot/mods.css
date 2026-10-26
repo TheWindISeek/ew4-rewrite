@@ -2,38 +2,38 @@
 .mod-hub-dialog{height:168px;margin-top:-84px}
 .mod-hub-hint{font-size:12px;line-height:1.5;color:#51514d;margin:0;flex:none}
 .mod-hub-choice{width:100%;height:36px;flex:none;font-size:14px}
-.author-dialog{height:300px;margin-top:-150px;overflow:hidden}
-.author-dialog>section:not([hidden]){display:flex;flex-direction:column;min-height:0;flex:1;gap:6px}
-.author-dialog>section:not([hidden])>.mod-import-row,
-.author-dialog>section:not([hidden])>.author-toolbar,
-.author-dialog>section:not([hidden])>.author-category-tabs,
-.author-dialog>section:not([hidden])>.author-scenario-empty,
-.author-dialog>section:not([hidden])>.author-scenario-title{flex:none}
-.author-notice{font-size:12px;line-height:1.4;color:#5a3d28;flex:none;max-height:36px;overflow:auto}
-.author-notice:empty{display:none}
-.author-toolbar{display:flex;flex-wrap:wrap;gap:5px;flex:none}
-.author-toolbar .native-command{height:28px;min-width:64px;font-size:12px;padding:0 6px}
-.author-mode-tabs{display:flex;gap:6px;flex:none;margin-bottom:4px}
-.author-mode-tab{flex:1;height:32px;font-size:13px;padding:0 4px}
-.author-mode-tab[aria-pressed=true]{outline:2px solid #f87311;outline-offset:-2px}
-.author-filter-label{display:block;font-size:12px;color:#343434;flex:none}
-.author-filter-label input{display:block;box-sizing:border-box;width:100%;height:25px;margin-top:3px;padding:2px 6px;border:1px solid #6b6b65;border-radius:2px;background:#e6e6df;font-size:13px}
-.author-commander-fields{flex-wrap:wrap}
-.author-commander-fields label{min-width:52px;flex:1}
-.author-skill-caption{flex:2 1 100%;font-size:11px;color:#51514d;margin:-4px 0 2px}
-.author-dialog>section:not([hidden])>#author-ws-panel-commander,
-.author-dialog>section:not([hidden])>#author-ws-panel-campaign,
-.author-dialog>section:not([hidden])>#author-ws-panel-conquest{display:flex;flex-direction:column;min-height:0;flex:1;gap:6px}
-.author-dialog>section:not([hidden])>#author-ws-panel-commander>.mod-list,
-.author-dialog>section:not([hidden])>#author-ws-panel-campaign>#author-scenario-list{flex:1;min-height:0;overflow:auto}
-.author-category-tabs{display:flex;gap:6px;flex:none}
-.author-cat-tab{flex:1;height:30px;font-size:13px;padding:0 4px}
-.author-cat-tab[aria-pressed=true]{outline:2px solid #f87311;outline-offset:-2px}
-.author-scenario-empty{font-size:12px;color:#51514d;margin:0;flex:none;text-align:center;padding:8px 0}
-.author-scenario-title{font-size:13px;color:#303030;margin:0 0 6px;flex:none}
-.author-diag{font-size:11px;max-height:72px;overflow:auto;background:#fff;border:1px solid #a7a79f;padding:4px;flex:none;white-space:pre-wrap}
-.author-data-table .mod-row{cursor:pointer}
-.author-data-table .mod-row[aria-selected=true]{outline:2px solid #f87311;outline-offset:-2px}
+.editor-dialog{height:300px;margin-top:-150px;overflow:hidden}
+.editor-dialog>section:not([hidden]){display:flex;flex-direction:column;min-height:0;flex:1;gap:6px}
+.editor-dialog>section:not([hidden])>.mod-import-row,
+.editor-dialog>section:not([hidden])>.editor-toolbar,
+.editor-dialog>section:not([hidden])>.editor-category-tabs,
+.editor-dialog>section:not([hidden])>.editor-hint,
+.editor-dialog>section:not([hidden])>.editor-panel-title{flex:none}
+.editor-notice{font-size:12px;line-height:1.4;color:#5a3d28;flex:none;max-height:36px;overflow:auto}
+.editor-notice:empty{display:none}
+.editor-toolbar{display:flex;flex-wrap:wrap;gap:5px;flex:none}
+.editor-toolbar .native-command{height:28px;min-width:64px;font-size:12px;padding:0 6px}
+.editor-mode-tabs{display:flex;gap:6px;flex:none;margin-bottom:4px}
+.editor-mode-tab{flex:1;height:32px;font-size:13px;padding:0 4px}
+.editor-mode-tab[aria-pressed=true]{outline:2px solid #f87311;outline-offset:-2px}
+.editor-filter-label{display:block;font-size:12px;color:#343434;flex:none}
+.editor-filter-label input{display:block;box-sizing:border-box;width:100%;height:25px;margin-top:3px;padding:2px 6px;border:1px solid #6b6b65;border-radius:2px;background:#e6e6df;font-size:13px}
+.editor-commander-fields{flex-wrap:wrap}
+.editor-commander-fields label{min-width:52px;flex:1}
+.editor-skill-caption{flex:2 1 100%;font-size:11px;color:#51514d;margin:-4px 0 2px}
+.editor-dialog>section:not([hidden])>#editor-ws-panel-commander,
+.editor-dialog>section:not([hidden])>#editor-ws-panel-campaign,
+.editor-dialog>section:not([hidden])>#editor-ws-panel-conquest{display:flex;flex-direction:column;min-height:0;flex:1;gap:6px}
+.editor-dialog>section:not([hidden])>#editor-ws-panel-commander>.mod-list,
+.editor-dialog>section:not([hidden])>#editor-ws-panel-campaign>#editor-campaign-list{flex:1;min-height:0;overflow:auto}
+.editor-category-tabs{display:flex;gap:6px;flex:none}
+.editor-cat-tab{flex:1;height:30px;font-size:13px;padding:0 4px}
+.editor-cat-tab[aria-pressed=true]{outline:2px solid #f87311;outline-offset:-2px}
+.editor-hint{font-size:12px;color:#51514d;margin:0;flex:none;text-align:center;padding:8px 0}
+.editor-panel-title{font-size:13px;color:#303030;margin:0 0 6px;flex:none}
+.editor-diag{font-size:11px;max-height:72px;overflow:auto;background:#fff;border:1px solid #a7a79f;padding:4px;flex:none;white-space:pre-wrap}
+.editor-data-table .mod-row{cursor:pointer}
+.editor-data-table .mod-row[aria-selected=true]{outline:2px solid #f87311;outline-offset:-2px}
 #mod-manager{display:block}
 .mod-dialog{position:absolute;left:50%;top:50%;margin-left:-238px;margin-top:-137px;width:476px;height:274px;padding:34px 14px 12px;box-sizing:border-box;text-align:left;display:flex;flex-direction:column;gap:8px}
 .mod-dialog>.menu-bar{position:absolute;left:0;top:0;flex:none}

@@ -1,3 +1,4 @@
+using Ew4.Platform.Content;
 using Ew4.Platform.Engine;
 using Xunit;
 

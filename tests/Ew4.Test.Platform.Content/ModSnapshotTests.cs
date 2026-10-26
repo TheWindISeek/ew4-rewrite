@@ -1,3 +1,4 @@
+using Ew4.Interface.Mod;
 using Ew4.Platform.Content;
 using Ew4.Platform.Engine;
 using Xunit;
@@ -11,7 +12,7 @@ public sealed class ModSnapshotTests
     [Fact]
     public void Loader_builds_content_ref_index()
     {
-        string? baseDir = BasePackDirectory();
+        string? baseDir = BaseModDirectory();
         if (baseDir == null)
         {
             return;
@@ -21,7 +22,7 @@ public sealed class ModSnapshotTests
         var loader = new ModSnapshotLoader(
             new ContentResolver(ContentKindRegistry.CreateDefault(), Engine),
             new ContentValidator(ContentKindRegistry.CreateDefault()));
-        ResolvedContent loaded = loader.LoadActivatedView(primary, null);
+        ResolvedContent loaded = loader.LoadActivatedView(primary, null).AsResolvedContent();
 
         Assert.NotNull(loaded.ContentRefs);
         Assert.NotEmpty(loaded.ContentRefs);
@@ -31,7 +32,7 @@ public sealed class ModSnapshotTests
     [Fact]
     public void ResolveView_matches_resolver_fingerprint_without_validation()
     {
-        string? baseDir = BasePackDirectory();
+        string? baseDir = BaseModDirectory();
         if (baseDir == null)
         {
             return;
@@ -42,7 +43,7 @@ public sealed class ModSnapshotTests
         var loader = new ModSnapshotLoader(resolver, new ContentValidator(ContentKindRegistry.CreateDefault()));
 
         ResolvedContent direct = resolver.Resolve(primary, null);
-        ResolvedContent view = loader.ResolveView(primary, null);
+        ResolvedContent view = loader.ResolveView(primary, null).AsResolvedContent();
 
         Assert.Equal(direct.Fingerprint, view.Fingerprint);
         Assert.NotNull(view.ContentRefs);
@@ -51,7 +52,7 @@ public sealed class ModSnapshotTests
     [Fact]
     public void Loader_matches_resolver_fingerprint_for_base()
     {
-        string? baseDir = BasePackDirectory();
+        string? baseDir = BaseModDirectory();
         if (baseDir == null)
         {
             return;
@@ -62,7 +63,7 @@ public sealed class ModSnapshotTests
         var loader = new ModSnapshotLoader(resolver, new ContentValidator(ContentKindRegistry.CreateDefault()));
 
         ResolvedContent direct = resolver.Resolve(primary, null);
-        ResolvedContent loaded = loader.LoadActivatedView(primary, null);
+        ResolvedContent loaded = loader.LoadActivatedView(primary, null).AsResolvedContent();
 
         Assert.Equal(direct.Fingerprint, loaded.Fingerprint);
         Assert.Equal(direct.Manifest.Id, loaded.Manifest.Id);
@@ -71,7 +72,7 @@ public sealed class ModSnapshotTests
     [Fact]
     public void Snapshot_overlay_commander_ref_is_primary_and_reads_child_bytes()
     {
-        string? baseDir = BasePackDirectory();
+        string? baseDir = BaseModDirectory();
         string modDir = Path.Combine(ModsRoot(), "ex-commander-skills");
         if (baseDir == null || !File.Exists(Path.Combine(modDir, "assets", "tables", "def_commander.xml")))
         {
@@ -84,10 +85,10 @@ public sealed class ModSnapshotTests
         ResolvedContent snapshot = resolver.Resolve(primary, parent);
         IModSnapshot view = snapshot;
 
-        ContentRef? commanderRef = view.ListContentRefs("assets/tables/")
+        ModContentRef? commanderRef = view.ListContentRefs("assets/tables/")
             .FirstOrDefault(r => r.LogicalPath.EndsWith("def_commander.xml", StringComparison.Ordinal));
         Assert.NotNull(commanderRef);
-        Assert.Equal(ModPackLayer.Primary, commanderRef!.Layer);
+        Assert.Equal(ModContentLayer.Primary, commanderRef!.Layer);
 
         Assert.True(view.TryReadRuntimeAsset("original/def_commander.xml", out byte[] bytes));
         string text = System.Text.Encoding.UTF8.GetString(bytes);
@@ -97,7 +98,7 @@ public sealed class ModSnapshotTests
     [Fact]
     public void Snapshot_revision_alias_equals_fingerprint()
     {
-        string? baseDir = BasePackDirectory();
+        string? baseDir = BaseModDirectory();
         if (baseDir == null)
         {
             return;
@@ -177,7 +178,7 @@ public sealed class ModSnapshotTests
         return Directory.GetCurrentDirectory();
     }
 
-    private static string? BasePackDirectory()
+    private static string? BaseModDirectory()
     {
         foreach (string relative in new[] { Path.Combine("install", "web", "mods", "base"), Path.Combine("install", "mods", "base") })
         {

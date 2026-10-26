@@ -8,7 +8,7 @@ public sealed class ModMergeTests
     [Fact]
     public void OpenParent_returns_null_when_manifest_has_no_parent()
     {
-        string? baseDir = BasePackDirectory();
+        string? baseDir = BaseModDirectory();
         if (baseDir == null)
         {
             return;
@@ -22,7 +22,7 @@ public sealed class ModMergeTests
     [Fact]
     public void OpenParent_opens_base_for_example_overlay_mod()
     {
-        string? baseDir = BasePackDirectory();
+        string? baseDir = BaseModDirectory();
         string modDir = Path.Combine(ModsRoot(), "ex-campaign-tweak");
         if (baseDir == null || !Directory.Exists(modDir))
         {
@@ -54,7 +54,7 @@ public sealed class ModMergeTests
         return Directory.GetCurrentDirectory();
     }
 
-    private static string? BasePackDirectory()
+    private static string? BaseModDirectory()
     {
         foreach (string relative in new[] { Path.Combine("install", "web", "mods", "base"), Path.Combine("install", "mods", "base") })
         {

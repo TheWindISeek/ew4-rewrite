@@ -1,16 +1,14 @@
-using Ew4.Platform.Content;
-using Ew4.Platform.Runtime;
-using Ew4.Backend.Web.Layout;
-using Microsoft.AspNetCore.Http;
+using Ew4.Interface.Host;
+using Ew4.Interface.Operations;
 using Microsoft.Extensions.FileProviders;
 
 namespace Ew4.Backend.Web;
 
 public static class PlayStaticFiles
 {
-    public static void UsePlayFrontend(this WebApplication app, AuthorHostOptions options)
+    public static void UsePlayFrontend(this WebApplication app)
     {
-        string wwwroot = WebPaths.ResolveWwwRoot(options.Install, options.RepositoryRoot);
+        string wwwroot = app.Services.GetRequiredService<IGameWebPaths>().WwwRootDirectory;
         if (Directory.Exists(wwwroot))
         {
             app.UseDefaultFiles(new DefaultFilesOptions
@@ -32,7 +30,7 @@ public static class PlayStaticFiles
             if (path.StartsWith("/content/", StringComparison.Ordinal)
                 || path is "/conquest-pages.json" or "/city-names.json")
             {
-                await ServePackOrFrontend(context, options, wwwroot, path);
+                await ServeThroughService(context, path);
                 return;
             }
 
@@ -40,93 +38,24 @@ public static class PlayStaticFiles
         });
     }
 
-    private static async Task ServePackOrFrontend(
-        HttpContext context,
-        AuthorHostOptions options,
-        string wwwroot,
-        string path)
+    private static async Task ServeThroughService(HttpContext context, string path)
     {
         context.Response.Headers.CacheControl = "no-store";
-        try
-        {
-            HostApp host = context.RequestServices.GetRequiredService<HostApp>();
-            IModSnapshot? snapshot = host.ActiveSnapshot;
-            if (snapshot == null)
-            {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
-                return;
-            }
-
-            if (path is "/conquest-pages.json" or "/city-names.json")
-            {
-                string file = Path.Combine(wwwroot, path.TrimStart('/'));
-                if (!File.Exists(file))
-                {
-                    context.Response.StatusCode = StatusCodes.Status404NotFound;
-                    return;
-                }
-
-                context.Response.ContentType = "application/json; charset=utf-8";
-                await context.Response.SendFileAsync(file);
-                return;
-            }
-
-            string runtimePath = MapContentPath(path["/content/".Length..]);
-            if (!snapshot.TryReadRuntimeAsset(runtimePath, out byte[] bytes))
-            {
-                context.Response.StatusCode = StatusCodes.Status404NotFound;
-                return;
-            }
-
-            string mimePath = ModAssetReader.TryResolve(snapshot.Source, runtimePath, out string packPath)
-                ? packPath
-                : runtimePath;
-            context.Response.ContentType = Mime(mimePath);
-            await context.Response.Body.WriteAsync(bytes);
-        }
-        catch (IOException)
+        IGameOperations game = context.RequestServices.GetRequiredService<IGameOperations>();
+        OperationResponse response = game.Invoke(new StaticHttpAssetDescriptor(path), new StaticAssetPayload());
+        if (response.StatusCode == StatusCodes.Status404NotFound)
         {
             context.Response.StatusCode = StatusCodes.Status404NotFound;
+            return;
         }
-    }
 
-    private static string MapContentPath(string relative)
-    {
-        relative = relative.Replace('\\', '/');
-        if (relative.StartsWith("r-", StringComparison.Ordinal))
+        if (response.BinaryContent == null)
         {
-            int slash = relative.IndexOf('/');
-            if (slash > 0)
-            {
-                relative = relative[(slash + 1)..];
-            }
+            context.Response.StatusCode = StatusCodes.Status404NotFound;
+            return;
         }
 
-        if (relative.StartsWith("extensions/", StringComparison.Ordinal))
-        {
-            if (!relative.EndsWith(".png", StringComparison.OrdinalIgnoreCase))
-            {
-                throw new IOException("Only extension images are public.");
-            }
-
-            return "rewrite/" + relative["extensions/".Length..];
-        }
-
-        return "client/" + relative;
+        context.Response.ContentType = response.ContentType;
+        await context.Response.Body.WriteAsync(response.BinaryContent);
     }
-
-    private static string Mime(string path) => Path.GetExtension(path) switch
-    {
-        ".html" => "text/html; charset=utf-8",
-        ".css" => "text/css; charset=utf-8",
-        ".js" => "text/javascript; charset=utf-8",
-        ".png" => "image/png",
-        ".json" => "application/json; charset=utf-8",
-        ".ttf" => "font/ttf",
-        ".woff2" => "font/woff2",
-        ".mp3" => "audio/mpeg",
-        ".wav" => "audio/wav",
-        ".ogg" => "audio/ogg",
-        _ => "application/octet-stream",
-    };
 }

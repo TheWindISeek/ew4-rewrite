@@ -1,17 +1,15 @@
 using System.Text.Json;
-using Ew4.Platform.Content;
-using Ew4.Service;
+using Ew4.Interface.Host;
+using Ew4.Interface.Operations;
 using Microsoft.AspNetCore.Http.Features;
 
 namespace Ew4.Backend.Web;
 
 public static class PlayModEndpoints
 {
-    private static readonly JsonSerializerOptions Json = new(JsonSerializerDefaults.Web) { WriteIndented = true };
-
     public static void MapPlayModApi(this WebApplication app)
     {
-        app.MapMethods("/api/mods", ["GET", "POST"], async (HttpRequest request, ModCatalogService catalog, ModImportService imports) =>
+        app.MapMethods("/api/mods", ["GET", "POST"], async (HttpRequest request, IGameOperations game) =>
         {
             if (PlayEndpoints.IsForbiddenCrossSite(request))
             {
@@ -22,51 +20,21 @@ public static class PlayModEndpoints
             {
                 using var reader = new StreamReader(request.Body);
                 string body = request.Query["q"].FirstOrDefault() ?? await reader.ReadToEndAsync();
-                if (!string.IsNullOrWhiteSpace(body))
-                {
-                    using var document = JsonDocument.Parse(body);
-                    string? op = document.RootElement.TryGetProperty("op", out JsonElement opEl) ? opEl.GetString() : null;
-                    if (op == "activate")
-                    {
-                        string? key = document.RootElement.TryGetProperty("key", out JsonElement keyEl) ? keyEl.GetString() : null;
-                        catalog.Activate(key);
-                    }
-                    else if (op == "delete")
-                    {
-                        string? key = document.RootElement.TryGetProperty("key", out JsonElement keyEl) ? keyEl.GetString() : null;
-                        if (!string.IsNullOrEmpty(key))
-                        {
-                            catalog.Remove(key);
-                        }
-                    }
-                    else if (op == "import")
-                    {
-                        string? token = document.RootElement.TryGetProperty("token", out JsonElement tokenEl) ? tokenEl.GetString() : null;
-                        string? id = document.RootElement.TryGetProperty("id", out JsonElement idEl) ? idEl.GetString() : null;
-                        string? name = document.RootElement.TryGetProperty("name", out JsonElement nameEl) ? nameEl.GetString() : null;
-                        if (!string.IsNullOrEmpty(token) && !string.IsNullOrEmpty(id) && !string.IsNullOrEmpty(name))
-                        {
-                            imports.Commit(token, id, name);
-                        }
-                    }
-                    else if (op == "discard")
-                    {
-                        string? token = document.RootElement.TryGetProperty("token", out JsonElement tokenEl) ? tokenEl.GetString() : null;
-                        imports.Discard(token);
-                    }
-                }
-
-                return Results.Text(
-                    JsonSerializer.Serialize(ModPanelApi.Serialize(catalog.GetPanelState()), Json),
-                    "application/json; charset=utf-8");
+                var kind = string.IsNullOrWhiteSpace(body)
+                    ? PlatformModOperationKind.ListMods
+                    : PlatformModOperationKind.MutateMods;
+                OperationResponse response = game.Invoke(
+                    new PlatformModOperationDescriptor(kind),
+                    new PlatformJsonPayload(string.IsNullOrWhiteSpace(body) ? null : body));
+                return Results.Text(response.TextContent ?? "", response.ContentType);
             }
-            catch (Exception error) when (error is IOException or InvalidOperationException or ArgumentException or JsonException or ContentError)
+            catch (Exception error) when (error is IOException or InvalidOperationException or ArgumentException or JsonException)
             {
                 return Results.Json(new { error = error.Message }, statusCode: 400);
             }
         });
 
-        app.MapPost("/api/mod-prepare", async (HttpRequest request, ModImportService imports) =>
+        app.MapPost("/api/mod-prepare", async (HttpRequest request, IGameOperations game) =>
         {
             string? temp = null;
             try
@@ -84,11 +52,13 @@ public static class PlayModEndpoints
                     await file.CopyToAsync(output);
                 }
 
-                PreparedModImport prepared = imports.StageUploadedFile(temp, file.FileName);
+                OperationResponse response = game.Invoke(
+                    new PlatformModOperationDescriptor(PlatformModOperationKind.PrepareImport),
+                    new PlatformFilePayload(temp, file.FileName));
                 temp = null;
-                return Results.Json(new { token = prepared.Token, identity = prepared.Identity });
+                return Results.Text(response.TextContent ?? "", response.ContentType);
             }
-            catch (Exception error) when (error is IOException or InvalidDataException or UnauthorizedAccessException or ContentError)
+            catch (Exception error) when (error is IOException or InvalidDataException or UnauthorizedAccessException)
             {
                 return Results.Json(new { error = error.Message }, statusCode: 400);
             }
@@ -101,17 +71,17 @@ public static class PlayModEndpoints
             }
         }).DisableAntiforgery();
 
-        app.MapPost("/api/mod-import", async (HttpRequest request, ModImportService imports, ModCatalogService catalog) =>
+        app.MapPost("/api/mod-import", async (HttpRequest request, IGameOperations game) =>
         {
             try
             {
                 var form = await request.ReadFormAsync();
-                imports.Commit(form["token"].ToString(), form["id"].ToString(), form["name"].ToString());
-                return Results.Text(
-                    JsonSerializer.Serialize(ModPanelApi.Serialize(catalog.GetPanelState()), Json),
-                    "application/json; charset=utf-8");
+                OperationResponse response = game.Invoke(
+                    new PlatformModOperationDescriptor(PlatformModOperationKind.CommitImport),
+                    new PlatformFormCommitPayload(form["token"].ToString(), form["id"].ToString(), form["name"].ToString()));
+                return Results.Text(response.TextContent ?? "", response.ContentType);
             }
-            catch (Exception error) when (error is IOException or InvalidOperationException or ArgumentException or ContentError)
+            catch (Exception error) when (error is IOException or InvalidOperationException or ArgumentException)
             {
                 return Results.Json(new { error = error.Message }, statusCode: 400);
             }

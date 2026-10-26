@@ -63,7 +63,7 @@
       const title=document.createElement('div');title.className='chapter-preview-title';title.append(this.lettering(chapter.name,'font_text_2_cn_hd','#ebe6e1',139,'center',{singleLine:true}));
       const years=document.createElement('div');years.className='chapter-preview-years';years.append(this.lettering(chapter.start+'-'+chapter.end,'font_char_2_hd','#404040'));
       const flags=document.createElement('div');flags.className='chapter-preview-flags';for(const country of chapter.countries)flags.append(this.countryFlag(country,26,15));
-      popup.append(title,years,flags);const confirm=this.api.button('',()=>{popup.remove();return this.openChapter(chapter);},popup);confirm.className='chapter-preview-confirm';confirm.setAttribute('aria-label','进入 '+chapter.name);confirm.title='进入 '+chapter.name;confirm.append(this.api.uiImage('button_confrim.png',31,31.5));
+      popup.append(title,years,flags);const confirm=this.api.button('',()=>{popup.remove();return this.openChapter(chapter);},popup);confirm.className='chapter-preview-confirm';confirm.setAttribute('aria-label',ew4t('ui.enter','进入 ')+chapter.name);confirm.title=ew4t('ui.enter','进入 ')+chapter.name;confirm.append(this.api.uiImage('button_confrim.png',31,31.5));
       // The visible marker tip is (25, 54); its texture includes transparent shadow margins.
       const targetX=parseFloat(anchor.style.left)+25,targetY=parseFloat(anchor.style.top)+54;
       const left=Math.max(4,Math.min(425,targetX-69.5));
@@ -167,9 +167,9 @@
       if(rank>0){const img=this.api.uiImage('rank_'+Math.min(rank,14)+'.png',21,24);img.className='commander-rank';card.append(img);}
       if(title>0){const img=this.api.uiImage('class_'+Math.min(title,9)+'.png',21,24);img.className='commander-title';card.append(img);}
       const open=document.createElement('button');open.className='commander-open';open.setAttribute('aria-label',definition.name);open.onclick=action;card.append(open);
-      const info=document.createElement('button');info.className='commander-info';info.setAttribute('aria-label',definition.name+'信息');info.title='将领信息';info.onclick=e=>{e.stopPropagation();this.commanderInfo(definition,held);};info.append(this.api.uiImage('button_generalinfo_blue.png',20,20));card.append(info);
-      if(held?.tag){const tag=document.createElement('span');tag.className='commander-tag';card.title='已标记';tag.setAttribute('aria-label','已标记');card.append(tag);}
-      if(held?.locked){card.dataset.locked='true';card.title=(card.title?card.title+' · ':'')+'已派遣';}return card;
+      const info=document.createElement('button');info.className='commander-info';info.setAttribute('aria-label',definition.name+'信息');info.title=ew4t('ui.commander_info','将领信息');info.onclick=e=>{e.stopPropagation();this.commanderInfo(definition,held);};info.append(this.api.uiImage('button_generalinfo_blue.png',20,20));card.append(info);
+      if(held?.tag){const tag=document.createElement('span');tag.className='commander-tag';card.title=ew4t('ui.tagged','已标记');tag.setAttribute('aria-label',ew4t('ui.tagged','已标记'));card.append(tag);}
+      if(held?.locked){card.dataset.locked='true';card.title=(card.title?card.title+' · ':'')+ew4t('ui.dispatched','已派遣');}return card;
     }
     drawRoster(){
       const data=this.data,screen=document.getElementById('hq-screen');screen.classList.toggle('recruiting',this.recruiting);screen.classList.toggle('tag-editing',!!this.tagDraft);screen.classList.toggle('deploying',!!this.deployment);
@@ -184,10 +184,10 @@
         .sort((a,b)=>Number(!!owned.get(b.id)?.tag)-Number(!!owned.get(a.id)?.tag)||section(b)-section(a));
       const filters=document.getElementById('hq-filters');filters.replaceChildren();
       if(this.recruiting)for(const [rating,count] of [6,4,2].entries()){
-        const b=this.api.button('',()=>{this.rating=rating;this.offer=null;this.drawRoster();},filters);b.setAttribute('role','tab');b.setAttribute('aria-label',['一星招募区','二星招募区','三星招募区'][rating]);b.setAttribute('aria-selected',String(rating===this.rating));b.append(this.api.uiImage('button_general_'+count+'.png',152,55));
+        const b=this.api.button('',()=>{this.rating=rating;this.offer=null;this.drawRoster();},filters);b.setAttribute('role','tab');b.setAttribute('aria-label',[ew4t('ui.star1_zone','一星招募区'),ew4t('ui.star2_zone','二星招募区'),ew4t('ui.star3_zone','三星招募区')][rating]);b.setAttribute('aria-selected',String(rating===this.rating));b.append(this.api.uiImage('button_general_'+count+'.png',152,55));
       }
       else if(!this.deployment)for(const rating of [null,0,1,2]){
-        const label=rating===null?'全选':['一星区','二星区','三星区'][rating];
+        const label=rating===null?ew4t('ui.all','全选'):[ew4t('ui.star1','一星区'),ew4t('ui.star2','二星区'),ew4t('ui.star3','三星区')][rating];
         const b=this.api.button('',()=>{this.rosterRating=rating;document.getElementById('hq-roster').scrollLeft=0;this.drawRoster();},filters);
         b.setAttribute('role','tab');b.setAttribute('aria-label',label);b.title=label;b.setAttribute('aria-selected',String(rating===this.rosterRating));
         if(rating===null){b.className='native-command blue';b.append(this.lettering(label,'font_text_3_cn_hd','#ebe6e1'));}
@@ -196,25 +196,25 @@
       const roster=document.getElementById('hq-roster'),scroll=roster.scrollLeft;roster.replaceChildren();
       roster.dataset.count=this.recruiting?[6,4,2][this.rating]:entries.length;
       for(const definition of entries){
-        const held=owned.get(definition.id),shown=this.tagDraft&&held?{...held,tag:this.tagDraft.has(held.id)?'置顶':''}:held,b=this.card(definition,shown,()=>{
+        const held=owned.get(definition.id),shown=this.tagDraft&&held?{...held,tag:this.tagDraft.has(held.id)?ew4t('ui.pinned','置顶'):''}:held,b=this.card(definition,shown,()=>{
           if(this.tagDraft){if(!this.tagSaving){if(this.tagDraft.has(held.id))this.tagDraft.delete(held.id);else this.tagDraft.add(held.id);this.drawRoster();}return;}
           if(this.recruiting){this.offer=definition;this.drawPurchases();for(const c of roster.children)c.setAttribute('aria-pressed',String(c===b));}
           else {this.rosterSelected=definition.id;for(const c of roster.children)c.setAttribute('aria-pressed',String(c===b));if(!this.deployment)this.commanderInfo(definition,held);}
         });roster.append(b);if(held)b.dataset.commander=held.id;
         if(this.deployment){
           b.querySelector('.commander-info').onclick=e=>{e.stopPropagation();this.commanderInfo(definition,held,()=>this.drawRoster());};
-          const deploy=this.api.button('',async()=>{await this.api.deploy(this.deployment,held.id);this.closeRoster();},b);deploy.className='deploy-card-confirm';deploy.setAttribute('aria-label','任命 '+definition.name);deploy.disabled=held.locked;deploy.append(this.lettering(this.text('btn_deploy'),'font_text_3_cn_hd','#ebe6e1'));
+          const deploy=this.api.button('',async()=>{await this.api.deploy(this.deployment,held.id);this.closeRoster();},b);deploy.className='deploy-card-confirm';deploy.setAttribute('aria-label',ew4t('ui.appoint','任命 ')+definition.name);deploy.disabled=held.locked;deploy.append(this.lettering(this.text('btn_deploy'),'font_text_3_cn_hd','#ebe6e1'));
         }
         if(this.tagDraft)b.querySelector('.commander-open').setAttribute('aria-pressed',String(this.tagDraft.has(held.id)));
         if(!this.recruiting&&!this.deployment)this.promotionShortcut(b,held,()=>this.drawRoster());
         b.setAttribute('aria-pressed',String(definition.id===(this.recruiting?this.offer?.id:this.rosterSelected)));
       }
       const capacity=data.sectionCapacity??20,slots=this.recruiting?[6,4,2][this.rating]:this.deployment?Math.max(12,entries.length):Math.max(this.rosterRating===null?capacity*3:capacity,entries.length);
-      for(let i=entries.length;i<slots;i++){const b=this.api.button('',()=>{if(!this.deployment){this.recruiting=true;this.rating=this.rosterRating??0;this.drawRoster();}},roster);b.className='commander-card empty-commander';b.setAttribute('aria-label','空将领位');b.append(this.api.uiImage('button_add_generals.png',78,78));const name=document.createElement('span');name.className='commander-name';b.append(name);b.disabled=this.recruiting||!!this.deployment||!!this.tagDraft;}
+      for(let i=entries.length;i<slots;i++){const b=this.api.button('',()=>{if(!this.deployment){this.recruiting=true;this.rating=this.rosterRating??0;this.drawRoster();}},roster);b.className='commander-card empty-commander';b.setAttribute('aria-label',ew4t('ui.empty_slot','空将领位'));b.append(this.api.uiImage('button_add_generals.png',78,78));const name=document.createElement('span');name.className='commander-name';b.append(name);b.disabled=this.recruiting||!!this.deployment||!!this.tagDraft;}
       if(!this.recruiting)for(const [i,card] of [...roster.children].entries()){card.style.gridRow=i%2+1;card.style.gridColumn=Math.floor(i/2)+1;}
       for(const id of ['hq-recruit-band','hq-refresh','hq-buy-buttons'])document.getElementById(id)?.remove();
       if(this.recruiting){const band=document.createElement('div');band.id='hq-recruit-band';screen.insertBefore(band,roster);
-        const refresh=this.api.button('',async()=>{this.offer=null;await this.transact({op:'refresh',group:this.rating});},screen);refresh.id='hq-refresh';refresh.className='native-command blue';refresh.setAttribute('aria-label','刷新将领');for(let i=0;i<3;i++)refresh.append(this.api.uiImage('button_refresh.png',13,16));this.drawPurchases();}
+        const refresh=this.api.button('',async()=>{this.offer=null;await this.transact({op:'refresh',group:this.rating});},screen);refresh.id='hq-refresh';refresh.className='native-command blue';refresh.setAttribute('aria-label',ew4t('ui.refresh_commanders','刷新将领'));for(let i=0;i<3;i++)refresh.append(this.api.uiImage('button_refresh.png',13,16));this.drawPurchases();}
       roster.scrollLeft=scroll;this.headquartersControls();
       const count=document.getElementById('hq-count');
       count.hidden=this.recruiting;count.replaceChildren(this.lettering(entries.length+' / '+slots,'font_char_2_hd','#404040'));
@@ -225,7 +225,7 @@
       document.getElementById('hq-buy-buttons')?.remove();if(!this.offer)return;
       const row=document.createElement('div');row.id='hq-buy-buttons';document.getElementById('hq-screen').append(row);
       for(const [currency,op,price,balance] of [['medals','recruit',this.offer.price,this.data.medals],['badges','recruit_badge',this.offer.badgePrice,this.data.badges]]){
-        if(price<=0)continue;const b=this.api.button('',async()=>{const definition=this.offer;this.offer=null;await this.transact({op,commander:definition.id,group:this.rating});},row);b.className='native-command'+(currency==='badges'?' red':'');b.setAttribute('aria-label',(currency==='badges'?'徽章':'勋章')+'招募 '+price);b.disabled=balance<price;b.append(this.api.uiImage(currency+'.png',13,17),this.lettering(price,'font_text_3_cn_hd','#ebe6e1'));
+        if(price<=0)continue;const b=this.api.button('',async()=>{const definition=this.offer;this.offer=null;await this.transact({op,commander:definition.id,group:this.rating});},row);b.className='native-command'+(currency==='badges'?' red':'');b.setAttribute('aria-label',(currency==='badges'?ew4t('ui.badge','徽章'):ew4t('ui.medal','勋章'))+ew4t('ui.recruit_for','招募 ')+price);b.disabled=balance<price;b.append(this.api.uiImage(currency+'.png',13,17),this.lettering(price,'font_text_3_cn_hd','#ebe6e1'));
       }
       this.api.popup(row);
     }
@@ -239,13 +239,13 @@
         const attrs=layout.children.find(e=>e.attributes.id==='group_save_'+slot.slot).attributes;
         const panel=document.createElement('section');panel.className='save-slot';
         Object.assign(panel.style,{left:attrs.x+'px',top:(Number(attrs.y)-27)+'px',width:attrs.w+'px',height:attrs.h+'px'});
-        const title=document.createElement('div');title.className='save-name';title.append(this.lettering(slot.corrupt?'存档损坏':slot.exists?slot.name:this.text('text_empty'),'font_text_2_cn_hd','#ebe6e1',110,'center'));panel.append(title);
+        const title=document.createElement('div');title.className='save-name';title.append(this.lettering(slot.corrupt?ew4t('ui.save_corrupt','存档损坏'):slot.exists?slot.name:this.text('text_empty'),'font_text_2_cn_hd','#ebe6e1',110,'center'));panel.append(title);
         const date=document.createElement('div');date.className='save-date';
         if(slot.savedAt){const d=new Date(slot.savedAt),pad=n=>String(n).padStart(2,'0');date.append(this.lettering(d.getFullYear()+'/'+pad(d.getMonth()+1)+'/'+pad(d.getDate())+'\n'+pad(d.getHours())+':'+pad(d.getMinutes()),'font_char_1_hd','#404040',110,'center'));}panel.append(date);
         if(slot.country){const flag=this.countryFlag(slot.country,25.5,15);flag.className='save-country';panel.append(flag);}
-        const titleText=(saving?'保存到':'载入')+(slot.slot===0?'自动存档':'存档 '+slot.slot)+(slot.exists?' '+slot.name+' 回合 '+slot.round:' 空');
+        const titleText=(saving?ew4t('ui.save_to','保存到'):ew4t('ui.load_from','载入'))+(slot.slot===0?ew4t('ui.autosave','自动存档'):ew4t('ui.save_slot','存档 {0}',[slot.slot]))+(slot.exists?' '+ew4t('ui.save_row','{0} 回合 {1}',[slot.name,slot.round]):ew4t('ui.slot_empty',' 空'));
         const command=this.api.button('',async()=>{
-          if(saving){await this.api.rpc('save',{slot:slot.slot,mode,tutorial});document.getElementById('detail-modal').hidden=true;this.api.notice('已保存');}
+          if(saving){await this.api.rpc('save',{slot:slot.slot,mode,tutorial});document.getElementById('detail-modal').hidden=true;this.api.notice(ew4t('ui.saved','已保存'));}
           else await this.api.load(slot.slot,mode);
         },panel);
         command.className='save-slot-confirm';command.setAttribute('aria-label',titleText);command.title=titleText;

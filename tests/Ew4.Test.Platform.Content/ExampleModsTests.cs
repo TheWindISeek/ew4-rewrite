@@ -1,7 +1,7 @@
 using Ew4.Platform.Content;
-using Ew4.Platform.Content.Build;
-using Ew4.Platform.Content.ScenarioEdit;
+using Ew4.Platform.Content.CatalogLoad;
 using Ew4.Platform.Engine;
+using Ew4.Platform.Mod;
 using Xunit;
 
 namespace Ew4.Test.Platform.Content;
@@ -28,7 +28,7 @@ public sealed class ExampleModsTests
         return Directory.GetCurrentDirectory();
     }
 
-    private static string? BasePackDirectory
+    private static string? BaseModDirectory
     {
         get
         {
@@ -64,7 +64,7 @@ public sealed class ExampleModsTests
     [InlineData("ex-conquest-tweak", "conquest1")]
     public void Example_scenario_overlay_resolves_with_base(string modId, string scenarioId)
     {
-        string? baseDir = BasePackDirectory;
+        string? baseDir = BaseModDirectory;
         if (baseDir == null)
         {
             return;
@@ -77,8 +77,7 @@ public sealed class ExampleModsTests
         var repository = new FileModRepository(Path.GetDirectoryName(baseDir)!);
         ModInstallGuard.ValidateActivation(child, repository, Engine);
 
-        ScenarioDocument document = ScenarioBtlResolver.OpenScenarioDocument(merged, scenarioId);
-        Assert.Equal(scenarioId, document.Id);
+        Assert.NotEmpty(ScenarioModAccess.OpenBattle(merged, scenarioId).Factions);
     }
 
     [Theory]
@@ -86,7 +85,7 @@ public sealed class ExampleModsTests
     [InlineData("ex-conquest-tweak", "conquest1", "示例征服：第一时代（仅改列表名）")]
     public void Example_scenario_overlay_display_name_for_catalog(string modId, string scenarioId, string expectedName)
     {
-        string? baseDir = BasePackDirectory;
+        string? baseDir = BaseModDirectory;
         if (baseDir == null)
         {
             return;
@@ -105,7 +104,7 @@ public sealed class ExampleModsTests
     [Fact]
     public void Example_commander_overlay_passes_activation_snapshot_load()
     {
-        string? baseDir = BasePackDirectory;
+        string? baseDir = BaseModDirectory;
         string modDir = Path.Combine(ModsRoot, "ex-commander-skills");
         if (baseDir == null || !File.Exists(Path.Combine(modDir, "assets", "tables", "def_commander.xml")))
         {
@@ -117,14 +116,14 @@ public sealed class ExampleModsTests
         var registry = ContentKindRegistry.CreateDefault();
         var resolver = new ContentResolver(registry, Engine);
         var loader = new ModSnapshotLoader(resolver, new ContentValidator(registry, Engine, new ScenarioJsonBuilder()));
-        ResolvedContent loaded = loader.LoadActivatedView(child, parent);
+        ResolvedContent loaded = loader.LoadActivatedView(child, parent).AsResolvedContent();
         Assert.Equal("ex-commander-skills", loaded.Manifest.Id);
     }
 
     [Fact]
     public void Example_commander_overlay_changes_napoleon_skill_with_base()
     {
-        string? baseDir = BasePackDirectory;
+        string? baseDir = BaseModDirectory;
         string modDir = Path.Combine(ModsRoot, "ex-commander-skills");
         if (baseDir == null || !File.Exists(Path.Combine(modDir, "assets", "tables", "def_commander.xml")))
         {
@@ -137,7 +136,7 @@ public sealed class ExampleModsTests
         var repository = new FileModRepository(Path.GetDirectoryName(baseDir)!);
         ModInstallGuard.ValidateActivation(child, repository, Engine);
 
-        byte[] xml = ModAssetRead.FromPack(merged)("original/def_commander.xml");
+        byte[] xml = ModAssetRead.FromMod(merged)("original/def_commander.xml");
         string text = System.Text.Encoding.UTF8.GetString(xml);
         Assert.Contains("Napoleon (example)", text, StringComparison.Ordinal);
         Assert.Contains("skill2=\"99\"", text, StringComparison.Ordinal);

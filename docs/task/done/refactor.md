@@ -43,7 +43,7 @@
 | S6 | `pack.json`、`PackInstallGuard` P1–P8 |
 | S7 | 文档与实现对齐 |
 
-现行结构见 [arch/README.md](../../arch/README.md)。
+现行结构见 [arch/module-responsibilities.md](../../arch/module-responsibilities.md)。
 
 ---
 

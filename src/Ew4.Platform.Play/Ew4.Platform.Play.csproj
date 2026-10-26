@@ -1,0 +1,12 @@
+<Project Sdk="Microsoft.NET.Sdk">
+  <PropertyGroup>
+    <TargetFramework>net10.0</TargetFramework>
+    <RootNamespace>Ew4.Platform.Play</RootNamespace>
+    <AssemblyName>Ew4.Platform.Play</AssemblyName>
+    <ImplicitUsings>enable</ImplicitUsings>
+    <Nullable>enable</Nullable>
+  </PropertyGroup>
+  <ItemGroup>
+    <ProjectReference Include="..\Ew4.Platform.Engine\Ew4.Platform.Engine.csproj" />
+  </ItemGroup>
+</Project>

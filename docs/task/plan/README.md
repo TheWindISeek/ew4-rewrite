@@ -6,6 +6,8 @@
 |------|------|
 | [pack-manifest-unify.md](./pack-manifest-unify.md) | 合并 `pack.json` 与 `mod.json`（M0） |
 | [mod-experience.md](./mod-experience.md) | Mod 切换体验问题域 |
+| [android-shell.md](./android-shell.md) | Android 壳（内置后端 + WebView） |
+| [apk-export.md](./apk-export.md) | Mod → APK 导出（`Ew4.Tool export-apk`）需求与 CLI 契约 |
 
 完成后：
 

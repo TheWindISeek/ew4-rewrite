@@ -37,7 +37,7 @@ public sealed class ContentValidator : IContentValidator
         foreach (string path in content.Source.List("").OrderBy(p => p, StringComparer.Ordinal))
         {
             if (string.Equals(path, ModManifestPaths.FileName, StringComparison.Ordinal)
-                || string.Equals(path, ModManifestPaths.LegacyPackJson, StringComparison.Ordinal)
+                || string.Equals(path, ModManifestPaths.LegacyModJson, StringComparison.Ordinal)
                 || string.Equals(path, ".workspace.json", StringComparison.Ordinal))
             {
                 continue;
@@ -111,31 +111,13 @@ public sealed class ContentValidator : IContentValidator
     {
         foreach (ScenarioIndex scenario in ScenarioCatalog.List(content.Source))
         {
-            if (scenario.IsEmbeddedDocument)
-            {
-                continue;
-            }
-
-            if (string.IsNullOrWhiteSpace(scenario.OriginalBtlPath))
+            if (!scenario.IsSchema3)
             {
                 yield return new Diagnostic(
                     Severity.Error,
-                    "scenario.legacy",
+                    "scenario.schema",
                     scenario.JsonPath,
-                    "Scenario '" + scenario.Id + "' is missing legacy.btl or embedded document.");
-                continue;
-            }
-
-            if (!content.Source.Exists(scenario.OriginalBtlPath))
-            {
-                bool optional = scenario.Id.StartsWith("multiplay", StringComparison.Ordinal);
-                yield return new Diagnostic(
-                    optional ? Severity.Warning : Severity.Error,
-                    "scenario.btl",
-                    scenario.JsonPath,
-                    optional
-                        ? "Multiplayer scenario BTL is not bundled in base: " + scenario.OriginalBtlPath
-                        : "BTL not found: " + scenario.OriginalBtlPath);
+                    "Scenario '" + scenario.Id + "' is not schema 3.");
             }
         }
     }

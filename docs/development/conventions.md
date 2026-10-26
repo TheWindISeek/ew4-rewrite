@@ -2,7 +2,7 @@
 
 状态:已实现（与当前 `src/` 对齐）
 
-仓库布局与名词见根 [README.md](../../README.md)、[glossary.md](../glossary.md)。依赖分层见 [arch/README.md](../arch/README.md)。
+仓库布局与名词见根 [README.md](../../README.md)、[glossary.md](../glossary.md)。依赖分层见 [arch/module-responsibilities.md](../arch/module-responsibilities.md)。
 
 ## 目标框架
 
@@ -16,7 +16,7 @@
 ## 依赖规则
 
 - **`Ew4.Platform.Engine` 不引用**任何其它项目或 NuGet 包。
-- 方向：Content 不引用 Session/Host；Authoring 不引用 Session（详见 [arch/README.md](../arch/README.md)）。
+- 方向：Content 不引用 `Ew4.Service`；磁盘只经 Persistence（详见 [arch/module-responsibilities.md](../arch/module-responsibilities.md)）。
 - 新类型放在正确层，禁止「下沉」规避依赖。
 
 ## 代码与 API

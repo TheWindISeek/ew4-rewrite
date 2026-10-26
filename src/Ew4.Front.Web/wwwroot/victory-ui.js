@@ -64,7 +64,7 @@
       if(bindings.thresholds)layout.hide(bindings.thresholds,!won||result.stars===0);
       if(bindings.stars){
         layout.fill(bindings.stars,...Array.from({length:5},(_,i)=>api.uiImage(i<result.stars?(screen.starImage||'star_middle.png'):(screen.emptyStarImage||'diffcult_1.png'),13,13)));
-        layout.get(bindings.stars).setAttribute('aria-label',result.stars+'星');
+        layout.get(bindings.stars).setAttribute('aria-label',ew4t('ui.stars','{0}星',[result.stars]));
       }
       if(bindings.generals){
         const generals=layout.get(bindings.generals),count=Math.max(6,result.generals.length);
@@ -77,21 +77,21 @@
         const slots=Array.from({length:count},(_,i)=>{
           const general=result.generals[i],slot=document.createElement('div');slot.className='result-general';
           if(general){
-            slot.setAttribute('aria-label',general.name+(general.withdrawn?' 已退场':''));slot.title=general.name;
+            slot.setAttribute('aria-label',general.name+(general.withdrawn?ew4t('ui.withdrawn',' 已退场'):''));slot.title=general.name;
             slot.append(api.portrait(general.image));
             for(const [value,name] of [[general.rank,'rank_'],[general.title,'class_']])if(value>0){
               const badge=api.uiImage(name+Math.min(value,name==='rank_'?14:9)+'.png',21,24);badge.className=name==='rank_'?'result-rank':'result-title';slot.append(badge);
             }
             if(general.withdrawn)slot.classList.add('withdrawn');
-          }else{slot.append(api.uiImage('button_add_generals.png',78,78));slot.setAttribute('aria-label','空将领位');}
+          }else{slot.append(api.uiImage('button_add_generals.png',78,78));slot.setAttribute('aria-label',ew4t('ui.empty_slot','空将领位'));}
           return slot;
         });
         layout.fill(bindings.generals,...slots);
       }
       layout.hide(bindings.continue,!won);layout.hide(bindings.restart,won);
-      layout.action(bindings.continue,'继续',async()=>{await api.continue(result);dismiss();api.close();});
-      layout.action(bindings.restart,'重新开始',async()=>{await api.restart();dismiss();api.close();});
-      layout.action(bindings.exit,'退出',()=>{dismiss();api.close();api.exit();});
+      layout.action(bindings.continue,ew4t('ui.continue','继续'),async()=>{await api.continue(result);dismiss();api.close();});
+      layout.action(bindings.restart,ew4t('ui.restart','重新开始'),async()=>{await api.restart();dismiss();api.close();});
+      layout.action(bindings.exit,ew4t('ui.quit','退出'),()=>{dismiss();api.close();api.exit();});
     }
   }
   root.Ew4VictoryUI={Results};

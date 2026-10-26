@@ -57,6 +57,7 @@ const localMultiplayerUi = new Ew4LocalMultiplayer.LocalMultiplayer({rpc,detail:
 let tutorial, tutorialRect;
 let settings={music:50,sound:50,speed:2,hd:true,screen:100,eventSize:100,cityLanguage:'en',geographicLanguage:'en',localMultiplayer:false,skipTurnFast:false,followAi:false};
 try { settings={...settings,...JSON.parse(localStorage.getItem('ew4.settings')||'{}')}; } catch (_) {}
+const music=Ew4Music.create(()=>settings.music);
 settings.eventSize=Number.isFinite(settings.eventSize)?Math.max(60,Math.min(180,settings.eventSize)):100;
 for(const key of ['skipTurnFast','followAi'])settings[key]=settings[key]===true;
 try { showGrid = localStorage.getItem('ew4.showGrid') === 'true'; } catch (_) { /* Storage can be unavailable in restricted WebViews. */ }
@@ -95,6 +96,7 @@ async function showMain() {
   const wasBusy=busy;busy=true;
   try {
     if(state)await rpc('leave',{revision:state.revision});
+    music.stop();
     state=undefined;selected=undefined;selection=undefined;tutorial=null;tutorialRect=null;
     battleDialogues.length=0;
     detailReturn=null;victoryUi.reset();localMultiplayerUi.sync(null);
@@ -111,20 +113,21 @@ async function showMain() {
 }
 function notice(text) { $('notice').textContent = text; $('notice').hidden = false; clearTimeout(errorTimer); errorTimer = setTimeout(() => $('notice').hidden = true, 5500); }
 async function rpc(route, args = {}) {
-  const response = await fetch('/api/' + route + '?q=' + encodeURIComponent(JSON.stringify(args)), {method: 'POST', cache: 'no-store'});
-  if (!response.ok) throw Error('连接失败 (' + response.status + ')');
+  const response = await fetch('/api/play/' + route + '?q=' + encodeURIComponent(JSON.stringify(args)), {method: 'POST', cache: 'no-store'});
+  if (!response.ok) throw Error(ew4t('ui.connect_failed','连接失败 ({0})',[response.status]));
   const result = await response.json();
   if (!result.ok) throw Error(failure(result.code, result.message));
+  if (result.data?.audio) music.play(result.data.audio.bgm);
   return result.data;
 }
 function failure(code, message) {
-  const labels = {'client.player_turn':'请等待己方回合','client.stale':'状态已更新，请重新选择','client.ai_turn':'当前并非电脑回合',
-    'action.dialogue_pending':'请先确认当前对白','action.phase':'回合尚未就绪','turn.finished':'本局已经结束',
-    'training.unit':'请先选择已任职将领的己方部队','client.no_session':'请先开始游戏',
-    'training.resources':'培训所需金币或粮食不足','training.unavailable':'该部队当前无法培训','training.limit':'已达到培训上限',
-    'upgrade.resources':'建筑升级所需资源不足','upgrade.used':'该建筑本回合已升级','upgrade.limit':'建筑已达到升级上限',
-    'purchase.resources':'改装所需资源不足','transport.unavailable':'该部队无法改装运输船',
-    'client.undo_move':'该部队目前没有可以撤回的移动：已攻击、原位被占用或相关地块已发生变化'};
+  const labels = {'client.player_turn':ew4t('err.client.player_turn','请等待己方回合'),'client.stale':ew4t('err.client.stale','状态已更新，请重新选择'),'client.ai_turn':ew4t('err.client.ai_turn','当前并非电脑回合'),
+    'action.dialogue_pending':ew4t('err.action.dialogue_pending','请先确认当前对白'),'action.phase':ew4t('err.action.phase','回合尚未就绪'),'turn.finished':ew4t('err.turn.finished','本局已经结束'),
+    'training.unit':ew4t('err.training.unit','请先选择已任职将领的己方部队'),'client.no_session':ew4t('err.client.no_session','请先开始游戏'),
+    'training.resources':ew4t('err.training.resources','培训所需金币或粮食不足'),'training.unavailable':ew4t('err.training.unavailable','该部队当前无法培训'),'training.limit':ew4t('err.training.limit','已达到培训上限'),
+    'upgrade.resources':ew4t('err.upgrade.resources','建筑升级所需资源不足'),'upgrade.used':ew4t('err.upgrade.used','该建筑本回合已升级'),'upgrade.limit':ew4t('err.upgrade.limit','建筑已达到升级上限'),
+    'purchase.resources':ew4t('err.purchase.resources','改装所需资源不足'),'transport.unavailable':ew4t('err.transport.unavailable','该部队无法改装运输船'),
+    'client.undo_move':ew4t('err.client.undo_move','该部队目前没有可以撤回的移动：已攻击、原位被占用或相关地块已发生变化')};
   return labels[code] || message;
 }
 function image(path) {
@@ -183,7 +186,7 @@ function scenarioList() {
 function updateConquestPagination(){
   const count=conquestPages.pages.length;
   $('conquest-page-number').replaceChildren(originalTextRenderer.element((conquestPage+1)+' / '+count,'font_char_2_hd','#ebe6e1',42,'center'));
-  $('conquest-page-number').setAttribute('aria-label','第'+(conquestPage+1)+'页，共'+count+'页');
+  $('conquest-page-number').setAttribute('aria-label',ew4t('ui.page_of','第{0}页，共{1}页',[conquestPage+1,count]));
   $('conquest-prev').disabled=conquestEntering||conquestPage===0;
   $('conquest-next').disabled=conquestEntering||conquestPage===count-1;
 }
@@ -258,19 +261,11 @@ async function installState(next, center = false) {
         const source=units.find(u=>u.id===notice.subject),victim=state.units.find(u=>u.id===notice.target);
         const speaker=source&&!next.units.some(u=>u.id===source.id)?{...source,health:0}:source;
         if(!speaker?.commanderImage||!victim)continue;
-        const rule=catalog.commanderDialogues?.[speaker.commanderDefinitionId]?.killRules?.find(rule=>killDialogueMatches(rule,next,speaker,victim)
-          && rule.chance>0&&(rule.chance===100||Math.random()*100<rule.chance));
-        if(rule){
-          queueBattleDialogue(speaker,rule.lines[rule.selection==='first'?0:Math.floor(Math.random()*rule.lines.length)]);
-          handled.add(notice.target);
-        }
-        continue;
       }
       if(notice.kind!=='battle.kill_dialogue'||handled.has(notice.target))continue;
       const speaker=units.find(u=>u.commanderId===notice.subject&&u.commanderImage);
       if(!speaker)continue;
-      const dedicated=catalog.commanderDialogues?.[speaker.commanderDefinitionId]?.kill;
-      const choices=dedicated?.length?dedicated:Object.entries(manifest.strings).filter(([key,text])=>/^desc_destroy enemy [1-6]$/.test(key)&&text).map(([,text])=>text);
+      const choices=Object.entries(manifest.strings).filter(([key,text])=>/^desc_destroy enemy [1-6]$/.test(key)&&text).map(([,text])=>text);
       if(!choices.length)continue;
       queueBattleDialogue(speaker,choices[Math.floor(Math.random()*choices.length)]);
     }
@@ -297,15 +292,6 @@ async function installState(next, center = false) {
   motions.clear();arrivals.clear();
   requestRender();
   if(!center&&state.activeFaction===state.playerFaction&&!state.dialogue){const unit=state.units.find(u=>u.id===keepUnit);const cell=unit?.cell??(keepUnit?null:keepCell);if(cell!=null)await selectCell(cell,true);}
-}
-function killDialogueMatches(rule,next,speaker,victim){
-  const when=rule.when;
-  return (!when.victimCommanders.length||when.victimCommanders.includes(victim.commanderDefinitionId))
-    &&(!when.victimCategories.length||when.victimCategories.includes(victim.category))
-    &&(when.victimHasCommander==null||when.victimHasCommander===!!victim.commanderId)
-    &&(!when.scenarios.length||when.scenarios.includes(next.scenario))
-    &&next.round>=when.minRound&&next.round<=when.maxRound
-    &&speaker.health*100<=speaker.maxHealth*when.killerHealthPercentAtMost;
 }
 function queueBattleDialogue(speaker,text){
   const name=speaker.commanderImage;
@@ -440,11 +426,11 @@ async function presentAiProgress(){
 function refreshHud() {
   const active = state.factions.find(f => f.id === state.activeFaction);
   const player = state.factions.find(f => f.id === state.playerFaction);
-  $('turn').replaceChildren(originalTextRenderer.element('回合  ' + state.round,'font_text_2_cn_hd','#404040'));
+  $('turn').replaceChildren(originalTextRenderer.element(ew4t('ui.round','回合  {0}',[state.round]),'font_text_2_cn_hd','#404040'));
   $('player-flag').src = flagSource(player);
   $('player-flag').alt = $('player-flag').title = player.name;
   $('resources').replaceChildren();
-  for (const [label, icon, value] of [['金钱','money', player.resources.money], ['工业','industry',player.resources.industry], ['粮食','food',player.resources.food]]) {
+  for (const [label, icon, value] of [[ew4t('ui.money','金钱'),'money', player.resources.money], [ew4t('ui.industry','工业'),'industry',player.resources.industry], [ew4t('ui.food','粮食'),'food',player.resources.food]]) {
     const span = document.createElement('span'); span.className='resource-item';span.setAttribute('aria-label', label + ' ' + value);
     const marker = document.createElement('img'); marker.src = '/content/ui/image_ui_hd/marker_' + icon + '.png'; marker.alt = '';
     span.append(marker, originalTextRenderer.element(value,'font_char_2_hd','#ffffff')); $('resources').append(span);
@@ -493,7 +479,7 @@ function refreshHud() {
     $('dialogue-portrait').replaceWith(Object.assign(talk?.portrait?menus.portrait(talk.portrait):document.createElement('img'),{id:'dialogue-portrait',alt:talk?.name||'',hidden:!talk?.portrait}));
     $('dialogue-text').scrollTop=0;
   }
-  $('status').textContent = state.phase === 'Finished' ? (state.outcome === 'Victory' ? '胜利' : '本局结束') : '';
+  $('status').textContent = state.phase === 'Finished' ? (state.outcome === 'Victory' ? ew4t('ui.victory','胜利') : ew4t('ui.game_over','本局结束')) : '';
   victoryUi.sync(state.localMultiplayer?null:state);
   localMultiplayerUi.sync(state);
 }
@@ -522,7 +508,7 @@ async function runAi() {
     while (aiCanContinue(state)) {
       if(fastSkipping()){
         const batch=await rpc('action',{op:'ai_batch',revision:state.revision});
-        if(batch.baseRevision!==state.revision)throw Error('回合状态不同步');
+        if(batch.baseRevision!==state.revision)throw Error(ew4t('ui.round_desync','回合状态不同步'));
         const next=batch.state;
         if(!next.cells){next.cells=state.cells.slice();for(const update of next.cellUpdates)next.cells[update.cell]=update.value;}
         delete next.cellUpdates;
@@ -571,18 +557,18 @@ async function selectCell(cell,restore=false,selectOnly=false) {
     }
     $('terrain-info').append(column);
   }
-  if(selection.deploy) toolButton('general','任命将领',()=>menus.deployGeneral(target.id,state.revision));
-  if(selection.actionQuotes?.upgrade) singleActionButton('buildupgrade','升级建筑','upgrade',selection.actionQuotes.upgrade,{cell});
-  if(selection.installations.length) toolButton('builddefense','防御',()=>openDefense(cell));
-  if(selection.actionQuotes?.train) singleActionButton('training','培训','train',selection.actionQuotes.train);
-  if(selection.items) toolButton('items','使用物品',()=>menus.useItems(target.id));
-  if(selection.offers.length) toolButton(({city:'city',industry:'factory',stable:'stable',port:'dock'})[site.buildingKind]||'buildfortress',site.buildingKind?'雇佣':'建造要塞',()=>openRecruitment(cell));
-  if(selection.actionQuotes?.transport) singleActionButton('buyship','改装运输船','transport',selection.actionQuotes.transport);
-  if(selection.tavern)toolButton('bar','酒馆',()=>menus.tavern(cell));
-  if(selection.shop)toolButton('shop','商店',()=>menus.shop(cell));
-  if(selection.market)toolButton('trade','市场',()=>menus.exchange(cell));
-  if(target)toolButton('info','部队信息',()=>openUnitInfo(target));
-  if(own&&selection.disband){const b=toolButton('disband','解散部队',()=>confirmDisband(target,selection.disband,b));b.dataset.action='disband';}
+  if(selection.deploy) toolButton('general',ew4t('ui.act.deploy','任命将领'),()=>menus.deployGeneral(target.id,state.revision));
+  if(selection.actionQuotes?.upgrade) singleActionButton('buildupgrade',ew4t('ui.act.upgrade','升级建筑'),'upgrade',selection.actionQuotes.upgrade,{cell});
+  if(selection.installations.length) toolButton('builddefense',ew4t('ui.defense','防御'),()=>openDefense(cell));
+  if(selection.actionQuotes?.train) singleActionButton('training',ew4t('ui.act.train','培训'),'train',selection.actionQuotes.train);
+  if(selection.items) toolButton('items',ew4t('ui.act.items','使用物品'),()=>menus.useItems(target.id));
+  if(selection.offers.length) toolButton(({city:'city',industry:'factory',stable:'stable',port:'dock'})[site.buildingKind]||'buildfortress',site.buildingKind?ew4t('ui.act.hire','雇佣'):ew4t('ui.act.fortress','建造要塞'),()=>openRecruitment(cell));
+  if(selection.actionQuotes?.transport) singleActionButton('buyship',ew4t('ui.act.transport','改装运输船'),'transport',selection.actionQuotes.transport);
+  if(selection.tavern)toolButton('bar',ew4t('ui.act.tavern','酒馆'),()=>menus.tavern(cell));
+  if(selection.shop)toolButton('shop',ew4t('ui.act.shop','商店'),()=>menus.shop(cell));
+  if(selection.market)toolButton('trade',ew4t('ui.act.market','市场'),()=>menus.exchange(cell));
+  if(target)toolButton('info',ew4t('ui.act.unit_info','部队信息'),()=>openUnitInfo(target));
+  if(own&&selection.disband){const b=toolButton('disband',ew4t('ui.act.disband','解散部队'),()=>confirmDisband(target,selection.disband,b));b.dataset.action='disband';}
   for(const entry of selection.skills||[]){
     const skill=entry.skill,b=toolButton('info',skill.name,()=>openSkillAction(target,entry));
     b.classList.add('active-skill-button');b.disabled=!entry.available;
@@ -616,7 +602,7 @@ function toolButton(icon,title,action){const b=button('',action,$('actions'));b.
   else b.append(uiImage('button_'+(icon==='general'?'generals':icon)+'.png',33));
   b.dataset.tutorialId=({general:'btn_general',items:'btn_item',city:'btn_city',factory:'btn_factory',stable:'btn_stable',dock:'btn_dock',buildfortress:'btn_fortress',builddefense:'btn_defense',buyship:'btn_ship',training:'btn_training',buildupgrade:'btn_upgrade'})[icon]||'';return b;}
 let detailReturn,detailRevision=0;
-function confirmDisband(unit,refund,anchor){openSingleAction('disband','解散部队',{cost:refund,affordable:true,warning:selection.disbandWarning},anchor,{unit:unit.id},true);}
+function confirmDisband(unit,refund,anchor){openSingleAction('disband',ew4t('ui.act.disband','解散部队'),{cost:refund,affordable:true,warning:selection.disbandWarning},anchor,{unit:unit.id},true);}
 function popupOpen(element){element.classList.remove('popup-opening');void element.offsetWidth;element.classList.add('popup-opening');}
 function closeDetail(){const back=detailReturn;detailReturn=null;menus.dismissSkillTip();$('detail-modal').hidden=true;if(back)back();}
 function detailWindow(title,width,height,confirm,onClose){
@@ -626,7 +612,7 @@ function detailWindow(title,width,height,confirm,onClose){
   const dialog=$('detail-modal').firstElementChild;dialog.style.width=width+'px';dialog.style.height=height+'px';
   dialog.classList.remove('native-dialog');
   dialog.style.removeProperty('--ui-scale');
-  const titleText=({headquarters_label:'指挥部',tutorial_label:'教程',country_label:'选择国家',recruit_label:'招募',info_label:'信息',defense_label:'防御'})[title]||manifest.strings[title]||title;
+  const titleText=({headquarters_label:ew4t('ui.headquarters','指挥部'),tutorial_label:ew4t('ui.tutorial','教程'),country_label:ew4t('ui.choose_country','选择国家'),recruit_label:ew4t('ui.recruit','招募'),info_label:ew4t('ui.info','信息'),defense_label:ew4t('ui.defense','防御')})[title]||manifest.strings[title]||title;
   $('detail-title').replaceChildren(labelImage(title,titleText,$('detail-title')));$('detail-content').replaceChildren();$('detail-content').nativeLayout=null;$('detail-content').className='';$('detail-modal').hidden=false;
   $('detail-confirm').dataset.tutorialId='winbtn_ok';$('detail-confirm').hidden=!confirm;$('detail-confirm').onclick=async()=>{try{await confirm();if(generation===detailRevision)$('detail-modal').hidden=true;await tutorialUi($('detail-confirm').dataset.tutorialId);}catch(e){notice(e.message);}};
   $('detail-confirm').disabled=false;
@@ -649,7 +635,7 @@ function unitCard(profile,cost){
 }
 function abilityGrid(profile,unit){
   const p=manifest.profiles[profile],s=p.stats,grid=document.createElement('div');grid.className='ability-grid';
-  const health=Number(s.strength)===-999?'一次性':unit?.health??s.strength;
+  const health=Number(s.strength)===-999?ew4t('ui.one_time','一次性'):unit?.health??s.strength;
   for(const [icon,value] of [['attack',s.minatk+'-'+s.maxatk],['soldiernumber',p.grade+1],['hp',health],['food',s.consumption],['range',s.maxatkrange],['move',unit?.remainingMovement??s.movement]]){
     const marker=document.createElement('span');marker.className='ability-icon';marker.append(uiImage('infomarker_'+icon+'.png',21));const number=document.createElement('span');number.textContent=value;grid.append(marker,number);
     if(icon==='soldiernumber'){number.replaceChildren();number.className='formation-count';for(let i=0;i<3;i++)number.append(tintedUi('infomarker_soldiernumber'+(i<value?'':'_empty')+'.png','#404040',14,18));}
@@ -666,13 +652,12 @@ async function openUnitInfo(unit){
   for(let i=0;i<=p.grade;i++){const marker=document.createElement('span');marker.className='info-formation-marker';marker.style.left=(i*4)+'px';marker.append(tintedUi('buildmaker.png',formationColors[p.grade]||formationColors[0],19,20),uiImage(p.cardMarker,19,19));card.append(marker);}
   const grid=abilityGrid(unit.profile,unit);grid.classList.add('info-abilities');l.fill('grid_ability',grid);
   l.text('intitle',p.name);l.text('text_desc',p.description);l.hide('group_info');
-  const tags=document.createElement('section');tags.className='unit-effect-region';tags.setAttribute('aria-label','技能与效果');
-  const title=document.createElement('div');title.className='unit-effect-title';title.append(originalTextRenderer.element('技能 / 效果','font_text_1_cn_hd','#646464'));tags.append(title);l.body.append(tags);
+  const tags=document.createElement('section');tags.className='unit-effect-region';tags.setAttribute('aria-label',ew4t('ui.skills_effects_label','技能与效果'));
+  const title=document.createElement('div');title.className='unit-effect-title';title.append(originalTextRenderer.element(ew4t('ui.skills_effects','技能 / 效果'),'font_text_1_cn_hd','#646464'));tags.append(title);l.body.append(tags);
   const list=document.createElement('div');list.className='unit-skill-list';tags.append(list);
   if(entries.length){
     for(const skill of entries){const row=button('',()=>openSkillDescription(skill,()=>openUnitInfo(state.units.find(u=>u.id===unit.id)||unit)),list);row.className='unit-skill-row';row.title=skill.description;
       row.append(Ew4SkillUI.icon(skill,19,uiImage),originalTextRenderer.element(skill.name,'font_text_2_cn_hd','#404040'));}
-    Ew4SkillUI.layout(list,catalog.extensionLayouts?.unit,entries);
   }
   const revision=state.revision;
   const info=await rpc('unit-info',{unit:unit.id,revision});
@@ -724,8 +709,8 @@ function openSingleAction(op,title,quote,anchor,extra={},refund=false){
   const funds=state.factions.find(f=>f.id===state.playerFaction).resources;
   const keys=op==='train'?['money','food']:['money','industry'];
   for(const key of ['money','industry','food'])if(quote.cost[key]&&!keys.includes(key))keys.push(key);
-  const labels={money:'金币',industry:'工业',food:'粮食'};
-  panel.setAttribute('aria-label',(refund?'返还':'费用')+'：'+keys.map(k=>labels[k]+quote.cost[k]).join('，'));
+  const labels={money:ew4t('ui.coin','金币'),industry:ew4t('ui.industry','工业'),food:ew4t('ui.food','粮食')};
+  panel.setAttribute('aria-label',(refund?ew4t('ui.refund','返还'):ew4t('ui.cost','费用'))+'：'+keys.map(k=>labels[k]+quote.cost[k]).join('，'));
   panel.style.height=(56+Math.max(0,keys.length-2)*21)+'px';
   for(const key of keys){
     const row=document.createElement('div');row.className='action-cost-row';row.dataset.resource=key;row.dataset.value=quote.cost[key];
@@ -733,7 +718,7 @@ function openSingleAction(op,title,quote,anchor,extra={},refund=false){
     row.append(uiImage('marker_'+key+'.png',19.5),originalTextRenderer.element((refund?'+':'')+quote.cost[key],'font_text_4',color,50,'center',{singleLine:true}));
     panel.append(row);
   }
-  confirm.disabled=!quote.affordable;confirm.title='确认'+title;confirm.setAttribute('aria-label','确认'+title);
+  confirm.disabled=!quote.affordable;confirm.title=ew4t('ui.confirm_prefix','确认')+title;confirm.setAttribute('aria-label',ew4t('ui.confirm_prefix','确认')+title);
   host.hidden=false;positionSingleAction();
 }
 function positionSingleAction(){
@@ -749,7 +734,7 @@ function positionSingleAction(){
 }
 async function submitSingleAction(pending){
   if(!pending||busy||!pending.quote.affordable)return;
-  if(pending.revision!==state.revision||pending.cell!==selection?.cell||pending.unit!==selected?.id){closeSingleAction();notice('状态已更新，请重新选择');return;}
+  if(pending.revision!==state.revision||pending.cell!==selection?.cell||pending.unit!==selected?.id){closeSingleAction();notice(ew4t('ui.state_stale','状态已更新，请重新选择'));return;}
   try{await act(pending.op,{...pending.extra,unit:pending.unit,revision:pending.revision});await tutorialUi('btn_done');}
   catch(error){notice(error.message);}
 }
@@ -758,7 +743,7 @@ $('single-action-confirm').onclick=async()=>{
   if(!pending||busy||!pending.quote.affordable)return;
   $('single-action-confirm').disabled=true;
   if(pending.quote.warning){
-    const body=detailWindow('解散要塞',300,160,async()=>{
+    const body=detailWindow(ew4t('ui.act.disband_fort','解散要塞'),300,160,async()=>{
       if($('detail-confirm').disabled)return;
       $('detail-confirm').disabled=true;
       await submitSingleAction(pending);
@@ -875,7 +860,7 @@ function render(time) {
   if(!renderDirty&&time-lastRenderTime<1000/30-.5){renderRequest=requestAnimationFrame(render);return;}
   renderDirty=false;lastRenderTime=time;
   const playVisible=state&&!$('play').hidden;
-  const covered=['pause','settings','detail-modal','mod-hub','mod-manager','author-manager','loading-screen'].some(id=>!$(id).hidden);
+  const covered=['pause','settings','detail-modal','mod-hub','mod-manager','editor-manager','loading-screen'].some(id=>!$(id).hidden);
   const animated=(!$('campaign-screen').hidden||!$('countries').hidden)||playVisible&&!covered&&!fastSkipping()&&
     (battlefield.animated||motions.size||arrivals.size||deaths.size||combatMotions.size||effects?.instances.length||damageNumbers?.instances.length||selection);
   if(animated)renderRequest=requestAnimationFrame(render);
@@ -905,7 +890,7 @@ async function beginTutorial(checkpoint){
     const cell=Number(command.id);
     switch(command.name){
       case 'rand seed':break;
-      case 'show text':$('tutorial-text').replaceChildren(originalTextRenderer.element(manifest.strings['desc_tutorials_word_'+command.id]||'','font_text_1_cn_hd','#404040',216));$('tutorial-speaker').replaceChildren(originalTextRenderer.element(manifest.strings.name_Napoleon||'拿破仑','font_text_2_cn_hd','#646464'));$('tutorial-portrait').src=menus.portrait('Napoleon.png').src;$('tutorial-talk').hidden=false;break;
+      case 'show text':$('tutorial-text').replaceChildren(originalTextRenderer.element(manifest.strings['desc_tutorials_word_'+command.id]||'','font_text_1_cn_hd','#404040',216));$('tutorial-speaker').replaceChildren(originalTextRenderer.element(manifest.strings.name_Napoleon||ew4t('ui.napoleon','拿破仑'),'font_text_2_cn_hd','#646464'));$('tutorial-portrait').src=menus.portrait('Napoleon.png').src;$('tutorial-talk').hidden=false;break;
       case 'hide text':$('tutorial-talk').hidden=true;break;
       case 'moveto area':{const p=point(cell);view.x=p.x;view.y=p.y;clampView();break;}
       case 'sel area':await selectCell(cell);break;
@@ -961,20 +946,35 @@ $('cancel-country').onclick=()=>$('countries').hidden=true;
 $('confirm-country').onclick=()=>{if(chosenScenario&&chosenCountry&&!busy)start(chosenScenario,chosenCountry).catch(e=>notice(e.message));};
 $('menu-back').onclick=showMain;
 $('headquarters').onclick=()=>{if(startupReady)menus.headquarters().catch(e=>notice(e.message));};
-const languageControls=[['city-language','cityLanguage','城市名称'],['geographic-language','geographicLanguage','地理名称']];
-for(const [id,key,title] of languageControls){
+const languageControls=[['city-language','cityLanguage','城市名称','ui.city_names'],['geographic-language','geographicLanguage','地理名称','ui.geo_names']];
+for(const [id,key,title,i18nKey] of languageControls){
   const row=document.createElement('div');row.className='setting-row language-row '+id;
-  const caption=document.createElement('span');caption.textContent=title;row.append(caption);
+  const caption=document.createElement('span');caption.textContent=title;caption.dataset.i18n=i18nKey;row.append(caption);
   const choice=button('',()=>{settings[key]=settings[key]==='zh'?'en':'zh';syncLanguages();
     if(key==='cityLanguage')battlefield.cityLabels.clear();else battlefield.mapLabels.clear();persistSettings();},row);
   choice.id=id;choice.title=title+'语言';$('settings-content').append(row);
 }
+// 界面语言：循环切换内容包提供的语言；切换后重载页面（canvas 文字需要重绘），局内进度以自动存档为准。
+{
+  const row=document.createElement('div');row.className='setting-row language-row ui-language';
+  const caption=document.createElement('span');caption.textContent='语言';caption.dataset.i18n='ui.language';row.append(caption);
+  const choice=button('',async()=>{
+    const languages=Ew4I18n.available;if(languages.length<2)return;
+    if(state&&!confirm(ew4t('ui.language_switch_hint','切换语言会返回主菜单，进度以自动存档为准。继续？')))return;
+    const next=languages[(languages.findIndex(l=>l.code===Ew4I18n.language)+1)%languages.length];
+    try{await Ew4I18n.set(rpc,next.code);location.reload();}catch(error){notice(error.message);}
+  },row);
+  choice.id='ui-language';$('settings-content').append(row);
+}
+function syncUiLanguage(){const choice=$('ui-language'),info=Ew4I18n.available.find(l=>l.code===Ew4I18n.language);const text=info?info.name:'简体中文';
+  choice.setAttribute('aria-label',text);choice.hidden=Ew4I18n.available.length<2;
+  if(originalTextRenderer)choice.replaceChildren(originalTextRenderer.element(text,'font_text_2_cn_hd','#404040'));else choice.textContent=text;}
 function syncLanguages(){for(const [id,key,title] of languageControls){const choice=$(id),text=settings[key]==='zh'?'中文':'English';
   choice.setAttribute('aria-label',title+'：'+text);choice.dataset.language=settings[key];
   if(originalTextRenderer)choice.replaceChildren(originalTextRenderer.element(text,'font_text_2_cn_hd','#404040'));
   else choice.textContent=text;
 }}
-function openSettings(){for(const [id,key] of [['music-volume','music'],['sound-volume','sound'],['game-speed','speed'],['screen-size','screen']])$(id).value=settings[key];syncLanguages();$('hd-mode').checked=settings.hd;$('show-grid').checked=showGrid;
+function openSettings(){for(const [id,key] of [['music-volume','music'],['sound-volume','sound'],['game-speed','speed'],['screen-size','screen']])$(id).value=settings[key];syncLanguages();syncUiLanguage();$('hd-mode').checked=settings.hd;$('show-grid').checked=showGrid;
   $('skip-turn-fast').checked=settings.skipTurnFast;$('follow-ai').checked=settings.followAi;
   const local=$('local-multiplayer-mode'),inGame=!$('play').hidden;
   local.disabled=inGame;local.checked=inGame?!!state?.localMultiplayer:!!settings.localMultiplayer;
@@ -991,9 +991,9 @@ for(const [id,key] of [['skip-turn-fast','skipTurnFast'],['follow-ai','followAi'
   requestRender();
 };
 $('local-multiplayer-mode').onchange=e=>{if(!$('play').hidden){e.target.checked=!!state?.localMultiplayer;return;}settings.localMultiplayer=e.target.checked;persistSettings();};
-function persistSettings(){try{localStorage.setItem('ew4.settings',JSON.stringify(settings));}catch(_){} }
+function persistSettings(){try{localStorage.setItem('ew4.settings',JSON.stringify(settings));}catch(_){} music.refresh(); }
 $('close-detail').onclick=async()=>{closeDetail();await tutorialUi('winbtn_close');};
-$('show-grid').onchange=e=>{showGrid=e.target.checked;try{localStorage.setItem('ew4.showGrid',String(showGrid));}catch(_){notice('无法保存设定');}};
+$('show-grid').onchange=e=>{showGrid=e.target.checked;try{localStorage.setItem('ew4.showGrid',String(showGrid));}catch(_){notice(ew4t('ui.save_settings_failed','无法保存设定'));}};
 $('menu-button').onclick=()=>$('pause').hidden=false;$('resume').onclick=()=>$('pause').hidden=true;
 $('end-turn').onclick=()=>act('end').catch(e=>notice(e.message));
 $('undo-move').onclick=()=>act('undo',{unit:selected?.id||state.undoUnit}).then(()=>tutorialUi('btn_undo')).catch(e=>notice(e.message));
@@ -1007,13 +1007,13 @@ $('save').onclick=()=>menus.saveMenu(true,catalog.scenarios.find(s=>s.id===state
 async function load(slot=0,saveMode=mode){if(busy)return;busy=true;try{await withLoading(async()=>{tutorial=null;await installState(await rpc('load',{slot,mode:saveMode}),true);$('detail-modal').hidden=true;await beginTutorial(state.tutorialCheckpoint);});}catch(e){notice(e.message);}finally{busy=false;if(state){refreshHud();await runAi();}}}
 $('continue').onclick=()=>menus.saveMenu(false,mode).catch(e=>notice(e.message));
 $('restart').onclick=()=>{if(state&&!busy)start(state.scenario,catalog.scenarios.find(s=>s.id===state.scenario)?.mode===2?(state.startCountry??state.factions.find(f=>f.id===state.playerFaction).country):null,state.localMultiplayer?.humanFactions??null).catch(e=>notice(e.message));};
-$('return-menu').onclick=()=>{if(busy){notice('请等待当前行动完成');return;}showMain();};
+$('return-menu').onclick=()=>{if(busy){notice(ew4t('ui.wait_action','请等待当前行动完成'));return;}showMain();};
 window.ew4Back=()=>{
   if(pendingAction){closeSingleAction();return 'handled';}
   const visible=id=>!$(id).hidden;
   const modal=document.querySelector('dialog[open]');
   if(modal){modal.close();return 'handled';}
-  if(visible('author-manager')){if(window.Ew4Author?.goBack)window.Ew4Author.goBack();else $('author-back')?.click();return 'handled';}
+  if(visible('editor-manager')){if(window.Ew4Editor?.goBack)window.Ew4Editor.goBack();else $('editor-back')?.click();return 'handled';}
   for(const [panel,close] of [['settings','close-settings'],['detail-modal','close-detail'],['mod-hub','mod-hub-close'],['mod-manager','mod-close']]){
     if(visible(panel)){$(close).click();return 'handled';}
   }
@@ -1031,14 +1031,14 @@ window.addEventListener('resize',()=>{sizeUi();requestRender();});sizeUi();
 function startupStatus(){
   const failures=Ew4OriginalUI.fontStatus.failures;
   $('startup-status').hidden=startupReady&&!failures.length&&!startupRunning;
-  $('startup-message').textContent=startupRunning?'正在载入…':startupError||
-    (failures.length?'字体载入失败，已使用内置备用字体：\n'+failures.map(face=>face.file+'：'+face.message).join('\n'):'');
+  $('startup-message').textContent=startupRunning?ew4t('ui.loading','正在载入…'):startupError||
+    (failures.length?ew4t('ui.font_fallback','字体载入失败，已使用内置备用字体：')+'\n'+failures.map(face=>face.file+'：'+face.message).join('\n'):'');
   $('startup-retry').hidden=startupRunning||!startupError&&!failures.length;
   sizeUi();
 }
 async function startupJson(url){
   const response=await fetch(url,{cache:'no-store'});
-  if(!response.ok)throw Error('资源载入失败：'+url+' ('+response.status+')');
+  if(!response.ok)throw Error(ew4t('ui.resource_load_failed','资源载入失败：')+url+' ('+response.status+')');
   return response.json();
 }
 async function initializeClient(){
@@ -1047,7 +1047,9 @@ async function initializeClient(){
   document.querySelectorAll('.main-entry').forEach(button=>button.disabled=true);$('continue').disabled=true;
   try{
     Ew4Startup.pending('游戏目录与资源索引');
+    await Ew4I18n.load(rpc);
     const [c,m,names,fx,pages,visuals]=await Promise.all([rpc('catalog'),startupJson('/content/manifest.json'),startupJson('city-names.json'),startupJson('/content/effects.json'),startupJson('conquest-pages.json'),startupJson('/content/unit-visuals.json')]);
+    Object.assign(m.strings||(m.strings={}),Ew4I18n.strings);
     Ew4Startup.pending('内置字库');
     const text=new Ew4OriginalUI.TextRenderer(m);await text.prepare();
     Ew4Startup.pending('菜单图像');

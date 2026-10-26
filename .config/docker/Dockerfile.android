@@ -1,0 +1,17 @@
+# syntax=docker/dockerfile:1
+# Android 壳的构建环境：JDK 17 + Android 命令行工具（aapt2 / d8 / zipalign / apksigner）。
+# 不用 Gradle；构建步骤见 scripts/dev/android.sh。
+FROM mcr.microsoft.com/dotnet/sdk:10.0
+RUN apt-get update \
+ && apt-get install -y --no-install-recommends openjdk-17-jdk-headless zip unzip curl ca-certificates \
+ && rm -rf /var/lib/apt/lists/*
+ENV ANDROID_HOME=/opt/android-sdk
+RUN mkdir -p $ANDROID_HOME/cmdline-tools \
+ && curl -fsSL -o /tmp/cmdline.zip https://dl.google.com/android/repository/commandlinetools-linux-11076708_latest.zip \
+ && unzip -q /tmp/cmdline.zip -d $ANDROID_HOME/cmdline-tools \
+ && mv $ANDROID_HOME/cmdline-tools/cmdline-tools $ANDROID_HOME/cmdline-tools/latest \
+ && rm /tmp/cmdline.zip \
+ && yes | $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager --licenses >/dev/null \
+ && $ANDROID_HOME/cmdline-tools/latest/bin/sdkmanager "platforms;android-34" "build-tools;34.0.0" >/dev/null
+ENV PATH="$ANDROID_HOME/build-tools/34.0.0:${PATH}"
+WORKDIR /src

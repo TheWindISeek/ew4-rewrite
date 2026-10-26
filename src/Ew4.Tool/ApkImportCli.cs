@@ -15,7 +15,7 @@ internal static class ApkImportCli
         string? apk = null;
         string modId = "mod";
         string packName = "Mod";
-        string basePack = "mods/base";
+        string baseMod = "mods/base";
         string dest = "";
         bool skipEmbed = false;
         for (int i = 1; i < args.Length; i++)
@@ -23,7 +23,7 @@ internal static class ApkImportCli
             if (args[i] == "--apk" && i + 1 < args.Length) apk = args[++i];
             else if (args[i] == "--id" && i + 1 < args.Length) modId = args[++i];
             else if (args[i] == "--name" && i + 1 < args.Length) packName = args[++i];
-            else if (args[i] == "--base" && i + 1 < args.Length) basePack = args[++i];
+            else if (args[i] == "--base" && i + 1 < args.Length) baseMod = args[++i];
             else if (args[i] == "--dest" && i + 1 < args.Length) dest = args[++i];
             else if (args[i] == "--skip-embed") skipEmbed = true;
         }
@@ -36,25 +36,24 @@ internal static class ApkImportCli
 
         if (string.IsNullOrWhiteSpace(dest))
         {
-            dest = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(basePack)) ?? "mods", modId);
+            dest = Path.Combine(Path.GetDirectoryName(Path.GetFullPath(baseMod)) ?? "mods", modId);
         }
 
         ApkOverlayModImporter.Result result = ApkOverlayModImporter.Import(
             Path.GetFullPath(apk),
             modId,
             packName,
-            Path.GetFullPath(basePack),
+            Path.GetFullPath(baseMod),
             Path.GetFullPath(dest));
 
         int embedded = 0;
         if (!skipEmbed)
         {
-            ModScenarioConvert.Result converted = ModScenarioConvert.ToEmbeddedDocumentFormat(result.PackDirectory);
-            embedded = converted.Embed.Embedded;
+            embedded = ModScenarioConvert.ToSchema3(result.ModDirectory).Converted;
         }
 
         Console.WriteLine(
-            $"import-apk-overlay: id={modId} files={result.FilesCopied} scenarios={result.ScenariosIndexed} embedded={embedded} manifest={ModManifestPaths.FileName} → {result.PackDirectory}");
+            $"import-apk-overlay: id={modId} files={result.FilesCopied} scenarios={result.ScenariosIndexed} embedded={embedded} manifest={ModManifestPaths.FileName} → {result.ModDirectory}");
         return 0;
     }
 }

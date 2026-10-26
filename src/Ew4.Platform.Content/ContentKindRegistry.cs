@@ -18,7 +18,7 @@ public sealed class ContentKindRegistry : IContentKindRegistry
             new JsonFileContentKind("script", "scripts/**/*", 1, true, new ContentLimits(256 * 1024, 64)),
             new OpaqueFileContentKind("asset", "assets/**", 1, true, new ContentLimits(64 * 1024 * 1024, 4096)),
             new OpaqueFileContentKind("source", "source/**", 1, false, new ContentLimits(64 * 1024 * 1024, 4096)),
-            new OpaqueFileContentKind("extension", "rewrite/**", 1, true, new ContentLimits(4 * 1024 * 1024, 128)));
+            new OpaqueFileContentKind("rewrite", "rewrite/**", 1, true, new ContentLimits(4 * 1024 * 1024, 128)));
 
     private readonly IReadOnlyList<IContentKind> _kinds;
 

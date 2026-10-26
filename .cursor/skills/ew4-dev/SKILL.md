@@ -6,7 +6,9 @@ description: >-
 
 # EW4 开发
 
-结构见 [docs/arch/README.md](../../../docs/arch/README.md)；任务 [docs/task/todo.md](../../../docs/task/todo.md)；计划 [docs/task/plan/roadmap.md](../../../docs/task/plan/roadmap.md)。**勿随意改 `docs/development/`。**
+**先读冻结约束 [docs/arch/frozen/](../../../docs/arch/frozen/README.md)（不可改）。** 加功能见 skill `ew4-extend`，Android 见 `ew4-android`。
+
+结构见 [docs/arch/module-responsibilities.md](../../../docs/arch/module-responsibilities.md)（另 [interface-contracts.md](../../../docs/arch/interface-contracts.md)、[operations.md](../../../docs/arch/operations.md)）；任务 [docs/task/todo.md](../../../docs/task/todo.md)；计划 [docs/task/plan/roadmap.md](../../../docs/task/plan/roadmap.md)。**勿随意改 `docs/development/`。**
 
 ```bash
 scripts/ew4.sh build -c Release
@@ -22,7 +24,7 @@ scripts/ew4.sh fmt --check
 - **接入层**：`src/Ew4.Backend.Web`（`scripts/ew4.sh web`）；**服务层** `Ew4.Service`；**平台层** `Ew4.Platform.*`。
 - **内容**：维护在 `mods/<packId>/`；Web 运行时 `install/web/mods/`；APK 渠道 `install/apk/mods/`（`sync-mods` 默认同步两侧）。激活与存档在对应渠道的 `user/`。
 - **前端**：`src/Ew4.Front.Web/wwwroot`；包资源 `/content/*`。
-- **游玩 API**：`POST /api/{route}?q=…`（`Ew4.Service`）；安装/切换 Mod 走 **HTTP**（`/api/mod-import` 等），**无**独立 shell「import mod」脚本。
+- **游玩 API**：`POST /api/play/{route}?q=…`（兼容 `/api/{route}`；`Ew4.Service`）；安装/切换 Mod 走 **HTTP**（`/api/mod-import` 等），**无**独立 shell「import mod」脚本。
 - **编译**：仅 Docker dev 镜像（`scripts/ew4.sh build` → `Ew4.sln`）。
 
 ## 目录
@@ -37,6 +39,6 @@ scripts/ew4.sh fmt --check
 | `data/import-seed/` | 可选；仅 `import-base` 从原料**重建** `mods/base` 时用 |
 | `backup/` | 封存对照，不参与构建 |
 
-可选：`scripts/ew4.sh import-base`（`data/import-seed` → `mods/base`）、`check btl`。
+可选：`scripts/ew4.sh import-base`（`data/import-seed` → `mods/base`）。
 
 命令全集：`scripts/ew4.sh help`。`dev/` 下 `paths.sh`、`docker.sh`、`cli.sh` 等仅被 `ew4.sh` source，见 `scripts/README.md`。

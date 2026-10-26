@@ -1,0 +1,15 @@
+---
+description: EW4 冻结架构约束；任何改动 src/、mods/、docs/ 前都要遵守
+alwaysApply: true
+---
+
+# 冻结架构（必须遵守）
+
+- 先读 `docs/arch/frozen/README.md`；约束全文在该目录（layering / extension-model / content-and-mods / platform-shells）。
+- **不得修改** `docs/arch/frozen/**`、`tests/Ew4.Test.Architecture/**`、`docs/development/**`，除非维护者在对话里明确要求。
+- 与冻结文档冲突时：停下并向维护者提问，不要绕过、不要改白名单、不要放宽校验。
+- 加功能 = 新模块 + 注册 Step/Plan（见 skill `ew4-extend`），不修改已有 Step 的读写声明。
+- 磁盘只经 Persistence；Backend 不引用 `Ew4.Platform.*`；Engine 零依赖。
+- 哈希一律 `Ew4.Interface.Common.Sha256Hash`，不直接用 `SHA256.*`。
+- 前端只有一份（`src/Ew4.Front.Web/wwwroot`）；新文字走 `ew4t(key, fallbackZh)`。
+- 回复使用中文；.NET 只通过 `scripts/ew4.sh`（Docker）。
