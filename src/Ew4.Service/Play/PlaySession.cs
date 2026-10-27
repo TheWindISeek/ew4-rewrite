@@ -184,14 +184,19 @@ public sealed partial class PlaySession(PlayContent content, string saveDirector
             case "skill":
                 throw new RuleViolation("skill.unavailable", "扩展主动技能已移除");
             case "move":
+                var worldBeforeMove = world;
                 var moved = ApplyEngine(new MoveCommand(revision, command.Unit!, command.Cell));
-                if (!flow.Blocked && moved.Events.OfType<UnitMovedEvent>().FirstOrDefault() is { } movement
-                    && moved.Session.World.TriggeredScenarioEvents.Count == world.TriggeredScenarioEvents.Count)
+                object? playerMovements = null;
+                if (moved.Events.OfType<UnitMovedEvent>().FirstOrDefault() is { } movement)
                 {
-                    undo.Record(session, moved.Session, movement.UnitId, movement.Path);
+                    playerMovements = new[] { new { unit = movement.UnitId, path = movement.Path } };
+                    if (!flow.Blocked && moved.Session.World.TriggeredScenarioEvents.Count == world.TriggeredScenarioEvents.Count)
+                    {
+                        undo.Record(session, moved.Session, movement.UnitId, movement.Path);
+                    }
                 }
 
-                return View();
+                return View(worldBeforeMove, playerMovements);
             case "disband":
                 ApplyEngine(new DisbandCommand(revision, command.Unit!));
                 AutoSave();
@@ -449,8 +454,84 @@ public sealed partial class PlaySession(PlayContent content, string saveDirector
                     ? content.Catalogs.Accounts.Rules().Definitions[owned.DefinitionId].DisplayName
                     : u.CommanderId == u.Id + ".commander" && originalUnits.TryGetValue(u.Id, out var commanded)
                     && content.Catalogs.Runtime.Commanders.TryGetValue(commanded.Commander, out var commander) ? commander.Definition.DisplayName : null }),
-            notices = current.Notices
+            notices = current.Notices,
+            turnSummary = TurnSummaryView(world, session, battle, current.Notices, current.Rules.Turns),
+            battleBriefing = BattleBriefingView(world, session, battle, current.Notices)
         };
+    }
+
+    private object? BattleBriefingView(WorldState world, GameSession session, StaticDataBattle battle, IReadOnlyList<WorldNotice> notices)
+    {
+        if (world.Round != 1 || world.Phase != TurnPhase.Active) return null;
+        if (!HumanPlayerInBattle(world, session)) return null;
+        var presentation = content.Presentations.GetValueOrDefault(world.ScenarioId)
+            ?? content.Presentations.Values.FirstOrDefault(p => p.Alternate == world.ScenarioId);
+        string title = content.Scenarios.Single(s => s.Id == world.ScenarioId).Name;
+        string description = presentation == null ? "" : content.Label(presentation.Description);
+        string? commander = presentation?.Commander;
+        return new
+        {
+            title,
+            description,
+            commanderImage = commander == null ? null : commander + ".png",
+            commanderName = commander == null ? null : content.Label("name_" + commander),
+            minimumRound = battle.MinimumRound,
+            ratingRound = battle.RatingRound
+        };
+    }
+
+    private object? TurnSummaryView(WorldState world, GameSession session, StaticDataBattle battle, IReadOnlyList<WorldNotice> notices, WorldTurnRules rules)
+    {
+        if (world.Phase != TurnPhase.Active) return null;
+        if (!PlayerTurnStarted(world, session, notices)) return null;
+        TurnEconomySnapshot snap = WorldTurns.EconomySnapshot(world, world.ActiveFaction, rules);
+        var quota = session.RosterDeployments.SingleOrDefault(q => q.Faction == world.ActiveFaction);
+        return new
+        {
+            round = world.Round,
+            income = new { money = snap.Income.Money, industry = snap.Income.Industry, food = snap.Income.Food },
+            upkeep = new { food = snap.FoodUpkeep },
+            shortage = snap.Shortage,
+            resources = new { money = snap.Resources.Money, industry = snap.Resources.Industry, food = snap.Resources.Food },
+            minimumRound = battle.MinimumRound,
+            ratingRound = battle.RatingRound,
+            generalSlots = quota?.Limit ?? 6,
+            generals = DeployedGeneralsView(session, world.ActiveFaction)
+        };
+    }
+
+    private static bool HumanPlayerInBattle(WorldState world, GameSession session)
+    {
+        if (session.World.LocalMultiplayer != null)
+            return session.World.LocalMultiplayer.HumanFactions.Any(id => world.Factions.Any(f => f.Id == id && f.Human && !f.Defeated));
+        var player = world.Factions.SingleOrDefault(f => f.Id == session.PlayerFaction);
+        return player is { Human: true, Defeated: false };
+    }
+
+    private static bool PlayerTurnStarted(WorldState world, GameSession session, IReadOnlyList<WorldNotice> notices)
+    {
+        if (!notices.Any(n => n.Kind == "faction.started" && n.Subject == world.ActiveFaction)) return false;
+        var active = world.Factions.Single(f => f.Id == world.ActiveFaction);
+        if (!active.Human) return false;
+        return session.World.LocalMultiplayer != null || world.ActiveFaction == session.PlayerFaction;
+    }
+
+    private object[] DeployedGeneralsView(GameSession session, string factionId)
+    {
+        var ids = session.RosterDeployments.Where(q => q.Faction == factionId).SelectMany(q => q.CommanderIds).ToHashSet();
+        return session.Account.Roster.Where(c => ids.Contains(c.Id)).Select(c =>
+        {
+            var definition = content.Catalogs.Accounts.Rules().Definitions[c.DefinitionId];
+            var runtime = session.World.Commanders.FirstOrDefault(g => g.Id == c.Id);
+            return new
+            {
+                name = content.Label(definition.DisplayName),
+                image = definition.DisplayName + ".png",
+                rank = runtime?.Rank.Level ?? c.Learning.Rank.Level,
+                title = runtime?.Title.Level ?? c.Learning.Title.Level,
+                withdrawn = runtime?.Withdrawn ?? false
+            };
+        }).ToArray<object>();
     }
 
     /// <summary>解析势力旗帜、贴图与颜色（含剧本动态创建势力）。</summary>
@@ -1189,6 +1270,7 @@ public sealed partial class PlaySession(PlayContent content, string saveDirector
             Countries = p.Value.Countries.Select(content.Countries.Canonical).ToArray()
         }),
         unlockedCampaigns = Account().UnlockedCampaigns,
+        campaignStars = Account().CampaignStars,
         hasSave = PlaySlotPersistence.Exists(Slot),
         countries = content.Countries.Countries,
         countryAliases = content.Countries.Aliases
@@ -1346,14 +1428,7 @@ public sealed partial class PlaySession(PlayContent content, string saveDirector
                 && CampaignProgress.Accessible(content, session.Account, p.Id)
                 && (p.Countries.Length == 0 || p.Countries.Select(content.Countries.Canonical).Contains(content.Countries.Canonical(content.Battle(scenario).Factions.Single(f => !f.Ai).CountryId))))
             .OrderBy(p => p.Id, StringComparer.Ordinal).FirstOrDefault();
-        var ids = session.RosterDeployments.Where(q => q.Faction == session.PlayerFaction).SelectMany(q => q.CommanderIds).ToHashSet();
-        var generals = session.Account.Roster.Where(c => ids.Contains(c.Id)).Select(c => {
-            var definition = content.Catalogs.Accounts.Rules().Definitions[c.DefinitionId];
-            var runtime = session.World.Commanders.FirstOrDefault(g => g.Id == c.Id);
-            return new { c.Id, name = content.Label(definition.DisplayName), image = definition.DisplayName + ".png",
-                rank = runtime?.Rank.Level ?? c.Learning.Rank.Level, title = runtime?.Title.Level ?? c.Learning.Title.Level,
-                withdrawn = runtime?.Withdrawn ?? false };
-        }).ToArray();
+        var generals = DeployedGeneralsView(session, session.PlayerFaction);
         return new { result.Id, result.Scenario, result.Outcome, result.Round, result.Stars,
             result.MinimumRatingRound, result.HighestRatingRound, result.AwardMedals, result.CollectedMedals,
             name = content.Scenarios.Single(s => s.Id == scenario).Name, nextScenario = next?.Id, generals,

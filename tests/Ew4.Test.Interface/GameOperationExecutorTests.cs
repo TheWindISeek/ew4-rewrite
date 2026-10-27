@@ -87,7 +87,13 @@ public sealed class GameOperationExecutorTests
         var play = new PlayHost(new Ew4.Platform.Engine.Engine());
         var registry = new PlanRegistry();
         new EditorPlans(new StubCampaignEditor(), new StubEditorOperations(), new StubPreviewBinding(), workspace).Register(registry);
-        new PlayPlans(runtime, play).Register(registry);
+        string cwd = Directory.GetCurrentDirectory();
+        var install = new Ew4.Service.Host.Ew4InstallOptions
+        {
+            RepositoryRoot = cwd,
+            Install = new Ew4.Platform.Persistence.Layout.InstallLayout(cwd),
+        };
+        new PlayPlans(runtime, play, install).Register(registry);
         new ModPlans(mod).Register(registry);
         registry.Validate();
 

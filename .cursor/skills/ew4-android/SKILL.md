@@ -15,7 +15,7 @@ scripts/ew4.sh apk                      # 产出 install/apk/ew4.apk（debug 签
 EW4_APK_MODS="base ww1" scripts/ew4.sh apk   # 仅内置部分 mod；默认内置 mods/ 全部
 ```
 
-流程：同步 mods → `dotnet publish -r linux-bionic-arm64 -p:Ew4Android=true` → **用 Termux 的 Mono 10.0.13 覆盖运行时**（`ew4_android_overlay_runtime`，缓存在 `build/android/cache`）→ `ew4-android:local` 容器内 `src/Ew4.Android/build.sh`（aapt2 / javac / d8 / zipalign / apksigner）。需要 Docker，涉及 docker 的命令在沙箱里要放开权限。
+流程：同步 mods → `dotnet publish -r linux-bionic-arm64 -p:Ew4Android=true` → **用 Termux 的 Mono 10.0.13 覆盖运行时**（`ew4_android_overlay_runtime`，缓存在 `build/android/cache`）→ **`ew4-dev:local`** 容器内 `src/Ew4.Android/build.sh`（aapt2 / javac / d8 / zipalign / apksigner）。与 `build`/`export-apk` 共用 **唯一**开发镜像（`.config/docker/Dockerfile.dev`；无 `ew4-android:local`）。改 Dockerfile 后 `scripts/ew4.sh image dev`；`export-apk` 依赖镜像内 **apktool 2.9.3**（排障见 `docs/debug/export-apk-apktool-and-dev-image.md`）。需要 Docker，涉及 docker 的命令在沙箱里要放开权限。
 
 ## 不要做的事
 

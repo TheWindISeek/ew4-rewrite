@@ -111,6 +111,7 @@ final class ServerProcess {
         builder.environment().put("DOTNET_CLI_TELEMETRY_OPTOUT", "1");
         builder.environment().put("ASPNETCORE_ENVIRONMENT", "Production");
         builder.environment().put("EW4_HOME", homeDir.getAbsolutePath());
+        builder.environment().put("EW4_CHANNEL", "apk");
         // Android 没有 OpenSSL：系统 SHA256 会让 Mono 直接 abort（捕获不了），所以强制托管实现
         builder.environment().put("EW4_FORCE_MANAGED_SHA256", "1");
         for (String entry : profile) {

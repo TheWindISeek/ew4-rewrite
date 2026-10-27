@@ -11,7 +11,7 @@
 #   docker.sh                构建 ew4-dev 镜像、在容器内执行 dotnet
 #   cli.sh                   调用 Ew4.Tool：import-base、validate、smoke-start
 #   install.sh               publish → install/web/app，同步 mods 到 web/apk
-#   android.sh               Android 壳：publish bionic → install/apk/ew4.apk
+#   android.sh               Android 壳（同 ew4-dev 镜像）：publish bionic → install/apk/ew4.apk
 #
 # 环境变量：
 #   EW4_HOME          安装根（覆盖默认）；未设时 EW4_CHANNEL 决定 install/web 或 install/apk
@@ -24,7 +24,7 @@
 # 典型流程：
 #   1. scripts/ew4.sh build
 #   2. 准备 mods/base；build/install/web 会同步到 install/web/mods 与 install/apk/mods
-#   3. scripts/ew4.sh web   → http://127.0.0.1:5184（EW4_HOME=install/web）
+#   3. scripts/ew4.sh web start | restart | stop | logs   → :5184（状态 .run/ew4-web.state）
 #
 set -euo pipefail
 SCRIPT_DIR="$(cd "$(dirname "${BASH_SOURCE[0]}")" && pwd)"
@@ -38,6 +38,8 @@ source "$SCRIPT_DIR/dev/cli.sh"
 source "$SCRIPT_DIR/dev/install.sh"
 # shellcheck source=dev/android.sh
 source "$SCRIPT_DIR/dev/android.sh"
+# shellcheck source=dev/web.sh
+source "$SCRIPT_DIR/dev/web.sh"
 ew4_usage() {
   cat <<'EOF'
 用法: scripts/ew4.sh <命令> [参数…]
@@ -46,11 +48,13 @@ ew4_usage() {
   install [Release]   publish → install/web/app
   apk                 Android 壳（内置后端 + WebView）→ install/apk/ew4.apk
   test [args…]        dotnet test
-  web                 开发态启动 Ew4.Backend.Web（--home install/web）
+  front-test          在 Docker 内运行 Ew4.Front.Web Vitest 单测
+  web [start|stop|restart|status|logs|fg]  开发 Web（默认 start 后台；状态 .run/ew4-web.state）
   import-base         Ew4.Tool：data/import-seed → mods/base
   sync-mods [web|apk|all]  mods/ → install/<channel>/mods（默认 all）
   validate smoke      Ew4.Tool：对内容包做 SmokeStart（默认 base）
   smoke-start         Ew4.Tool：单剧本开局烟测
+  export-apk          Ew4.Tool：合并 Mod → 原版壳 APK（见 docs/task/plan/apk-export.md）
   fmt [--check]       dotnet format
   image dev|web       构建 Docker 镜像（dev 日常 / web 发行）
   clean               删除 src、tests 下散落的 bin/obj
@@ -62,39 +66,9 @@ ew4_usage() {
 EOF
 }
 
-cmd_web() {
-  local root home home_container port host_bind web
-  root="$(ew4_repo_root)"
-  if [[ -n "${EW4_HOME:-}" ]]; then
-    home="$(ew4_home_dir "$root")"
-  else
-    home="$(ew4_web_home_dir "$root")"
-  fi
-  home_container="$(ew4_container_path "$root" "$home")"
-  web="src/Ew4.Backend.Web/Ew4.Backend.Web.csproj"
-  [[ -f "$root/$web" ]] || { echo "找不到 $web" >&2; exit 1; }
-  port="${PORT:-5184}"
-  host_bind="${EW4_WEB_BIND:-0.0.0.0}"
+cmd_front_test() {
   ew4_ensure_dev_image
-  ew4_migrate_legacy_install_layout "$root"
-  ew4_ensure_channel_runtime_dirs "$home"
-  ew4_sync_repo_mods_to_install "$root" web
-  echo "Ew4.Backend.Web → http://127.0.0.1:${port}/" >&2
-  echo "  EW4_HOME: $home" >&2
-  echo "  mods:     $(ew4_install_mods_dir "$root") (来自 $(ew4_repo_mods_dir "$root"))" >&2
-  echo "  user:     $(ew4_user_dir "$root")" >&2
-  docker run --rm \
-    -u "$(id -u):$(id -g)" \
-    -e HOME=/tmp \
-    -e EW4_HOME="$home_container" \
-    -v "$root:/src" \
-    -w /src \
-    -p "${port}:${port}" \
-    "$(ew4_dev_image)" \
-    dotnet run --project "$web" -- \
-    --root /src \
-    --home "$home_container" \
-    --urls "http://${host_bind}:${port}"
+  ew4_docker_dev bash -lc 'cd tests/Ew4.Test.Front && npm ci && npm test'
 }
 
 cmd_fmt() {
@@ -136,17 +110,19 @@ main() {
     apk) ew4_build_apk ;;
     sync-mods) ew4_sync_repo_mods_to_install "$(ew4_repo_root)" "${1:-all}" ;;
     test) ew4_docker_dotnet test Ew4.sln "$@" ;;
+    front-test) cmd_front_test ;;
     web|run-web) cmd_web "$@" ;;
     import-base) cmd_import_base "$@" ;;
     validate) cmd_validate "$@" ;;
     smoke-start) cmd_smoke_start "$@" ;;
+    export-apk) cmd_export_apk "$@" ;;
     fmt|format) cmd_fmt "$@" ;;
     clean) cmd_clean ;;
     shell|run) ew4_docker_dev "$@" ;;
     dotnet) ew4_docker_dotnet "$@" ;;
     image)
       case "${1:-dev}" in
-        dev) ew4_ensure_dev_image ;;
+        dev) ew4_build_dev_image ;;
         web) shift; cmd_image_web "${1:-}" ;;
         *) echo "image dev|web" >&2; exit 2 ;;
       esac

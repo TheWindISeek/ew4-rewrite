@@ -1,6 +1,6 @@
 # APK 导出（Mod → 可安装包）
 
-状态:**计划中（未实现）；`Ew4.Tool.Export` 里只有空骨架（接口已留好，实现由维护者完成）**  
+状态:**进行中** — `Ew4.Tool export-apk` 已实现合并/补丁/CLI；经 **`scripts/ew4.sh`** 在 **`ew4-dev:local`** 内执行（镜像内 **apktool 2.9.3** 改 Manifest），可选 **apksigner** 签名。  
 关联：[roadmap.md](./roadmap.md) H3；对称工具 `import-apk-overlay`（`Ew4.Tool`）。
 
 ## 1. 背景
@@ -116,7 +116,7 @@ Ew4.Tool export-apk --out <path.apk>
 | Manifest 补丁 | `ApkManifestPatch`（versionCode / versionName / package） |
 | 签名 | `ApkSignerRunner`（调用宿主 `zipalign`/`apksigner`，或文档要求 PATH） |
 
-**依赖**：`Ew4.Platform.Mod`（合并）、`Ew4.Platform.Persistence`（读包）、`Ew4.Tool.Import`（对照）、Scenario btl 转换（与 `ScenarioCli` / `ModScenarioConvert` 共用）。
+**依赖**：`Ew4.Platform.Mod`（合并）、`Ew4.Platform.Persistence`（读包）、`Ew4.Tool.Lib.Import`（对照）、Scenario btl 转换（与 `ScenarioCli` / `ModScenarioConvert` 共用）。
 
 ## 9. 对外接口 — 未来 HTTP（非首期）
 
@@ -156,7 +156,8 @@ Content-Type: application/json
 
 - 壳版本与 `mods/base` **assets 布局漂移** → 映射回归。
 - 二进制 **AndroidManifest** 编辑错误 → 安装失败；需真机或 emulator 验证。
-- 宿主需 **Android build-tools**（`zipalign`、`apksigner`）或在 CI 镜像中预装。
+- 工具链已并入 **`ew4-dev:local`**（`.config/docker/Dockerfile.dev`：**apktool 2.9.3**、build-tools、zipalign/apksigner）；改 Dockerfile 后需 `scripts/ew4.sh image dev` 重建，并用 `docker run --rm ew4-dev:local apktool --version` 确认版本。
+- **decode 不得加 `-r`**：会保留二进制 Manifest，与 `ApkManifestXmlEditor` 冲突；勿为兼容 Debian 2.7 使用 `-r`，应升级镜像 apktool。案例见 [debug/export-apk-apktool-and-dev-image.md](../../debug/export-apk-apktool-and-dev-image.md)。
 - 再分发 `ew4-base.apk` 的合规由项目方负责。
 
 ---
@@ -172,18 +173,15 @@ Content-Type: application/json
 - 原版不认识的内容（多语言文件 `client/lang/`、BGM 配置 `client/music*`）属于"自动忽略"，不进清单。
 - 不修改原 APK 的语言：原版有什么语言就是什么语言。
 
-## 14. 前端接口（已留，未实现）
+## 14. 前端接口
 
-Plan 请求 `platform.export-apk`（HTTP `POST /api/export-apk`），当前恒返回 play 接口一贯的失败信封（HTTP 200，`ok:false`）：
+`POST /api/export-apk`（play 路由 `export-apk`），JSON body：
 
-```json
-// 请求
-{ "modId": "my-mod", "dryRun": true, "allowLossy": false }
-// 响应（实现后）
-{ "ok": true, "data": { "compat": [ { "path": "...", "field": "...", "reason": "...", "impact": "..." } ],
-                        "outPath": "...", "exportId": 1730000000 } }
-// 当前
-{ "ok": false, "code": "export.unimplemented", "message": "APK export is not implemented yet." }
-```
+- `{ "op": "check", "modId": "…", "allowLossy": true }` — 兼容性清单
+- `{ "op": "export", "modId": "…", "allowLossy": true }` — 写出 APK 到 `user/export-apk/`，响应含 `downloadUrl`
 
-骨架类（均在 `Ew4.Tool.Export`）：`ApkExportRequest` / `ApkExportResult` / `ApkCompatIssue`、`IApkExporter`、`ApkOverlayModExporter`（`NotImplementedException`）、`ExportApkCli`（CLI 占位，退出码 2）、`ApkCompatibilityChecker`（同）。
+实现：`Ew4.Tool.Lib.Export.ApkExporter`；Web 经 `ExportApkToolInvoker` 子进程调用 `export-apk --json`。Mod 面板每行有「导出 APK」按钮（`mods.js`）。
+
+### Android 游戏 APK（`EW4_CHANNEL=apk`）
+
+侧载安装的 **游戏客户端** 内 **不提供** Mod→APK 导出：无 `Ew4.Tool`、无 apktool 工具链。壳启动后端时设 `EW4_CHANNEL=apk`；`/api/mods` 响应 `exportApkSupported: false`，**不渲染**导出按钮；`POST /api/export-apk` 返回 `export.unsupported`。请在开发机使用 `scripts/ew4.sh export-apk` 或 `scripts/ew4.sh web`。

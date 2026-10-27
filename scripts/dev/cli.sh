@@ -101,3 +101,9 @@ cmd_validate() {
   ew4_docker_dotnet run --project "$EW4_TOOL_PROJECT" -- \
     validate-mod --packs "$packs" --pack "$pack_id" --level "$level"
 }
+
+cmd_export_apk() {
+  local root
+  root="$(ew4_repo_root)"
+  ew4_docker_dotnet run --project "$EW4_TOOL_PROJECT" -- export-apk "$@"
+}

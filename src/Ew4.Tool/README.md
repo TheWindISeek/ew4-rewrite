@@ -6,14 +6,16 @@
 
 | 层 | 位置 | 用途 |
 |----|------|------|
-| **Content**（引用） | `Ew4.Platform.Content` | Pack 解析、校验、`ScenarioBtlResolver`、`ScenarioBtlCodec` 等 |
-| **Service**（引用） | `Ew4.Service` | `smoke-start` 等使用 `CliEngineGame` |
-| **Persistence**（引用） | `Ew4.Platform.Persistence` | 路径与包 IO（经 Tool 间接使用） |
-| **Tool 导入** | `Ew4.Tool.Import` | `import-base`、APK→差异包、剧本嵌入/校验、国旗占位；**不**作为 Content 对外 API |
-| **Tool 导出** | `Ew4.Tool.Export`（计划） | `export-apk`：合并 Mod → 壳 APK；见 [apk-export.md](../../docs/task/plan/apk-export.md) |
-| **CLI** | `Program.cs`、`ApkImportCli.cs`、`ScenarioCli.cs` … | 命令行入口 |
+| **cli/** | `Ew4.Tool.Cli` | 命令行：解析参数、打印结果、`--help` |
+| **lib/** | `Ew4.Tool.Lib.Export` / `Ew4.Tool.Lib.Import` | APK 导出、APK/seed 导入；**不**放在 `Ew4.Platform.Content` |
+| **Platform**（引用） | Content / Mod / Persistence 等 | 合并 Mod、校验、剧本 btl 等运行时内容 API |
+| **Service**（引用） | `Ew4.Service` | 仅 `smoke-start` 等 CLI 烟测 |
 
-需要 APK 转换能力时：引用 `Ew4.Tool` 项目或调用 `Ew4.Tool.Import.ApkOverlayModImporter.Import`，不要从 Content 拉取 APK 逻辑。
+Web `POST /api/export-apk` 在 `ExportApkSteps` 内通过 `ExportApkToolInvoker` 子进程执行 `Ew4.Tool export-apk --json`（Service 不引用 Tool 程序集，避免依赖环）。
+
+**隔离**：`src/` 内除 `Ew4.Tool` 外不得引用本程序集；单测放在 `tests/Ew4.Test.Tool`（见 `ToolReferenceIsolationTests`）。
+
+路径对称：`Ew4.Platform.Mod.Apk.ModApkPathMapping`（APK → Mod）；`Ew4.Tool.Lib.Export.ApkAssetPathMapping`（Mod → APK）。
 
 ## 常用命令
 

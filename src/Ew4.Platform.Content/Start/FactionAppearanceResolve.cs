@@ -47,7 +47,7 @@ public static class FactionAppearanceResolve
         }
         else if (battlePackedColor != 0)
         {
-            color = battlePackedColor;
+            color = PackBattleColor(battlePackedColor);
         }
 
         if (color == 0)
@@ -56,6 +56,26 @@ public static class FactionAppearanceResolve
         }
 
         return new(flag, flagImage, color);
+    }
+
+    /// <summary>BTL/剧本 JSON 的 32 位色：<c>0xAARRGGBB</c>。RGB 全 0 且 A&gt;0（如普鲁士 <c>0x28000000</c>）为原版半透明叠色，不是「未指定」。</summary>
+    public static int PackBattleColor(int value)
+    {
+        if (value == 0)
+        {
+            return 0;
+        }
+
+        int a = (value >> 24) & 0xFF;
+        int r = (value >> 16) & 0xFF;
+        int g = (value >> 8) & 0xFF;
+        int b = value & 0xFF;
+        if (a == 0 && (r | g | b) != 0)
+        {
+            a = 255;
+        }
+
+        return unchecked(r | g << 8 | b << 16 | a << 24);
     }
 
     public static int DefaultPackedColor(string factionId)

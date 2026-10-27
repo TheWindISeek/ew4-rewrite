@@ -50,8 +50,16 @@ public sealed record WorldTurnRules
     }
 }
 
+public sealed record TurnEconomySnapshot(Resources Income, long FoodUpkeep, int Shortage, Resources Resources);
+
 public static class WorldTurns
 {
+    public static TurnEconomySnapshot EconomySnapshot(WorldState state, string factionId, WorldTurnRules rules)
+    {
+        var faction = state.Factions.Single(f => f.Id == factionId);
+        return new(FactionIncome(state, faction, rules), FactionUpkeep(state, factionId), faction.Shortage, faction.Resources);
+    }
+
     private static void CheckRevision(WorldState state, long expectedRevision)
     {
         state.Validate();

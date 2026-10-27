@@ -87,7 +87,8 @@ public static class JurisdictionClaims
             {
                 if (Released.Contains(guard)) continue;
                 if (!occupyFarm && state.Cells[guard].BuildingKind == "farmland" && state.Cells[guard].Owner is string farmer && farmer != owner) return false;
-                if (SameDistrict(state, cell, guard) && forts.TryGetValue(guard, out var owners) && owners.Any(o => o != owner)) return false;
+                if (!occupiedSite && SameDistrict(state, cell, guard) && forts.TryGetValue(guard, out var owners) && owners.Any(o => o != owner))
+                    return false;
             }
             return true;
         }
@@ -101,11 +102,21 @@ public static class JurisdictionClaims
         return proposed.Select((c, i) => c.Owner == state.Cells[i].Owner || c.Owner == null && c.Terrain.Sea && state.Cells[i].BuildingKind == null || policy.CanClaim(i) ? c : state.Cells[i]).ToArray();
     }
 
-    public static IReadOnlyList<CellState> Move(WorldState state, IReadOnlyList<CellState> proposed, IReadOnlyList<int> path, string owner)
+    public static IReadOnlyList<CellState> Move(WorldState state, IReadOnlyList<CellState> proposed, IReadOnlyList<int> path, string owner,
+        IReadOnlyCollection<int>? unitOccupiedCells = null)
     {
+        var unitBlocked = unitOccupiedCells?.ToHashSet() ?? state.Units.Select(u => u.Cell).ToHashSet();
         var occupied = path.Skip(1).ToHashSet();
         proposed = PreserveAllies(state, proposed, owner, occupied);
         if (state.Jurisdictions == null) return proposed;
+        var map = new HexMap(state.Width, state.Height);
+        var movePaint = new HashSet<int>(occupied);
+        foreach (int cell in occupied)
+            for (int direction = 0; direction < 6; direction++)
+            {
+                int neighbor = map.Neighbor(cell, direction);
+                if (neighbor >= 0) movePaint.Add(neighbor);
+            }
         var policy = new Policy(state, owner);
         var capturedFarms = new List<int>();
         foreach (int cell in path.Skip(1).Distinct())
@@ -115,22 +126,28 @@ public static class JurisdictionClaims
             if (policy.CanClaim(cell, true, true)) capturedFarms.Add(cell); else policy.Released.Remove(cell);
         }
         var result = proposed.Select((c, i) => c.Owner == state.Cells[i].Owner || c.Owner == null && c.Terrain.Sea && state.Cells[i].BuildingKind == null
+            || movePaint.Contains(i) && !unitBlocked.Contains(i) && c.Owner == owner
             || occupied.Contains(i) && (TerritorialJurisdictions.IsCenter(c) || c.BuildingKind == "port") && AlliedTerritory(state, i, owner)
             || policy.CanClaim(i, capturedFarms.Contains(i), occupied.Contains(i)) ? c : state.Cells[i]).ToArray();
         foreach (int farm in capturedFarms)
             foreach (int cell in policy.Ring(farm))
-                if (cell == farm || policy.CanClaim(cell)) result[cell] = result[cell] with { Owner = owner };
+                if (!unitBlocked.Contains(cell) && (cell == farm || policy.CanClaim(cell)))
+                    result[cell] = result[cell] with { Owner = owner };
         foreach (int center in path.Skip(1).Distinct().Where(i => TerritorialJurisdictions.IsCenter(state.Cells[i])
             && state.Cells[i].Owner != owner && result[i].Owner == owner))
-            TransferDistrict(state, result, center, owner, new Policy(state, owner, true));
+            TransferDistrict(state, result, center, owner, new Policy(state, owner, true), unitBlocked);
+        int destination = path[^1];
+        for (int i = 0; i < result.Length; i++)
+            if (i != destination && unitBlocked.Contains(i)) result[i] = state.Cells[i];
         return result;
     }
 
-    private static void TransferDistrict(WorldState state, CellState[] result, int center, string owner, Policy policy)
+    private static void TransferDistrict(WorldState state, CellState[] result, int center, string owner, Policy policy, HashSet<int> unitBlocked)
     {
         policy.OccupiedCenter(center);
         for (int i = 0; i < result.Length; i++)
-            if (state.Jurisdictions!.CellCenters[i] == center && policy.CanClaim(i, true)) result[i] = result[i] with { Owner = owner };
+            if (!unitBlocked.Contains(i) && state.Jurisdictions!.CellCenters[i] == center && policy.CanClaim(i, true))
+                result[i] = result[i] with { Owner = owner };
     }
 
     public static WorldState UpgradeCapturedDistricts(WorldState state, WorldState original)
@@ -145,7 +162,8 @@ public static class JurisdictionClaims
             // Reconstruct the frontier before this old-save capture, without granting a deep/sea shortcut.
             var before = state with { Cells = state.Cells.Select((c, i) => i == center ? c with { Owner = original.Cells[i].Owner } : c).ToArray() };
             var policy = new Policy(before, owner, true);
-            if (AlliedTerritory(before, center, owner) || policy.CanClaim(center, occupiedSite: true)) TransferDistrict(before, result, center, owner, policy);
+            if (AlliedTerritory(before, center, owner) || policy.CanClaim(center, occupiedSite: true))
+                TransferDistrict(before, result, center, owner, policy, new HashSet<int>());
         }
         return state with { Cells = result, Jurisdictions = state.Jurisdictions with { CenterCaptureVersion = 2 } };
     }

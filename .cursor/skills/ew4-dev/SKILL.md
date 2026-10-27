@@ -13,7 +13,7 @@ description: >-
 ```bash
 scripts/ew4.sh build -c Release
 scripts/ew4.sh install              # publish → install/web/app
-scripts/ew4.sh web                  # Ew4.Backend.Web，--home install/web，:5184
+scripts/ew4.sh web start            # 后台 :5184；restart / stop / logs / fg
 scripts/ew4.sh test -c Release
 scripts/ew4.sh validate smoke       # 可选：mods/base 全包 SmokeStart
 scripts/ew4.sh fmt --check

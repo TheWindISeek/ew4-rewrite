@@ -134,7 +134,7 @@ public static class Movement
         if (to.Sea)
         {
             if ((to.BlockedSeaEdges & (1 << enteringEdge)) != 0 || (actor.Category != "naval" && !actor.Transport)) return null;
-            cost = rules.SeaCost;
+            cost = actor.Category == "naval" ? rules.SeaCost : actor.FullBudget;
         }
         else
         {

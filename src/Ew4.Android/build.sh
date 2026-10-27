@@ -1,6 +1,6 @@
 #!/usr/bin/env bash
 #
-# 在 ew4-android 容器内运行（由 scripts/dev/android.sh 调用，仓库挂载为 /src）。
+# 在 ew4-dev:local 容器内运行（由 scripts/dev/android.sh 调用，仓库挂载为 /src）。
 # 输入：build/android/app（dotnet publish 结果）、install/apk/mods（要内置的 mod 由 EW4_APK_MODS 指定）
 # 输出：install/apk/ew4.apk（debug 密钥签名，可直接侧载）
 set -euo pipefail

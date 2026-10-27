@@ -11,6 +11,30 @@
   "zh-Hans": "Mod 与创作",
   "en": "Mods & Authoring"
  },
+ "ui.mod_hub_hint": {
+  "zh-Hans": "管理已安装内容包，或编辑草稿并导出 Mod。",
+  "en": "Manage installed packs or edit drafts and export mods."
+ },
+ "ui.mod_packages": {
+  "zh-Hans": "内容包管理",
+  "en": "Content packs"
+ },
+ "ui.mod_editor": {
+  "zh-Hans": "Mod 创作",
+  "en": "Mod authoring"
+ },
+ "ui.mod_import_steps": {
+  "zh-Hans": "导入：① 点「选择文件」选 .zip/.ew4mod → ② 核对标识与名称 → ③ 点「导入」（仅填框不会生效）。",
+  "en": "Import: ① Choose file → ② Check id & name → ③ Import (typing alone does nothing)."
+ },
+ "ui.mod_id_pending": {
+  "zh-Hans": "请先选择文件",
+  "en": "Choose a file first"
+ },
+ "ui.mod_editor_create_hint": {
+  "zh-Hans": "填写标识与名称后点「新建」，草稿会出现在下方列表；点「打开」进入编辑。",
+  "en": "Enter id and name, then New; open a draft from the list below."
+ },
  "ui.prev_page": {
   "zh-Hans": "上一页",
   "en": "Previous page"
@@ -122,6 +146,14 @@
  "ui.napoleon": {
   "zh-Hans": "拿破仑",
   "en": "Napoleon"
+ },
+ "ui.tutorial_tap_continue": {
+  "zh-Hans": "点击此处继续",
+  "en": "Tap here to continue"
+ },
+ "ui.tutorial_tap_map": {
+  "zh-Hans": "点击任意处继续",
+  "en": "Tap anywhere to continue"
  },
  "ui.headquarters": {
   "zh-Hans": "指挥部",
@@ -282,6 +314,30 @@
  "ui.round": {
   "zh-Hans": "回合  {0}",
   "en": "Round {0}"
+ },
+ "ui.turn_summary_title": {
+  "zh-Hans": "回合总结",
+  "en": "Turn summary"
+ },
+ "ui.turn_summary_heading": {
+  "zh-Hans": "第 {0} 回合",
+  "en": "Round {0}"
+ },
+ "ui.turn_summary_income": {
+  "zh-Hans": "收入",
+  "en": "Income"
+ },
+ "ui.turn_summary_upkeep": {
+  "zh-Hans": "维持",
+  "en": "Upkeep"
+ },
+ "ui.turn_summary_stock": {
+  "zh-Hans": "当前资源",
+  "en": "Resources"
+ },
+ "ui.turn_summary_shortage": {
+  "zh-Hans": "粮食短缺等级 {0}",
+  "en": "Food shortage level {0}"
  },
  "ui.money": {
   "zh-Hans": "金钱",
@@ -522,6 +578,18 @@
  "ui.saved": {
   "zh-Hans": "已保存",
   "en": "Saved"
+ },
+ "ui.export_apk": {
+  "zh-Hans": "导出 APK",
+  "en": "Export APK"
+ },
+ "ui.export_apk_working": {
+  "zh-Hans": "正在导出 APK…",
+  "en": "Exporting APK…"
+ },
+ "ui.export_apk_done": {
+  "zh-Hans": "APK 已生成，开始下载",
+  "en": "APK ready — download started"
  },
  "ui.local_pick_factions": {
   "zh-Hans": "选择本局势力",

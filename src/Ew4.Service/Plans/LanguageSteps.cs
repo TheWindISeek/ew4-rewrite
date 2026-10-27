@@ -74,12 +74,4 @@ public static class LanguageSteps
         }
     }
 
-    /// <summary>APK 导出的前端接口占位：契约见 docs/task/plan/apk-export.md §14，实现由 Ew4.Tool 完成。</summary>
-    public static string ExportApkUnimplemented() =>
-        new JsonObject
-        {
-            ["ok"] = false,
-            ["code"] = "export.unimplemented",
-            ["message"] = "APK export is not implemented yet.",
-        }.ToJsonString();
 }

@@ -101,6 +101,8 @@ Mod 列表里 **huangkai** 的显示名即为「皇帝的凯旋」（不是战�
 
 **修复**：构建 `Chapters` 时跳过 `hide="1"` 的 battleline（与隐藏关卡逻辑一致；`presentation.chapter` 仍按 `campaignN_*` 编号，不受影响）。
 
+**base 英国战役缺钉**：`neversets`（`btn_selcamp_6` / 英国）在 `mods/base/assets/original/def_battleline.xml` 曾被标 `hide="1"`，过滤后只剩 5 章、地图无英伦锚点；已改为 `hide="0"`（与 `great-front` 包一致）。改 `mods/base` 后需 `sync-mods` 并重启 web。
+
 ### 自测记录（2026-10-23）
 
 本地已 `build -c Release` → `sync-mods` → 释放 `:5184` 后 `scripts/ew4.sh web`。

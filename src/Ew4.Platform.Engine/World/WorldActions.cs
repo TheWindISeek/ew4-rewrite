@@ -147,8 +147,10 @@ public static class WorldActions
         if (!MovementRange(state, unit, rules).TryGetValue(destination, out var reachable))
             throw new RuleViolation("move.unreachable", "No affordable legal route to destination");
         var otherUnits = state.Units.Where(u => u.Id != unitId).ToArray();
+        // Neighbor cells with other units stay unclaimed; the move destination itself must still capture.
+        var blockedCells = otherUnits.Where(u => u.Cell != destination).Select(u => u.Cell).Distinct().ToArray();
         var claimed = JurisdictionClaims.Move(state,
-            TerritoryClaims.Move(map, state.Cells, otherUnits.Select(u => u.Cell).Distinct().ToArray(), reachable.Path, faction.Id, rules.Territory), reachable.Path, faction.Id);
+            TerritoryClaims.Move(map, state.Cells, blockedCells, reachable.Path, faction.Id, rules.Territory), reachable.Path, faction.Id, blockedCells);
         var moved = unit with
         {
             Cell = destination, RemainingMovement = rules.SpendAllMovement ? 0 : Math.Max(0, reachable.Remaining),
@@ -191,6 +193,7 @@ public static class WorldActions
             var events = WorldEvents.DuringAction(next, new(TriggerKind.CellCaptured, Cell: destination, PreviousOwner: previous, NewOwner: current));
             next = events.State; notices.AddRange(events.Notices);
         }
+        next = WorldDeaths.RefreshMorale(next, rules.NeutralCamps);
         next = next with { Revision = checked(state.Revision + 1) };
         next.Validate();
         return new(next, notices);

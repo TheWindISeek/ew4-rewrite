@@ -2,6 +2,7 @@ using System.Text.Json;
 using Ew4.Interface.Mod;
 using Ew4.Platform.Mod.Catalog;
 using Ew4.Platform.Mod.Import;
+using Ew4.Service.Tooling;
 
 namespace Ew4.Service.Host;
 
@@ -19,7 +20,7 @@ public sealed class ModOps : IModOperations
     }
 
     public string GetPanelStateJson() =>
-        JsonSerializer.Serialize(ModPanelApi.Serialize(GetPanelState()), Json);
+        JsonSerializer.Serialize(ModPanelApi.Serialize(GetPanelState(), ExportApkCapability.Supported), Json);
 
     public void Activate(string? modId) => _catalog.Activate(modId);
 

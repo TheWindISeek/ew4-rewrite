@@ -32,6 +32,9 @@
 /install/**
 !/install/README.md
 
+# 本地 dev Web 状态（scripts/ew4.sh web）
+/.run/
+
 # Legacy
 /local/**
 /packs/

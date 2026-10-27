@@ -1,25 +1,11 @@
 # shellcheck shell=bash
 #
 # Android 壳构建（仅被 scripts/ew4.sh source）。设计见 docs/task/plan/android-shell.md。
+# 与 build/test/export-apk 共用镜像 ew4-dev:local（见 scripts/dev/docker.sh）。
 #
-#   ew4_ensure_android_image   → 构建 ew4-android:local（JDK + Android 命令行工具）
-#   ew4_build_apk              → publish linux-bionic-arm64 → 打包 → install/apk/ew4.apk
+#   ew4_build_apk  → publish linux-bionic-arm64 → 打包 → install/apk/ew4.apk
 #
 # 环境变量：EW4_APK_MODS  内置哪些 mod（空格分隔，默认 mods/ 下全部）
-
-ew4_android_image() {
-  printf '%s' "${EW4_ANDROID_IMAGE:-ew4-android:local}"
-}
-
-ew4_ensure_android_image() {
-  local root image
-  root="$(ew4_repo_root)"
-  image="$(ew4_android_image)"
-  if docker image inspect "$image" >/dev/null 2>&1; then
-    return 0
-  fi
-  docker build -t "$image" -f "$root/.config/docker/Dockerfile.android" "$root"
-}
 
 # 官方 linux-bionic 运行时包（Mono）在真机上于 libcoreclr 初始化时 SIGSEGV；
 # 改用 Termux 在 Android 上实际跑通的同版本（10.0.13）Mono 运行时，覆盖 Microsoft.NETCore.App 部分。
@@ -47,15 +33,14 @@ ew4_android_overlay_runtime() {
     name="$(basename "$f")"
     cp -f "$f" "$root/build/android/app/$name"
   done
-  # 官方包里的 Mono 静态库对运行没用，删掉以减小体积
   rm -f "$root"/build/android/app/*.a
 }
 
 ew4_build_apk() {
-  local root
+  local root image
   root="$(ew4_repo_root)"
   ew4_ensure_dev_image
-  ew4_ensure_android_image
+  image="$(ew4_dev_image)"
   ew4_sync_repo_mods_to_install "$root" apk
 
   echo "[apk] dotnet publish (linux-bionic-arm64)" >&2
@@ -71,7 +56,7 @@ ew4_build_apk() {
     -e EW4_APK_MODS="${EW4_APK_MODS:-}" \
     -v "$root:/src" \
     -w /src \
-    "$(ew4_android_image)" \
+    "$image" \
     bash src/Ew4.Android/build.sh
   echo "APK: $root/install/apk/ew4.apk" >&2
 }

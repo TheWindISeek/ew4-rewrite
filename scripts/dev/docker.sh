@@ -7,7 +7,8 @@
 #
 # 函数：
 #   ew4_dev_image           → 镜像名
-#   ew4_ensure_dev_image    → 不存在则 docker compose build dev
+#   ew4_build_dev_image     → 强制 docker compose build dev（scripts/ew4.sh image dev）
+#   ew4_ensure_dev_image    → 不存在则 ew4_build_dev_image
 #   ew4_docker_dev cmd…     → 在容器内执行任意命令（仓库挂载 /src）
 #   ew4_docker_dotnet args… → 在容器内执行 dotnet …
 
@@ -15,13 +16,11 @@ ew4_dev_image() {
   printf '%s' "${EW4_DEV_IMAGE:-ew4-dev:local}"
 }
 
-ew4_ensure_dev_image() {
+ew4_build_dev_image() {
   local root image
   root="$(ew4_repo_root)"
   image="$(ew4_dev_image)"
-  if docker image inspect "$image" >/dev/null 2>&1; then
-    return 0
-  fi
+  echo "构建开发镜像 $image（Dockerfile.dev）…" >&2
   if docker compose version >/dev/null 2>&1; then
     docker compose -f "$root/.config/docker/compose.yaml" build dev
     return
@@ -31,6 +30,13 @@ ew4_ensure_dev_image() {
     return
   fi
   docker build -t "$image" -f "$root/.config/docker/Dockerfile.dev" "$root"
+}
+
+ew4_ensure_dev_image() {
+  if docker image inspect "$(ew4_dev_image)" >/dev/null 2>&1; then
+    return 0
+  fi
+  ew4_build_dev_image
 }
 
 ew4_docker_dev() {

@@ -11,11 +11,12 @@
 | `Ew4.Test.Platform.Play` | `Ew4.Platform.Play`（Match） | 已有 |
 | `Ew4.Test.Service` | `Ew4.Service` | 已有（`ProfileStore`；不依赖游戏资源） |
 | `Ew4.Test.Editor` | `Ew4.Platform.Editor` | 已有 |
-| `Ew4.Test.Architecture` | 依赖图 | 锁定 `docs/arch/frozen/layering.md`；改白名单=改架构 |
-| `Ew4.Test.Tool` | `Ew4.Tool` | 尚未创建 |
+| `Ew4.Test.Architecture` | 依赖图 | 锁定 `docs/arch/frozen/layering.md`；`ToolReferenceIsolationTests` 禁止 src 引用 Tool |
+| `Ew4.Test.Tool` | `Ew4.Tool` | APK 导出/导入库（`lib/Export`、`lib/Import`）；**唯一**可引用 `Ew4.Tool` 的测试项目 |
 | `Ew4.Test.Interface` | `Ew4.Interface` | 已有 |
+| `Ew4.Test.Front` | `Ew4.Front.Web` | Vitest（`package.json` + `*.test.js`）；`scripts/ew4.sh front-test` |
 
-前缀 **`Ew4.Test.`** 表示测试程序集。`src` 改名时更新 csproj 的 `ProjectReference` 路径即可。
+前缀 **`Ew4.Test.`** 表示测试程序集；**`Ew4.Test.Front` 为 Node/Vitest**，不是 csproj，故不进 `dotnet test`。`src` 改名时更新 csproj 的 `ProjectReference` 路径即可。
 
 运行：
 

@@ -11,6 +11,7 @@
     <PackageReference Include="xunit.runner.visualstudio" Version="2.8.2" />
   </ItemGroup>
   <ItemGroup>
+    <ProjectReference Include="..\..\src\Ew4.Platform.Content\Ew4.Platform.Content.csproj" />
     <ProjectReference Include="..\..\src\Ew4.Platform.Engine\Ew4.Platform.Engine.csproj" />
     <ProjectReference Include="..\..\src\Ew4.Platform.Mod\Ew4.Platform.Mod.csproj" />
     <ProjectReference Include="..\..\src\Ew4.Platform.Persistence\Ew4.Platform.Persistence.csproj" />

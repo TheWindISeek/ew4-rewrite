@@ -52,7 +52,7 @@ filesDir/ew4/home/     EW4_HOME：mods/、user/（存档、设置）
 
 ## 5. 构建
 
-宿主机只需 Docker。内置哪些 mod 由 `EW4_APK_MODS` 决定（空格分隔，默认内置仓库 `mods/` 下的全部 mod）。镜像 `ew4-android:local`（`.config/docker/Dockerfile.android`）= dotnet SDK + JDK 17 + Android 命令行工具（`platforms;android-34`、`build-tools;34.0.0`）。
+宿主机只需 Docker。内置哪些 mod 由 `EW4_APK_MODS` 决定（空格分隔，默认内置仓库 `mods/` 下的全部 mod）。镜像 **`ew4-dev:local`**（`.config/docker/Dockerfile.dev`，**唯一**开发镜像，与 `apk` / `export-apk` 共用）= dotnet SDK + JDK 17 + Android 命令行工具（`platforms;android-34`、`build-tools;34.0.0`）+ **apktool 2.9.3**（`export-apk` 改 Manifest）。改 Dockerfile 后执行 `scripts/ew4.sh image dev`。
 
 ```bash
 scripts/ew4.sh apk            # → install/apk/ew4.apk（debug 密钥签名，可直接侧载）

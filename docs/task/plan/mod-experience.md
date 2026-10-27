@@ -61,7 +61,7 @@ Overlay 改兵种未更新 manifest 时，攻击/血量/图标错位。
 
 - 引擎：`BattleSettlement` + `PlayerAccount.CampaignStars`。
 - 胜利界面：`victory-ui.js` 显示当局星级。
-- 选关列表：**未**展示历史星级；`/api/catalog` **未**下发 `campaignStars`。
+- 选关列表：展示 `catalog.campaignStars`（账户存档）；`/api/catalog` 下发 `campaignStars`（见 [debug/play-feedback-b3-campaign-stars.md](../debug/play-feedback-b3-campaign-stars.md)）。
 - 换包：`AccountContentRevision` 变化时账户部分字段重置。
 
 **目标（M5）：** 产品规则定稿后接 API + UI。
@@ -72,7 +72,7 @@ Overlay 改兵种未更新 manifest 时，攻击/血量/图标错位。
 
 | 能力 | 引擎/API | UI / 资源 |
 |------|----------|-----------|
-| 士气 | 有 | 几乎无条/图标 |
+| 士气 | 有 | 局内单位旁 `morale_up` / `morale_down1–3`（`battlefield.js`） |
 | 音效 | 时间轴触发 | `effects.json` 白名单 + `/content/sounds/` |
 | 动画 | — | `movementStepMs`、战斗 timeline；体感偏慢可调参 |
 

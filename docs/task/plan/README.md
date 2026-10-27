@@ -8,6 +8,8 @@
 | [mod-experience.md](./mod-experience.md) | Mod 切换体验问题域 |
 | [android-shell.md](./android-shell.md) | Android 壳（内置后端 + WebView） |
 | [apk-export.md](./apk-export.md) | Mod → APK 导出（`Ew4.Tool export-apk`）需求与 CLI 契约 |
+| [java-migration.md](./java-migration.md) | C# → Java 迁移顺序、写法对照、测试与容器环境（草案） |
+| [play-feedback-2026-10.md](./play-feedback-2026-10.md) | 玩法/UI 待办：海洋行动力、普鲁士色、战役星级、AI 自动、回合信息、Mod 整页、移动动画（B1–B7） |
 
 完成后：
 

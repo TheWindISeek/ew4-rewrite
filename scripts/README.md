@@ -26,8 +26,11 @@
 scripts/ew4.sh build              # 编译后 sync mods → install/web & install/apk
 scripts/ew4.sh sync-mods          # 默认 all；或 sync-mods web | apk
 scripts/ew4.sh install          # publish → install/web/app
-scripts/ew4.sh web                # http://127.0.0.1:5184（--home install/web）
+scripts/ew4.sh web start          # 后台 :5184，状态 .run/ew4-web.state
+scripts/ew4.sh web restart        # 改代码后重启
+scripts/ew4.sh web logs -f        # 跟随日志；前台调试用 web fg
 scripts/ew4.sh test
+scripts/ew4.sh front-test         # Vitest（tests/Ew4.Test.Front，Docker 内 npm ci）
 scripts/ew4.sh import-base        # 需本地 data/import-seed
 scripts/ew4.sh validate smoke
 ```

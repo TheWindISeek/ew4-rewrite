@@ -17,10 +17,11 @@
 | M2 | **势力外观统一** | 地图涂色不为 0；未知势力有默认色；`flag` / `flagImage` / `Appearance` 一条解析链（前后端一致） |
 | M3 | **肖像与扩展图** | 指挥部/战役/对话/结算共用资源解析（atlas + `rewrite/` + API 下发的 `image`） |
 | M4 | **兵种 UI 与 Mod 表一致** | `manifest.profiles` 与 overlay 的 `def_army` 同步策略；信息面板攻击/血量/图标不错位 |
-| M5 | **战役进度展示** | `CampaignStars` 进 catalog 或专用 API；选关界面显示历史星级；明确按包隔离存档规则 |
-| M6 | **士气表现** | 规则已有；补原版级 UI（条/图标/晕厥） |
+| M5 | **战役进度展示** | `catalog.campaignStars` + 选关星标（账户槽位）；按包隔离规则仍待产品定稿 |
+| M6 | **士气表现** | 局内 `morale_*` 图标已接；信息面板条/晕厥动画等可继续补 |
 | M7 | **音效** | Mod 可声明音效；`effects.json` 合并/回退策略可测 |
 | M8 | **动画与性能** | 先调参（`settings.speed`、步长）；性能 profiling 单列，不阻塞 M1–M7 |
+| M9 | **Android 壳内体验** | 载入时画面比例预设（100% / 50% / 75%）；局内角落按钮触控热区；见 plan B12–B13 |
 
 问题域拆解：[mod-experience.md](./mod-experience.md)。  
 已修复案例索引：[debug/README.md](../debug/README.md)。
@@ -45,7 +46,7 @@
 | H1 | **Android 壳** | 路线 A：APK 内带后端 + WebView；见 [android-shell.md](./android-shell.md) |
 | L1 | **多语言** | `zh-Hans/zh-Hant/en`；见 [arch/localization.md](../../arch/localization.md) |
 | H2 | **发行内置 Mod** | 默认 `base` + 样例包打进 `install/mods/` 的安装器体验 |
-| H3 | **APK 导出** | 内置 `ew4-base.apk` + 合并 Mod → 可安装 APK；`Ew4.Tool export-apk`；见 [apk-export.md](./apk-export.md) |
+| H3 | **APK 导出（进行中）** | 内置 `ew4-base.apk` + 合并 Mod → 可安装 APK；`Ew4.Tool export-apk`；见 [apk-export.md](./apk-export.md) |
 
 ---
 
@@ -54,5 +55,6 @@
 - **进行中：** Mod 体验（M3–M8，见 [mod-experience.md](./mod-experience.md)）
 - **已在本分支：** M0（`mod.json`）、M1（客户端资源契约告警）、M2（势力外观/涂色/旗）
 - **下一步建议：** M3 肖像统一，M4 兵种 UI
+- **待办队列（2026-10-27）：** [play-feedback-2026-10.md](./play-feedback-2026-10.md)（B1–B10 已验收；**B11** 胜利判定、**B12–B13** APK 触控与载入比例）
 
 流程与门禁见 [../todo.md](../todo.md)；本文件记 **功能 backlog**。

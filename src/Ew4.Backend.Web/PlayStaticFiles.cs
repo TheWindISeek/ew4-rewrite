@@ -11,6 +11,25 @@ public static class PlayStaticFiles
         string wwwroot = app.Services.GetRequiredService<IGameWebPaths>().WwwRootDirectory;
         if (Directory.Exists(wwwroot))
         {
+            app.Use(async (context, next) =>
+            {
+                string path = context.Request.Path.Value ?? "/";
+                if (path is "/" or "")
+                {
+                    context.Request.Path = "/html/index.html";
+                }
+                else if (path.Equals("/index.html", StringComparison.OrdinalIgnoreCase))
+                {
+                    context.Request.Path = "/html/index.html";
+                }
+                else if (path.Equals("/editor.html", StringComparison.OrdinalIgnoreCase))
+                {
+                    context.Request.Path = "/html/editor.html";
+                }
+
+                await next();
+            });
+
             app.UseDefaultFiles(new DefaultFilesOptions
             {
                 FileProvider = new PhysicalFileProvider(wwwroot),

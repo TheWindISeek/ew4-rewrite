@@ -1,14 +1,33 @@
 using System.Text.Json;
+using System.Text.RegularExpressions;
 using Ew4.Interface.Host;
 using Ew4.Interface.Operations;
+using Ew4.Service.Host;
 using Microsoft.AspNetCore.Http.Features;
 
 namespace Ew4.Backend.Web;
 
 public static class PlayModEndpoints
 {
+    private static readonly Regex ExportApkFileName = new(@"^[a-z0-9][a-z0-9_.-]{0,80}-\d{9,12}\.apk$", RegexOptions.CultureInvariant);
+
     public static void MapPlayModApi(this WebApplication app)
     {
+        app.MapGet("/api/export-apk/download/{fileName}", (string fileName, Ew4InstallOptions install) =>
+        {
+            if (!ExportApkFileName.IsMatch(fileName))
+            {
+                return Results.NotFound();
+            }
+
+            string path = Path.Combine(install.StateDirectory, "export-apk", fileName);
+            if (!File.Exists(path))
+            {
+                return Results.NotFound();
+            }
+
+            return Results.File(path, "application/vnd.android.package-archive", fileName);
+        });
         app.MapMethods("/api/mods", ["GET", "POST"], async (HttpRequest request, IGameOperations game) =>
         {
             if (PlayEndpoints.IsForbiddenCrossSite(request))

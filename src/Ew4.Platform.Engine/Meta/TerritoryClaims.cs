@@ -55,18 +55,19 @@ public static class TerritoryClaims
         int start = route[0], end = route[route.Count - 1];
         if (rules.ReleaseEmptySea && !occupied.Contains(start) && cells[start].Terrain.Sea && cells[start].BuildingKind == null)
             result[start] = result[start] with { Owner = null };
-        void Claim(int cell)
+        void Claim(int cell, bool occupySite = false)
         {
             var site = result[cell];
+            bool facility = site.BuildingKind != null && !rules.PassThroughBuildingKinds.Contains(site.BuildingKind);
             if (!site.Terrain.Sea && !occupied.Contains(cell) && !site.Objective && !site.BlocksTerritoryExpansion
-                && (site.BuildingKind == null || rules.PassThroughBuildingKinds.Contains(site.BuildingKind)))
+                && (!facility || occupySite && (TerritorialJurisdictions.IsCenter(site) || site.BuildingKind == "port")))
                 result[cell] = site with { Owner = owner };
         }
         for (int i = 1; i < route.Count - 1; i++)
         {
             int intermediate = route[i];
             if (cells[intermediate].Terrain.Sea) continue;
-            Claim(intermediate);
+            Claim(intermediate, true);
             if (!rules.ClaimPathNeighbors) continue;
             for (int direction = 0; direction < 6; direction++)
             {
@@ -74,7 +75,13 @@ public static class TerritoryClaims
                 if (neighbor >= 0 && cells[neighbor].Terrain.Active) Claim(neighbor);
             }
         }
-        if (rules.ClaimEndpoint) result[end] = result[end] with { Owner = owner };
+        if (rules.ClaimEndpoint && !cells[end].Terrain.Sea) Claim(end, true);
+        if (rules.ClaimPathNeighbors && rules.ClaimEndpoint)
+            for (int direction = 0; direction < 6; direction++)
+            {
+                int neighbor = map.Neighbor(end, direction);
+                if (neighbor >= 0 && cells[neighbor].Terrain.Active) Claim(neighbor);
+            }
         return result;
     }
 }

@@ -24,18 +24,20 @@ public sealed class PlayPlans : IPlanModule
 
     private readonly IRuntimeHost _host;
     private readonly PlayHost _play;
+    private readonly Ew4InstallOptions _install;
 
-    public PlayPlans(IRuntimeHost host, PlayHost play)
+    public PlayPlans(IRuntimeHost host, PlayHost play, Ew4InstallOptions install)
     {
         _host = host;
         _play = play;
+        _install = install;
     }
 
     public void Register(PlanRegistry registry)
     {
         MusicPlan(registry);
         BodyPlan(registry, PlayRoutes.Language, "language", "language.config", body => LanguageSteps.Config(_host, _play, body));
-        BodyPlan(registry, PlayRoutes.ExportApk, "export", "export.apk", _ => LanguageSteps.ExportApkUnimplemented());
+        BodyPlan(registry, PlayRoutes.ExportApk, "export", "export.apk", body => ExportApkSteps.Run(_install, _play, body));
         foreach (string route in PlayRoutes.All)
         {
             string name = RequestNames.ForRoute(route);

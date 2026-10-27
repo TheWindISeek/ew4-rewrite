@@ -9,6 +9,17 @@ internal static class WebHostPaths
     public static string ResolveWwwRoot(InstallLayout install, string repositoryRoot)
     {
         string published = Path.Combine(install.AppDirectory, WwwRootFolderName);
+        string dev = RepositoryPaths.FrontendWwwRoot(repositoryRoot);
+        string devIndex = Path.Combine(dev, "html", "index.html");
+        if (Directory.Exists(dev) && File.Exists(devIndex))
+        {
+            string publishedIndex = Path.Combine(published, "html", "index.html");
+            if (!File.Exists(publishedIndex))
+            {
+                return dev;
+            }
+        }
+
         if (Directory.Exists(published))
         {
             return published;
@@ -20,7 +31,6 @@ internal static class WebHostPaths
             return besideHost;
         }
 
-        string dev = RepositoryPaths.FrontendWwwRoot(repositoryRoot);
         return Directory.Exists(dev) ? dev : published;
     }
 }
